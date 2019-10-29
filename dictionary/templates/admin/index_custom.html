@@ -1,0 +1,26 @@
+{% extends "admin/index.html" %}
+{{% load i18n static %}
+{% block sidebar %}
+
+    {{ block.super }}
+
+
+    <div class="module">
+        <table style="width: 100%">
+            <caption>diğer aksiyonlar</caption>
+            <tbody>
+            {% if perms.dictionary.can_activate_user %}
+                <tr>
+                    <th><a href="{% url 'admin:novice_list' %}">Çaylak onay listesi</a></th>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <br><br>
+    <br>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ page_safename }}{% endblock %}
+{% block bodyattr %}class="topic-list-view"{% endblock %}
+
+{% block content %}
+    {#todo: gündem/tarihte bugün vs. filtre#}
+    <div class="left-frame-in">
+        <h2>{{ page_safename }}</h2>
+        <ul id="topic-list-standalone" class="list-group topic-list">
+            {% for topic in topics %}
+                <li class="list-group-item"><a href="{{ topic.slug }}">{{ topic.title }}
+                    <small class="total_entries">{{ topic.count }}</small>
+                </a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

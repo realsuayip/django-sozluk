@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    {% load humanize %}
+    {% load global_objects %}
+    <h4>mesajlar (<span>{% message_status user=request.user unread_count=True %}</span>)</h4>
+    <hr>
+
+    {% if conversations %}
+
+
+        <ul class="threads">
+            {% for chat in conversations %}
+                <li {% if chat.last_message.recipient == request.user and not chat.last_message.read_at %}class="unread"{% endif %}>
+                    {% with sender=chat.last_message.sender recipient=chat.last_message.recipient %}
+                        {% if sender == request.user %}
+                            <a href="{% url 'conversation' username=recipient.username %}">
+                            <h5>{{ recipient.username }}</h5>
+
+                        {% else %}
+                            <a href="{% url 'conversation' username=sender.username %}">
+                            <h5>{{ sender.username }}</h5>
+                        {% endif %}
+                    {% endwith %}
+                    <p>{{ chat.last_message.body }}</p>
+                    {{ chat.last_message.sent_at|naturaltime }}
+                    </a>
+                </li>
+
+            {% endfor %}
+        </ul>
+    {% else %}
+        <small>yok ki</small>
+    {% endif %}
+
+{% endblock %}

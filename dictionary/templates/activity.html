@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block bodyattr %}class="topic-list-view"{% endblock %}
+{% load basic_filters %}
+{% load functions %}
+{% block content %}
+    <div class="left-frame-in">
+
+        <h2>takip</h2>
+        {% if topics_following %}
+            <ul id="topic-list-standalone" class="list-group topic-list">
+                {% for following in topics_following %}
+                    {% activity_latest_entry request.user following.topic as latest_entry_date %}
+                    {#                todo fix request.user, and blocked thingss..#}
+                    <li class="list-group-item {% if following.read_at < latest_entry_date %}active{% endif %}">
+                        <a href="{% url 'topic' slug=following.topic.slug %}?a=following&d={{ following.read_at|timestamp }}">{{ following.topic.title }}
+                        </a></li>
+
+                {% endfor %}
+            </ul>
+        {% else %}
+            <small>yok ki</small>
+        {% endif %}
+
+    </div>
+{% endblock %}

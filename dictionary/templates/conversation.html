@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}@{{ recipient.username }} ile sohbet muhabbet{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    {% load humanize %}
+    {% load basic_filters %}
+    {% include "includes/block_user_modal.html" %}
+    <h4><a href="{% url 'user_profile' username=recipient.username %}">@{{ recipient.username }}</a> ile sohbet muhabbet
+    </h4>
+
+    <span class="chat-quick-links">
+        <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda"><i class="material-icons">reply</i>mesajlara dön</a>
+        {% if not recipient in request.user.blocked.all %}
+            <a href="#" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
+        {% endif %}
+
+    </span>
+
+    <hr class="mt-0">
+
+    {% if conversation.messages.all|length > 4 %}
+        <a id="message_history_show" href="#" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için
+            tıklayın</a>
+    {% endif %}
+
+    <ul id="message_list" class="chat">
+        {% for message in conversation.messages.all %}
+            {% if message.sender == request.user %}
+                <li class="bubble sent">
+                    <p>{{ message.body|formatted|safe }}</p>
+                    <time>{{ message.sent_at|naturaltime }}
+                        {% if message.read_at %}
+                            <i title="görüldü, {{ message.read_at|naturalday }}" class="material-icons">done_all</i>
+                        {% else %}
+                            <i title="gönderildi" class="material-icons">done</i>
+                        {% endif %}
+                    </time>
+                </li>
+            {% else %}
+                <li class="bubble recieved">
+                    <p>{{ message.body }}</p>
+                    <time>{{ message.sent_at|naturaltime }}</time>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    {% if request.user in recipient.blocked.all or recipient in request.user.blocked.all %}
+        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
+    {% else %}
+        <h5>cevap yaz</h5>
+        <section class="chat-reply mb-3">
+            {% load widget_tweaks %}
+            <form method="POST">
+                {% csrf_token %}
+                {% render_field form.body|attr:"autofocus" class="mr-2" rows="5" spellcheck="true" %}
+                <button type="submit" class="btn btn-django">gönder</button>
+            </form>
+        </section>
+
+    {% endif %}
+
+
+{% endblock %}

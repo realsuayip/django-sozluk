@@ -1,0 +1,20 @@
+<div class="blackquote-container">
+    {% load basic_filters %}
+    <blockquote class="user-pin m-0">
+        <h5><a href="{% url 'topic' slug=entry.topic.slug %}"> {{ entry.topic }}</a></h5>
+        <span class="entry-content">  {{ entry.content|formatted|linebreaks }} </span>
+        <div class="entry-permalink">
+            <a href="{% url 'entry_permalink' entry_id=entry.id %}">
+                {{ entry.date_created|date:"d.m.Y H:i" }}
+                {% if entry.date_edited != entry.date_created %}
+                    {% now "d.m.Y" as today %}
+                    {% if today == entry.date_edited|date:"d.m.Y" %}
+                        {{ entry.date_edited|date:" ~ H:i" }}
+                    {% else %}
+                        {{ entry.date_edited|date:" ~ d.m.Y H:i" }}
+                    {% endif %}
+                {% endif %}
+            </a>
+        </div>
+    </blockquote>
+</div>

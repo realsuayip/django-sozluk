@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.title }}{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+
+    {% load functions %}
+    {% load basic_filters %}
+    <section class="user_entries">
+        <header class="entry_header">
+
+
+            {% if topic_exists %}
+
+                <h1><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a></h1>
+                <div class="lower">
+                    <div class="title_sub">
+                        {% url 'topic' slug=topic.slug as relative_url %}
+
+                        <span class="mr-3 nice-filter">şükela:&nbsp;<a
+                                href="{{ relative_url }}?a=nice"
+                                {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a
+                                href="{{ relative_url }}?a=nicetoday"
+                                {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
+
+                        <a data-toggle="dropdown" class="expand mr-2" href="#">başlıkta ara</a>
+
+                        <div class="dropdown-menu topic-dropdown">
+                            <a class="dropdown-item" href="{{ relative_url }}?day=today">bugün</a>
+                            <a class="dropdown-item" href="{{ relative_url }}?a=search&keywords=http://">linkler</a>
+
+                            {% if request.user.is_authenticated %}
+                                <a class="dropdown-item"
+                                   href="{{ relative_url }}?a=search&keywords=@{{ request.user.username }}">benimkiler</a>
+                            {% endif %}
+                            <a class="dropdown-item pb-2" href="#">
+                                <form method="GET" action="{% url 'topic' slug=topic.slug %}">
+                                    <div class="input-group input-group-sm">
+                                        <input type="hidden" name="a" value="search">
+                                        <input name="keywords" class="searchbox-text" type="text"
+                                               placeholder="kelime ya da @yazar"
+                                               aria-label="kelime ya da @yazar" aria-describedby="basic-addon2"
+                                               required>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">ara</button>
+
+                                        </div>
+                                    </div>
+                                </form>
+                            </a>
+
+                        </div>
+                        {% if request.user.is_authenticated %}
+                            {% load functions %}
+                            {% check_follow_status request.user topic as status %}
+                            <a href="#" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip
+                                etme{% else %}takip et{% endif %}</a>
+                        {% endif %}
+                    </div>
+
+                    {% if entries.paginator.num_pages > 1 %}
+                        <div class="pagination">
+
+
+                            {% if entries.has_previous %}
+                                <a title="önceki sayfa" href="?{% url_replace request 'page' entries.previous_page_number %}">«</a>
+                            {% endif %}
+
+
+                            <select id="entry_list_page">
+                                {% for page in entries.paginator.page_range %}
+                                    {% if page == entries.number %}
+                                        <option selected>{{ page }}</option>
+                                    {% else %}
+                                        <option>{{ page }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+
+                            <span style="color:#444">&nbsp;/&nbsp;</span>
+
+                            <a title="son sayfa" href="?{% url_replace request 'page' entries.paginator.num_pages %}">{{ entries.paginator.num_pages }}</a>
+                            {% if entries.has_next %}
+                                <a title="sonraki sayfa" href="?{% url_replace request 'page' entries.next_page_number %}"
+                                   style="margin-left:4px;">»</a>
+                            {% endif %}
+                        </div>
+                        </div>
+                    {% endif %}
+
+                </header>
+                {% if entries_before %}
+                    {#                    todo : after you code şükela arama vs. burayı da include yap ve entry olmayınca yok ki behaviour#}
+                    {% if entry_perma %}
+                        <a title="tümünü göster"
+                           href="{% url 'topic' slug=entry_perma.topic.slug %}?page={{ before_page }}"
+                           class="more-entries-button">
+                            {{ entries_before }} entry daha
+                        </a>
+                    {% else %}
+                        <a title="tümünü göster" href="?page={{ before_page }}" class="more-entries-button">
+                            {{ entries_before }} entry daha
+                        </a>
+                    {% endif %}
+
+
+
+                {% endif %}
+
+                <ul>
+                    {% if entry_perma %}
+                        {% with entry_perma as entry %}
+                            {% include "includes/entry.html" %}
+                        {% endwith %}
+                    {% endif %}
+
+
+                    {% if entries %}
+                        {% for entry in entries %}
+                            {% include "includes/entry.html" %}
+                        {% endfor %}
+                    {% endif %}
+
+
+                </ul>
+
+                {% if entries_after %}
+                    {% if entry_perma %}
+                        <a title="tümünü göster"
+                           href="{% url 'topic' slug=entry_perma.topic.slug %}?page={{ after_page }}"
+                           class="more-entries-button">
+                            {{ entries_after }} entry daha
+                        </a>
+
+                    {% else %}
+                        <a title="tümünü göster" href="?page={{ after_page }}" class="more-entries-button">
+                            {{ entries_after }} entry daha
+                        </a>
+
+                    {% endif %}
+                {% endif %}
+
+
+            {% else %}
+                <h1><a href="/topic/?q={{ topic.title }}">{{ topic.title }}</a></h1>
+                {% if err %}
+                    {{ err }}
+                    {% if entries_after %}
+                        <a title="tümünü göster"
+                           href="{% url 'topic' slug=topic.slug %}"
+                           class="more-entries-button">
+                            {{ entries_after }} entry daha
+                        </a>
+
+                    {% endif %}
+                {% else %}
+                    <small>böyle bir şey yok.</small>
+                    {% if topic.title|banned_topic %}
+                        <small>lanet olsun böyle başlığa zaten</small>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+    </section>
+
+    <hr>
+    {% if request.user.is_authenticated %}
+        {% include "includes/send_message_modal.html" %}
+        {% include "includes/block_user_modal.html" %}
+
+        {% if not topic.title|banned_topic %}
+            <section class="user-comments">
+                <div class="editor-buttons">
+                    <button id="insert_bkz" class="add-code">(bkz: hede)</button>
+                    <button id="insert_hede" class="add-code">hede</button>
+                    <button id="insert_swh" class="add-code">*</button>
+                    <button id="insert_spoiler" class="add-code">- spoiler -</button>
+                    <button id="insert_link" class="add-code">http://</button>
+                </div>
+                {% load widget_tweaks %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% with topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
+                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor" rows="5" spellcheck="true" %}
+                    {% endwith %}
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-check">
+                                {% render_field form.is_draft class="form-check-input" id="is_draft" %}
+                                <label class="form-check-label" for="is_draft">kenarda dursun şimdilik</label>
+
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-django entry_submit">yolla</button>
+                        </div>
+                    </div>
+{#                    <input type="hidden" name="next" value="{{ request.path }}">#}
+                </form>
+
+
+            </section>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block rightframe %}
+    {% if topic.category.all %}
+        <section class="topic-categories-list">
+            <h2>başlığın kanalları</h2>
+            <ul>
+
+                {% for category in topic.category.all %}
+                    <li>
+                        <a id="category_view_ls" data-safename="{{ category }}" data-category="{{ category.slug }}"
+                           href="/basliklar/{{ category.slug }}/">#{{ category }}</a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </section>
+    {% endif %}
+{% endblock %}
