@@ -8,11 +8,11 @@ from decimal import Decimal
 from dateutil.parser import parse
 from django.urls import reverse_lazy
 
-
 # time difference of 1 day. if you are going to refactor this, please look for usages beforehand.
 time_threshold_24h = timezone.now() - datetime.timedelta(hours=24)
+YEAR_RANGE = list(reversed(range(2017, 2020)))  # also set in djdict.js, reversed so as the latest year is on
 ENTRIES_PER_PAGE = 10
-TOPICS_PER_PAGE = 2 # experimental
+TOPICS_PER_PAGE = 2  # experimental
 ENTRIES_PER_PAGE_PROFILE = 15
 nondb_categories = ["bugun", "gundem", "basiboslar", "tarihte-bugun", "kenar", "caylaklar", "takip"]
 banned_topics = [  # include banned topics here
@@ -22,14 +22,16 @@ vote_rates = {"favorite": Decimal(".2"), "increase": Decimal(".2"), "reduce": De
               "anonymous_multiplier": Decimal(".5"), }
 
 
-def topic_list_qs(request, category_slug, year=None):
+def topic_list_qs(request, category_slug, year=None, extend=False):
     """
     Queryset to call on topics that have entires written today.
     category -> Category slug.
+    year -> supply for tarihte-bugun
+    extend -> full data (for pagination)
     """
     topic_list = []
     serialized_data = []
-    extended = True if request.GET.get("extended") == "yes" else False
+    extended = True if request.GET.get("extended") == "yes" or extend else False
     last_entries = None
 
     if category_slug in nondb_categories:
@@ -52,6 +54,8 @@ def topic_list_qs(request, category_slug, year=None):
                 for entry in last_entries:
                     serialized_data.append({"title": f"{entry.topic.title}/#{entry.id}",
                                             "slug": reverse_lazy("entry_update", kwargs={"pk": entry.id})})
+
+                serialized_data = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
                 return serialized_data
             else:
                 raise Http404
@@ -85,6 +89,7 @@ def topic_list_qs(request, category_slug, year=None):
 
         return Topic.objects.filter(id=topic_obj.id, entry__date_created__gte=time_threshold_24h,
                                     entry__author__is_novice=False).count()
+
     if not last_entries:
         return []  # empty respose
 

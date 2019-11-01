@@ -711,3 +711,8 @@ $(".follow-topic-trigger").on("click", ({currentTarget}) => {
 
 
 });
+
+
+$("select#mobile_year_changer").on("change", function () {
+    window.location = updateQueryStringParameter(location.href, "year", this.value);
+});

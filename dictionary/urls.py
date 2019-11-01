@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (index, Logout, Login, SignUp, topic, topic_list, user_profile, messages, conversation,
+from .views import (index, Logout, Login, SignUp, topic, user_profile, messages, conversation,
                     _autocomplete, _favorite, _category, _compose_message, _vote, _user_actions, people, _entry_actions,
                     _topic_actions)
 
@@ -20,7 +20,7 @@ urlpatterns = urlpatterns_ajax + [path('', index, name="home"), path('login/', L
                                   path('topic/', topic, name="topic_search"),
                                   path('topic/<slug:slug>/', topic, name="topic"),
                                   path('topic/<str:unicode>/', topic, name="topic_unicode_url"),
-                                  path('basliklar/<slug:slug>/', topic_list, name="topic_list"),
+                                  path('basliklar/<slug:slug>/', views.TopicList.as_view(), name="topic_list"),
                                   path('entry/<int:entry_id>/', topic, name="entry_permalink"),
                                   path('entry/update/<int:pk>/', views.EntryUpdate.as_view(), name="entry_update"),
                                   path('autocomplete/general/', _autocomplete, name="autocomplete"),

@@ -9,7 +9,7 @@ from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, Preference
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, \
-    vote_rates, require_ajax, find_after_page, mark_read
+    vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE
 from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.contrib import messages as django_messages
 import math
 import datetime
+import random
 from django.views.generic import ListView, UpdateView
 from django.db.models import Max, Q, Case, When, F, IntegerField
 from decimal import Decimal
@@ -195,21 +196,51 @@ def _compose_message(request):
     return JsonResponse({"success": True, "detail": "mesajınız sağ salim gönderildi"})
 
 
-def topic_list(request, slug):
-    """
-        Topic list for mobile users.
-    """
-    topics = topic_list_qs(request, slug)
-    print(topics)
-    nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar",
-                      "tarihte-bugun": "tarihte bugün", "kenar": "kenar"}
-    if slug in nondb_categories:
-        title = nondb_safename[slug]
-    else:
-        title = Category.objects.get(slug=slug).name
+class TopicList(ListView):
+    model = Topic
+    context_object_name = "topics"
+    template_name = "topic_list.html"
+    paginate_by = TOPICS_PER_PAGE
 
-    data = {"topics": topics, "page_safename": title, "page_name": slug}
-    return render(request, "topic_list.html", context=data)
+    def get_queryset(self):
+        year = None
+        if self.kwargs["slug"] == "tarihte-bugun":
+
+            if self.request.GET.get("year"):
+                year = self.request.GET.get("year")
+                self.request.session["year"] = year
+            else:
+                year = self.request.session.get("year")
+
+            if not year:
+                year = random.choice(YEAR_RANGE)
+                self.request.session["year"] = year
+
+            print(YEAR_RANGE)
+            try:
+                if int(year) not in YEAR_RANGE:
+                    year = None
+            except ValueError:
+                year = None
+
+        return topic_list_qs(self.request, self.kwargs['slug'], year, extend=True)
+
+    def get_context_data(self, **kwargs):
+        slug = self.kwargs['slug']
+        nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar",
+                          "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar"}
+        if slug in nondb_categories:
+            title = nondb_safename[slug]
+        else:
+            title = Category.objects.get(slug=slug).name
+        context = super().get_context_data(**kwargs)
+        context['page_safename'] = title
+        if self.request.session.get("year"):
+            context["current_year"] = self.request.session.get("year")
+        context['slug_name'] = slug
+        if slug == "tarihte-bugun":
+            context["year_range"] = YEAR_RANGE
+        return context
 
 
 class Login(LoginView):
