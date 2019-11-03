@@ -1164,6 +1164,18 @@ select.mobile-topic-list {
     background: #fff;
 }
 
+.refresh-button{
+    border: 1px solid #ccc;
+    padding: .3em;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: .75em;
+}
+
+.refresh-button:hover{
+    background: #f2f2f2;
+}
+
 
 /** MEDIA QUERIES **/
 /** anchor **/

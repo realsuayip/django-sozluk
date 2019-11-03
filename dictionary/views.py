@@ -12,6 +12,7 @@ from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_P
     vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE
 from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -22,6 +23,8 @@ import random
 from django.views.generic import ListView, UpdateView
 from django.db.models import Max, Q, Case, When, F, IntegerField
 from decimal import Decimal
+from django.views.decorators.vary import vary_on_cookie
+from django.views.decorators.cache import cache_page, never_cache
 
 
 # todo imports according to pep8
@@ -216,13 +219,12 @@ class TopicList(ListView):
                 year = random.choice(YEAR_RANGE)
                 self.request.session["year"] = year
 
-            print(YEAR_RANGE)
             try:
                 if int(year) not in YEAR_RANGE:
                     year = None
             except ValueError:
                 year = None
-
+        # todo extend caching support for mobile
         return topic_list_qs(self.request, self.kwargs['slug'], year, extend=True)
 
     def get_context_data(self, **kwargs):
@@ -655,11 +657,46 @@ def _favorite(request):
 
 @require_ajax
 def _category(request, slug):
-    # https://docs.djangoproject.com/en/2.2/topics/class-based-views/mixins/#more-than-just-html
-    year = request.GET.get("year", None)
-    # tarih int gelmezse ERROR kap
+    year = request.GET.get("year", None) if slug == "tarihte-bugun" else None
+    if year:
+        try:
+            if not int(year) in YEAR_RANGE:
+                return HttpResponseBadRequest()
+        except (ValueError, OverflowError):
+            return HttpResponseBadRequest()
+
+    # Caching of "bugun", needs testing
+    # reference https://stackoverflow.com/a/20146767/
+    if slug == "bugun" and request.user.is_authenticated:
+        user_id = request.user.id  # anonymous users are not allowed to view 'bugun'
+        # cache keys for 'bugun' cache
+        cache_key_normal = f"bugun_{user_id}"
+        cache_key_extended = f"bugun_extended_{user_id}"
+
+        is_extended = True if request.GET.get("extended") == "yes" else False
+        cached = False if request.GET.get("nocache") == "yes" else True  # returning cached info is OK or not
+        cache_key = cache_key_extended if is_extended else cache_key_normal
+
+        if cached and cache.get(cache_key):
+            """
+            There is cached data, return that. refresh_count informs the
+            user about the new data count from the latest caching time.
+            """
+            data = cache.get(cache_key)
+            refresh_count = Entry.objects.filter(date_created__gte=data.get("set_at")).count()
+
+            return JsonResponse({"topic_data": data.get("response"), "refresh_count": refresh_count}, safe=False)
+
+        else:
+            # No cached data found, so create cache information to be used the next time.
+            cache.delete_many([cache_key_normal, cache_key_extended])
+            response = topic_list_qs(request, slug, year)
+            cache_data = {"response": response, "set_at": timezone.now()}
+            cache.set(cache_key, cache_data, 3000)  # cache at 5 minutes
+            return JsonResponse({"topic_data": response}, safe=False)
+
     response = topic_list_qs(request, slug, year)
-    return JsonResponse(response, safe=False)
+    return JsonResponse({"topic_data": response}, safe=False)
 
 
 @csrf_exempt

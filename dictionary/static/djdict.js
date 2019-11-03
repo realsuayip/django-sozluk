@@ -172,8 +172,11 @@ function letframe_button_reset() {
     localStorage.removeItem("navigation_page");
 }
 
-function leftframe_stick(category = null, extended = false, page = null) {
-
+function leftframe_stick(category = null, extended = false, page = null, reset_cache = false) {
+    // category -> cateogry slug to call topics
+    // extended -> retrieve full data (required for paginated data)
+    // page -> which page to call, use with extended true
+    // reset_cache -> whether to use cached data while calling
 
     // leftframe behaviour on link clicks on desktop.
     let year_select = $("#year_select");
@@ -219,6 +222,9 @@ function leftframe_stick(category = null, extended = false, page = null) {
 
         year_select.val(selected_year);
         parameters = `?year=${selected_year}`;
+    }
+    if (parameters && reset_cache) {
+        parameters += "&nocache=yes";
     }
 
     topic_ajax_call(api_url, parameters, extended, page);
@@ -273,19 +279,29 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
             $("#current_category_name").html(localStorage.getItem("active_category_safe"));
             $("#load_indicator").css("display", "none");
 
-            if (data.length === 0) {
+            if (data["topic_data"].length === 0) {
 
                 topic_list.html("<small>yok ki</small>");
                 $("a#show_more").addClass("dj-hidden");
 
             } else {
 
+                if (data["refresh_count"]) {
+                    $("#refresh_bugun").removeClass("dj-hidden");
+                    $("span#new_content_count").text(`(${data["refresh_count"]})`);
+                } else {
+                    $("#refresh_bugun").addClass("dj-hidden");
+                }
+
                 if (page) {
-                    const paginator = new Paginator(data, 2);
+
+
+                    const paginator = new Paginator(data['topic_data'], 2);
 
                     if (page > paginator.total_pages) {
                         Notify("yok hiç bişi kalmamış");
                     } else {
+                        topic_list.empty();
                         localStorage.setItem("navigation_page", page);
                         const left_frame_select = $("select#left_frame_paginator");
                         left_frame_select.empty();
@@ -302,9 +318,14 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
                         $("#lf_pagination_wrapper").removeClass("dj-hidden");
                     }
 
+                } else {
+                    topic_list.empty();
+                    data = data['topic_data'];
+
                 }
                 // default behaviour (no page number is  supplied)
-                topic_list.empty();
+
+
                 for (let i = 0; i < data.length; i++) {
                     let topic_template = `<li class="list-group-item"><a href="${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ''}</small></a></li>`;
                     topic_list.append(topic_template);
@@ -715,4 +736,10 @@ $(".follow-topic-trigger").on("click", ({currentTarget}) => {
 
 $("select#mobile_year_changer").on("change", function () {
     window.location = updateQueryStringParameter(location.href, "year", this.value);
+});
+
+$("#refresh_bugun").on("click", function () {
+    letframe_button_reset();
+    leftframe_stick("bugun", false, null, true);
+    $(this).addClass("dj-hidden");
 });

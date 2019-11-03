@@ -27,7 +27,10 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
     Queryset to call on topics that have entires written today.
     category -> Category slug.
     year -> supply for tarihte-bugun
-    extend -> full data (for pagination)
+    extend -> full data (for pagination on mobile)
+
+    How pagination works? This function does not paginate. If request contains extended=yes, full content will be
+    yielded to paginate in javascript or in view function. If extended is None, then the first page will be the output.
     """
     topic_list = []
     serialized_data = []
