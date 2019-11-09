@@ -23,8 +23,6 @@ import random
 from django.views.generic import ListView, UpdateView
 from django.db.models import Max, Q, Case, When, F, IntegerField
 from decimal import Decimal
-from django.views.decorators.vary import vary_on_cookie
-from django.views.decorators.cache import cache_page, never_cache
 
 
 # todo imports according to pep8
@@ -313,7 +311,6 @@ def user_profile(request, username):
             else:
                 data['novice_queue'] = False
 
-    novice = profile.is_novice
     page_tab = request.GET.get("t")
 
     if page_tab == "favorites":
@@ -321,16 +318,10 @@ def user_profile(request, username):
         entries = profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
     elif page_tab == "popular":
         data['tab'] = "popular"
-        if novice:
-            entries = Entry.objects_novices.filter(author=profile, vote_rate__gt=Decimal("1"))
-        else:
-            entries = Entry.objects.filter(author=profile, vote_rate__gt=Decimal("1"))
+        entries = Entry.objects_published.filter(author=profile, vote_rate__gt=Decimal("1"))
     else:
         data['tab'] = "entries"
-        if novice:
-            entries = Entry.objects_novices.filter(author=profile).order_by("-date_created")
-        else:
-            entries = Entry.objects.filter(author=profile).order_by("-date_created")
+        entries = Entry.objects_published.filter(author=profile).order_by("-date_created")
 
     paginator = Paginator(entries, ENTRIES_PER_PAGE_PROFILE)
     page = request.GET.get("page")

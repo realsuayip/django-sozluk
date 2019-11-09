@@ -1,3 +1,4 @@
 django
 django-widget-tweaks
 django-uuslug
+python-dateutil

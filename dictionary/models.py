@@ -160,7 +160,7 @@ class Topic(models.Model):
         super().save(*args, **kwargs)
 
     def has_entries(self):
-        return Entry.objects.filter(topic=self).exists()  # used to be .count()
+        return Entry.objects_published.filter(topic=self).exists()  # used to be .count()
 
     def follow_check(self, user):
         return TopicFollowing.objects.filter(topic=self, author=user).exists()

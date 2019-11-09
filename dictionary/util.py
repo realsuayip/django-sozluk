@@ -172,7 +172,9 @@ class NoviceActivityMiddleware:
             if not last_activity or parse(last_activity) < time_threshold_24h:
                 Author.objects.filter(id=request.user.id).update(last_activity=timezone.now())
                 request.session[self.KEY] = timezone.now().isoformat()
-                # determines the novice queue number on profile page
+                # Determines the novice queue number on profile page
+                # it finds ALL the novices on the list whose queue number is before the user, having the equals to adds
+                # +1 to the number, giving the current users queue number
                 queue = Author.objects.filter(is_novice=True, application_status="PN",
                                               last_activity__gte=time_threshold_24h,
                                               application_date__lte=request.user.application_date).count()
