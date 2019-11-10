@@ -299,6 +299,15 @@ class Conversation(models.Model):
         return self.messages.latest(field_name="sent_at")
 
 
+class Memento(models.Model):
+    body = models.TextField()
+    holder = models.ForeignKey(Author, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="+")
+
+    def __str__(self):
+        return f"{self.__class__.__name__}#{self.id}, from {self.holder} about {self.patient}"
+
+
 @receiver(post_save, sender=Message, dispatch_uid="create_conversation")
 def create_conversation(sender, instance, **kwargs):
     """

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing
+from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import FormView
@@ -302,6 +302,19 @@ def user_profile(request, username):
     data = {"author": profile}
 
     if request.user.is_authenticated:
+        if request.method == "POST":
+            body = request.POST.get("memento")
+            obj, created = Memento.objects.update_or_create(holder=request.user, patient=profile,
+                                                            defaults={"body": body})
+            data["memento"] = obj.body
+            django_messages.add_message(request, django_messages.INFO, "kaydettik efendim")
+            return redirect(reverse("user_profile", kwargs={"username": profile.username}))
+        else:
+            try:
+                data["memento"] = Memento.objects.get(holder=request.user, patient=profile).body
+            except ObjectDoesNotExist:
+                pass
+
         if request.user in profile.blocked.all() or profile in request.user.blocked.all():
             raise Http404
 

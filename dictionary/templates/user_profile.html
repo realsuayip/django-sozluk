@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}mobil uyumsuz kullanıcı: username -webname{% endblock %}
+{% block title %}kullanıcı: {{ author.username }}{% endblock %}
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 
 {% block content %}
@@ -120,5 +120,16 @@
     {% endif %}
 
 
+
+{% endblock %}
+{% block rightframe %}
+
+    <h6><strong>notlar</strong></h6>
+    <form method="post" class="memento">
+        <textarea name="memento" rows="10"
+                  placeholder="{{ author.username }} hakkındaki düşünceleriniz">{{ memento }}</textarea>
+        {% csrf_token %}
+        <button class="btn btn-django">kaydet</button>
+    </form>
 
 {% endblock %}

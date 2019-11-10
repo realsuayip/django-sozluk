@@ -1164,7 +1164,7 @@ select.mobile-topic-list {
     background: #fff;
 }
 
-.refresh-button{
+.refresh-button {
     border: 1px solid #ccc;
     padding: .3em;
     text-align: center;
@@ -1172,9 +1172,19 @@ select.mobile-topic-list {
     margin-bottom: .75em;
 }
 
-.refresh-button:hover{
+.refresh-button:hover {
     background: #f2f2f2;
 }
+
+
+form.memento textarea {
+    height: auto;
+    padding: .2em;
+    outline: none;
+    width: 250px;
+}
+
+
 
 
 /** MEDIA QUERIES **/

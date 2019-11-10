@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing
+from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing, Memento
 from django.contrib.auth.admin import UserAdmin
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -150,5 +150,7 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Message)
 admin.site.register(Conversation)
 admin.site.register(TopicFollowing)
+admin.site.register(Memento)
+
 
 # Register your models here.
