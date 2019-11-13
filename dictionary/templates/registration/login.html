@@ -4,6 +4,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 {% block content %}
     <h4 class="mb-3">giriş</h4>
+
     <form method="post" class="login-form">
         {% csrf_token %}
         <div class="form-group">
@@ -25,9 +26,8 @@
             <label class="form-check-label" for="remember_me">{{ form.remember_me.label }}</label>
         </div>
         <hr>
-        <a href="#" class="m-2">şifre neydi ya</a>
+        <a href="{% url 'password_reset' %}" class="m-2">şifre neydi ya</a>
         <button type="submit" class="btn float-right">giriş yap</button>
-
     </form>
 
 {% endblock %}
