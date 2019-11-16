@@ -9,6 +9,9 @@ GENDERS = (('NO', 'Boşver'), ('MN', 'Erkek'), ('WM', 'Kadın'), ('OT', 'Diğer'
 
 
 class LoginForm(AuthenticationForm):
+    error_messages = {'invalid_login': (
+        "giriş yapılamadı. doğru e-posta ve parola kombinasyonunu girdiğinizden emin olun. bilgileriniz büyük-küçük "
+        "harf hassastır. e-posta adresinizi onayladığınzdan emin olun.")}
     remember_me = forms.BooleanField(required=False, label="beni hatırla")
 
 
@@ -53,3 +56,20 @@ class SendMessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ('body',)
+
+
+class ChangeEmailForm(forms.Form):
+    email1 = forms.EmailField(max_length=254, label="yeni e-posta adresi")
+    email2 = forms.EmailField(max_length=254, label="yeni e-posta adresi (tekrar)")
+    password_confirm = forms.CharField(label="parolanızı teyit edin", strip=False, widget=forms.PasswordInput)
+
+    def clean(self):
+        form_data = self.cleaned_data
+        if form_data["email1"] != form_data["email2"]:
+            raise forms.ValidationError("e-postalar uyuşmadı")
+        else:
+            if Author.objects.filter(email=form_data["email1"]).exists():
+                # todo: if multiple unactivated accounts exist, delete rest when one of them is activated
+                raise forms.ValidationError("bu e-posta kullanımda")
+
+        super().clean()

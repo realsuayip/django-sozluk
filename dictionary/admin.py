@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing, Memento
+from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
 from django.contrib.auth.admin import UserAdmin
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -36,8 +36,9 @@ class CustomUserAdmin(UserAdmin):
     model = Author
 
     fieldsets = UserAdmin.fieldsets + ((None, {'fields': (
-        'is_novice', 'application_status', 'application_date', 'last_activity', 'banned_until', 'birth_date', 'gender',
-        'following', "blocked", 'favorite_entries', 'upvoted_entries', 'downvoted_entries', 'pinned_entry')}),)
+        'is_novice', 'application_status', 'application_date', 'last_activity', 'banned_until',
+        'birth_date', 'gender', 'following', "blocked", 'favorite_entries', 'upvoted_entries', 'downvoted_entries',
+        'pinned_entry')}),)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -151,6 +152,6 @@ admin.site.register(Message)
 admin.site.register(Conversation)
 admin.site.register(TopicFollowing)
 admin.site.register(Memento)
-
+admin.site.register(UserVerification)
 
 # Register your models here.

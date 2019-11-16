@@ -1,4 +1,4 @@
-from .models import Entry, Category, Topic, Author, TopicFollowing
+from .models import Entry, Category, Topic, Author, TopicFollowing, UserVerification
 import datetime
 from django.shortcuts import get_object_or_404
 from functools import wraps
@@ -7,8 +7,23 @@ from django.utils import timezone
 from decimal import Decimal
 from dateutil.parser import parse
 from django.urls import reverse_lazy
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.hashers import make_password
 
-# time difference of 1 day. if you are going to refactor this, please look for usages beforehand.
+"""
+Custom settings
+"""
+
+DOMAIN = "127.0.0.1:8000"
+PROTOCOL = "http"
+FROM_EMAIL = "test@django.org"
+
+# time difference of 1 day. if you are going to refactor this,
+# please look for usages beforehand [there are a lot of usages].
 time_threshold_24h = timezone.now() - datetime.timedelta(hours=24)
 YEAR_RANGE = list(reversed(range(2017, 2020)))  # also set in djdict.js, reversed so as the latest year is on
 ENTRIES_PER_PAGE = 10
@@ -153,6 +168,26 @@ def mark_read(topic, user):
     obj.read_at = timezone.now()
     obj.save()
     return True
+
+
+class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return str(user.pk) + str(timestamp) + str(user.is_active)
+
+
+def send_email_confirmation(user, to_email):
+    token_generator = EmailVerificationTokenGenerator()
+    verification_token_raw = token_generator.make_token(user)
+    verification_token_hashed = make_password(verification_token_raw)
+    expiration_date = timezone.now() + datetime.timedelta(days=1)
+    UserVerification.objects.create(author=user, verification_token=verification_token_hashed,
+                                    expiration_date=expiration_date, new_email=to_email)
+
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    params = {"domain": DOMAIN, "protocol": PROTOCOL, "user": user, "uidb64": uidb64, "token": verification_token_raw}
+    msg = render_to_string("registration/email_confirmation.html", params)
+    return send_mail("email onayı", "email onayı", from_email=FROM_EMAIL, recipient_list=[to_email], html_message=msg,
+                     fail_silently=True)
 
 
 class NoviceActivityMiddleware:

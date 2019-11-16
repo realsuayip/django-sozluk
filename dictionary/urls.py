@@ -15,16 +15,17 @@ urlpatterns_ajax = [path('entry/favorite/', _favorite, name="favorite"), path('e
                     path('entry/action/', _entry_actions, name="entry_actions"),
                     path('t/action/', _topic_actions, name="topic_actions")]
 
-urlpatterns_password_reset = [
-    path("parola/", PasswordResetView.as_view(template_name="registration/password_reset/form.html",
-         html_email_template_name="registration/password_reset/email_template.html"), name="password_reset"),
-    path("parola/oldu/", PasswordResetDoneView.as_view(template_name="registration/password_reset/done.html"),
-         name="password_reset_done"),
-    path("parola/onay/<uidb64>/<token>/", PasswordResetConfirmView.as_view(
-        template_name="registration/password_reset/confirm.html"), name="password_reset_confirm"),
-    path("parola/tamam/", PasswordResetCompleteView.as_view(template_name="registration/password_reset/complete.html"),
-         name="password_reset_complete"),
-]
+urlpatterns_password_reset = [path("parola/",
+                                   PasswordResetView.as_view(template_name="registration/password_reset/form.html",
+                                                             html_email_template_name="registration/password_reset/email_template.html"),
+                                   name="password_reset"), path("parola/oldu/", PasswordResetDoneView.as_view(
+    template_name="registration/password_reset/done.html"), name="password_reset_done"),
+                              path("parola/onay/<uidb64>/<token>/", PasswordResetConfirmView.as_view(
+                                  template_name="registration/password_reset/confirm.html"),
+                                   name="password_reset_confirm"), path("parola/tamam/",
+                                                                        PasswordResetCompleteView.as_view(
+                                                                            template_name="registration/password_reset/complete.html"),
+                                                                        name="password_reset_complete"), ]
 
 urlpatterns_regular = [path('', index, name="home"), path('login/', Login.as_view(), name="login"),
                        path('register/', SignUp.as_view(), name="register"),
@@ -42,6 +43,8 @@ urlpatterns_regular = [path('', index, name="home"), path('login/', Login.as_vie
                        path('olay/', views.ActivityList.as_view(), name="activity"),
                        path("kanallar/", views.CategoryList.as_view(), name="category_list"),
                        path("ayarlar/", views.UserPreferences.as_view(), name="user_preferences"),
-                       path("ayarlar/sifre/", views.ChangePassword.as_view(), name="user_preferences_password"), ]
+                       path("ayarlar/sifre/", views.ChangePassword.as_view(), name="user_preferences_password"),
+                       path("ayarlar/email/", views.ChangeEmail.as_view(), name="user_preferences_email"),
+                       path("email/onayla/<uidb64>/<token>/", views.ConfirmEmail.as_view(), name="confirm_email"), ]
 
 urlpatterns = urlpatterns_regular + urlpatterns_ajax + urlpatterns_password_reset

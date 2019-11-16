@@ -59,6 +59,7 @@ class Author(AbstractUser):
     birth_date = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
     is_novice = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)  # NOT NULL
@@ -71,7 +72,7 @@ class Author(AbstractUser):
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
     downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
     pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
-    email = models.EmailField(_('email adresi'), unique=True)
+    email = models.EmailField(_('e-posta adresi'), unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
 
@@ -117,6 +118,14 @@ class Author(AbstractUser):
             return entry
         else:
             return None
+
+    @property
+    def email_confirmed(self):
+        if self.userverification_set.filter(
+                expiration_date__gte=timezone.now() - datetime.timedelta(hours=24)).exists():
+            return False
+        else:
+            return True
 
     def __str__(self):
         return f"{self.username}:{self.id}"
@@ -306,6 +315,17 @@ class Memento(models.Model):
 
     def __str__(self):
         return f"{self.__class__.__name__}#{self.id}, from {self.holder} about {self.patient}"
+
+
+class UserVerification(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    verification_token = models.CharField(max_length=128)
+    new_email = models.EmailField(null=True, blank=True)  # new e-mail if it is subject to change
+    expiration_date = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        UserVerification.objects.filter(author=self.author).delete()
+        super().save(*args, **kwargs)
 
 
 @receiver(post_save, sender=Message, dispatch_uid="create_conversation")

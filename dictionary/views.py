@@ -1,30 +1,33 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import FormView
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, \
-    vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE
-from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import cache
-from django.core.paginator import Paginator
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.contrib import messages as django_messages
-import math
 import datetime
+import math
 import random
-from django.views.generic import ListView, UpdateView
-from django.db.models import Max, Q, Case, When, F, IntegerField
 from decimal import Decimal
 
+from django.contrib import messages as django_messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
+from django.db.models import Max, Q, Case, When, F, IntegerField
+from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.views.generic import View, ListView, UpdateView
+from django.views.generic.edit import FormView
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.http import urlsafe_base64_decode
 
+from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm
+from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
+from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, \
+    vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
+
+# flatpages for about us etc.
 # todo imports according to pep8
 # todo scrollbar tracking
 # todo converation pagenation
@@ -244,9 +247,7 @@ class TopicList(ListView):
 
 
 class Login(LoginView):
-    # todo passwordresetView
     # TODO: login_required varken yanlış yönlendirme yapıo
-    # TODO: usernameler türkçe karakter içeremez!! regex
     form_class = LoginForm
 
     def form_valid(self, form):
@@ -277,6 +278,51 @@ class ChangePassword(PasswordChangeView):
         return super().form_valid(form)
 
 
+class ChangeEmail(LoginRequiredMixin, FormView):
+    template_name = "user_preferences_email.html"
+    form_class = ChangeEmailForm
+    success_url = reverse_lazy("user_preferences")
+
+    def form_valid(self, form):
+        if not self.request.user.check_password(form.cleaned_data.get("password_confirm")):
+            django_messages.add_message(self.request, django_messages.INFO, "parolanızı yanlış girdiniz")
+            return redirect(reverse("user_preferences_email"))
+
+        send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
+        django_messages.add_message(self.request, django_messages.INFO,
+                                    "e-posta onayından sonra adresiniz değişecektir.")
+        return redirect(self.success_url)
+
+
+class ConfirmEmail(View):
+    success = False
+
+    def get(self, request, uidb64, token):
+        try:
+            user_id = urlsafe_base64_decode(uidb64).decode()
+            verification_object = UserVerification.objects.get(author_id=user_id,
+                                                               expiration_date__gte=time_threshold_24h)
+        except (ValueError, UnicodeDecodeError, ObjectDoesNotExist):
+            return self.response()
+
+        if check_password(token, verification_object.verification_token):
+            author = Author.objects.get(id=user_id)
+            if not author.is_active:
+                author.is_active = True
+                author.save()
+            else:
+                author.email = verification_object.new_email
+                author.save()
+
+            self.success = True
+            UserVerification.objects.filter(author=author).delete()
+
+        return self.response()
+
+    def response(self):
+        return render(self.request, "registration/email_confirmation_result.html", context={"success": self.success})
+
+
 class SignUp(FormView):
     """
         todo: usernamelerde türkçe karakter olmayacak. kontrol mekanizması yapçaz.
@@ -290,11 +336,11 @@ class SignUp(FormView):
         user.birth_date = form.cleaned_data.get('birth_date')
         user.gender = form.cleaned_data.get('gender')
         user.save()
-        email = form.cleaned_data.get('email')
-        raw_password = form.cleaned_data.get('password1')
-        author = authenticate(username=email, password=raw_password)
-        login(self.request, author)
-        return redirect('home')
+        send_email_confirmation(user, user.email)
+        django_messages.add_message(self.request, django_messages.INFO,
+                                    "e-posta adresinize bir onay bağlantısı gönderildi."
+                                    "bu bağlantıya tıklayarak hesabınızı aktif hale getirip giriş yapabilirsiniz.")
+        return redirect('login')
 
 
 def user_profile(request, username):

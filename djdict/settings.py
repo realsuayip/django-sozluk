@@ -119,7 +119,7 @@ SESSION_COOKIE_AGE = 1209600
 # in development environment use Python's local mail server
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
-
+PASSWORD_RESET_TIMEOUT_DAYS = 1
 
 USE_I18N = True
 
