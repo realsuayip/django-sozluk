@@ -73,3 +73,15 @@ class ChangeEmailForm(forms.Form):
                 raise forms.ValidationError("bu e-posta kullanımda")
 
         super().clean()
+
+
+class ResendEmailForm(forms.Form):
+    email = forms.EmailField(max_length=254, label="kayıt olurken kullandığınız e-posta adresiniz")
+
+    def clean(self):
+        try:
+            author = Author.objects.get(email=self.cleaned_data['email'])
+            if author.is_active:
+                raise forms.ValidationError("bu e-posta çoktan onaylanmış")
+        except Author.DoesNotExist:
+            raise forms.ValidationError("böyle bir e-posta yok yalnız, hiç duymadım.")

@@ -45,6 +45,8 @@ urlpatterns_regular = [path('', index, name="home"), path('login/', Login.as_vie
                        path("ayarlar/", views.UserPreferences.as_view(), name="user_preferences"),
                        path("ayarlar/sifre/", views.ChangePassword.as_view(), name="user_preferences_password"),
                        path("ayarlar/email/", views.ChangeEmail.as_view(), name="user_preferences_email"),
-                       path("email/onayla/<uidb64>/<token>/", views.ConfirmEmail.as_view(), name="confirm_email"), ]
+                       path("email/onayla/<uidb64>/<token>/", views.ConfirmEmail.as_view(), name="confirm_email"),
+                       path("email/tekrar/", views.ResendEmailConfirmation.as_view(), name="resend_email"),
+                       ]
 
 urlpatterns = urlpatterns_regular + urlpatterns_ajax + urlpatterns_password_reset

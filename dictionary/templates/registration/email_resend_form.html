@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}e-mail onaylaması{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    {% load widget_tweaks %}
+    <h4 class="mb-3">onaylama e-postasını tekrar gönder</h4>
+    <hr>
+
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+
+        <div class="form-group">
+            <label for="emailForResend">{{ form.email.label }}</label>
+            {% render_field form.email class="form-control" id="emailForResend" %}
+        </div>
+
+        {% csrf_token %}
+        <button class="btn btn-django">yolla bakayım bir daha</button>
+
+    </form>
+
+{% endblock %}

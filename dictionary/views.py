@@ -22,10 +22,11 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 
-from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm
+from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm, ResendEmailForm
 from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
 from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, \
     vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
+
 
 # flatpages for about us etc.
 # todo imports according to pep8
@@ -321,6 +322,19 @@ class ConfirmEmail(View):
 
     def response(self):
         return render(self.request, "registration/email_confirmation_result.html", context={"success": self.success})
+
+
+class ResendEmailConfirmation(FormView):
+    form_class = ResendEmailForm
+    template_name = "registration/email_resend_form.html"
+
+    def form_valid(self, form):
+        email = form.cleaned_data["email"]
+        author = Author.objects.get(email=email)
+        send_email_confirmation(author, email)
+        django_messages.add_message(self.request, django_messages.INFO,
+                                    "onaylama bağlantısını içeren e-posta gönderildi")
+        return redirect("login")
 
 
 class SignUp(FormView):
