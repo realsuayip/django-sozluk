@@ -60,14 +60,14 @@ def people(request):
 @login_required
 def messages(request):
     conversations = Conversation.objects.list_for_user(request.user)
-    return render(request, "conversation_list.html", context={"conversations": conversations})
+    return render(request, "conversation/inbox.html", context={"conversations": conversations})
 
 
 #
 # class ConversationList(ListView, LoginRequiredMixin):
 #     model = Conversation
 #     paginate_by = 1
-#     template_name = "conversation_list.html"
+#     template_name = "inbox.html"
 #     context_object_name = "conversations"
 #
 #     def get_queryset(self):
@@ -75,7 +75,7 @@ def messages(request):
 class UserPreferences(UpdateView, LoginRequiredMixin):
     model = Author
     form_class = PreferencesForm
-    template_name = "user_preferences.html"
+    template_name = "user/preferences/index.html"
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -179,12 +179,13 @@ def conversation(request, username):
             message.save()
 
     data = {"conversation": conversation_object, "recipient": recipient, "form": form}
-    return render(request, "conversation.html", context=data)
+    return render(request, "conversation/conversation.html", context=data)
 
 
 @require_ajax
 @login_required
 def _compose_message(request):
+    print(5)
     message_body = request.POST.get("message_body")
     if len(message_body) < 1:
         return JsonResponse({"success": False, "detail": "az bişeyler yaz yeğen"}, )
@@ -272,7 +273,7 @@ class Logout(LogoutView, LoginRequiredMixin):
 
 class ChangePassword(PasswordChangeView):
     success_url = reverse_lazy("user_preferences")
-    template_name = "user_preferences_password.html"
+    template_name = "user/preferences/password.html"
 
     def form_valid(self, form):
         django_messages.add_message(self.request, django_messages.INFO, "işlem tamam")
@@ -280,7 +281,7 @@ class ChangePassword(PasswordChangeView):
 
 
 class ChangeEmail(LoginRequiredMixin, FormView):
-    template_name = "user_preferences_email.html"
+    template_name = "user/preferences/email.html"
     form_class = ChangeEmailForm
     success_url = reverse_lazy("user_preferences")
 
@@ -401,7 +402,7 @@ def user_profile(request, username):
     entries_list = paginator.get_page(page)
     data['entries'] = entries_list
 
-    return render(request, "user_profile.html", context=data)
+    return render(request, "user/user_profile.html", context=data)
 
 
 def topic(request, slug=None, entry_id=0, unicode=None):
@@ -646,6 +647,7 @@ def _autocomplete(request):
     Header search autocomplete filters.
         Problem: Cannot return querysets with length restrictions on 'query' (autocomplete results won't appear),
      if you know how to fix this, please do.
+     todo : boşlukları sil kenardan
     # TODO: LIST COMPREHENDSIONS
      Todo: also add some users on topic autocomplete.
      """

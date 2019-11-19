@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ topic.title }}{% endblock %}
-{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
 {% block content %}
 
     {% load functions %}
@@ -62,7 +62,8 @@
 
 
                             {% if entries.has_previous %}
-                                <a title="önceki sayfa" href="?{% url_replace request 'page' entries.previous_page_number %}">«</a>
+                                <a title="önceki sayfa"
+                                   href="?{% url_replace request 'page' entries.previous_page_number %}">«</a>
                             {% endif %}
 
 
@@ -79,9 +80,11 @@
 
                             <span style="color:#444">&nbsp;/&nbsp;</span>
 
-                            <a title="son sayfa" href="?{% url_replace request 'page' entries.paginator.num_pages %}">{{ entries.paginator.num_pages }}</a>
+                            <a title="son sayfa"
+                               href="?{% url_replace request 'page' entries.paginator.num_pages %}">{{ entries.paginator.num_pages }}</a>
                             {% if entries.has_next %}
-                                <a title="sonraki sayfa" href="?{% url_replace request 'page' entries.next_page_number %}"
+                                <a title="sonraki sayfa"
+                                   href="?{% url_replace request 'page' entries.next_page_number %}"
                                    style="margin-left:4px;">»</a>
                             {% endif %}
                         </div>
@@ -142,7 +145,7 @@
 
 
             {% else %}
-                <h1><a href="/topic/?q={{ topic.title }}">{{ topic.title }}</a></h1>
+                <h1><a href="{% url 'topic_search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
                 {% if err %}
                     {{ err }}
                     {% if entries_after %}
@@ -198,7 +201,7 @@
                             <button type="submit" class="btn btn-django entry_submit">yolla</button>
                         </div>
                     </div>
-{#                    <input type="hidden" name="next" value="{{ request.path }}">#}
+                    {#                    <input type="hidden" name="next" value="{{ request.path }}">#}
                 </form>
 
 

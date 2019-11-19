@@ -111,7 +111,7 @@ $(function () {
     $("#send_message_btn").on("click", () => {
         $.ajax({
             type: "POST",
-            url: "/mesaj/gonder/",
+            url: "/mesaj/action/gonder/",
             data: {
                 message_body: $("textarea#message_body").val(),
                 recipient: $("input.author-search").val()
@@ -743,3 +743,28 @@ $("#refresh_bugun").on("click", function () {
     leftframe_stick("bugun", false, null, true);
     $(this).addClass("dj-hidden");
 });
+
+$.fn.overflown = function () {
+    const e = this[0];
+    return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
+};
+
+
+const truncate_entry_text = () => {
+
+    for (const element of $("article.entry p ")) {
+        if ($(element).overflown()) {
+            $(element).parent().append(`<div class="read_more">devamını okuyayım</div>`)
+        }
+    }
+};
+
+
+if ($("body").hasClass("has-entries")) {
+    truncate_entry_text();
+    $("div.read_more").on("click", function () {
+        $(this).siblings("p").css("max-height", "none");
+        $(this).hide();
+    });
+
+}

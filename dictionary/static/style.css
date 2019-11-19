@@ -1,3 +1,7 @@
+html{
+    font-size: 14px;
+}
+
 body {
     font-family: "Source Sans Pro", sans-serif;
     font-size: 14px;
@@ -356,7 +360,17 @@ section.user_entries ul li {
 section.user_entries article.entry {
     padding: .8em 0;
     font-size: 16px;
+    text-overflow: ellipsis;
 }
+
+
+section.user_entries article.entry p {
+    overflow: hidden;
+    line-height: 1.5em;
+    max-height: 15em;
+    word-wrap: break-word;
+}
+
 
 section.user_entries article.entry.by_novice {
     font-style: italic;
@@ -1185,7 +1199,18 @@ form.memento textarea {
 }
 
 
+div.read_more {
+    cursor: pointer;
+    color: #16784f;
+    font-size: 1rem;
+    display: inline-block;
+}
 
+
+div.read_more:hover{
+    color: inherit;
+    text-decoration: underline;
+}
 
 /** MEDIA QUERIES **/
 /** anchor **/

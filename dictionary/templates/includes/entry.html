@@ -6,8 +6,8 @@
         <h5><a href="{% url "topic" slug=entry.topic.slug %}">{{ entry.topic.title }}</a></h5>
     {% endif %}
 
-    <article class="entry {% if entry.author.is_novice %}by_novice{% endif %}">
-        {{ entry.content|formatted|linebreaks }}
+    <article class="entry{% if entry.author.is_novice %} by_novice{% endif %}">
+        <p>{{ entry.content|formatted|linebreaksbr }}</p>
     </article>
 
     <div class="entry_info">

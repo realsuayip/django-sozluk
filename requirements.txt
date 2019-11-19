@@ -1,4 +1,4 @@
-django
-django-widget-tweaks
-django-uuslug
-python-dateutil
+django==2.2.7
+django-widget-tweaks==1.4.5
+django-uuslug==1.1.9
+python-dateutil=2.8.1
