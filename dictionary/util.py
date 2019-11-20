@@ -29,7 +29,7 @@ YEAR_RANGE = list(reversed(range(2017, 2020)))  # also set in djdict.js, reverse
 ENTRIES_PER_PAGE = 10
 TOPICS_PER_PAGE = 2  # experimental
 ENTRIES_PER_PAGE_PROFILE = 15
-nondb_categories = ["bugun", "gundem", "basiboslar", "tarihte-bugun", "kenar", "caylaklar", "takip"]
+nondb_categories = ["bugun", "gundem", "basiboslar", "tarihte-bugun", "kenar", "caylaklar", "takip", "debe"]
 banned_topics = [  # include banned topics here
     " ", "@", " % ", "seks"]
 
@@ -53,6 +53,7 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
     last_entries = None
 
     if category_slug in nondb_categories:
+
         if category_slug == "bugun":
             if request.user.is_authenticated:
                 last_entries = Entry.objects.filter(date_created__gte=time_threshold_24h).order_by("-date_created")
@@ -77,8 +78,10 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
                 return serialized_data
             else:
                 raise Http404
+
         elif category_slug == "caylaklar":
             last_entries = Entry.objects_novices.filter(date_created__gte=time_threshold_24h).order_by("-date_created")
+
         elif category_slug == "takip":
             last_entries = Entry.objects.filter(date_created__gte=time_threshold_24h,
                                                 author__in=request.user.following.all()).order_by("-date_created")
@@ -86,6 +89,20 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
             for entry in last_entries:
                 serialized_data.append({"title": f"{entry.topic.title}/@{entry.author.username}",
                                         "slug": reverse_lazy("entry_permalink", kwargs={"entry_id": entry.id})})
+
+            serialized_data = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
+            return serialized_data
+
+        elif category_slug == "debe":
+            year, month, day = time_threshold_24h.year, time_threshold_24h.month, time_threshold_24h.day
+            last_entries = Entry.objects.filter(date_created__day=day, date_created__month=month,
+                                                date_created__year=year).order_by("-vote_rate")[:50]
+            serialized_data = []
+            for entry in last_entries:
+                serialized_data.append({"title": f"{entry.topic.title}",
+                                       "slug": reverse_lazy("entry_permalink", kwargs={"entry_id": entry.id})})
+
+            serialized_data = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
             return serialized_data
 
         else:

@@ -1,4 +1,4 @@
-html{
+html {
     font-size: 14px;
 }
 
@@ -84,7 +84,7 @@ nav.usermenu ul li {
 nav.usermenu ul li a {
     color: #333;
     padding: 0 10px;
-    font-size: .9rem;
+    font-size: 1rem;
 }
 
 nav.sub-nav {
@@ -160,20 +160,23 @@ nav.sub-nav ul .more_tags_dropdown a {
     font-size: 14px;
 }
 
-nav.sub-nav ul .more_tags_dropdown a.active {
+nav.sub-nav ul .more_tags_dropdown a.active,
+.usermenu-dropdown a.active{
     background: #092e20;
     color: #fff;
-    font-weight: bold;
 }
 
 
 nav.sub-nav ul .more_tags_dropdown a:focus,
-nav.sub-nav ul .more_tags_dropdown a:active {
+nav.sub-nav ul .more_tags_dropdown a:active
+.usermenu-dropdown a:focus,
+.usermenu-dropdown a:active{
     color: #fff;
     background: #092e20;
 }
 
-nav.sub-nav ul .more_tags_dropdown {
+nav.sub-nav ul .more_tags_dropdown,
+.usermenu-dropdown{
     top: -3px !important;
 }
 
@@ -321,7 +324,8 @@ header.entry_header .pagination a:hover {
     background: #f6f7f7;
 }
 
-header.entry_header .pagination select {
+header.entry_header .pagination select,
+.lf_pagination select{
     background: #fff;
     margin-left: 4px;
     min-width: 50px;
@@ -1158,19 +1162,6 @@ ul.category-list-all li h5 {
     background: #f6f7f7;
 }
 
-.lf_pagination select {
-    background: #fff;
-    margin-left: 4px;
-    min-width: 50px;
-    max-width: 65px;
-    padding: 2px;
-    cursor: pointer;
-    border-color: #b0bec5;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-}
-
 
 select.mobile-topic-list {
     width: 100%;
@@ -1207,10 +1198,16 @@ div.read_more {
 }
 
 
-div.read_more:hover{
+div.read_more:hover {
     color: inherit;
     text-decoration: underline;
 }
+
+.year-select{
+    background: #fff;
+}
+
+
 
 /** MEDIA QUERIES **/
 /** anchor **/
@@ -1272,9 +1269,7 @@ div.read_more:hover{
     }
 
 
-    nav.sub-nav ul li.nav_auth_item {
-        display: none;
-    }
+
 }
 
 
@@ -1315,6 +1310,7 @@ div.read_more:hover{
 
     .content {
         padding: 1.5em;
+        margin-top: 90px;
     }
 
 
@@ -1323,7 +1319,7 @@ div.read_more:hover{
     }
 
     .mobile-only {
-        display: block !important;
+        display: flex !important;
     }
 
     ul.user-navigation span {
@@ -1335,12 +1331,11 @@ div.read_more:hover{
         padding-right: 0;
     }
 
-    nav.sub-nav ul li.replace_auth {
-        display: none;
-    }
 
-    nav.sub-nav ul li.nav_auth_item {
-        display: block;
+
+
+    nav.sub-nav ul li a {
+        padding-bottom: .5em;
     }
 
     nav.usermenu {
@@ -1351,6 +1346,7 @@ div.read_more:hover{
     .top-bar {
         padding-right: 1em;
         padding-left: 1em;
+        margin-bottom: .25em;
     }
 
     .searchbox {

@@ -32,15 +32,9 @@ from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_P
 # todo imports according to pep8
 # todo scrollbar tracking
 # todo converation pagenation
-# todo: dikkat include eddiğin duplicate olmasın
-# Do not use mutable default arguments in Python
-# todo: devamını okuyayım
-# todo: @csrf_protect @require_POST
-# todo note: Q -> OR
 # todo karma skor!
 # todo hayvan ara !!
 # todo: get_or_create for entry cretion topic shit xd
-# entry load için paginator kullacağız efendimiz :))
 # Some function views are suitable for Class based views, but I'll convert them after I decide that I wont be making
 # more changes to these views
 
@@ -232,8 +226,9 @@ class TopicList(ListView):
 
     def get_context_data(self, **kwargs):
         slug = self.kwargs['slug']
-        nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar",
-                          "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar"}
+        nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar", "takip": "takip",
+                          "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar",
+                          "debe": "dünün en beğenilen entry'leri", }
         if slug in nondb_categories:
             title = nondb_safename[slug]
         else:

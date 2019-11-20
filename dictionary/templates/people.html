@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}takip/engellenmişler{% endblock %}
-
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
 
 {% block content %}
     <h5>takip ettiğin ve engellenmiş insanlar</h5>
@@ -26,7 +26,8 @@
         <ul class="people-list">
             {% for author in blocked.all %}
 
-                <li><a href="#" class="unblock-user-trigger" data-username="{{ author.username }}">{{ author.username }}</a></li>
+                <li><a href="#" class="unblock-user-trigger"
+                       data-username="{{ author.username }}">{{ author.username }}</a></li>
 
             {% endfor %}
         </ul>
