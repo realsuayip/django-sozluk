@@ -1221,6 +1221,13 @@ div.read_more:hover {
 }
 
 
+.refresh-button-mobile{
+    background: #fff;
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: .25em 0;
+    margin-bottom: 1em;
+}
 /** MEDIA QUERIES **/
 /** anchor **/
 /

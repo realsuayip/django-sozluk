@@ -42,7 +42,7 @@ $("ul#category_view li.nav-item, div#category_view_in a, a#category_view_ls").on
 
 
 $("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on('click', function () {
-    letframe_button_reset();
+    leftframe_button_reset();
     leftframe_stick($(this).attr("data-category"));
 
 });
@@ -167,7 +167,7 @@ function screenTest(e) {
 
 mql.addListener(screenTest);
 
-function letframe_button_reset() {
+function leftframe_button_reset() {
     $("a#show_more").removeClass("dj-hidden");
     $("#lf_pagination_wrapper").addClass("dj-hidden");
     localStorage.removeItem("navigation_page");
@@ -235,12 +235,9 @@ function leftframe_stick(category = null, extended = false, page = null, reset_c
 $("#year_select").on("change", function () {
     let selected_year = this.value;
     localStorage.setItem("selected_year", selected_year);
-    //let parameters = `?year=${selected_year}`;
-    // let api_url = `/category/tarihte-bugun/`;
     $("a#show_more").removeClass("dj-hidden");
+    leftframe_button_reset();
     leftframe_stick("tarihte-bugun");
-
-    //topic_ajax_call(api_url, parameters);
 });
 
 class Paginator {
@@ -740,7 +737,7 @@ $("select#mobile_year_changer").on("change", function () {
 });
 
 $("#refresh_bugun").on("click", function () {
-    letframe_button_reset();
+    leftframe_button_reset();
     leftframe_stick("bugun", false, null, true);
     $(this).addClass("dj-hidden");
 });

@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 
 """
 Custom settings
@@ -30,6 +31,7 @@ ENTRIES_PER_PAGE = 10
 TOPICS_PER_PAGE = 2  # experimental
 ENTRIES_PER_PAGE_PROFILE = 15
 nondb_categories = ["bugun", "gundem", "basiboslar", "tarihte-bugun", "kenar", "caylaklar", "takip", "debe"]
+exclusively_cache = ["bugun", "debe", "kenar", "takip"]
 banned_topics = [  # include banned topics here
     " ", "@", " % ", "seks"]
 
@@ -47,9 +49,18 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
     How pagination works? This function does not paginate. If request contains extended=yes, full content will be
     yielded to paginate in javascript or in view function. If extended is None, then the first page will be the output.
     """
+    extended = True if request.GET.get("extended") == "yes" or extend else False
+    cache_key = f"global_{category_slug}"
+    cache_key_extended = f"global_{category_slug}_extended"  # for 'debe' this is obsolete
+    cache_key_global = cache_key_extended if extended else cache_key
+    cache_timeout = 60  # 1 minutes
+
+    if category_slug not in exclusively_cache:
+        if cache.get(cache_key_global):
+            return cache.get(cache_key_global)
+
     topic_list = []
     serialized_data = []
-    extended = True if request.GET.get("extended") == "yes" or extend else False
     last_entries = None
 
     if category_slug in nondb_categories:
@@ -57,11 +68,12 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
         if category_slug == "bugun":
             if request.user.is_authenticated:
                 last_entries = Entry.objects.filter(date_created__gte=time_threshold_24h).order_by("-date_created")
-        elif category_slug == "tarihte-bugun":
 
+        elif category_slug == "tarihte-bugun":
             now = datetime.datetime.now()
             last_entries = Entry.objects.filter(date_created__year=year, date_created__day=now.day,
                                                 date_created__month=now.month).order_by("-date_created")
+
         elif category_slug == "basiboslar":
             last_entries = Entry.objects.filter(topic__category=None, date_created__gte=time_threshold_24h).order_by(
                 "-date_created")
@@ -138,6 +150,7 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
         serialized_data.append(serialized)
 
     response = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
+    cache.set(cache_key_global, response, cache_timeout)  # cache at 1 minute
     return response
 
 

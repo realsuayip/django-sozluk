@@ -7,6 +7,16 @@
     <div class="left-frame-in">
         <h2>{{ page_safename }}</h2>
 
+        {% if slug_name == "bugun" %}
+
+            {% if refresh_count %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="refresh-button-mobile">yenile ({{ refresh_count }})</button>
+                </form>
+            {% endif %}
+
+        {% endif %}
 
         {% if slug_name == "tarihte-bugun" %}
             <select class="mobile-topic-list" id="mobile_year_changer">

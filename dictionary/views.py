@@ -20,6 +20,7 @@ from django.views.generic import View, ListView, UpdateView
 from django.views.generic.edit import FormView
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.http import urlsafe_base64_decode
 
 from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm, ResendEmailForm
@@ -197,10 +198,18 @@ def _compose_message(request):
 
 
 class TopicList(ListView):
+    """
+        Topic list (başlıklar) for mobile views such as "bugün", "gündem",
+        Desktop equivalent => _category
+
+        cache_key for bugun-> bugun_extended_{self.request.user.id} (also used in _category)
+        refresh_count -> for bugun only, "yenile" button count
+    """
     model = Topic
     context_object_name = "topics"
     template_name = "topic_list.html"
     paginate_by = TOPICS_PER_PAGE
+    refresh_count = 0
 
     def get_queryset(self):
         year = None
@@ -222,6 +231,10 @@ class TopicList(ListView):
             except ValueError:
                 year = None
         # todo extend caching support for mobile
+
+        if self.request.user.is_authenticated and self.kwargs['slug'] == "bugun":
+            return self.bugun_cached(return_queryset=True)
+
         return topic_list_qs(self.request, self.kwargs['slug'], year, extend=True)
 
     def get_context_data(self, **kwargs):
@@ -240,7 +253,35 @@ class TopicList(ListView):
         context['slug_name'] = slug
         if slug == "tarihte-bugun":
             context["year_range"] = YEAR_RANGE
+
+        context['refresh_count'] = self.refresh_count
         return context
+
+    def bugun_cached(self, return_queryset=False):
+        cache_key = f"bugun_extended_{self.request.user.id}"
+        data = cache.get(cache_key)
+        if data:
+            if return_queryset:
+                self.refresh_count = Entry.objects.filter(date_created__gte=data.get("set_at")).count()
+                return data.get("queryset")
+            return True
+        else:
+            # No cached data found, so create cache information to be used the next time.
+            queryset = topic_list_qs(self.request, "bugun", extend=True)
+            cache_data = {"queryset": queryset, "set_at": timezone.now()}
+            cache.set(cache_key, cache_data, 300)  # cache at 5 minutes
+            if return_queryset:
+                return queryset
+            return False
+
+    @method_decorator(login_required)
+    def post(self, *args, **kwargs):
+        if self.kwargs['slug'] == "bugun":
+            # reset cache (refresh button mobile click event)
+            uid = self.request.user.id
+            cache.delete(f"bugun_extended_{uid}")
+            return redirect(self.request.path)
+        return HttpResponseBadRequest()
 
 
 class Login(LoginView):
@@ -746,15 +787,16 @@ def _category(request, slug):
             data = cache.get(cache_key)
             refresh_count = Entry.objects.filter(date_created__gte=data.get("set_at")).count()
 
-            return JsonResponse({"topic_data": data.get("response"), "refresh_count": refresh_count}, safe=False)
+            return JsonResponse({"topic_data": data.get("queryset"), "refresh_count": refresh_count}, safe=False)
 
         else:
             # No cached data found, so create cache information to be used the next time.
-            cache.delete_many([cache_key_normal, cache_key_extended])
-            response = topic_list_qs(request, slug, year)
-            cache_data = {"response": response, "set_at": timezone.now()}
-            cache.set(cache_key, cache_data, 3000)  # cache at 5 minutes
-            return JsonResponse({"topic_data": response}, safe=False)
+            # Refresh request
+            cache.delete(cache_key_extended)
+            queryset = topic_list_qs(request, "bugun")
+            cache_data = {"queryset": queryset, "set_at": timezone.now()}
+            cache.set(cache_key, cache_data, 300)  # cache at 5 minutes
+            return JsonResponse({"topic_data": queryset}, safe=False)
 
     response = topic_list_qs(request, slug, year)
     return JsonResponse({"topic_data": response}, safe=False)
