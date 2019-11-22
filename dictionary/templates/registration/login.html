@@ -12,6 +12,12 @@
         {% endfor %}
     {% endif %}
 
+    {% if request.user.is_authenticated %}
+    <p class="text-danger">
+    şuan zaten '{{ request.user.username }}' olaraktan giriş yapmışsınız ona göre.
+    </p>
+
+    {% endif %}
     <form method="post" class="login-form">
         {% csrf_token %}
         <div class="form-group">
@@ -28,16 +34,16 @@
             <label for="loginPassword">{{ form.password.label }}</label>
             {% render_field form.password id="loginPassword" class="form-control" %}
         </div>
-        <div class="form-check">
-            {% render_field form.remember_me class="form-check-input" id="remember_me" %}
-            <label class="form-check-label" for="remember_me">{{ form.remember_me.label }}</label>
+        <div class="custom-control custom-checkbox">
+            {% render_field form.remember_me class="custom-control-input" id="remember_me" %}
+            <label class="custom-control-label" for="remember_me">{{ form.remember_me.label }}</label>
         </div>
-        <hr>
+
+        <br>
             <a href="{% url 'password_reset' %}" class="m-2">şifre neydi ya</a>
             <a href="{% url 'resend_email' %}">onaylama maili gelmedi</a>
-            <button type="submit" class="btn float-right">giriş yap</button>
-
-
+        <hr>
+            <button type="submit" class="btn" style="width: 100%;">giriş yap</button>
     </form>
 
 {% endblock %}

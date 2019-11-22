@@ -1,0 +1,7 @@
+{% if request.user.is_authenticated %}
+    <li class="nav-item" data-category="bugun" data-safename="bugün">
+        <a title="en son girilenler" id="bugun" href="{% url "topic_list" slug="bugun" %}">
+            bugün
+        </a>
+    </li>
+{% endif %}

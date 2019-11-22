@@ -56,6 +56,8 @@ $(function () {
     }
 
 
+if (!mql.matches) {
+    // triggers only in desktop views
     if (localStorage.getItem("active_category")) {
         let category = localStorage.getItem("active_category");
         const navigation_page = localStorage.getItem("navigation_page");
@@ -72,10 +74,9 @@ $(function () {
             } else {
                 leftframe_stick(category);
             }
-
-
         }
     }
+}
 
 
     $("#header_search").autocomplete({
@@ -133,7 +134,7 @@ let mql = window.matchMedia('(max-width: 810px)');
 
 function desktop_view() {
 
-    $("ul#category_view li a, div#category_view_in a, a#category_view_ls").on('click', function (e) {
+    $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function (e) {
 
         e.preventDefault();
 

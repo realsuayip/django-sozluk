@@ -4,7 +4,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 {% block content %}
     <h4 class="mb-3">şifre neydi</h4>
-    <form method="post" class="login-form">
+    <form method="post">
         {% csrf_token %}
 
         <div class="form-group">
@@ -21,7 +21,7 @@
         </div>
 
         <hr>
-        <button type="submit" class="btn float-right">yap bi güzellik</button>
+        <button type="submit" class="btn btn-django" style="width: 100%">yap bi güzellik</button>
     </form>
 {% endblock %}
 

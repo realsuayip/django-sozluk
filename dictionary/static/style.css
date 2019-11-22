@@ -161,7 +161,7 @@ nav.sub-nav ul .more_tags_dropdown a {
 }
 
 nav.sub-nav ul .more_tags_dropdown a.active,
-.usermenu-dropdown a.active{
+.usermenu-dropdown a.active {
     background: #092e20;
     color: #fff;
 }
@@ -170,15 +170,20 @@ nav.sub-nav ul .more_tags_dropdown a.active,
 nav.sub-nav ul .more_tags_dropdown a:focus,
 nav.sub-nav ul .more_tags_dropdown a:active
 .usermenu-dropdown a:focus,
-.usermenu-dropdown a:active{
+.usermenu-dropdown a:active {
     color: #fff;
     background: #092e20;
 }
 
 nav.sub-nav ul .more_tags_dropdown,
-.usermenu-dropdown{
+.usermenu-dropdown {
     top: -3px !important;
 }
+
+.usermenu-dropdown a{
+    padding: .7rem 1.4rem;
+}
+
 
 .small-device-alert {
     display: none;
@@ -245,6 +250,7 @@ nav.sub-nav ul .more_tags_dropdown,
 .left-frame h2 {
     font-size: 1.4em;
     color: #888;
+    max-width: 240px;
 }
 
 .left-frame-in h2 {
@@ -325,7 +331,7 @@ header.entry_header .pagination a:hover {
 }
 
 header.entry_header .pagination select,
-.lf_pagination select{
+.lf_pagination select {
     background: #fff;
     margin-left: 4px;
     min-width: 50px;
@@ -884,7 +890,7 @@ section.user-info-detail .detail-nav ul li a {
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
-    vertical-align: middle;
+    vertical-align: bottom;
     margin-left: 3px;
 }
 
@@ -996,7 +1002,7 @@ section.chat-reply form textarea {
     right: 0;
     z-index: 9999;
     top: 0;
-    margin: 7em;
+    margin: 10em 8em;
     background: #fff;
     padding: .5em 1em;
     border: 1px solid #272727;
@@ -1127,6 +1133,7 @@ ul.category-list-all li h5 {
 .lf_pagination {
     margin: 0 auto;
     align-items: flex-start;
+    margin-top: 5px;
 }
 
 .lf_pagination.stretch {
@@ -1203,10 +1210,15 @@ div.read_more:hover {
     text-decoration: underline;
 }
 
-.year-select{
+.year-select {
     background: #fff;
+    width: 100%;
 }
 
+
+.custom-checkbox .custom-control-input:checked~.custom-control-label::before{
+  background-color: #16784f;
+}
 
 
 /** MEDIA QUERIES **/
@@ -1269,7 +1281,6 @@ div.read_more:hover {
     }
 
 
-
 }
 
 
@@ -1330,8 +1341,6 @@ div.read_more:hover {
         padding-left: 0;
         padding-right: 0;
     }
-
-
 
 
     nav.sub-nav ul li a {

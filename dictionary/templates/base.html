@@ -21,7 +21,10 @@
     <title>{% block title %}{% endblock %} - django sözlük </title>
 </head>
 
-<body {% block bodyattr %}class="default" {% endblock %}>
+{#body classes explained#}
+{#1) default => when the width is strechted show LEFT FRAME#}
+{#2) topic-entry-view => when streched show CONTENT FRAME#}
+<body {% block bodyattr %}class="default"{% endblock %}>
 
 
 <header class="page_header">
@@ -119,27 +122,12 @@
     <nav class="sub-nav">
 
         <ul class="mobile-only">
-            {% if request.user.is_authenticated %}
-                <li class="nav-item" data-category="bugun" data-safename="bugün">
-                    <a id="bugun" href="{% url "topic_list" slug="bugun" %}">
-                        bugün
-                    </a>
-                </li>
-            {% endif %}
-
-            <li class="nav-item" data-category="gundem" data-safename="gündem">
-                <a id="gundem" href="{% url "topic_list" slug="gundem" %}">gündem</a>
-            </li>
-
-            <li class="nav-item" data-category="debe" data-safename="debe">
-                <a href="{% url "topic_list" slug="debe" %}">debe</a>
-            </li>
-
+            {% include "includes/header_links/bugun.html" %}
+            {% include "includes/header_links/gundem.html" %}
+            {% include "includes/header_links/debe.html" %}
 
             {% if request.user.is_authenticated %}
-                <li class="nav-item" data-category="takip" data-safename="takip">
-                    <a title="takip ettiğim yazarlar ne yazmış?" href="{% url "topic_list" slug="takip" %}">takip</a>
-                </li>
+                {% include "includes/header_links/takip.html" %}
 
                 <li id="usermenu_mobile" data-toggle="dropdown">
                     <i class="material-icons">more_horiz</i>
@@ -158,49 +146,37 @@
                 </div>
 
             {% else %}
-                <li class="nav_auth_item">
+                <li>
                     <a href="{% url 'login' %}">giriş yap</a>
                 </li>
-                <li class="nav_auth_item">
+                <li>
                     <a href="{% url 'register' %}">kayıt ol</a>
                 </li>
             {% endif %}
         </ul>
 
+
         <ul class="desktop-only" id="category_view">
-            {% if request.user.is_authenticated %}
-                <li class="nav-item" data-category="bugun" data-safename="bugün">
-                    <a id="bugun" href="{% url "topic_list" slug="bugun" %}">
-                        bugün
-                    </a>
-                </li>
-            {% endif %}
-
-            <li class="nav-item" data-category="gundem" data-safename="gündem">
-                <a id="gundem" href="{% url "topic_list" slug="gundem" %}">gündem</a>
-            </li>
-
-            <li class="nav-item" data-category="debe" data-safename="debe">
-                <a href="{% url "topic_list" slug="debe" %}">debe</a>
-            </li>
+            {% include "includes/header_links/bugun.html" %}
+            {% include "includes/header_links/gundem.html" %}
+            {% include "includes/header_links/debe.html" %}
 
             {% if request.user.is_authenticated %}
-                <li class="nav-item" data-category="takip" data-safename="takip">
-                    <a title="takip ettiğim yazarlar ne yazmış?" href="#">takip</a>
-                </li>
+                {% include "includes/header_links/takip.html" %}
 
                 <li class="nav-item" data-category="kenar" data-safename="kenar">
-                    <a href="#">kenar</a>
+                    <a title="kenara attığım entry'ler" href="{% url 'topic_list' slug="kenar" %}">kenar</a>
                 </li>
 
                 <li class="nav-item" data-category="caylaklar" data-safename="çaylaklar">
-                    <a href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
+                    <a title="çömezlerin girdikleri" href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
                 </li>
             {% endif %}
 
             <li data-category="tarihte-bugun" data-safename="tarihte bugün"
                 class="nav-item">
-                <a href="{% url "topic_list" slug="tarihte-bugun" %}">tarihte bugün</a>
+                <a title="geçen yıllarda bu zamanlar ne denmiş?" href="{% url "topic_list" slug="tarihte-bugun" %}">tarihte
+                    bugün</a>
             </li>
 
             {% categories_list as nav_categories %}
@@ -219,7 +195,7 @@
             <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right"
                  aria-labelledby="more_tags_button">
 
-                {% for category in nav_categories|slice:"4:" %}
+                {% for category in nav_categories|slice:"4:12" %}
                     <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
                        class="dropdown-item nav-item"
                        href="{% url 'topic_list' slug=category.slug %}">#{{ category.name }}</a>
@@ -229,6 +205,7 @@
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item nav-item" data-safename="başıboşlar" data-category="basiboslar"
                    href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
+                <a href="{% url 'category_list' %}" class="dropdown-item nav-item regular">tüm kanallar</a>
             </div>
         </ul>
 
@@ -245,14 +222,15 @@
     <!-- entry list -->
     <div id="left-frame-nav" class="left-frame">
 
-        <div class="row m-0" id="category_holder" style="min-height: 34px;">
-            <h2 class=" col-md-6 p-0 col-sm-6">
-                <span id="current_category_name">yükleniyor</span><i class="material-icons spinning"
-                                                                     id="load_indicator">refresh</i>
+        <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
+            <h2 class="col-lg-auto p-0" id="scroll_top">
+                <span id="current_category_name" style="vertical-align: sub;">yükleniyor</span><i
+                    class="material-icons spinning"
+                    id="load_indicator">refresh</i>
             </h2>
 
 
-            <select style="display: none;" class="col-md-6 col-sm-6 p-0 pl-2 year-select" id="year_select"></select>
+            <select style="display: none;" class="year-select col-lg-auto py-1 px-1 mb-1" id="year_select"></select>
 
         </div>
         <div class="refresh-button dj-hidden" id="refresh_bugun" title="akıt gelsin">yenile <span
@@ -272,7 +250,7 @@
             <a id="lf_navigate_after" href="#" style="margin-left:4px;">»</a>
         </div>
         <ul id="topic-list" class="list-group topic-list"></ul>
-        <a href="#" id="show_more">tümünü görüntüle</a>
+        <a href="#scroll_top" id="show_more">tümünü görüntüle</a>
 
 
     </div>
