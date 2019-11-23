@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db.models import Max, Q, Case, When, F, IntegerField
@@ -25,8 +24,10 @@ from django.utils.http import urlsafe_base64_decode
 
 from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm, ResendEmailForm
 from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
-from .util import topic_list_qs, time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, \
-    vote_rates, require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
+from .util import time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, vote_rates, \
+    require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
+
+from .merge_with_util import TopicListManager
 
 
 # flatpages for about us etc.
@@ -67,7 +68,7 @@ def messages(request):
 #
 #     def get_queryset(self):
 #         return Conversation.objects.list_for_user(self.request.user)
-class UserPreferences(UpdateView, LoginRequiredMixin):
+class UserPreferences(LoginRequiredMixin, UpdateView):
     model = Author
     form_class = PreferencesForm
     template_name = "user/preferences/index.html"
@@ -84,7 +85,7 @@ class UserPreferences(UpdateView, LoginRequiredMixin):
         return super().form_invalid(form)
 
 
-class ActivityList(ListView, LoginRequiredMixin):
+class ActivityList(LoginRequiredMixin, ListView):
     model = TopicFollowing
     template_name = "activity.html"
     context_object_name = "topics_following"
@@ -103,7 +104,7 @@ class CategoryList(ListView):
     context_object_name = "categories"
 
 
-class EntryUpdate(UpdateView, LoginRequiredMixin):
+class EntryUpdate(LoginRequiredMixin, UpdateView):
     model = Entry
     form_class = EntryForm
     template_name = "entry_update.html"
@@ -213,7 +214,8 @@ class TopicList(ListView):
 
     def get_queryset(self):
         year = None
-        if self.kwargs["slug"] == "tarihte-bugun":
+        slug = self.kwargs['slug']
+        if slug == "tarihte-bugun":
 
             if self.request.GET.get("year"):
                 year = self.request.GET.get("year")
@@ -230,12 +232,13 @@ class TopicList(ListView):
                     year = None
             except ValueError:
                 year = None
-        # todo extend caching support for mobile
 
-        if self.request.user.is_authenticated and self.kwargs['slug'] == "bugun":
-            return self.bugun_cached(return_queryset=True)
+        if slug == "bugun" and not self.request.user.is_authenticated:
+            return self.model.objects.none()
 
-        return topic_list_qs(self.request, self.kwargs['slug'], year, extend=True)
+        manager = TopicListManager(self.request.user, slug, extend=True, year=year)
+        self.refresh_count = manager.refresh_count
+        return manager.serialized
 
     def get_context_data(self, **kwargs):
         slug = self.kwargs['slug']
@@ -257,29 +260,12 @@ class TopicList(ListView):
         context['refresh_count'] = self.refresh_count
         return context
 
-    def bugun_cached(self, return_queryset=False):
-        cache_key = f"bugun_extended_{self.request.user.id}"
-        data = cache.get(cache_key)
-        if data:
-            if return_queryset:
-                self.refresh_count = Entry.objects.filter(date_created__gte=data.get("set_at")).count()
-                return data.get("queryset")
-            return True
-        else:
-            # No cached data found, so create cache information to be used the next time.
-            queryset = topic_list_qs(self.request, "bugun", extend=True)
-            cache_data = {"queryset": queryset, "set_at": timezone.now()}
-            cache.set(cache_key, cache_data, 300)  # cache at 5 minutes
-            if return_queryset:
-                return queryset
-            return False
-
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
         if self.kwargs['slug'] == "bugun":
             # reset cache (refresh button mobile click event)
-            uid = self.request.user.id
-            cache.delete(f"bugun_extended_{uid}")
+            manager = TopicListManager(self.request.user, "bugun", extend=True)
+            manager.delete_cache()
             return redirect(self.request.path)
         return HttpResponseBadRequest()
 
@@ -300,10 +286,11 @@ class Login(LoginView):
         return super().form_valid(form)
 
 
-class Logout(LogoutView, LoginRequiredMixin):
+class Logout(LogoutView):
     def dispatch(self, request, *args, **kwargs):
-        success_message = "başarıyla çıkış yaptınız efendim"
-        django_messages.add_message(self.request, django_messages.INFO, success_message)
+        if self.request.user.is_authenticated:
+            success_message = "başarıyla çıkış yaptınız efendim"
+            django_messages.add_message(self.request, django_messages.INFO, success_message)
         return super().dispatch(request)
 
 
@@ -767,39 +754,12 @@ def _category(request, slug):
         except (ValueError, OverflowError):
             return HttpResponseBadRequest()
 
-    # Caching of "bugun", needs testing
-    # reference https://stackoverflow.com/a/20146767/
-    if slug == "bugun" and request.user.is_authenticated:
-        user_id = request.user.id  # anonymous users are not allowed to view 'bugun'
-        # cache keys for 'bugun' cache
-        cache_key_normal = f"bugun_{user_id}"
-        cache_key_extended = f"bugun_extended_{user_id}"
-
-        is_extended = True if request.GET.get("extended") == "yes" else False
-        cached = False if request.GET.get("nocache") == "yes" else True  # returning cached info is OK or not
-        cache_key = cache_key_extended if is_extended else cache_key_normal
-
-        if cached and cache.get(cache_key):
-            """
-            There is cached data, return that. refresh_count informs the
-            user about the new data count from the latest caching time.
-            """
-            data = cache.get(cache_key)
-            refresh_count = Entry.objects.filter(date_created__gte=data.get("set_at")).count()
-
-            return JsonResponse({"topic_data": data.get("queryset"), "refresh_count": refresh_count}, safe=False)
-
-        else:
-            # No cached data found, so create cache information to be used the next time.
-            # Refresh request
-            cache.delete(cache_key_extended)
-            queryset = topic_list_qs(request, "bugun")
-            cache_data = {"queryset": queryset, "set_at": timezone.now()}
-            cache.set(cache_key, cache_data, 300)  # cache at 5 minutes
-            return JsonResponse({"topic_data": queryset}, safe=False)
-
-    response = topic_list_qs(request, slug, year)
-    return JsonResponse({"topic_data": response}, safe=False)
+    extend = True if request.GET.get("extended") == "yes" else False
+    fetch_cached = False if request.GET.get("nocache") == "yes" else True
+    manager = TopicListManager(request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
+    print(manager.valid_cache_key, manager.cache_exists)
+    print(manager.serialized)
+    return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count}, safe=False)
 
 
 @csrf_exempt

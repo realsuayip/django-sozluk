@@ -31,7 +31,7 @@ Notify = (message) => {
 };
 
 
-$("ul#category_view li.nav-item, div#category_view_in a, a#category_view_ls").on('click', function () {
+$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function () {
     localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
     $("ul#category_view li").removeClass('active');
     $("div#category_view_in a").removeClass('active');
@@ -56,27 +56,27 @@ $(function () {
     }
 
 
-if (!mql.matches) {
-    // triggers only in desktop views
-    if (localStorage.getItem("active_category")) {
-        let category = localStorage.getItem("active_category");
-        const navigation_page = localStorage.getItem("navigation_page");
-        let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
-        selector.addClass("active");
-        if (selector.attr("data-category") === undefined) {
-            // DEFAULT
-            // YÜKLENİYOR.
-        } else {
-            $("#current_category_name").text(selector.attr("data-safename"));
-            if (navigation_page) {
-                leftframe_stick(category, true, parseInt(navigation_page));
-                $("a#show_more").addClass("dj-hidden");
+    if (!mql.matches) {
+        // triggers only in desktop views
+        if (localStorage.getItem("active_category")) {
+            let category = localStorage.getItem("active_category");
+            const navigation_page = localStorage.getItem("navigation_page");
+            let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
+            selector.addClass("active");
+            if (selector.attr("data-category") === undefined) {
+                // DEFAULT
+                // YÜKLENİYOR.
             } else {
-                leftframe_stick(category);
+                $("#current_category_name").text(selector.attr("data-safename"));
+                if (navigation_page) {
+                    leftframe_stick(category, true, parseInt(navigation_page));
+                    $("a#show_more").addClass("dj-hidden");
+                } else {
+                    leftframe_stick(category);
+                }
             }
         }
     }
-}
 
 
     $("#header_search").autocomplete({
@@ -291,6 +291,13 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
                     $("#refresh_bugun").addClass("dj-hidden");
                 }
 
+                if (extended) {
+                    if (!page) {
+                        page = 1;
+                        $("#show_more").addClass("dj-hidden");
+                    }
+                }
+
                 if (page) {
 
 
@@ -330,6 +337,10 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
 
                 }
 
+
+                if(localStorage.getItem("active_category") === "debe"){
+                    $("#show_more").addClass("dj-hidden");
+                }
 
             }
 
@@ -607,7 +618,6 @@ $("#rate a#downvote").on("click", ({currentTarget}) => {
 
 
 const user_action = (type, recipient_username) => {
-    // todo -> yükleniyor tarzı bişiy modalda engelleme.
     $.ajax({
         url: '/user/action/',
         type: 'POST',
@@ -643,6 +653,7 @@ $(".block-user-trigger").on("click", ({currentTarget}) => {
 $("#block_user").on("click", ({currentTarget}) => {
     let target_user = $(currentTarget).attr("data-username");
     block_user(target_user);
+    $("#blockUserModal").modal('hide');
 });
 
 $(".unblock-user-trigger").on("click", ({currentTarget}) => {
@@ -737,8 +748,12 @@ $("select#mobile_year_changer").on("change", function () {
 });
 
 $("#refresh_bugun").on("click", function () {
+    let is_extended = false;
+    if (localStorage.getItem("navigation_page")) {
+        is_extended = true;
+    }
     leftframe_button_reset();
-    leftframe_stick("bugun", false, null, true);
+    leftframe_stick("bugun", is_extended, null, true);
     $(this).addClass("dj-hidden");
 });
 

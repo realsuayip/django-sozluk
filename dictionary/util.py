@@ -31,16 +31,17 @@ ENTRIES_PER_PAGE = 10
 TOPICS_PER_PAGE = 2  # experimental
 ENTRIES_PER_PAGE_PROFILE = 15
 nondb_categories = ["bugun", "gundem", "basiboslar", "tarihte-bugun", "kenar", "caylaklar", "takip", "debe"]
-exclusively_cache = ["bugun", "debe", "kenar", "takip"]
+exclusively_cache = ["bugun", "debe", "kenar", "takip", "tarihte-bugun"]
 banned_topics = [  # include banned topics here
     " ", "@", " % ", "seks"]
-
+cache_timeout = 60  # 1 minutes, for non-exclusive slugs
 vote_rates = {"favorite": Decimal(".2"), "increase": Decimal(".2"), "reduce": Decimal("-.2"),
               "anonymous_multiplier": Decimal(".5"), }
 
 
-def topic_list_qs(request, category_slug, year=None, extend=False):
+def topic_list_qs(request=None, category_slug=None, year=None, extend=False, fetch_cached=True, clear_cache=False):
     """
+    # THIS FUNCTION IS (DEPRECATED) REPLACED WITH TopicListManager AND WILL BE REMOVED IN FURTHER COMMITS
     Queryset to call on topics that have entires written today.
     category -> Category slug.
     year -> supply for tarihte-bugun
@@ -50,27 +51,48 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
     yielded to paginate in javascript or in view function. If extended is None, then the first page will be the output.
     """
     extended = True if request.GET.get("extended") == "yes" or extend else False
-    cache_key = f"global_{category_slug}"
-    cache_key_extended = f"global_{category_slug}_extended"  # for 'debe' this is obsolete
-    cache_key_global = cache_key_extended if extended else cache_key
-    cache_timeout = 60  # 1 minutes
+    request_bugun = True if request.user.is_authenticated and category_slug == "bugun" else False
 
-    if category_slug not in exclusively_cache:
-        if cache.get(cache_key_global):
-            return cache.get(cache_key_global)
+    # caching stuff
+    cached = False if not fetch_cached or request.GET.get("nocache") == "yes" else True
+    cache_key_ultimate = None
+    if cached:
+        cache_type = f"pri_uid_{request.user.id}" if request_bugun else "global"
+        cache_year = str(year) if year else ""
+        cache_key = f"{cache_type}_{category_slug}{cache_year}"
+        cache_key_extended = f"{cache_key}_extended"  # for 'debe' this is obsolete
+        cache_key_ultimate = cache_key_extended if extended else cache_key
+
+        if clear_cache:
+            cache.delete(cache_key_ultimate)
+            return True
+
+        cached_data = cache.get(cache_key_ultimate)
+
+        if cached_data:
+            if category_slug not in exclusively_cache:
+                return cached_data
+            else:
+                if category_slug == "tarihte-bugun" or category_slug == "debe":
+                    now_day = timezone.now().day
+                    if cached_data.get("day") == now_day:
+                        return cached_data.get("response")
+
+                elif category_slug == "bugun":
+                    set_at = cached_data.get("set_at")
+                    refresh_count = Entry.objects.filter(date_created__gte=set_at).count()
+                    return {"response": cached_data.get("response"), "refresh_count": refresh_count}
 
     topic_list = []
     serialized_data = []
-    last_entries = None
 
     if category_slug in nondb_categories:
 
-        if category_slug == "bugun":
-            if request.user.is_authenticated:
-                last_entries = Entry.objects.filter(date_created__gte=time_threshold_24h).order_by("-date_created")
+        if request_bugun:
+            last_entries = Entry.objects.filter(date_created__gte=time_threshold_24h).order_by("-date_created")
 
         elif category_slug == "tarihte-bugun":
-            now = datetime.datetime.now()
+            now = timezone.now()
             last_entries = Entry.objects.filter(date_created__year=year, date_created__day=now.day,
                                                 date_created__month=now.month).order_by("-date_created")
 
@@ -112,7 +134,7 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
             serialized_data = []
             for entry in last_entries:
                 serialized_data.append({"title": f"{entry.topic.title}",
-                                       "slug": reverse_lazy("entry_permalink", kwargs={"entry_id": entry.id})})
+                                        "slug": reverse_lazy("entry_permalink", kwargs={"entry_id": entry.id})})
 
             serialized_data = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
             return serialized_data
@@ -126,7 +148,7 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
 
     def get_count(topic_obj):
         if category_slug == "tarihte-bugun":
-            now_ = datetime.datetime.now()
+            now_ = timezone.now()
             return Topic.objects.filter(id=topic_obj.id, entry__date_created__year=year,
                                         entry__date_created__day=now_.day, entry__date_created__month=now_.month,
                                         entry__author__is_novice=False).count()
@@ -150,7 +172,17 @@ def topic_list_qs(request, category_slug, year=None, extend=False):
         serialized_data.append(serialized)
 
     response = serialized_data if extended else serialized_data[:TOPICS_PER_PAGE]
-    cache.set(cache_key_global, response, cache_timeout)  # cache at 1 minute
+
+    if category_slug in exclusively_cache:
+        if category_slug == "tarihte-bugun" or category_slug == "debe":
+            now_day = timezone.now().day
+            cache.set(cache_key_ultimate, {"response": response, "day": now_day}, 86400)  # 24 hours
+        elif category_slug == "bugun":
+            cache.set(cache_key_ultimate, {"response": response, "set_at": timezone.now()})
+            return {"response": response, "refresh_count": 0}
+    else:
+        cache.set(cache_key_ultimate, response, cache_timeout)
+
     return response
 
 
