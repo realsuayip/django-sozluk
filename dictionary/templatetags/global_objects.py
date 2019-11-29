@@ -1,9 +1,7 @@
 from django import template
-from ..models import Category, Conversation, TopicFollowing, Entry
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from ..models import Category, Conversation, TopicFollowing, Entry
 
-# todo: object doesnt exist replace
 register = template.Library()
 
 """

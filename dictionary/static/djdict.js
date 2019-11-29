@@ -297,7 +297,7 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
                         $("#show_more").addClass("dj-hidden");
                     }
                 }
-
+                const slug_identifier = data['slug_identifier'];
                 if (page) {
 
 
@@ -332,7 +332,7 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
 
 
                 for (let i = 0; i < data.length; i++) {
-                    let topic_template = `<li class="list-group-item"><a href="${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ''}</small></a></li>`;
+                    let topic_template = `<li class="list-group-item"><a href="${slug_identifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ''}</small></a></li>`;
                     topic_list.append(topic_template);
 
                 }

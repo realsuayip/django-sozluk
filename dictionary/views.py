@@ -10,11 +10,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.db.models import Max, Q, Case, When, F, IntegerField, Min, Count
-from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.db.models import Max, Q, Case, When, F, IntegerField
+from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.views.generic import View, ListView, UpdateView
 from django.views.generic.edit import FormView
 from django.urls import reverse, reverse_lazy
@@ -24,12 +22,15 @@ from django.utils.http import urlsafe_base64_decode
 
 from .forms import SignUpForm, EntryForm, SendMessageForm, LoginForm, PreferencesForm, ChangeEmailForm, ResendEmailForm
 from .models import Entry, Category, Topic, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
-from .util import time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, nondb_categories, vote_rates, \
-    require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
 
-from .merge_with_util import TopicListManager
-from .utils.views import AjaxView
 from .utils.decorators import ajax_post, ajax_get
+from .utils.email import send_email_confirmation
+from .utils.managers import TopicListManager
+from .utils.views import AjaxView
+from .utils.settings import (ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE, TOPICS_PER_PAGE, YEAR_RANGE, nondb_categories,
+                             vote_rates, time_threshold_24h)
+
+from .util import find_after_page, mark_read
 
 
 # flatpages for about us etc.
@@ -38,28 +39,9 @@ from .utils.decorators import ajax_post, ajax_get
 # todo converation pagenation
 # todo karma skor!
 # todo hayvan ara !!
-# todo: get_or_create for entry cretion topic shit xd
 # ALL views will be converted to class based views.
-# todo convert ajax views to class based-> with mixins
-# https://stackoverflow.com/questions/33256096/django-order-by-the-amount-of-comments
 
 def index(request):
-    # some prototypes
-    latest_entry_time = dict(last_entry_dt=Max('entries__date_created'))
-    last_24_hour_filter = dict(entries__date_created__gte=time_threshold_24h)
-
-    prev_24_hour_topics = Topic.objects.annotate(**latest_entry_time).filter(**last_24_hour_filter).order_by(
-        '-last_entry_dt')
-
-    #print(prev_24_hour_topics)
-
-    prev_25_hour_topics = Topic.objects.annotate(last_entry_dt=Max('entries__date_created'),
-                                                 entry_count=Count("entries", filter=Q(
-                                                     entries__date_created__gte=time_threshold_24h))).filter(
-        entries__date_created__gte=time_threshold_24h).order_by('-last_entry_dt').values_list("title", "slug", "entry_count")
-
-    print(prev_25_hour_topics)
-
     return render(request, "index.html")
 
 
@@ -182,7 +164,6 @@ def conversation(request, username):
                 django_messages.add_message(request, django_messages.INFO, "mesajınızı gönderemedik ne yazık ki")
             return HttpResponseRedirect(reverse('conversation', kwargs={'username': username}))
 
-    # todo bunu ajaxlıya da ekle success olunca <3
     conversation_object = Conversation.objects.with_user(request.user, recipient)
 
     # mark messages read
@@ -238,6 +219,7 @@ class TopicList(ListView):
     template_name = "topic_list.html"
     paginate_by = TOPICS_PER_PAGE
     refresh_count = 0
+    slug_identifier = None
 
     def get_queryset(self):
         year = None
@@ -265,6 +247,7 @@ class TopicList(ListView):
 
         manager = TopicListManager(self.request.user, slug, extend=True, year=year)
         self.refresh_count = manager.refresh_count
+        self.slug_identifier = manager.slug_identifier
         return manager.serialized
 
     def get_context_data(self, **kwargs):
@@ -285,6 +268,7 @@ class TopicList(ListView):
             context["year_range"] = YEAR_RANGE
 
         context['refresh_count'] = self.refresh_count
+        context['slug_identifier'] = self.slug_identifier
         return context
 
     @method_decorator(login_required)
@@ -298,7 +282,6 @@ class TopicList(ListView):
 
 
 class Login(LoginView):
-    # TODO: login_required varken yanlış yönlendirme yapıo
     form_class = LoginForm
 
     def form_valid(self, form):
@@ -541,7 +524,7 @@ def topic(request, slug=None, entry_id=0, unicode=None):
             entry.save()
             return HttpResponseRedirect(reverse('entry_permalink', kwargs={'entry_id': entry.id}))
 
-    # handling of: valid slugs with parameters "day", "year (tarihte-bugun)", "todo: gundem"
+    # handling of: valid slugs with parameters "day", "year (tarihte-bugun)"
     entries = None
     if (slug and request.GET.get("year") or request.GET.get("day") or request.GET.get("a")) and not entry_id:
         look_for_before = False
@@ -620,7 +603,6 @@ def topic(request, slug=None, entry_id=0, unicode=None):
             elif mode == "caylaklar":
                 look_for_before = True
                 look_for_after = True
-                # Entry.caylaklar.filter todo
                 entries = Entry.objects_novices.filter(topic__slug=slug, date_created__gte=time_threshold_24h)
 
         if request.user.is_authenticated and entries:
@@ -748,7 +730,8 @@ class AsyncTopicList(AjaxView):
         extend = True if self.request_data.get("extended") == "yes" else False
         fetch_cached = False if self.request_data.get("nocache") == "yes" else True
         manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
-        return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count}, safe=False)
+        return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count,
+                             "slug_identifier": manager.slug_identifier})
 
 
 class Vote(AjaxView):

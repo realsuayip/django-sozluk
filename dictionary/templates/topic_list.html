@@ -36,7 +36,7 @@
         <ul id="topic-list-standalone" class="list-group topic-list">
             {% if topics %}
                 {% for topic in topics %}
-                    <li class="list-group-item"><a href="{{ topic.slug }}">{{ topic.title }}
+                    <li class="list-group-item"><a href="{{ slug_identifier }}{{ topic.slug }}">{{ topic.title }}
                         <small class="total_entries">{{ topic.count }}</small>
                     </a></li>
                 {% endfor %}

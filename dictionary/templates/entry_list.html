@@ -93,7 +93,6 @@
 
                 </header>
                 {% if entries_before %}
-                    {#                    todo : after you code şükela arama vs. burayı da include yap ve entry olmayınca yok ki behaviour#}
                     {% if entry_perma %}
                         <a title="tümünü göster"
                            href="{% url 'topic' slug=entry_perma.topic.slug %}?page={{ before_page }}"

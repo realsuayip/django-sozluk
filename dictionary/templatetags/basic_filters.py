@@ -1,9 +1,9 @@
-from django import template
-from ..util import banned_topics
 import re
-from django.utils.html import escape, mark_safe
-import time
 import calendar
+from django import template
+from django.utils.html import escape, mark_safe
+from ..utils.settings import banned_topics
+
 
 register = template.Library()
 
@@ -34,18 +34,6 @@ def formatted(raw_entry):
 
 
 @register.filter
-def classified(author_list):
-    authors = []
-    novices = []
-    for person in author_list:
-        if person.is_novice:
-            novices.append(person)
-        else:
-            authors.append(person)
-    return [authors, novices]
-
-
-@register.filter
 def banned_topic(topic_title):
     if topic_title in banned_topics:
         return True
@@ -55,5 +43,4 @@ def banned_topic(topic_title):
 
 @register.filter
 def timestamp(date):
-    # does not work at all todo
     return int(calendar.timegm(date.timetuple()))

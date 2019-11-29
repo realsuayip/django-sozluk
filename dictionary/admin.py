@@ -9,7 +9,7 @@ from django.contrib import messages as django_messages
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.core.mail import send_mail
 from django.contrib.contenttypes.models import ContentType
-from .util import time_threshold_24h
+from .utils.settings import time_threshold_24h
 from django.db.models import Q, Case, When, IntegerField
 
 GENERIC_SUPERUSER_ID = 1  # generic user that does administrative actions on website, should not be a real user
