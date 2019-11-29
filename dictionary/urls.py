@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import (index, Logout, Login, SignUp, topic, user_profile, messages, conversation, _autocomplete, _favorite,
-                    _category, _compose_message, _vote, _user_actions, people, _entry_actions, _topic_actions)
+from .views import (index, Logout, Login, SignUp, topic, user_profile, messages, conversation, people)
 
 # todo convert all of paths to views.<ViewName>
 from . import views
@@ -9,12 +8,13 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
     PasswordResetConfirmView
 
 urlpatterns_ajax = [
-    path('entry/favorite/', _favorite, name="favorite"), path('entry/vote/', _vote, name="vote"),
-    path('category/<slug:slug>/', _category, name="cateogry"),
-    path('mesaj/action/gonder/', _compose_message, name="compose_message"),
-    path('user/action/', _user_actions, name="user_actions"),
-    path('entry/action/', _entry_actions, name="entry_actions"),
-    path('t/action/', _topic_actions, name="topic_actions")
+    path('entry/vote/', views.Vote.as_view(), name="vote"),
+    path('category/<slug:slug>/', views.AsyncTopicList.as_view(), name="cateogry"),
+    path('mesaj/action/gonder/', views.ComposeMessage.as_view(), name="compose_message"),
+    path('user/action/', views.UserAction.as_view(), name="user_actions"),
+    path('entry/action/', views.EntryAction.as_view(), name="entry_actions"),
+    path('t/action/', views.TopicAction.as_view(), name="topic_actions"),
+    path('autocomplete/general/', views.AutoComplete.as_view(), name="autocomplete"),
 ]
 
 urlpatterns_password_reset = [
@@ -47,7 +47,6 @@ urlpatterns_regular = [path('', index, name="home"),
                        path('basliklar/<slug:slug>/', views.TopicList.as_view(), name="topic_list"),
                        path('entry/<int:entry_id>/', topic, name="entry_permalink"),
                        path('entry/update/<int:pk>/', views.EntryUpdate.as_view(), name="entry_update"),
-                       path('autocomplete/general/', _autocomplete, name="autocomplete"),
                        path('mesaj/', messages, name="messages"),
                        path('mesaj/<str:username>/', conversation, name="conversation"),
                        path('takip-engellenmis/', people, name="people"),
@@ -57,7 +56,7 @@ urlpatterns_regular = [path('', index, name="home"),
                        path("ayarlar/sifre/", views.ChangePassword.as_view(), name="user_preferences_password"),
                        path("ayarlar/email/", views.ChangeEmail.as_view(), name="user_preferences_email"),
                        path("email/onayla/<uidb64>/<token>/", views.ConfirmEmail.as_view(), name="confirm_email"),
-                       path("email/tekrar/", views.ResendEmailConfirmation.as_view(), name="resend_email"),
+                       path("email/tekrar/", views.ResendEmailConfirmation.as_view(), name="resend_email")
                        ]
 
 urlpatterns = urlpatterns_regular + urlpatterns_ajax + urlpatterns_password_reset

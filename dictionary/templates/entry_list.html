@@ -113,7 +113,7 @@
                 <ul>
                     {% if entry_perma %}
                         {% with entry_perma as entry %}
-                            {% include "includes/entry.html" %}
+                            {% include "includes/entry.html" with permalink="yes"%}
                         {% endwith %}
                     {% endif %}
 

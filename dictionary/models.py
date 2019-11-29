@@ -104,10 +104,6 @@ class Author(AbstractUser):
         return Entry.objects_published.filter(author=self).latest("date_created").date_created
 
     @property
-    def entries(self):
-        return Entry.objects_published.filter(author=self)
-
-    @property
     def followers(self):
         return Author.objects.filter(following=self)
 
@@ -209,8 +205,7 @@ class EntryManagerOnlyPublished(models.Manager):
 
 
 class Entry(models.Model):
-    topic = models.ForeignKey(Topic,
-                              on_delete=models.PROTECT)  # don't use topic_set because there are many managers for Entry
+    topic = models.ForeignKey(Topic, on_delete=models.PROTECT, related_name="entries")
     author = models.ForeignKey(Author, on_delete=models.PROTECT)
     content = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
@@ -274,6 +269,9 @@ class Message(models.Model):
     read_at = models.DateTimeField(null=True, blank=True)
 
     objects = MessageManager()
+
+    class Meta:
+        ordering = ["sent_at"]
 
     def __str__(self):
         return f"{self.pk}"

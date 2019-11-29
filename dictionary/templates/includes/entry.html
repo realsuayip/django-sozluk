@@ -41,8 +41,8 @@
                        class="material-icons">keyboard_arrow_down</i></a>
            {% endif %}
 
-
-               <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
+               {% if request.user.is_authenticated %}
+                   <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
 {#                # use relative name instead; everywhere todo #}
 
                    <i {% if request.user in entry.favorited_by.all %}class="material-icons favorite-entry-btn mr-1"
@@ -57,7 +57,9 @@
                        {% if entry.favorited_by.all %}{{ entry.favorited_by.count }}{% endif %}</a>
                    <span class="dropdown-menu favorites-list" aria-labelledby="dropdownFavorites"></span>
                </div>
-           </div>
+             {% endif %}
+                   </div>
+
         </span>
 
 
@@ -97,7 +99,8 @@
 
 
 
-                            <a href="#" data-target-entry="{{ entry.id }}" class="dropdown-item delete-entry">sil</a>
+                            <a href="#" data-target-entry="{{ entry.id }}"
+                               class="dropdown-item delete-entry{% if permalink == "yes" %}-redirect{% endif %}">sil</a>
                             <a href="{% url "entry_update" pk=entry.id %}" class="dropdown-item">düzelt</a>
                         {% endif %}
 

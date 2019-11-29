@@ -14,6 +14,17 @@ login_required_categories = ["bugun", "kenar", "takip"]
 do_not_cache = ["kenar"]
 
 
+"""
+This manager is subject to dramatic changes. prototype:
+ desired_date = timezone.now() - datetime.timedelta(hours=24)
+    distinct_ids = Topic.objects.filter(entries__date_created__gte=desired_date).distinct().values_list('id', flat=True)
+    ordered_qs = Topic.objects.filter(id__in=distinct_ids).annotate(lts=Max("entries__date_created"),
+                                                                    entry_count=Count("entries", filter=Q(entries__date_created__gte=desired_date))).order_by('-lts')
+    uu = ordered_qs.values_list("title", "slug", "entry_count")
+
+"""
+
+
 class TopicListManager:
     """
     Topic List Manager. views => left_frame for desktop and /basliklar/ for mobile.
@@ -24,6 +35,7 @@ class TopicListManager:
     current examples include debe, takip, kenar
     """
     entries = None
+    topics = None
     custom_serialized_data = None
     cache_exists = False
     valid_cache_key = None
@@ -131,8 +143,8 @@ class TopicListManager:
             return Topic.objects.filter(id=topic.id, entry__date_created__gte=time_threshold_24h,
                                         entry__author__is_novice=True).count()
 
-        return Topic.objects.filter(id=topic.id, entry__date_created__gte=time_threshold_24h,
-                                    entry__author__is_novice=False).count()
+        return Topic.objects.filter(id=topic.id, entries__date_created__gte=time_threshold_24h,
+                                    entries__author__is_novice=False).count()
 
     @property
     def serialized(self):
@@ -157,7 +169,7 @@ class TopicListManager:
                                  "count": self._get_count(topic)}
                 data.append(data_instance)
 
-            return self.cache_data(self._delimit_length(data))
+            return self._delimit_length(data)
 
         return []  # found nothing
 
@@ -218,3 +230,4 @@ class TopicListManager:
             else:
                 return Entry.objects.filter(date_created__gte=set_at).count()
         return 0
+

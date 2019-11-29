@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.db.models import Max, Q, Case, When, F, IntegerField
+from django.db.models import Max, Q, Case, When, F, IntegerField, Min, Count
 from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -28,6 +28,8 @@ from .util import time_threshold_24h, ENTRIES_PER_PAGE, ENTRIES_PER_PAGE_PROFILE
     require_ajax, find_after_page, mark_read, TOPICS_PER_PAGE, YEAR_RANGE, send_email_confirmation
 
 from .merge_with_util import TopicListManager
+from .utils.views import AjaxView
+from .utils.decorators import ajax_post, ajax_get
 
 
 # flatpages for about us etc.
@@ -37,11 +39,27 @@ from .merge_with_util import TopicListManager
 # todo karma skor!
 # todo hayvan ara !!
 # todo: get_or_create for entry cretion topic shit xd
-# Some function views are suitable for Class based views, but I'll convert them after I decide that I wont be making
-# more changes to these views
-
+# ALL views will be converted to class based views.
+# todo convert ajax views to class based-> with mixins
+# https://stackoverflow.com/questions/33256096/django-order-by-the-amount-of-comments
 
 def index(request):
+    # some prototypes
+    latest_entry_time = dict(last_entry_dt=Max('entries__date_created'))
+    last_24_hour_filter = dict(entries__date_created__gte=time_threshold_24h)
+
+    prev_24_hour_topics = Topic.objects.annotate(**latest_entry_time).filter(**last_24_hour_filter).order_by(
+        '-last_entry_dt')
+
+    #print(prev_24_hour_topics)
+
+    prev_25_hour_topics = Topic.objects.annotate(last_entry_dt=Max('entries__date_created'),
+                                                 entry_count=Count("entries", filter=Q(
+                                                     entries__date_created__gte=time_threshold_24h))).filter(
+        entries__date_created__gte=time_threshold_24h).order_by('-last_entry_dt').values_list("title", "slug", "entry_count")
+
+    print(prev_25_hour_topics)
+
     return render(request, "index.html")
 
 
@@ -93,7 +111,7 @@ class ActivityList(LoginRequiredMixin, ListView):
     # todo from onread anchor link
     def get_queryset(self):
         return TopicFollowing.objects.filter(author=self.request.user).annotate(
-            latest=Max("topic__entry__date_created"),
+            latest=Max("topic__entries__date_created"),
             is_read=Case(When(Q(latest__gt=F("read_at")), then=1), When(Q(latest__lt=F("read_at")), then=2),
                          output_field=IntegerField()), ).order_by("is_read", "-read_at")
 
@@ -178,30 +196,39 @@ def conversation(request, username):
     return render(request, "conversation/conversation.html", context=data)
 
 
-@require_ajax
-@login_required
-def _compose_message(request):
-    print(5)
-    message_body = request.POST.get("message_body")
-    if len(message_body) < 1:
-        return JsonResponse({"success": False, "detail": "az bişeyler yaz yeğen"}, )
+class ComposeMessage(AjaxView):
+    login_required = True
+    require_method = "POST"
 
-    try:
-        recipient = Author.objects.get(username=request.POST.get("recipient"))
-    except ObjectDoesNotExist:
-        return JsonResponse({"success": False, "detail": "öyle bir insan yok etrafta"})
+    def handle(self):
+        return self.compose()
 
-    msg = Message.objects.compose(request.user, recipient, message_body)
-    if not msg:
-        return JsonResponse({"success": False, "detail": "mesajınızı gönderemedik ne yazık ki"})
+    def compose(self):
+        message_body = self.request_data.get("message_body")
+        if len(message_body) < 3:
+            self.error_message = "az bir şeyler yaz yeğenim"
+            return self.error(status=200)
 
-    return JsonResponse({"success": True, "detail": "mesajınız sağ salim gönderildi"})
+        try:
+            recipient = Author.objects.get(username=self.request_data.get("recipient"))
+        except Author.DoesNotExist:
+            self.error_message = "öyle birini bulamadım valla"
+            return self.error(status=200)
+
+        msg = Message.objects.compose(self.request.user, recipient, message_body)
+
+        if not msg:
+            self.error_message = "mesajınızı gönderemedik ne yazık ki"
+            return self.error(status=200)
+        else:
+            self.success_message = "mesajınız sağ salim gönderildi"
+            return self.success()
 
 
 class TopicList(ListView):
     """
         Topic list (başlıklar) for mobile views such as "bugün", "gündem",
-        Desktop equivalent => _category
+        Desktop equivalent => TopicListAsync
 
         cache_key for bugun-> bugun_extended_{self.request.user.id} (also used in _category)
         refresh_count -> for bugun only, "yenile" button count
@@ -429,6 +456,8 @@ def user_profile(request, username):
 
 
 def topic(request, slug=None, entry_id=0, unicode=None):
+    """ THIS VIEW WILL BE CONVERTED TO CLASS BASED"""
+
     # todo: başlık yönlendirme (türkçe düzeltme gibi.)
     # todo: entry baslıklarının nasıl olacağına dair bir regex yapıp titleyi kontrol et (başlık formatı)
     # todo topic__slug => topic_object
@@ -663,297 +692,342 @@ def topic(request, slug=None, entry_id=0, unicode=None):
 
 
 # ajax views
+class AutoComplete(AjaxView):
+    require_method = "GET"
 
+    def handle(self):
+        if self.request_data.get("author"):
+            return self.author()
+        elif self.request_data.get("query"):
+            return self.query()
 
-def _autocomplete(request):
-    """
-    Header search autocomplete filters.
-        Problem: Cannot return querysets with length restrictions on 'query' (autocomplete results won't appear),
-     if you know how to fix this, please do.
-     todo : boşlukları sil kenardan
-    # TODO: LIST COMPREHENDSIONS
-     Todo: also add some users on topic autocomplete.
-     """
+        super().handle()
 
-    if request.GET.get("author"):
-        objects = Author.objects.filter(username__istartswith=request.GET.get("author"))
+    def author(self):
+        objects = Author.objects.filter(username__istartswith=self.request_data.get("author"))
         response = [obj.username for obj in objects]
         return JsonResponse({"suggestions": response})
 
-    query = request.GET.get("query")
-    if query.startswith("@"):
-        if len(query) <= 1:
-            response = ["@"]
+    def query(self):
+        query = self.request_data.get("query")
+
+        if query.startswith("@"):
+            if len(query) <= 1:
+                response = ["@"]
+            else:
+                response = ["@" + obj.username for obj in Author.objects.filter(username__istartswith=query[1:])[:7]]
         else:
-            response = ["@" + obj.username for obj in Author.objects.filter(username__istartswith=query[1:])[:7]]
-    else:
-        response = [obj.title for obj in Topic.objects.filter(title__istartswith=query)[:7]]
+            response = [obj.title for obj in Topic.objects.filter(title__istartswith=query)[:7]]
 
-        for extra in Topic.objects.filter(title__icontains=query)[:7]:
-            if len(response) >= 7:
-                break
-            if extra.title not in response:
-                response.append(extra.title)
+            for extra in Topic.objects.filter(title__icontains=query)[:7]:
+                if len(response) >= 7:
+                    break
+                if extra.title not in response:
+                    response.append(extra.title)
 
-        extra_authors = Author.objects.filter(username__istartswith=query)[:3]
-        for author in extra_authors:
-            response.append("@" + author.username)
-    return JsonResponse({"suggestions": response})
+            extra_authors = Author.objects.filter(username__istartswith=query)[:3]
+            for author in extra_authors:
+                response.append("@" + author.username)
+        return JsonResponse({"suggestions": response})
 
 
-@login_required
-def _favorite(request):
-    """
-        1. POST for Favorite or unfavorite entries.
-        2. GET for favorite count & list.
-    """
+class AsyncTopicList(AjaxView):
+    require_method = "GET"
 
-    if request.method == "GET":
-        entry_id = request.GET.get("entry_id")
-        try:
-            entry = get_object_or_404(Entry, id=entry_id)
-        except ValueError:
-            return HttpResponse(status=400)
-        if entry:
-            users_favorited = entry.favorited_by.all()
-            authors, novices = [], []
-            for user in users_favorited:
-                if user.is_novice:
-                    novices.append(user.username)
-                else:
-                    authors.append(user.username)
-            return JsonResponse({'users': [authors, novices]})
-        return HttpResponse(status=400)
+    def handle(self):
+        slug = self.kwargs.get("slug")
+        year = self.request_data.get("year") if slug == "tarihte-bugun" else None
 
-    if request.method == "POST":
-        entry_id = request.POST.get("entry_id", None)
-        try:
-            entry_to_fav = get_object_or_404(Entry, id=entry_id)
-        except ValueError:
-            return HttpResponse(status=400)
+        if year:
+            try:
+                if not int(year) in YEAR_RANGE:
+                    return self.bad_request()
+            except(ValueError, OverflowError):
+                return self.bad_request()
 
-        if entry_to_fav:
-            if request.user in entry_to_fav.favorited_by.all():
-                request.user.favorite_entries.remove(entry_to_fav)
-                entry_to_fav.update_vote(vote_rates['reduce'])
-                return JsonResponse({'count': entry_to_fav.favorited_by.count(), 'status': -1})
-
-            request.user.favorite_entries.add(entry_to_fav)
-            entry_to_fav.update_vote(vote_rates['increase'])
-            return JsonResponse({'count': entry_to_fav.favorited_by.count(), 'status': 1})
-    return HttpResponse(status=400)
+        extend = True if self.request_data.get("extended") == "yes" else False
+        fetch_cached = False if self.request_data.get("nocache") == "yes" else True
+        manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
+        return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count}, safe=False)
 
 
-@require_ajax
-def _category(request, slug):
-    year = request.GET.get("year", None) if slug == "tarihte-bugun" else None
-    if year:
-        try:
-            if not int(year) in YEAR_RANGE:
-                return HttpResponseBadRequest()
-        except (ValueError, OverflowError):
-            return HttpResponseBadRequest()
-
-    extend = True if request.GET.get("extended") == "yes" else False
-    fetch_cached = False if request.GET.get("nocache") == "yes" else True
-    manager = TopicListManager(request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
-    print(manager.valid_cache_key, manager.cache_exists)
-    print(manager.serialized)
-    return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count}, safe=False)
-
-
-@csrf_exempt
-@require_ajax
-@require_POST
-def _vote(request):
+class Vote(AjaxView):
     """
     Anonymous users can vote, in order to hinder duplicate votings, session is used; though it is not
     the best way to handle this, I think it's better than storing all the IP adresses of the guest users as acquiring an
     IP adress is a nuance; it depends on the server and it can also be manipulated by keen hackers. It's just better to
     stick to this way instead of making things complicated as there is no way to make this work 100% intended.
     """
+    require_method = "POST"
 
-    vote = request.POST.get("vote")
+    # View specific attributes
+    vote = None
+    entry = None
+    already_voted = False
+    already_voted_type = None
+    anonymous = True
+    anon_votes = None
+    cast_up = None
+    cast_down = None
 
-    if vote not in ["up", "down"]:
-        raise Http404
+    def handle(self):
+        self.vote = self.request_data.get("vote")
+        self.cast_up = True if self.vote == "up" else False
+        self.cast_down = True if self.vote == "down" else False
 
-    try:
-        entry = get_object_or_404(Entry, id=int(request.POST.get("entry_id", None)))
-    except ValueError:
-        raise Http404
+        try:
+            self.entry = get_object_or_404(Entry, id=int(self.request_data.get("entry_id")))
+        except (ValueError, OverflowError):
+            return self.error()
 
-    reduce = vote_rates["reduce"]
-    increase = vote_rates["increase"]
-    sender = request.user
+        if self.request.user.is_authenticated:
+            # self-vote not allowed
+            if self.request.user == self.entry.author:
+                return self.error()
+            self.anonymous = False
 
-    # self-vote not allowed
-    if entry.author == sender:
-        raise Http404
+        if self.vote in ["up", "down"]:
+            if self.cast():
+                return self.success()
 
-    if sender.is_authenticated:
-        up = True if vote == "up" else False  # upvoted
-        down = True if vote == "down" else False  # downvoted
-        upvoters = entry.upvoted_by.all()
-        downvoters = entry.downvoted_by.all()
+        super().handle()
 
-        if sender in upvoters and up:  # cancel upvote
-            sender.upvoted_entries.remove(entry)
-            entry.update_vote(reduce)
-        elif sender in downvoters and down:  # cancel downvote
-            sender.downvoted_entries.remove(entry)
-            entry.update_vote(increase)
-        elif sender in upvoters and down:  # change vote from up to down
-            sender.upvoted_entries.remove(entry)
-            sender.downvoted_entries.add(entry)
-            entry.update_vote(reduce, change=True)
-        elif sender in downvoters and up:  # change vote from down to up
-            sender.downvoted_entries.remove(entry)
-            sender.upvoted_entries.add(entry)
-            entry.update_vote(increase, change=True)
-        else:  # first time voting
-            if up:
-                sender.upvoted_entries.add(entry)
-                entry.update_vote(increase)
-            elif down:
-                sender.downvoted_entries.add(entry)
-                entry.update_vote(reduce)
-        return HttpResponse(status=200)
+    def cast(self):
+        entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down
+        reduce, increase = vote_rates["reduce"], vote_rates["increase"]
 
-    else:
-        # Anonymous voting
-        anon_votes = request.session.get("anon_votes")
-        anon_already_voted = False
-        anon_already_voted_type = None
-        anon_votes_new = []
-        k = vote_rates["anonymous_multiplier"]  # so as to make anonymous votes less effective as they are not reliable
+        if self.anonymous:
+            k = vote_rates["anonymous_multiplier"]
+            self.anon_votes = self.request.session.get("anon_votes")
+            if self.anon_votes:
+                for record in self.anon_votes:  # do not use the name 'record' method's this scope
+                    if record.get("entry_id") == entry.id:
+                        self.already_voted = True
+                        self.already_voted_type = record.get("type")
+                        break
+        else:
+            k = vote_rates["authenticated_multiplier"]
+            sender = self.request.user
+            if entry in sender.upvoted_entries.all():
+                self.already_voted = True
+                self.already_voted_type = "up"
+            elif entry in sender.downvoted_entries.all():
+                self.already_voted = True
+                self.already_voted_type = "down"
 
-        if anon_votes:
-            for obj in anon_votes:
-                if obj.get("entry_id") == entry.id:
-                    anon_already_voted = True
-                    anon_already_voted_type = obj.get("type")
-
-        if anon_already_voted:
-            if anon_already_voted_type == vote:
+        if self.already_voted:
+            if self.already_voted_type == self.vote:
                 # Removes the vote cast.
-                if vote == "up":
+                if cast_up:
                     entry.update_vote(reduce * k)
-                elif vote == "down":
+                elif cast_down:
                     entry.update_vote(increase * k)
-                anon_votes_new = [y for y in anon_votes if y.get('entry_id') != entry.id]
             else:
                 # Changes the vote cast.
-                if vote == "up":
+                if cast_up:
                     entry.update_vote(increase * k, change=True)
-                if vote == "down":
+                if cast_down:
                     entry.update_vote(reduce * k, change=True)
-
-                anon_votes_new = [y for y in anon_votes if y.get('entry_id') != entry.id]
-                anon_votes_new.append({"entry_id": entry.id, "type": vote})
         else:
             # First time voting.
-            if vote == "up":
+            if cast_up:
                 entry.update_vote(increase * k)
-            elif vote == "down":
+            elif cast_down:
                 entry.update_vote(reduce * k)
 
-            if anon_votes:
-                anon_votes.append({"entry_id": entry.id, "type": vote})
-                anon_votes_new = anon_votes
+        if self.record_vote():
+            return True
+        return False
+
+    def record_vote(self):
+        entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down
+        prior_cast_up = True if self.already_voted_type == "up" else False
+        prior_cast_down = True if self.already_voted_type == "down" else False
+
+        if self.anonymous:
+            anon_votes_new = []
+            if self.already_voted:
+                anon_votes_new = [y for y in self.anon_votes if y.get('entry_id') != entry.id]
+                if self.already_voted_type != self.vote:
+                    anon_votes_new.append({"entry_id": entry.id, "type": self.vote})
             else:
-                anon_votes_new.append({"entry_id": entry.id, "type": vote})
+                if self.anon_votes:
+                    self.anon_votes.append({"entry_id": entry.id, "type": self.vote})
+                    anon_votes_new = self.anon_votes
+                else:
+                    anon_votes_new.append({"entry_id": entry.id, "type": self.vote})
 
-        request.session["anon_votes"] = anon_votes_new
-        return HttpResponse(status=200)
+            self.request.session["anon_votes"] = anon_votes_new
+
+        else:
+            sender = self.request.user
+            if self.already_voted:
+                if prior_cast_up and cast_up:
+                    sender.upvoted_entries.remove(entry)
+                elif prior_cast_down and cast_down:
+                    sender.downvoted_entries.remove(entry)
+                elif prior_cast_up and cast_down:
+                    sender.upvoted_entries.remove(entry)
+                    sender.downvoted_entries.add(entry)
+                elif prior_cast_down and cast_up:
+                    sender.downvoted_entries.remove(entry)
+                    sender.upvoted_entries.add(entry)
+            else:
+                if cast_up:
+                    sender.upvoted_entries.add(entry)
+                elif cast_down:
+                    sender.downvoted_entries.add(entry)
+        return True
 
 
-@require_POST
-@login_required
-@require_ajax
-def _user_actions(request):
-    action = request.POST.get("type")
-    sender = Author.objects.get(id=request.user.id)
-    recipient = get_object_or_404(Author, username=request.POST.get("recipient_username"))
-    if sender == recipient:
-        return HttpResponse(status=403)
+class UserAction(AjaxView):
+    login_required = True
+    require_method = "POST"
+    sender = None
+    recipient = None
 
-    if action in ["follow", "block"]:
+    def handle(self):
+        action = self.request_data.get("type")
+        self.sender = self.request.user
+        self.recipient = get_object_or_404(Author, username=self.request_data.get("recipient_username"))
+
+        if self.sender == self.recipient:
+            return self.bad_request()
+
         if action == "follow":
-            if sender in recipient.blocked.all() or recipient in sender.blocked.all():
-                return HttpResponse(status=403)
+            return self.follow()
+        elif action == "block":
+            return self.block()
+
+    def follow(self):
+        sender, recipient = self.sender, self.recipient
+
+        if sender in recipient.blocked.all() or recipient in sender.blocked.all():
+            return self.bad_request()
+
+        if recipient in sender.following.all():
+            sender.following.remove(recipient)
+        else:
+            sender.following.add(recipient)
+        return self.success()
+
+    def block(self):
+        sender, recipient = self.sender, self.recipient
+
+        if recipient in sender.blocked.all():
+            sender.blocked.remove(recipient)
+            return self.success()
+        else:
             if recipient in sender.following.all():
                 sender.following.remove(recipient)
-            else:
-                sender.following.add(recipient)
-        elif action == "block":
-            if recipient in sender.blocked.all():
-                sender.blocked.remove(recipient)
-            else:
-                if recipient in sender.following.all():
-                    sender.following.remove(recipient)
 
-                if sender in recipient.following.all():
-                    recipient.following.remove(sender)
+            if sender in recipient.following.all():
+                recipient.following.remove(sender)
 
-                sender.blocked.add(recipient)
-                return JsonResponse({"redirect": request.build_absolute_uri(reverse("home"))})
-
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=403)
+            sender.blocked.add(recipient)
+            return self.success(redirect_url=self.request.build_absolute_uri(reverse("home")))
 
 
-@require_POST
-@require_ajax
-@login_required
-def _entry_actions(request):
-    action = request.POST.get("type")
+class EntryAction(AjaxView):
+    login_required = True
+    owner_action = False
+    redirect_url = None
+    entry = None
+    success_message = "oldu bu iş"
 
-    try:
-        entry = get_object_or_404(Entry, id=int(request.POST.get("entry_id")))
-    except ValueError:
-        return HttpResponse(status=403)
+    def handle(self):
+        action = self.request_data.get("type")
 
-    redirect_to = reverse_lazy("topic", kwargs={"slug": entry.topic.slug}) if request.POST.get(
-        "redirect") == "true" else None
+        try:
+            self.entry = get_object_or_404(Entry, id=int(self.request_data.get("entry_id")))
+        except (ValueError, TypeError, Entry.DoesNotExist):
+            return self.bad_request()
 
-    if action in ["delete", "pin"]:
+        self.owner_action = True if self.entry.author == self.request.user else False
+        self.redirect_url = reverse_lazy("topic", kwargs={"slug": self.entry.topic.slug}) if self.request_data.get(
+            "redirect") == "true" else None
+
         if action == "delete":
-            if entry.author == request.user:
-                entry.delete()
+            self.success_message = "silindi"
+            return self.delete()
+
         elif action == "pin":
-            if entry.author == request.user:
-                if request.user.pinned_entry == entry:
-                    request.user.pinned_entry = None
-                else:
-                    request.user.pinned_entry = entry
-                request.user.save()
+            return self.pin()
 
-        if redirect_to:
-            django_messages.add_message(request, django_messages.INFO, "oldu bu iş")
-            return JsonResponse({"redirect_to": redirect_to})
+        elif action == "favorite":
+            return self.favorite()
+
+        elif action == "favorite_list":
+            return self.favorite_list()
+
+        super().handle()
+
+    @ajax_post
+    def delete(self):
+        if self.owner_action:
+            self.entry.delete()
+            if self.redirect_url:
+                return self.success(message_pop=True, redirect_url=self.redirect_url)
+            return self.success()
+
+    @ajax_post
+    def pin(self):
+        if self.owner_action:
+            if self.request.user.pinned_entry == self.entry:  # unpin
+                self.request.user.pinned_entry = None
+            else:
+                self.request.user.pinned_entry = self.entry
+            self.request.user.save()
+            return self.success()
+
+    @ajax_post
+    def favorite(self):
+        if self.entry in self.request.user.favorite_entries.all():
+            self.request.user.favorite_entries.remove(self.entry)
+            self.entry.update_vote(vote_rates["reduce"])
+            status = -1
         else:
-            return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=403)
+            self.request.user.favorite_entries.add(self.entry)
+            self.entry.update_vote(vote_rates["increase"])
+            status = 1
+
+        return JsonResponse({'count': self.entry.favorited_by.count(), 'status': status})
+
+    @ajax_get
+    def favorite_list(self):
+        users_favorited = self.entry.favorited_by.all()
+        authors, novices = [], []
+        for user in users_favorited:
+            if user.is_novice:
+                novices.append(user.username)
+            else:
+                authors.append(user.username)
+        return JsonResponse({'users': [authors, novices]})
 
 
-@require_POST
-@require_ajax
-@login_required
-def _topic_actions(request):
-    action = request.POST.get("type")
-    try:
-        topic_obj = get_object_or_404(Topic, id=int(request.POST.get("topic_id")))
-    except ValueError:
-        return HttpResponseBadRequest()
+class TopicAction(AjaxView):
+    login_required = True
+    require_method = "POST"
+    topic_object = None
 
-    if action == "follow":
+    def handle(self):
+        action = self.request_data.get("type")
+
+        try:
+            self.topic_object = get_object_or_404(Topic, id=int(self.request_data.get("topic_id")))
+        except (ValueError, TypeError, ObjectDoesNotExist):
+            return self.bad_request()
+
+        if action == "follow":
+            return self.follow()
+
+        super().handle()
+
+    def follow(self):
         try:
             # unfollow if already following
-            existing_obj = TopicFollowing.objects.get(topic=topic_obj, author=request.user)
-            existing_obj.delete()
+            existing = TopicFollowing.objects.get(topic=self.topic_object, author=self.request.user)
+            existing.delete()
         except TopicFollowing.DoesNotExist:
-            TopicFollowing.objects.create(topic=topic_obj, author=request.user)
-        return HttpResponse(status=200)
+            TopicFollowing.objects.create(topic=self.topic_object, author=self.request.user)
+        return self.success()

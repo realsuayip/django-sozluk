@@ -34,6 +34,7 @@ def log_admin(msg, authorizer, model_type, model_object, flag=CHANGE):
 
 class CustomUserAdmin(UserAdmin):
     model = Author
+    raw_id_fields  = ['favorite_entries', 'upvoted_entries', 'downvoted_entries', 'following', 'blocked', 'pinned_entry']
 
     fieldsets = UserAdmin.fieldsets + ((None, {'fields': (
         'is_novice', 'application_status', 'application_date', 'last_activity', 'banned_until',

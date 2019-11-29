@@ -118,7 +118,7 @@ $(function () {
                 recipient: $("input.author-search").val()
             },
             success: (data) => {
-                Notify(data.detail);
+                Notify(data.message);
                 if (data.success) {
                     $("#sendMessageModal").modal('hide');
                 }
@@ -514,12 +514,11 @@ $("button#insert_link").on('click', function () {
 $(".favorite-entry-btn").on("click", function () {
     let self = this;
     let entry_id = $(self).closest("#rate").attr("data-entry-id");
-
-
     $.ajax({
-        url: '/entry/favorite/',
+        url: '/entry/action/',
         type: 'POST',
         data: {
+            "type": "favorite",
             "entry_id": entry_id,
         },
         success: function (data) {
@@ -543,9 +542,10 @@ $(".dropdown-fav-count").on('click', ({currentTarget}) => {
     let self = currentTarget;
     let favorites_list = $(self).next();
     $.ajax({
-        url: '/entry/favorite/',
+        url: '/entry/action/',
         type: 'GET',
         data: {
+            "type": "favorite_list",
             "entry_id": $(self).closest("#rate").attr("data-entry-id"),
         },
         success: data => {
@@ -626,12 +626,12 @@ const user_action = (type, recipient_username) => {
             "recipient_username": recipient_username,
         },
         success: (data) => {
-            if (data["redirect"]) {
-                window.location.replace(data["redirect"]);
+            if (data["redirect_to"]) {
+                window.location.replace(data["redirect_to"]);
             }
         },
-        error: (err) => {
-            Notify("olmadı");
+        error: (data) => {
+            Notify(data["message"]);
         }
 
     });
@@ -670,7 +670,7 @@ $("#follow_user").on("click", ({currentTarget}) => {
 });
 
 
-const entry_action = (type, entry_id, sucess_message = "silindi", redirect = false) => {
+const entry_action = (type, entry_id, redirect = false) => {
     $.ajax({
         url: '/entry/action/',
         type: 'POST',
@@ -682,13 +682,15 @@ const entry_action = (type, entry_id, sucess_message = "silindi", redirect = fal
         },
         success: (data) => {
             console.log(data);
-            if (sucess_message) {
-                Notify(sucess_message);
+            if (data['message']) {
+                Notify(data['message']);
             }
 
             if (redirect) {
                 window.location.replace(data['redirect_to']);
             }
+
+            return data;
         },
         error: (err) => {
             console.log(err);
@@ -708,13 +710,13 @@ $(".delete-entry").on("click", ({currentTarget}) => {
 
 $(".delete-entry-redirect").on("click", ({currentTarget}) => {
     if (confirm("harbiden silinsin mi?")) {
-        entry_action("delete", $(currentTarget).attr("data-target-entry"), false, true);
+        entry_action("delete", $(currentTarget).attr("data-target-entry"), true);
     }
 });
 
 
 $(".pin-entry").on("click", ({currentTarget}) => {
-    entry_action("pin", $(currentTarget).attr("data-target-entry"), "hallettik.");
+    entry_action("pin", $(currentTarget).attr("data-target-entry"));
 });
 
 const topic_action = (type, topic_id) => {
