@@ -1,12 +1,13 @@
+from django.contrib import messages as notifications
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from django.contrib import messages as django_messages
+
 from .decorators import require_ajax
 
 
-class AjaxView(UserPassesTestMixin, View):
+class JsonView(UserPassesTestMixin, View):
     login_required = False
     require_method = None  # "post" or "get" applies to WHOLE view
     request_data = None
@@ -52,7 +53,7 @@ class AjaxView(UserPassesTestMixin, View):
 
     def success(self, message_pop=False, redirect_url=False):
         if message_pop:
-            django_messages.success(self.request, self.success_message)
+            notifications.success(self.request, self.success_message)
 
         if redirect_url:
             return JsonResponse({"success": True, "message": self.success_message, "redirect_to": redirect_url},
@@ -62,7 +63,7 @@ class AjaxView(UserPassesTestMixin, View):
 
     def error(self, message_pop=False, status=500):
         if message_pop:
-            django_messages.success(self.request, self.error_message)
+            notifications.success(self.request, self.error_message)
         return JsonResponse({"success": False, "message": self.error_message}, status=status)
 
     def bad_request(self):

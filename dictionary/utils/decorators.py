@@ -13,8 +13,8 @@ def require_ajax(view):
     return _wrapped_view
 
 
-def ajax_post(func):
-    # Compatible only with utils.views.AjaxView
+def force_post(func):
+    # Compatible only with utils.views.JsonView
     def inner(self, *args, **kwargs):
         if self.method != "post":
             return HttpResponseBadRequest()
@@ -23,8 +23,8 @@ def ajax_post(func):
     return inner
 
 
-def ajax_get(func):
-    # Compatible only with utils.views.AjaxView
+def force_get(func):
+    # Compatible only with utils.views.JsonView
     def inner(self, *args, **kwargs):
         if self.method != "get":
             return HttpResponseBadRequest()

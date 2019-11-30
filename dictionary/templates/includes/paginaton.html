@@ -1,0 +1,29 @@
+{% load functions %}
+{% with paginator as page_obj  %}
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="lf_pagination {% if stretch == "yes" %}stretch{% endif %}">
+    {% if page_obj.has_previous %}
+        <a title="önceki sayfa" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
+    {% endif %}
+
+    <select id="entry_list_page">
+        {% for page in page_obj.paginator.page_range %}
+            {% if page == page_obj.number %}
+                <option selected>{{ page }}</option>
+            {% else %}
+                <option>{{ page }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    <span style="color:#444;">&nbsp;/&nbsp;</span>
+    <a class="number" title="son sayfa"
+       href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+
+    {% if page_obj.has_next %}
+        <a title="sonraki sayfa" href="?{% url_replace request 'page' page_obj.next_page_number %}"
+           style="margin-left:4px;">»</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endwith %}

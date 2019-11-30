@@ -84,43 +84,9 @@
     {% endif %}
     <hr>
 
-    {% load functions %}
 
-    {% if entries.paginator.num_pages > 1 %}
-        <header class="entry_header">
-            <div class="pagination">
-
-
-                {% if entries.has_previous %}
-                    <a href="?{% url_replace request 'page' entries.previous_page_number %}">«</a>
-                {% endif %}
-
-
-                <select id="entry_list_page">
-                    {% for page in entries.paginator.page_range %}
-                        {% if page == entries.number %}
-                            <option selected>{{ page }}</option>
-                        {% else %}
-                            <option>{{ page }}</option>
-                        {% endif %}
-
-                    {% endfor %}
-                </select>
-
-                <span style="color:#444">&nbsp;/&nbsp;</span>
-
-                <a href="?{% url_replace request 'page' entries.paginator.num_pages %}">{{ entries.paginator.num_pages }}</a>
-                {% if entries.has_next %}
-                    <a href="?{% url_replace request 'page' entries.next_page_number %}"
-                       style="margin-left:4px;">»</a>
-                {% endif %}
-            </div>
-
-        </header>
-    {% endif %}
-
-
-
+    {% include "includes/paginaton.html" with paginator=entries %}
+    <br>
 {% endblock %}
 {% block rightframe %}
 

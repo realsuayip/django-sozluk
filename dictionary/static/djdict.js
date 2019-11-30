@@ -2,12 +2,12 @@ $.ajaxSetup({
     beforeSend: function (xhr, settings) {
         function getCookie(name) {
             let cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                let cookies = document.cookie.split(';');
+            if (document.cookie && document.cookie !== '') {
+                let cookies = document.cookie.split(";");
                 for (let i = 0; i < cookies.length; i++) {
                     let cookie = jQuery.trim(cookies[i]);
                     // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
                     }
@@ -23,7 +23,7 @@ $.ajaxSetup({
     }
 });
 
-Notify = (message) => {
+const Notify = (message) => {
     let notifiction = $("#notifications");
     notifiction.html(message);
     notifiction.fadeIn();
@@ -31,113 +31,11 @@ Notify = (message) => {
 };
 
 
-$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function () {
-    localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
-    $("ul#category_view li").removeClass('active');
-    $("div#category_view_in a").removeClass('active');
-    $(this).addClass('active');
-    localStorage.setItem("active_category", $(this).attr("data-category"));
-
-});
-
-
-$("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on('click', function () {
-    leftframe_button_reset();
-    leftframe_stick($(this).attr("data-category"));
-
-});
-
-
-$(function () {
-
-    let notification = $("#notifications").attr("data-request-message");
-    if (notification) {
-        Notify(notification);
-    }
-
-
-    if (!mql.matches) {
-        // triggers only in desktop views
-        if (localStorage.getItem("active_category")) {
-            let category = localStorage.getItem("active_category");
-            const navigation_page = localStorage.getItem("navigation_page");
-            let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
-            selector.addClass("active");
-            if (selector.attr("data-category") === undefined) {
-                // DEFAULT
-                // YÜKLENİYOR.
-            } else {
-                $("#current_category_name").text(selector.attr("data-safename"));
-                if (navigation_page) {
-                    leftframe_stick(category, true, parseInt(navigation_page));
-                    $("a#show_more").addClass("dj-hidden");
-                } else {
-                    leftframe_stick(category);
-                }
-            }
-        }
-    }
-
-
-    $("#header_search").autocomplete({
-        serviceUrl: '/autocomplete/general/',
-        preserveInput: true,
-        triggerSelectOnValidInput: false,
-
-        onSelect: function (suggestion) {
-            window.location.replace("/topic/?q=" + suggestion.value);
-
-        }
-    });
-
-
-    $(".author-search").autocomplete({
-        serviceUrl: '/autocomplete/general/',
-        triggerSelectOnValidInput: false,
-        paramName: "author",
-
-        onSelect: function (suggestion) {
-            $("input.author-search").val(suggestion.value);
-        }
-
-
-    });
-
-
-    $(".send-message-trigger").on("click", ({currentTarget}) => {
-        let recipient = $(currentTarget).attr("data-recipient");
-        $("input.author-search").val(recipient);
-        $("#sendMessageModal").modal('show');
-    });
-    $("#send_message_btn").on("click", () => {
-        $.ajax({
-            type: "POST",
-            url: "/mesaj/action/gonder/",
-            data: {
-                message_body: $("textarea#message_body").val(),
-                recipient: $("input.author-search").val()
-            },
-            success: (data) => {
-                Notify(data.message);
-                if (data.success) {
-                    $("#sendMessageModal").modal('hide');
-                }
-            }
-
-        });
-
-    });
-
-});
-
 let mql = window.matchMedia('(max-width: 810px)');
 
 function desktop_view() {
-
     $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function (e) {
-
         e.preventDefault();
-
     });
 }
 
@@ -154,10 +52,9 @@ if (mql.matches) {
     desktop_view();
 }
 
-
 function screenTest(e) {
     if (e.matches) {
-        /* MOBILE switch */
+        /* mobile switch */
         mobile_view();
     } else {
 
@@ -165,7 +62,7 @@ function screenTest(e) {
     }
 }
 
-mql.addListener(screenTest);
+mql.addEventListener("change", screenTest);
 
 function leftframe_button_reset() {
     $("a#show_more").removeClass("dj-hidden");
@@ -229,16 +126,8 @@ function leftframe_stick(category = null, extended = false, page = null, reset_c
     }
 
     topic_ajax_call(api_url, parameters, extended, page);
-
 }
 
-$("#year_select").on("change", function () {
-    let selected_year = this.value;
-    localStorage.setItem("selected_year", selected_year);
-    $("a#show_more").removeClass("dj-hidden");
-    leftframe_button_reset();
-    leftframe_stick("tarihte-bugun");
-});
 
 class Paginator {
     constructor(items, items_per_page) {
@@ -338,7 +227,7 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
                 }
 
 
-                if(localStorage.getItem("active_category") === "debe"){
+                if (localStorage.getItem("active_category") === "debe") {
                     $("#show_more").addClass("dj-hidden");
                 }
 
@@ -352,6 +241,114 @@ function topic_ajax_call(api_url, parameters, extended = false, page = null) {
         },
     });
 }
+
+$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function () {
+    localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
+    $("ul#category_view li").removeClass('active');
+    $("div#category_view_in a").removeClass('active');
+    $(this).addClass('active');
+    localStorage.setItem("active_category", $(this).attr("data-category"));
+
+});
+
+$("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on('click', function () {
+    leftframe_button_reset();
+    leftframe_stick($(this).attr("data-category"));
+
+});
+
+$(function () {
+
+    let notification = $("#notifications").attr("data-request-message");
+    if (notification) {
+        Notify(notification);
+    }
+
+    if (!mql.matches) {
+        // triggers only in desktop views
+        if (localStorage.getItem("active_category")) {
+            let category = localStorage.getItem("active_category");
+            const navigation_page = localStorage.getItem("navigation_page");
+            let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
+            selector.addClass("active");
+            if (selector.attr("data-category") === undefined) {
+                // DEFAULT
+                // YÜKLENİYOR.
+            } else {
+                $("#current_category_name").text(selector.attr("data-safename"));
+                if (navigation_page) {
+                    leftframe_stick(category, true, parseInt(navigation_page));
+                    $("a#show_more").addClass("dj-hidden");
+                } else {
+                    leftframe_stick(category);
+                }
+            }
+        }
+    }
+
+
+    $("#header_search").autocomplete({
+        serviceUrl: '/autocomplete/general/',
+        preserveInput: true,
+        triggerSelectOnValidInput: false,
+
+        onSelect: function (suggestion) {
+            window.location.replace("/topic/?q=" + suggestion.value);
+
+        }
+    });
+
+
+    $(".author-search").autocomplete({
+        serviceUrl: '/autocomplete/general/',
+        triggerSelectOnValidInput: false,
+        paramName: "author",
+
+        onSelect: function (suggestion) {
+            $("input.author-search").val(suggestion.value);
+        }
+
+
+    });
+
+
+    $(".send-message-trigger").on("click", ({currentTarget}) => {
+        let recipient = $(currentTarget).attr("data-recipient");
+        $("input.author-search").val(recipient);
+        $("#sendMessageModal").modal('show');
+    });
+
+    $("#send_message_btn").on("click", () => {
+        $.ajax({
+            type: "POST",
+            url: "/mesaj/action/gonder/",
+            data: {
+                message_body: $("textarea#message_body").val(),
+                recipient: $("input.author-search").val()
+            },
+            success: (data) => {
+                Notify(data.message);
+                if (data.success) {
+                    $("#sendMessageModal").modal('hide');
+                }
+            }
+
+        });
+
+    });
+
+});
+
+
+
+$("#year_select").on("change", function () {
+    let selected_year = this.value;
+    localStorage.setItem("selected_year", selected_year);
+    $("a#show_more").removeClass("dj-hidden");
+    leftframe_button_reset();
+    leftframe_stick("tarihte-bugun");
+});
+
 
 $("select#left_frame_paginator").on("change", function () {
     leftframe_stick(localStorage.getItem("active_category"), true, this.value);

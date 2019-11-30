@@ -29,6 +29,9 @@
 
             {% endfor %}
         </ul>
+
+
+        {% include "includes/paginaton.html" with paginator=page_obj %}
     {% else %}
         <small>yok ki</small>
     {% endif %}

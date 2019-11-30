@@ -179,7 +179,6 @@ class TopicListManager:
 
     @property
     def get_cached_data(self):
-        print(59)
         if self.slug in ["debe", "tarihte-bugun", "bugun"]:  # exclusively cached
             return cache.get(self.valid_cache_key).get("data")
         return cache.get(self.valid_cache_key)
