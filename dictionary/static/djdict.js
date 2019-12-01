@@ -1,782 +1,714 @@
 $.ajaxSetup({
-    beforeSend: function (xhr, settings) {
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                let cookies = document.cookie.split(";");
-                for (let i = 0; i < cookies.length; i++) {
-                    let cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+  beforeSend (xhr, settings) {
+    const getCookie = function (name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        let cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          let cookie = jQuery.trim(cookies[i]);
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + "=")) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
         }
+      }
+      return cookieValue;
+    };
 
-        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-            // Only send the token to relative URLs i.e. locally.
-            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
+    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+      // Only send the token to relative URLs i.e. locally.
+      xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
     }
+  }
 });
 
-const Notify = (message) => {
-    let notifiction = $("#notifications");
-    notifiction.html(message);
-    notifiction.fadeIn();
-    $(notifiction).delay(1600).fadeOut();
+const notify = message => {
+  let notifiction = $("#notifications");
+  notifiction.html(message);
+  notifiction.fadeIn();
+  $(notifiction).delay(1600).fadeOut();
 };
 
+let mql = window.matchMedia("(max-width: 810px)");
 
-let mql = window.matchMedia('(max-width: 810px)');
+const desktopView = function () {
+  $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
+    e.preventDefault();
+  });
+};
 
-function desktop_view() {
-    $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function (e) {
-        e.preventDefault();
-    });
-}
-
-function mobile_view() {
-    $("ul#category_view a, div#category_view_in a").on('click', function () {
-        window.location = this.href;
-    });
-}
+const mobileView = function () {
+  $("ul#category_view a, div#category_view_in a").on("click", function () {
+    window.location = this.href;
+  });
+};
 
 if (mql.matches) {
-    mobile_view();
-
+  mobileView();
 } else {
-    desktop_view();
+  desktopView();
 }
 
-function screenTest(e) {
-    if (e.matches) {
-        /* mobile switch */
-        mobile_view();
-    } else {
-
-        desktop_view();
-    }
-}
+const screenTest = function (e) {
+  if (e.matches) {
+    /* mobile switch */
+    mobileView();
+  } else {
+    desktopView();
+  }
+};
 
 mql.addEventListener("change", screenTest);
 
-function leftframe_button_reset() {
-    $("a#show_more").removeClass("dj-hidden");
-    $("#lf_pagination_wrapper").addClass("dj-hidden");
-    localStorage.removeItem("navigation_page");
-}
-
-function leftframe_stick(category = null, extended = false, page = null, reset_cache = false) {
-    // category -> cateogry slug to call topics
-    // extended -> retrieve full data (required for paginated data)
-    // page -> which page to call, use with extended true
-    // reset_cache -> whether to use cached data while calling
-
-    // leftframe behaviour on link clicks on desktop.
-    let year_select = $("#year_select");
-    year_select.css("display", "none");
-    year_select.html("");
-
-
-    if (category == null) {
-        console.log("something happened.");
-    }
-
-
-    let api_url = `/category/${category}/`;
-    let parameters = "";
-
-    // add parameters for specific slugs
-
-    if (category === "bugun") {
-        parameters = "?day=today";
-    }
-
-    if (category === "caylaklar") {
-        parameters = "?a=caylaklar";
-    }
-
-
-    if (category === "tarihte-bugun") {
-        year_select.css("display", "block");
-        let years = ["2019", "2018", "2017"];
-        for (let year of years) {
-            $("#year_select").append(`<option id="${year}">${year}</option>`);
-        }
-
-        let selected_year = null;
-
-        if (localStorage.getItem("selected_year")) {
-            selected_year = localStorage.getItem("selected_year");
-        } else {
-            selected_year = years[Math.floor(Math.random() * years.length)];
-            localStorage.setItem("selected_year", selected_year);
-        }
-
-
-        year_select.val(selected_year);
-        parameters = `?year=${selected_year}`;
-    }
-    if (parameters && reset_cache) {
-        parameters += "&nocache=yes";
-    }
-
-    topic_ajax_call(api_url, parameters, extended, page);
-}
-
-
 class Paginator {
-    constructor(items, items_per_page) {
-        this.items = items;
-        this.items_per_page = items_per_page;
-        this.total_pages = Math.ceil(items.length / items_per_page);
+  constructor (items, itemsPerPage) {
+    this.items = items;
+    this.items_per_page = itemsPerPage;
+    this.total_pages = Math.ceil(items.length / itemsPerPage);
+  }
 
+  getPage (page) {
+    --page;
+    return this.items.slice(page * this.items_per_page, (page + 1) * this.items_per_page);
+  }
+
+  get range () {
+    let range = [];
+    for (let i = 1; i <= this.total_pages; i++) {
+      range.push(i);
     }
+    return range;
+  }
+}
 
-    get_page(page) {
-        --page;
-        return this.items.slice(page * this.items_per_page, (page + 1) * this.items_per_page);
+const topicListCall = function (apiUrl, parameters, extended = false, page = null) {
+  $("#load_indicator").css("display", "inline-block");
+  // extended=true calls ALL of the corresponding topics
+  let topicList = $("ul#topic-list");
+  // if extended == true then set extended parameter, if other parameters exist convert ? to &
+  let parameterIsExtended = extended ? `${parameters ? "&" : "?"}extended=yes` : "";
+  $.ajax({
+    type: "GET",
+    url: apiUrl + parameters + parameterIsExtended,
+    success (data) {
+      $("#current_category_name").html(localStorage.getItem("active_category_safe"));
+      $("#load_indicator").css("display", "none");
 
-    }
-
-    get range() {
-        let range = [];
-        for (let i = 1; i <= this.total_pages; i++) {
-            range.push(i);
+      if (data["topic_data"].length === 0) {
+        topicList.html("<small>yok ki</small>");
+        $("a#show_more").addClass("dj-hidden");
+      } else {
+        if (data["refresh_count"]) {
+          $("#refresh_bugun").removeClass("dj-hidden");
+          $("span#new_content_count").text(`(${data["refresh_count"]})`);
+        } else {
+          $("#refresh_bugun").addClass("dj-hidden");
         }
-        return range;
+
+        if (extended) {
+          if (!page) {
+            page = 1;
+            $("#show_more").addClass("dj-hidden");
+          }
+        }
+        const slugIdentifier = data["slug_identifier"];
+        if (page) {
+          const paginator = new Paginator(data["topic_data"], 2);
+
+          if (page > paginator.total_pages) {
+            notify("yok hiç bişi kalmamış");
+          } else {
+            topicList.empty();
+            localStorage.setItem("navigation_page", page);
+            const leftFrameSelect = $("select#left_frame_paginator");
+            leftFrameSelect.empty();
+            for (const element of paginator.range) {
+              leftFrameSelect.append($("<option>", {
+                value: element,
+                text: element
+              }
+              ));
+            }
+            leftFrameSelect.val(page);
+            $("#lf_total_pages").html(paginator.total_pages);
+            data = paginator.getPage(page);
+            $("#lf_pagination_wrapper").removeClass("dj-hidden");
+          }
+        } else {
+          topicList.empty();
+          data = data["topic_data"];
+        }
+        // default behaviour (no page number is  supplied)
+
+        for (let i = 0; i < data.length; i++) {
+          let topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
+          topicList.append(topicItem);
+        }
+
+        if (localStorage.getItem("active_category") === "debe") {
+          $("#show_more").addClass("dj-hidden");
+        }
+      }
+    },
+    error (error) {
+      notify("bir şeyler yanlış gitti");
+      $("#load_indicator").css("display", "none");
+      console.log(error);
+    }
+  });
+};
+
+const leftFrameReset = function () {
+  $("a#show_more").removeClass("dj-hidden");
+  $("#lf_pagination_wrapper").addClass("dj-hidden");
+  localStorage.removeItem("navigation_page");
+};
+
+const leftFramePopulate = function (category = null, extended = false, page = null, resetCache = false) {
+  // category -> cateogry slug to call topics
+  // extended -> retrieve full data (required for paginated data)
+  // page -> which page to call, use with extended true
+  // reset_cache -> whether to use cached data while calling
+
+  // leftframe behaviour on link clicks on desktop.
+  let yearSelect = $("#year_select");
+  yearSelect.css("display", "none");
+  yearSelect.html("");
+
+  if (category == null) {
+    console.log("something happened.");
+  }
+
+  let apiUrl = `/category/${category}/`;
+  let parameters = "";
+
+  // add parameters for specific slugs
+
+  if (category === "bugun") {
+    parameters = "?day=today";
+  }
+
+  if (category === "caylaklar") {
+    parameters = "?a=caylaklar";
+  }
+
+  if (category === "tarihte-bugun") {
+    yearSelect.css("display", "block");
+    let years = ["2019", "2018", "2017"];
+    for (let year of years) {
+      yearSelect.append(`<option id="${year}">${year}</option>`);
     }
 
-}
+    let selectedYear = null;
 
-function topic_ajax_call(api_url, parameters, extended = false, page = null) {
-    $("#load_indicator").css("display", "inline-block");
-    // extended=true calls ALL of the corresponding topics
-    let topic_list = $("ul#topic-list");
-    // if extended == true then set extended parameter, if other parameters exist convert ? to &
-    let ext_parameter = extended ? `${parameters ? "&" : "?"}extended=yes` : "";
-    $.ajax({
-        type: "GET",
-        url: api_url + parameters + ext_parameter,
-        success: function (data) {
-            $("#current_category_name").html(localStorage.getItem("active_category_safe"));
-            $("#load_indicator").css("display", "none");
+    if (localStorage.getItem("selected_year")) {
+      selectedYear = localStorage.getItem("selected_year");
+    } else {
+      selectedYear = years[Math.floor(Math.random() * years.length)];
+      localStorage.setItem("selected_year", selectedYear);
+    }
 
-            if (data["topic_data"].length === 0) {
+    yearSelect.val(selectedYear);
+    parameters = `?year=${selectedYear}`;
+  }
+  if (parameters && resetCache) {
+    parameters += "&nocache=yes";
+  }
 
-                topic_list.html("<small>yok ki</small>");
-                $("a#show_more").addClass("dj-hidden");
+  topicListCall(apiUrl, parameters, extended, page);
+};
 
-            } else {
-
-                if (data["refresh_count"]) {
-                    $("#refresh_bugun").removeClass("dj-hidden");
-                    $("span#new_content_count").text(`(${data["refresh_count"]})`);
-                } else {
-                    $("#refresh_bugun").addClass("dj-hidden");
-                }
-
-                if (extended) {
-                    if (!page) {
-                        page = 1;
-                        $("#show_more").addClass("dj-hidden");
-                    }
-                }
-                const slug_identifier = data['slug_identifier'];
-                if (page) {
-
-
-                    const paginator = new Paginator(data['topic_data'], 2);
-
-                    if (page > paginator.total_pages) {
-                        Notify("yok hiç bişi kalmamış");
-                    } else {
-                        topic_list.empty();
-                        localStorage.setItem("navigation_page", page);
-                        const left_frame_select = $("select#left_frame_paginator");
-                        left_frame_select.empty();
-                        for (const element of paginator.range) {
-                            left_frame_select.append($('<option>', {
-                                    value: element,
-                                    text: element
-                                }
-                            ));
-                        }
-                        left_frame_select.val(page);
-                        $("#lf_total_pages").html(paginator.total_pages);
-                        data = paginator.get_page(page);
-                        $("#lf_pagination_wrapper").removeClass("dj-hidden");
-                    }
-
-                } else {
-                    topic_list.empty();
-                    data = data['topic_data'];
-
-                }
-                // default behaviour (no page number is  supplied)
-
-
-                for (let i = 0; i < data.length; i++) {
-                    let topic_template = `<li class="list-group-item"><a href="${slug_identifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ''}</small></a></li>`;
-                    topic_list.append(topic_template);
-
-                }
-
-
-                if (localStorage.getItem("active_category") === "debe") {
-                    $("#show_more").addClass("dj-hidden");
-                }
-
-            }
-
-        },
-        error: function (error) {
-            Notify("bir şeyler yanlış gitti");
-            $("#load_indicator").css("display", "none");
-            console.log(error);
-        },
-    });
-}
-
-$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on('click', function () {
-    localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
-    $("ul#category_view li").removeClass('active');
-    $("div#category_view_in a").removeClass('active');
-    $(this).addClass('active');
-    localStorage.setItem("active_category", $(this).attr("data-category"));
-
+$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function () {
+  localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
+  $("ul#category_view li").removeClass("active");
+  $("div#category_view_in a").removeClass("active");
+  $(this).addClass("active");
+  localStorage.setItem("active_category", $(this).attr("data-category"));
 });
 
-$("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on('click', function () {
-    leftframe_button_reset();
-    leftframe_stick($(this).attr("data-category"));
-
+$("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on("click", function () {
+  leftFrameReset();
+  leftFramePopulate($(this).attr("data-category"));
 });
 
 $(function () {
+  let notification = $("#notifications").attr("data-request-message");
+  if (notification) {
+    notify(notification);
+  }
 
-    let notification = $("#notifications").attr("data-request-message");
-    if (notification) {
-        Notify(notification);
+  if (!mql.matches) {
+    // triggers only in desktop views
+    if (localStorage.getItem("active_category")) {
+      let category = localStorage.getItem("active_category");
+      const navigationPage = localStorage.getItem("navigation_page");
+      let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
+      selector.addClass("active");
+      if (!selector.attr("data-category")) {
+        // DEFAULT
+        // YÜKLENİYOR.
+      } else {
+        $("#current_category_name").text(selector.attr("data-safename"));
+        if (navigationPage) {
+          leftFramePopulate(category, true, parseInt(navigationPage));
+          $("a#show_more").addClass("dj-hidden");
+        } else {
+          leftFramePopulate(category);
+        }
+      }
+    }
+  }
+
+  $("#header_search").autocomplete({
+    serviceUrl: "/autocomplete/general/",
+    preserveInput: true,
+    triggerSelectOnValidInput: false,
+
+    onSelect (suggestion) {
+      window.location.replace("/topic/?q=" + suggestion.value);
+    }
+  });
+
+  $(".author-search").autocomplete({
+    serviceUrl: "/autocomplete/general/",
+    triggerSelectOnValidInput: false,
+    paramName: "author",
+
+    onSelect (suggestion) {
+      $("input.author-search").val(suggestion.value);
     }
 
-    if (!mql.matches) {
-        // triggers only in desktop views
-        if (localStorage.getItem("active_category")) {
-            let category = localStorage.getItem("active_category");
-            const navigation_page = localStorage.getItem("navigation_page");
-            let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
-            selector.addClass("active");
-            if (selector.attr("data-category") === undefined) {
-                // DEFAULT
-                // YÜKLENİYOR.
-            } else {
-                $("#current_category_name").text(selector.attr("data-safename"));
-                if (navigation_page) {
-                    leftframe_stick(category, true, parseInt(navigation_page));
-                    $("a#show_more").addClass("dj-hidden");
-                } else {
-                    leftframe_stick(category);
-                }
-            }
+  });
+
+  $(".send-message-trigger").on("click", function () {
+    let recipient = $(this).attr("data-recipient");
+    $("input.author-search").val(recipient);
+    $("#sendMessageModal").modal("show");
+  });
+
+  $("#send_message_btn").on("click", () => {
+    $.ajax({
+      type: "POST",
+      url: "/mesaj/action/gonder/",
+      data: {
+        message_body: $("textarea#message_body").val(),
+        recipient: $("input.author-search").val()
+      },
+      success: data => {
+        notify(data.message);
+        if (data.success) {
+          $("#sendMessageModal").modal("hide");
         }
-    }
-
-
-    $("#header_search").autocomplete({
-        serviceUrl: '/autocomplete/general/',
-        preserveInput: true,
-        triggerSelectOnValidInput: false,
-
-        onSelect: function (suggestion) {
-            window.location.replace("/topic/?q=" + suggestion.value);
-
-        }
-    });
-
-
-    $(".author-search").autocomplete({
-        serviceUrl: '/autocomplete/general/',
-        triggerSelectOnValidInput: false,
-        paramName: "author",
-
-        onSelect: function (suggestion) {
-            $("input.author-search").val(suggestion.value);
-        }
-
+      }
 
     });
-
-
-    $(".send-message-trigger").on("click", ({currentTarget}) => {
-        let recipient = $(currentTarget).attr("data-recipient");
-        $("input.author-search").val(recipient);
-        $("#sendMessageModal").modal('show');
-    });
-
-    $("#send_message_btn").on("click", () => {
-        $.ajax({
-            type: "POST",
-            url: "/mesaj/action/gonder/",
-            data: {
-                message_body: $("textarea#message_body").val(),
-                recipient: $("input.author-search").val()
-            },
-            success: (data) => {
-                Notify(data.message);
-                if (data.success) {
-                    $("#sendMessageModal").modal('hide');
-                }
-            }
-
-        });
-
-    });
-
+  });
 });
-
-
 
 $("#year_select").on("change", function () {
-    let selected_year = this.value;
-    localStorage.setItem("selected_year", selected_year);
-    $("a#show_more").removeClass("dj-hidden");
-    leftframe_button_reset();
-    leftframe_stick("tarihte-bugun");
+  let selectedYear = this.value;
+  localStorage.setItem("selected_year", selectedYear);
+  $("a#show_more").removeClass("dj-hidden");
+  leftFrameReset();
+  leftFramePopulate("tarihte-bugun");
 });
 
-
 $("select#left_frame_paginator").on("change", function () {
-    leftframe_stick(localStorage.getItem("active_category"), true, this.value);
+  leftFramePopulate(localStorage.getItem("active_category"), true, this.value);
 });
 
 $("#lf_total_pages").on("click", function () {
-    $("select#left_frame_paginator").val($(this).html()).trigger("change");
-
+  $("select#left_frame_paginator").val($(this).html()).trigger("change");
 });
 
 $("#lf_navigate_before").on("click", function () {
-    const selected = parseInt($("select#left_frame_paginator").val());
-    if (selected - 1 > 0) {
-        $("select#left_frame_paginator").val(selected - 1).trigger("change");
-    }
-});
-$("#lf_navigate_after").on("click", function () {
-    const selected = parseInt($("select#left_frame_paginator").val());
-    const max = parseInt($("#lf_total_pages").html());
-    if (selected + 1 <= max) {
-        $("select#left_frame_paginator").val(selected + 1).trigger("change");
-    }
+  const lfSelect = $("select#left_frame_paginator");
+  const selected = parseInt(lfSelect.val());
+  if (selected - 1 > 0) {
+    lfSelect.val(selected - 1).trigger("change");
+  }
 });
 
+$("#lf_navigate_after").on("click", function () {
+  const lfSelect = $("select#left_frame_paginator");
+  const selected = parseInt(lfSelect.val());
+  const max = parseInt($("#lf_total_pages").html());
+  if (selected + 1 <= max) {
+    lfSelect.val(selected + 1).trigger("change");
+  }
+});
 
 $("a#show_more").on("click", function () {
-    leftframe_stick(localStorage.getItem("active_category"), true, 2);
-    $(this).addClass("dj-hidden");
+  leftFramePopulate(localStorage.getItem("active_category"), true, 2);
+  $(this).addClass("dj-hidden");
 });
 
-
 // https://stackoverflow.com/questions/5999118/how-can-i-add-or-update-a-query-string-parameter
-function updateQueryStringParameter(uri, key, value) {
-    let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-    let separator = uri.indexOf('?') !== -1 ? "&" : "?";
-    if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + "=" + value + '$2');
-    } else {
-        return uri + separator + key + "=" + value;
-    }
-}
-
+const updateQueryStringParameter = function (uri, key, value) {
+  let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+  let separator = uri.indexOf("?") !== -1 ? "&" : "?";
+  if (uri.match(re)) {
+    return uri.replace(re, "$1" + key + "=" + value + "$2");
+  } else {
+    return uri + separator + key + "=" + value;
+  }
+};
 
 $("select#entry_list_page").on("change", function () {
-    window.location = updateQueryStringParameter(location.href, "page", this.value);
+  window.location = updateQueryStringParameter(location.href, "page", this.value);
 });
 
 jQuery.fn.extend({
-    insertAtCaret: function (myValue) {
-        return this.each(function (i) {
-            if (document.selection) {
-                // Internet Explorer
-                this.focus();
-                var sel = document.selection.createRange();
-                sel.text = myValue;
-                this.focus();
-            } else if (this.selectionStart || this.selectionStart === '0') {
-                //For browsers like Firefox and Webkit based
-                let startPos = this.selectionStart;
-                let endPos = this.selectionEnd;
-                let scrollTop = this.scrollTop;
-                this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
-                this.focus();
-                this.selectionStart = startPos + myValue.length;
-                this.selectionEnd = startPos + myValue.length;
-                this.scrollTop = scrollTop;
-            } else {
-                this.value += myValue;
-                this.focus();
-            }
-        });
-    },
-    toggleText: function (a, b) {
-        return this.text(this.text() === b ? a : b);
-    }
-
+  insertAtCaret (myValue) {
+    return this.each(function (i) {
+      if (document.selection) {
+        // Internet Explorer
+        this.focus();
+        let sel = document.selection.createRange();
+        sel.text = myValue;
+        this.focus();
+      } else if (this.selectionStart || this.selectionStart === "0") {
+        // For browsers like Firefox and Webkit based
+        let startPos = this.selectionStart;
+        let endPos = this.selectionEnd;
+        let scrollTop = this.scrollTop;
+        this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
+        this.focus();
+        this.selectionStart = startPos + myValue.length;
+        this.selectionEnd = startPos + myValue.length;
+        this.scrollTop = scrollTop;
+      } else {
+        this.value += myValue;
+        this.focus();
+      }
+    });
+  },
+  toggleText (a, b) {
+    return this.text(this.text() === b ? a : b);
+  }
 
 });
 
-
-const replace_text = (element_id, replacement_type) => {
-    let txtarea = document.getElementById(element_id);
-    let start = txtarea.selectionStart;
-    let finish = txtarea.selectionEnd;
-    let allText = txtarea.value;
-    let sel = allText.substring(start, finish);
-    if (!sel) {
-        return false;
-    } else {
-        if (replacement_type === "bkz") {
-            txtarea.value = allText.substring(0, start) + `(bkz: ${sel})` + allText.substring(finish, allText.length);
-        } else if (replacement_type === "hede") {
-            txtarea.value = allText.substring(0, start) + `\`${sel}\`` + allText.substring(finish, allText.length);
-        } else if (replacement_type === "swh") {
-            txtarea.value = allText.substring(0, start) + `\`:${sel}\`` + allText.substring(finish, allText.length);
-        } else if (replacement_type === "spoiler") {
-            txtarea.value = allText.substring(0, start) + `--\`spoiler\`--\n${sel}\n--\`spoiler\`--` + allText.substring(finish, allText.length);
-        } else if (replacement_type === "link") {
-            let link_text = prompt("hangi adrese gidecek?", "http://");
-            if (link_text !== "http://") {
-                txtarea.value = allText.substring(0, start) + `[${link_text} ${sel}]` + allText.substring(finish, allText.length);
-            }
-        }
-        return true;
+const replaceText = (elementId, replacementType) => {
+  let txtarea = document.getElementById(elementId);
+  let start = txtarea.selectionStart;
+  let finish = txtarea.selectionEnd;
+  let allText = txtarea.value;
+  let sel = allText.substring(start, finish);
+  if (!sel) {
+    return false;
+  } else {
+    if (replacementType === "bkz") {
+      txtarea.value = allText.substring(0, start) + `(bkz: ${sel})` + allText.substring(finish, allText.length);
+    } else if (replacementType === "hede") {
+      txtarea.value = allText.substring(0, start) + `\`${sel}\`` + allText.substring(finish, allText.length);
+    } else if (replacementType === "swh") {
+      txtarea.value = allText.substring(0, start) + `\`:${sel}\`` + allText.substring(finish, allText.length);
+    } else if (replacementType === "spoiler") {
+      txtarea.value = allText.substring(0, start) + `--\`spoiler\`--\n${sel}\n--\`spoiler\`--` + allText.substring(finish, allText.length);
+    } else if (replacementType === "link") {
+      let linkText = prompt("hangi adrese gidecek?", "http://");
+      if (linkText !== "http://") {
+        txtarea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length);
+      }
     }
+    return true;
+  }
 };
 
-
-$("button#insert_bkz").on('click', function () {
-    if (!replace_text("user_content_edit", "bkz")) {
-        let bkz_text = prompt("bkz verilecek başlık");
-        if (bkz_text) {
-            $("textarea#user_content_edit").insertAtCaret(`(bkz: ${bkz_text})`);
-        }
+$("button#insert_bkz").on("click", function () {
+  if (!replaceText("user_content_edit", "bkz")) {
+    let bkzText = prompt("bkz verilecek başlık");
+    if (bkzText) {
+      $("textarea#user_content_edit").insertAtCaret(`(bkz: ${bkzText})`);
     }
+  }
 });
 
-
-$("button#insert_hede").on('click', function () {
-    if (!replace_text("user_content_edit", "hede")) {
-        let hede_text = prompt("hangi başlık için link oluşturulacak?");
-        if (hede_text) {
-            $("textarea#user_content_edit").insertAtCaret(`\`${hede_text}\``);
-        }
+$("button#insert_hede").on("click", function () {
+  if (!replaceText("user_content_edit", "hede")) {
+    let hedeText = prompt("hangi başlık için link oluşturulacak?");
+    if (hedeText) {
+      $("textarea#user_content_edit").insertAtCaret(`\`${hedeText}\``);
     }
+  }
 });
 
-$("button#insert_swh").on('click', function () {
-    if (!replace_text("user_content_edit", "swh")) {
-        let swh_text = prompt("yıldız içinde ne görünecek?");
-        if (swh_text) {
-            $("textarea#user_content_edit").insertAtCaret(`\`:${swh_text}\``);
-        }
+$("button#insert_swh").on("click", function () {
+  if (!replaceText("user_content_edit", "swh")) {
+    let swhText = prompt("yıldız içinde ne görünecek?");
+    if (swhText) {
+      $("textarea#user_content_edit").insertAtCaret(`\`:${swhText}\``);
     }
+  }
 });
 
-$("button#insert_spoiler").on('click', function () {
-    if (!replace_text("user_content_edit", "spoiler")) {
-        let spoiler_text = prompt("spoiler arasına ne yazılacak?");
-        if (spoiler_text) {
-            $("textarea#user_content_edit").insertAtCaret(`--\`spoiler\`--\n${spoiler_text}\n--\`spoiler\`--`);
-        }
-
+$("button#insert_spoiler").on("click", function () {
+  if (!replaceText("user_content_edit", "spoiler")) {
+    let spoilerText = prompt("spoiler arasına ne yazılacak?");
+    if (spoilerText) {
+      $("textarea#user_content_edit").insertAtCaret(`--\`spoiler\`--\n${spoilerText}\n--\`spoiler\`--`);
     }
+  }
 });
 
-$("button#insert_link").on('click', function () {
-    if (!replace_text("user_content_edit", "link")) {
-        let link_text = prompt("hangi adrese gidecek?", "http://");
-        if (link_text !== "http://") {
-            let link_name = prompt(" verilecek linkin adı ne olacak?");
-            if (link_name) {
-                $("textarea#user_content_edit").insertAtCaret(`[${link_text} ${link_name}]`);
-            }
-        }
+$("button#insert_link").on("click", function () {
+  if (!replaceText("user_content_edit", "link")) {
+    let linkText = prompt("hangi adrese gidecek?", "http://");
+    if (linkText !== "http://") {
+      let linkName = prompt(" verilecek linkin adı ne olacak?");
+      if (linkName) {
+        $("textarea#user_content_edit").insertAtCaret(`[${linkText} ${linkName}]`);
+      }
     }
+  }
 });
-
 
 $(".favorite-entry-btn").on("click", function () {
-    let self = this;
-    let entry_id = $(self).closest("#rate").attr("data-entry-id");
-    $.ajax({
-        url: '/entry/action/',
-        type: 'POST',
-        data: {
-            "type": "favorite",
-            "entry_id": entry_id,
-        },
-        success: function (data) {
-            $(self).next().html(data['count']);
-            console.log(data);
-            if (data['count'] === 0 || data['count'] === 1 && data['status'] === 1) {
-                $(self).next().toggleClass('dj-hidden');
-            }
-            $(self).toggleClass("fav-inverted");
-        }
-    });
-});
-
-
-$(document).on('click', 'div.entry_info div.rate .dropdown-menu', e => {
-    e.stopPropagation();
-});
-
-
-$(".dropdown-fav-count").on('click', ({currentTarget}) => {
-    let self = currentTarget;
-    let favorites_list = $(self).next();
-    $.ajax({
-        url: '/entry/action/',
-        type: 'GET',
-        data: {
-            "type": "favorite_list",
-            "entry_id": $(self).closest("#rate").attr("data-entry-id"),
-        },
-        success: data => {
-            favorites_list.html("");
-            if (data['users'][0].length > 0) {
-                for (let author of data['users'][0]) {
-                    favorites_list.append(`<a class="author-name" href="/biri/${author}/">@${author}</a>`);
-                }
-            }
-
-            if (data['users'][1].length > 0) {
-                favorites_list.append(`<a id="show_novice_button" href="#">...${data['users'][1].length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
-                $("a#show_novice_button").on('click', () => {
-                    $("#favorites_list_novices").toggleClass("dj-hidden");
-                });
-                for (let novice of data['users'][1]) {
-                    $("#favorites_list_novices").append(`<a class="author-name novice" href="/biri/${novice}/">@${novice}</a>`);
-                }
-            }
-
-        }
-    });
-
-});
-
-
-$("a#message_history_show").on('click', ({currentTarget}) => {
-    $("ul#message_list li.bubble").css('display', 'list-item');
-    $(currentTarget).toggle();
-});
-
-
-function entry_rate(entry_id, vote, anon_action = -1,) {
-    $.ajax({
-        url: '/entry/vote/',
-        type: 'POST',
-        data: {
-            "entry_id": entry_id,
-            "vote": vote,
-            "anon_action": anon_action,
-        },
-
-        success: data => {
-            console.log(data);
-        },
-
-        error: err => {
-            console.log(err);
-        },
-
-
-    });
-}
-
-
-$("#rate a#upvote").on("click", ({currentTarget}) => {
-    let entry_id = $(currentTarget).closest("#rate").attr("data-entry-id");
-    entry_rate(entry_id, "up");
-    $(currentTarget).siblings("a#downvote").removeClass("active");
-    $(currentTarget).toggleClass("active");
-
-});
-
-$("#rate a#downvote").on("click", ({currentTarget}) => {
-    let entry_id = $(currentTarget).closest("#rate").attr("data-entry-id");
-    entry_rate(entry_id, "down");
-    $(currentTarget).siblings("a#upvote").removeClass("active");
-    $(currentTarget).toggleClass("active");
-});
-
-
-const user_action = (type, recipient_username) => {
-    $.ajax({
-        url: '/user/action/',
-        type: 'POST',
-        data: {
-            "type": type,
-            "recipient_username": recipient_username,
-        },
-        success: (data) => {
-            if (data["redirect_to"]) {
-                window.location.replace(data["redirect_to"]);
-            }
-        },
-        error: (data) => {
-            Notify(data["message"]);
-        }
-
-    });
-
-};
-
-
-const block_user = (username) => {
-    user_action("block", username);
-};
-
-$(".block-user-trigger").on("click", ({currentTarget}) => {
-    let username = $(currentTarget).attr("data-username")
-    $("#block_user").attr("data-username", username);
-    $("#username-holder").text(username);
-    $("#blockUserModal").modal('show');
-});
-
-$("#block_user").on("click", ({currentTarget}) => {
-    let target_user = $(currentTarget).attr("data-username");
-    block_user(target_user);
-    $("#blockUserModal").modal('hide');
-});
-
-$(".unblock-user-trigger").on("click", ({currentTarget}) => {
-    if (confirm("engel kalksın mı?")) {
-        block_user($(currentTarget).attr("data-username"));
-        $(currentTarget).hide();
+  let self = this;
+  let entryId = $(self).closest("#rate").attr("data-entry-id");
+  $.ajax({
+    url: "/entry/action/",
+    type: "POST",
+    data: {
+      "type": "favorite",
+      "entry_id": entryId
+    },
+    success (data) {
+      $(self).next().html(data["count"]);
+      console.log(data);
+      if (data["count"] === 0 || data["count"] === 1 && data["status"] === 1) {
+        $(self).next().toggleClass("dj-hidden");
+      }
+      $(self).toggleClass("fav-inverted");
     }
+  });
 });
 
-$("#follow_user").on("click", ({currentTarget}) => {
-    let target_user = $(currentTarget).parent().attr("data-username");
-    user_action("follow", target_user);
-    $(currentTarget).children("a").toggleText('takip et', 'takip etme');
+$(document).on("click", "div.entry_info div.rate .dropdown-menu", e => {
+  e.stopPropagation();
 });
 
-
-const entry_action = (type, entry_id, redirect = false) => {
-    $.ajax({
-        url: '/entry/action/',
-        type: 'POST',
-        data: {
-            "type": type,
-            "entry_id": entry_id,
-            "redirect": redirect,
-
-        },
-        success: (data) => {
-            console.log(data);
-            if (data['message']) {
-                Notify(data['message']);
-            }
-
-            if (redirect) {
-                window.location.replace(data['redirect_to']);
-            }
-
-            return data;
-        },
-        error: (err) => {
-            console.log(err);
+$(".dropdown-fav-count").on("click", function () {
+  let self = this;
+  let favoritesList = $(self).next();
+  $.ajax({
+    url: "/entry/action/",
+    type: "GET",
+    data: {
+      "type": "favorite_list",
+      "entry_id": $(self).closest("#rate").attr("data-entry-id")
+    },
+    success: data => {
+      favoritesList.html("");
+      if (data["users"][0].length > 0) {
+        for (let author of data["users"][0]) {
+          favoritesList.append(`<a class="author-name" href="/biri/${author}/">@${author}</a>`);
         }
-    });
-};
+      }
 
+      if (data["users"][1].length > 0) {
+        favoritesList.append(`<a id="show_novice_button" href="#">...${data["users"][1].length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+        $("a#show_novice_button").on("click", () => {
+          $("#favorites_list_novices").toggleClass("dj-hidden");
+        });
+        for (let novice of data["users"][1]) {
+          $("#favorites_list_novices").append(`<a class="author-name novice" href="/biri/${novice}/">@${novice}</a>`);
+        }
+      }
+    }
+  });
+});
 
-$(".delete-entry").on("click", ({currentTarget}) => {
-    if (confirm("harbiden silinsin mi?")) {
-        entry_action("delete", $(currentTarget).attr("data-target-entry"));
-        $(currentTarget).closest(".entry-full").css("display", "none");
+$("a#message_history_show").on("click", function () {
+  $("ul#message_list li.bubble").css("display", "list-item");
+  $(this).toggle();
+});
+
+const entryRate = function (entryId, vote, anonAction = -1) {
+  $.ajax({
+    url: "/entry/vote/",
+    type: "POST",
+    data: {
+      "entry_id": entryId,
+      vote,
+      "anon_action": anonAction
+    },
+
+    success: data => {
+      console.log(data);
+    },
+
+    error: err => {
+      console.log(err);
     }
 
-});
-
-
-$(".delete-entry-redirect").on("click", ({currentTarget}) => {
-    if (confirm("harbiden silinsin mi?")) {
-        entry_action("delete", $(currentTarget).attr("data-target-entry"), true);
-    }
-});
-
-
-$(".pin-entry").on("click", ({currentTarget}) => {
-    entry_action("pin", $(currentTarget).attr("data-target-entry"));
-});
-
-const topic_action = (type, topic_id) => {
-    $.ajax({
-        url: '/t/action/',
-        type: 'POST',
-        data: {
-            "type": type,
-            "topic_id": topic_id,
-        },
-        success: (data) => {
-            console.log(data);
-
-        },
-        error: (err) => {
-            console.log(err);
-        }
-    });
+  });
 };
 
-$(".follow-topic-trigger").on("click", ({currentTarget}) => {
-    $(currentTarget).toggleText('takip etme', 'takip et');
-    topic_action("follow", $(currentTarget).attr("data-topic-id"));
-
-
+$("#rate a#upvote").on("click", function () {
+  let entryId = $(this).closest("#rate").attr("data-entry-id");
+  entryRate(entryId, "up");
+  $(this).siblings("a#downvote").removeClass("active");
+  $(this).toggleClass("active");
 });
 
+$("#rate a#downvote").on("click", function () {
+  let entryId = $(this).closest("#rate").attr("data-entry-id");
+  entryRate(entryId, "down");
+  $(this).siblings("a#upvote").removeClass("active");
+  $(this).toggleClass("active");
+});
+
+const userAction = (type, recipientUsername) => {
+  $.ajax({
+    url: "/user/action/",
+    type: "POST",
+    data: {
+      type,
+      "recipient_username": recipientUsername
+    },
+    success: data => {
+      if (data["redirect_to"]) {
+        window.location.replace(data["redirect_to"]);
+      }
+    },
+    error: data => {
+      notify(data["message"]);
+    }
+
+  });
+};
+
+const blockUser = username => {
+  userAction("block", username);
+};
+
+$(".block-user-trigger").on("click", function () {
+  let username = $(this).attr("data-username");
+  $("#block_user").attr("data-username", username);
+  $("#username-holder").text(username);
+  $("#blockUserModal").modal("show");
+});
+
+$("#block_user").on("click", function () {
+  let targetUser = $(this).attr("data-username");
+  blockUser(targetUser);
+  $("#blockUserModal").modal("hide");
+});
+
+$(".unblock-user-trigger").on("click", function () {
+  if (confirm("engel kalksın mı?")) {
+    blockUser($(this).attr("data-username"));
+    $(this).hide();
+  }
+});
+
+$("#follow_user").on("click", function () {
+  let targetUser = $(this).parent().attr("data-username");
+  userAction("follow", targetUser);
+  $(this).children("a").toggleText("takip et", "takip etme");
+});
+
+const entryAction = (type, entryId, redirect = false) => {
+  $.ajax({
+    url: "/entry/action/",
+    type: "POST",
+    data: {
+      type,
+      "entry_id": entryId,
+      redirect
+
+    },
+    success: data => {
+      console.log(data);
+      if (data["message"]) {
+        notify(data["message"]);
+      }
+
+      if (redirect) {
+        window.location.replace(data["redirect_to"]);
+      }
+
+      return data;
+    },
+    error: err => {
+      console.log(err);
+    }
+  });
+};
+
+$(".delete-entry").on("click", function () {
+  if (confirm("harbiden silinsin mi?")) {
+    entryAction("delete", $(this).attr("data-target-entry"));
+    $(this).closest(".entry-full").css("display", "none");
+  }
+});
+
+$(".delete-entry-redirect").on("click", function () {
+  if (confirm("harbiden silinsin mi?")) {
+    entryAction("delete", $(this).attr("data-target-entry"), true);
+  }
+});
+
+$(".pin-entry").on("click", function () {
+  entryAction("pin", $(this).attr("data-target-entry"));
+});
+
+const topicAction = (type, topicId) => {
+  $.ajax({
+    url: "/t/action/",
+    type: "POST",
+    data: {
+      type,
+      "topic_id": topicId
+    },
+    success: data => {
+      console.log(data);
+    },
+    error: err => {
+      console.log(err);
+    }
+  });
+};
+
+$(".follow-topic-trigger").on("click", function () {
+  $(this).toggleText("takip etme", "takip et");
+  topicAction("follow", $(this).attr("data-topic-id"));
+});
 
 $("select#mobile_year_changer").on("change", function () {
-    window.location = updateQueryStringParameter(location.href, "year", this.value);
+  window.location = updateQueryStringParameter(location.href, "year", this.value);
 });
 
 $("#refresh_bugun").on("click", function () {
-    let is_extended = false;
-    if (localStorage.getItem("navigation_page")) {
-        is_extended = true;
-    }
-    leftframe_button_reset();
-    leftframe_stick("bugun", is_extended, null, true);
-    $(this).addClass("dj-hidden");
+  let isExtended = false;
+  if (localStorage.getItem("navigation_page")) {
+    isExtended = true;
+  }
+  leftFrameReset();
+  leftFramePopulate("bugun", isExtended, null, true);
+  $(this).addClass("dj-hidden");
 });
 
 $.fn.overflown = function () {
-    const e = this[0];
-    return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
+  const e = this[0];
+  return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
 };
 
-
-const truncate_entry_text = () => {
-
-    for (const element of $("article.entry p ")) {
-        if ($(element).overflown()) {
-            $(element).parent().append(`<div class="read_more">devamını okuyayım</div>`)
-        }
+const truncateEntryText = () => {
+  for (const element of $("article.entry p ")) {
+    if ($(element).overflown()) {
+      $(element).parent().append(`<div class="read_more">devamını okuyayım</div>`);
     }
+  }
 };
-
 
 if ($("body").hasClass("has-entries")) {
-    truncate_entry_text();
-    $("div.read_more").on("click", function () {
-        $(this).siblings("p").css("max-height", "none");
-        $(this).hide();
-    });
-
+  truncateEntryText();
+  $("div.read_more").on("click", function () {
+    $(this).siblings("p").css("max-height", "none");
+    $(this).hide();
+  });
 }

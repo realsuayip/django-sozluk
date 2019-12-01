@@ -1,0 +1,45 @@
+{
+  "extends": "standard",
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jquery": true
+  },
+  "rules": {
+    "semi": [
+      2,
+      "always"
+    ],
+    "quotes": [
+      2,
+      "double",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "no-use-before-define": [
+      2,
+      {
+        "functions": true,
+        "classes": true
+      }
+    ],
+    "object-shorthand": [
+      2,
+      "always"
+    ],
+    "func-style": [
+      2,
+      "expression",
+      {
+        "allowArrowFunctions": true
+      }
+    ],
+    "arrow-parens": [
+      2,
+      "as-needed"
+    ]
+  }
+}

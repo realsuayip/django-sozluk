@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
@@ -26,8 +25,10 @@ class AsyncTopicList(JsonView):
         extend = True if self.request_data.get("extended") == "yes" else False
         fetch_cached = False if self.request_data.get("nocache") == "yes" else True
         manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
-        return JsonResponse({"topic_data": manager.serialized, "refresh_count": manager.refresh_count,
-                             "slug_identifier": manager.slug_identifier})
+        self.data = dict(topic_data=manager.serialized, refresh_count=manager.refresh_count,
+                         slug_identifier=manager.slug_identifier)
+
+        return super().handle()
 
 
 class AutoComplete(JsonView):
@@ -35,16 +36,16 @@ class AutoComplete(JsonView):
 
     def handle(self):
         if self.request_data.get("author"):
-            return self.author()
+            self.data = self.author()
         elif self.request_data.get("query"):
-            return self.query()
+            self.data = self.query()
 
-        super().handle()
+        return super().handle()
 
     def author(self):
         objects = Author.objects.filter(username__istartswith=self.request_data.get("author"))
         response = [obj.username for obj in objects]
-        return JsonResponse({"suggestions": response})
+        return dict(suggestions=response)
 
     def query(self):
         query = self.request_data.get("query")
@@ -66,7 +67,7 @@ class AutoComplete(JsonView):
             extra_authors = Author.objects.filter(username__istartswith=query)[:3]
             for author in extra_authors:
                 response.append("@" + author.username)
-        return JsonResponse({"suggestions": response})
+        return dict(suggestions=response)
 
 
 class UserAction(JsonView):
@@ -87,6 +88,8 @@ class UserAction(JsonView):
             return self.follow()
         elif action == "block":
             return self.block()
+
+        return super().handle()
 
     def follow(self):
         sender, recipient = self.sender, self.recipient
@@ -144,12 +147,12 @@ class EntryAction(JsonView):
             return self.pin()
 
         elif action == "favorite":
-            return self.favorite()
+            self.data = self.favorite()
 
         elif action == "favorite_list":
-            return self.favorite_list()
+            self.data = self.favorite_list()
 
-        super().handle()
+        return super().handle()
 
     @force_post
     def delete(self):
@@ -180,7 +183,7 @@ class EntryAction(JsonView):
             self.entry.update_vote(vote_rates["increase"])
             status = 1
 
-        return JsonResponse({'count': self.entry.favorited_by.count(), 'status': status})
+        return dict(count=self.entry.favorited_by.count(), status=status)
 
     @force_get
     def favorite_list(self):
@@ -191,7 +194,7 @@ class EntryAction(JsonView):
                 novices.append(user.username)
             else:
                 authors.append(user.username)
-        return JsonResponse({'users': [authors, novices]})
+        return dict(users=[authors, novices])
 
 
 class TopicAction(JsonView):
@@ -210,7 +213,7 @@ class TopicAction(JsonView):
         if action == "follow":
             return self.follow()
 
-        super().handle()
+        return super().handle()
 
     def follow(self):
         try:
@@ -290,7 +293,7 @@ class Vote(JsonView):
             if self.cast():
                 return self.success()
 
-        super().handle()
+        return super().handle()
 
     def cast(self):
         entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down

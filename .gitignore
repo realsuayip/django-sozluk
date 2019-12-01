@@ -124,5 +124,11 @@ dmypy.json
 
 .idea
 
+# node stuff
+node_modules
+package-lock.json
+
+# datadump
+datadump.json
 
 # End of https://www.gitignore.io/api/django

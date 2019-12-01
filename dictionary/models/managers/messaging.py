@@ -13,8 +13,6 @@ class MessageManager(models.Manager):
 
 class ConversationManager(models.Manager):
     def list_for_user(self, user):
-        # todo yanlış query, !!
-        # bu query düz mantıkla yazılmalı part.._in = user, order by messages snet at.
         return self.filter(participants__in=[user]).annotate(message_sent_last=Max('messages__sent_at')).order_by(
             "-message_sent_last")
 

@@ -1,9 +1,9 @@
+from django.conf import settings
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-
 from .decorators import require_ajax
 
 
@@ -12,6 +12,7 @@ class JsonView(UserPassesTestMixin, View):
     require_method = None  # "post" or "get" applies to WHOLE view
     request_data = None
     method = None
+    data = None
     success_message = "oldu"
     error_message = "olmadı"
     bad_request_message = "400 Bad Request"
@@ -37,19 +38,27 @@ class JsonView(UserPassesTestMixin, View):
         return True
 
     def handle(self):
-        return self.error()
+        if self.data is not None:
+            return self._response()
+        else:
+            if settings.DEBUG:
+                raise ValueError(f"The view {self.__class__.__name__} returned nothing")
+            return self.error()
 
-    def get_data(self, method):
+    def _response(self):
+        return JsonResponse(self.data)
+
+    def _get_data(self, method):
         self.request_data = method
         return self.handle()
 
     @method_decorator(require_ajax)
     def get(self, *args, **kwargs):
-        return self.get_data(self.request.GET)
+        return self._get_data(self.request.GET)
 
     @method_decorator(require_ajax)
     def post(self, *args, **kwargs):
-        return self.get_data(self.request.POST)
+        return self._get_data(self.request.POST)
 
     def success(self, message_pop=False, redirect_url=False):
         if message_pop:
