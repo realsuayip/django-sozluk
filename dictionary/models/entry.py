@@ -8,7 +8,7 @@ from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyNovic
 
 
 class Entry(models.Model):
-    topic = models.ForeignKey("Topic", on_delete=models.PROTECT, related_name="entries")
+    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries")
     author = models.ForeignKey("Author", on_delete=models.PROTECT)
     content = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)

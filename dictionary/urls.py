@@ -7,7 +7,7 @@ from .views.detail import Chat, UserProfile
 from .views.edit import UserPreferences, EntryUpdate
 from .views.json import AsyncTopicList, AutoComplete, UserAction, EntryAction, TopicAction, ComposeMessage, Vote
 from .views.list import PeopleList, ConversationList, ActivityList, CategoryList, TopicList, TopicEntryList, index
-
+from .views.reporting import GeneralReportView
 
 urlpatterns_json = [
     path('entry/vote/', Vote.as_view(), name="vote"),
@@ -70,6 +70,7 @@ urlpatterns_regular = [
 
     # Other views
     path('entry/update/<int:pk>/', EntryUpdate.as_view(), name="entry_update"),
+    path('iletisim/', GeneralReportView.as_view(), name="general-report")
 ]
 
 urlpatterns = urlpatterns_regular + urlpatterns_json + urlpatterns_password_reset

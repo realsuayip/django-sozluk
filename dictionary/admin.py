@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing, Memento, UserVerification
+from .models import Topic, Entry, Category, Author, Message, Conversation, TopicFollowing, Memento, UserVerification, \
+    GeneralReport
 from django.contrib.auth.admin import UserAdmin
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -143,6 +144,20 @@ class CategoryAdmin(admin.ModelAdmin):
     exclude = ("slug",)
 
 
+class GeneralReportAdmin(admin.ModelAdmin):
+    list_display = ("subject", "reporter_email", "is_open",)
+    readonly_fields = ('reporter_email', 'category', 'subject', 'content')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by("-is_open")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 admin.site.index_template = "dictionary/admin/index_custom.html"
 admin.site.register(Author, CustomUserAdmin)
 admin.site.register(Topic)
@@ -153,5 +168,6 @@ admin.site.register(Conversation)
 admin.site.register(TopicFollowing)
 admin.site.register(Memento)
 admin.site.register(UserVerification)
+admin.site.register(GeneralReport, GeneralReportAdmin)
 
 # Register your models here.

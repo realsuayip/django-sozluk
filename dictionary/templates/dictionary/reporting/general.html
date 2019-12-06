@@ -1,0 +1,45 @@
+{% extends "dictionary/base.html" %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block title %}şikayet{% endblock %}
+
+
+
+{% block content %}
+    <h4>İletişim</h4>
+    <hr>
+
+    <ol>
+        <li>iletişime geçmeden önce lütfen <a href="#">sıkça sorulan sorular</a> kısmını ziyaret edin.</li>
+        <li>lütfen istek ve şikayetinizi anlaşılır bir şekilde dile getirin</li>
+        <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem
+            anonim olarak yapılmaktadır.
+        </li>
+        <li>gerekli bulunursa geri dönüş yapılacağından, lütfen geçerli bir mail adresi girin.</li>
+
+    </ol>
+
+    <form method="post">
+        {% load widget_tweaks %}
+
+        <div class="form-group">
+            <label for="reporter_email">{{ form.reporter_email.label }}</label>
+            {% render_field form.reporter_email class="form-control" id="reporter_email" %}
+        </div>
+        <div class="form-group">
+            <label for="report_category">{{ form.category.label }}</label>
+            {% render_field form.category class="form-control" id="report_category" %}
+        </div>
+        <div class="form-group">
+            <label for="reporter_subject">{{ form.subject.label }}</label>
+            {% render_field form.subject class="form-control" id="reporter_subject" %}
+        </div>
+        <div class="form-group">
+            <label for="reporter_content">{{ form.content.label }}</label>
+            {% render_field form.content rows="5" class="form-control" id="reporter_content" %}
+        </div>
+
+        {% csrf_token %}
+        <button class="btn btn-django" style="width: 100%;">gönder</button>
+    </form>
+    <br>
+{% endblock %}

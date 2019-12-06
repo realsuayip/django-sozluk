@@ -106,7 +106,7 @@
 
                     {% endif %}
 
-                    <a class="dropdown-item" href="#">şikayet</a>
+                    <a class="dropdown-item" href="{% url 'general-report' %}?referrer_entry={{ entry.id }}&referrer_topic={{ topic.title }}">şikayet</a>
 
                 </div>
             </a>
