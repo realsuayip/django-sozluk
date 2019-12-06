@@ -56,7 +56,7 @@ class CustomUserAdmin(UserAdmin):
 
         novices = novice_full_list()[:10]
         context = dict(self.admin_site.each_context(request), title="Çaylak onay listesi", objects=novices)
-        return TemplateResponse(request, "admin/novices.html", context)
+        return TemplateResponse(request, "dictionary/admin/novices.html", context)
 
     def novice_lookup(self, request, username):
         """
@@ -136,14 +136,14 @@ class CustomUserAdmin(UserAdmin):
         context = dict(self.admin_site.each_context(request), title=f"{username} isimli çaylağın ilk 10 entry'si",
                        entries=first_ten_entries, next=next_username)
 
-        return TemplateResponse(request, "admin/novice_lookup.html", context)
+        return TemplateResponse(request, "dictionary/admin/novice_lookup.html", context)
 
 
 class CategoryAdmin(admin.ModelAdmin):
     exclude = ("slug",)
 
 
-admin.site.index_template = "admin/index_custom.html"
+admin.site.index_template = "dictionary/admin/index_custom.html"
 admin.site.register(Author, CustomUserAdmin)
 admin.site.register(Topic)
 admin.site.register(Entry)

@@ -1,0 +1,49 @@
+{% extends "dictionary/base.html" %}
+{% load widget_tweaks %}
+{% block title %}Giriş yap{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    <h4 class="mb-3">giriş</h4>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+    <p class="text-danger">
+    şuan zaten '{{ request.user.username }}' olaraktan giriş yapmışsınız ona göre.
+    </p>
+
+    {% endif %}
+    <form method="post" class="login-form">
+        {% csrf_token %}
+        <div class="form-group">
+            {% for err in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ err }}
+                </div>
+            {% endfor %}
+            <label for="loginUser">{{ form.username.label }}</label>
+            {% render_field form.username type="email" id="loginUser" class="form-control" %}
+        </div>
+
+        <div class="form-group">
+            <label for="loginPassword">{{ form.password.label }}</label>
+            {% render_field form.password id="loginPassword" class="form-control" %}
+        </div>
+        <div class="custom-control custom-checkbox">
+            {% render_field form.remember_me class="custom-control-input" id="remember_me" %}
+            <label class="custom-control-label" for="remember_me">{{ form.remember_me.label }}</label>
+        </div>
+
+        <br>
+            <a href="{% url 'password_reset' %}" class="m-2">şifre neydi ya</a>
+            <a href="{% url 'resend_email' %}">onaylama maili gelmedi</a>
+        <hr>
+            <button type="submit" class="btn" style="width: 100%;">giriş yap</button>
+    </form>
+
+{% endblock %}

@@ -122,9 +122,12 @@ class Author(AbstractUser):
 
 
 class Memento(models.Model):
-    body = models.TextField()
+    body = models.TextField(blank=True, null=True)
     holder = models.ForeignKey(Author, on_delete=models.CASCADE)
     patient = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="+")
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['holder', 'patient'], name='unique_memento')]
 
     def __str__(self):
         return f"{self.__class__.__name__}#{self.id}, from {self.holder} about {self.patient}"

@@ -1,0 +1,49 @@
+{% extends "dictionary/base.html" %}
+{% load widget_tweaks %}
+{% block title %}şifre sıfırlama{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    <h4 class="mb-3">şifre sıfırlama</h4>
+
+    {% if form %}
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                {% for err in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ err }}
+                    </div>
+                {% endfor %}
+
+                <div class="form-group">
+                    <label class="mr-2" for="pref_new_password1"><strong>{{ form.new_password1.label }}</strong></label>
+                    {% render_field form.new_password1 class="form-control" id="pref_new_password1" %}
+                    {{ form.new_password1.errors }}
+                    <small class="form-text text-muted helptext-list">{{ form.new_password1.help_text }}</small>
+
+                </div>
+
+
+                <div class="form-group">
+                    <label class="mr-2" for="pref_new_password2"><strong>{{ form.new_password2.label }}</strong></label>
+                    {% render_field form.new_password2 class="form-control" id="pref_new_password2" %}
+                    {{ form.new_password2.errors }}
+                </div>
+
+
+            </div>
+            <hr>
+
+            <button type="submit" class="btn float-right">bi daha unutmam inşallah</button>
+
+        </form>
+    {% else %}
+        <div class="alert alert-secondary" role="alert">
+        selam canım. ne dediğini pek anlayamadık açıkçası. şifreni sıfırlamak istiyorsan seni
+        <a href="{% url 'password_reset' %}">şuraya</a> alalım.
+        </div>
+    {% endif %}
+{% endblock %}
+

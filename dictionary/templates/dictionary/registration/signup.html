@@ -1,0 +1,91 @@
+{% extends "dictionary/base.html" %}
+{% load widget_tweaks %}
+{% block title %}Kayıt ol{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    <h4>kayıt olalım</h4>
+    <hr>
+    <form method="post" id="signup">
+        {% if form.errors %}
+
+            <div class="alert alert-danger">
+                <strong>lütfen aşağıdaki hataları kontrol edip tekrar deneyin.</strong>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    {% for field in form.errors %}
+                        {% if field == "username" %}
+
+                            $("#signup_usernameHelp").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.username.errors.0 }}");
+                        {% elif field == "email" %}
+                            $("#signup_emailHelp").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.email.errors.0 }}");
+                        {% elif field == "password2" %}
+                            $("#signup_password2Help").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.password2.errors.0 }}");
+                        {% elif field == "birth_date" %}
+                            $("#signup_birth_dateHelp").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.birth_date.errors.0 }}");
+                        {% endif %}
+                    {% endfor %}
+                    $("form#signup input").on("change keyup paste", function () {
+                        $(this).removeClass("is-invalid");
+                    });
+                });
+
+            </script>
+
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+
+        {% endif %}
+
+        {% csrf_token %}
+        {% with WIDGET_ERROR_CLASS='is-invalid' %}
+            <div class="form-group">
+                <label for="signup_username">{{ form.username.label }}</label>
+                {% render_field form.username class="form-control" id="signup_username" aria-describedby="signup_usernameHelp" %}
+                <small id="signup_usernameHelp" class="form-text text-muted">{{ form.username.help_text }}</small>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="signup_email">{{ form.email.label }}</label>
+                {% render_field form.email class="form-control" id="signup_email" aria-describedby="signup_emailHelp" %}
+                <small id="signup_emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label for="signup_email">{{ form.password1.label }}</label>
+                {% render_field form.password1 class="form-control" id="signup_password1" aria-describedby="signup_password1Help" %}
+                <small id="signup_password1Help" class="form-text text-muted">{{ form.password1.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label for="signup_email">{{ form.password2.label }}</label>
+                {% render_field form.password2 class="form-control" id="signup_password2" aria-describedby="signup_password2Help" %}
+                <small id="signup_password2Help" class="form-text text-muted">{{ form.password2.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label for="signup_gender">{{ form.gender.label }}</label>
+                {% render_field form.gender class="form-control" id="signup_gender" %}
+            </div>
+            <div class="form-group">
+                <label style="display: block;" for="signup_birth_date">{{ form.birth_date.label }}</label>
+                {% render_field form.birth_date class="datepicker form-control" id="signup_birth_date datepicker" aria-describedby="signup_birth_dateHelp" %}
+                <small id="signup_birth_dateHelp" class="form-text text-muted">{{ form.birth_date.help_text }}</small>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+                {% render_field form.terms_conditions class="custom-control-input" id="terms_conditions" %}
+                <label class="custom-control-label" for="terms_conditions"><a href="#">kullanıcı sözleşmesini</a> okudum ve
+                    kabul ediyorum</label>
+            </div>
+            <hr>
+        {% endwith %}
+        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django mb-5" style="width: 100%;">kayıt ol</button>
+    </form>
+{% endblock %}

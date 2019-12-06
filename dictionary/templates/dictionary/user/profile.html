@@ -1,0 +1,109 @@
+{% extends "dictionary/base.html" %}
+
+{% block title %}kullanıcı: {{ profile.username }}{% endblock %}
+{% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
+
+{% block content %}
+    {% load humanize %}
+    <section class="user-info">
+        <h4><a href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a></h4>
+
+
+        {% if request.user.is_authenticated and request.user != profile %}
+            {% include "dictionary/includes/send_message_modal.html" %}
+            {% include "dictionary/includes/block_user_modal.html" %}
+
+            <ul class="user-links" data-username="{{ profile.username }}">
+                <li id="follow_user"><a href="#">{% if profile in request.user.following.all %}takip etme{% else %}takip
+                    et{% endif %}</a></li>
+                <li class="block-user-trigger" data-username="{{ profile.username }}"><a href="#">engelle</a></li>
+                <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a href="#">mesaj gönder</a>
+                </li>
+            </ul>
+        {% endif %}
+
+
+        <ul class="user-stats">
+            <li title="toplam entry sayısı">{{ profile.entry_count }}</li>
+            <li title="son 1 ayda girdiği entry sayısı">{{ profile.entry_count_month }}</li>
+            <li title="son 1 haftada girdiği entry sayısı">{{ profile.entry_count_week }}</li>
+            <li title="son 24 saatte girdiği entry sayısı">{{ profile.entry_count_day }}</li>
+            {% if profile.last_entry_date %}
+                <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|naturalday }}</li>
+            {% else %}
+                <li class="nobullet" title="son entry girdiği zaman">hiç</li>
+            {% endif %}
+            <li class="profile-badges nobullet ml-2">
+                {% if profile.is_novice %}
+                    <a href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
+                {% endif %}
+            </li>
+            {% if novice_queue %}
+                <span style="float: right">çaylak onay listesinde {{ novice_queue|ordinal }} sıradasınız </span>
+            {% endif %}
+        </ul>
+
+
+        {% if profile.pinned_entry %}
+            {% with profile.pinned_entry as entry %}
+                {% include "dictionary/includes/profile_entry_pinned.html" %}
+            {% endwith %}
+        {% else %}
+            {% if profile.entry_nice %}
+                {% with profile.entry_nice as entry %}
+                    {% include "dictionary/includes/profile_entry_pinned.html" %}
+                {% endwith %}
+            {% endif %}
+        {% endif %}
+
+
+    </section>
+
+    <section class="user-info-detail">
+        <div class="detail-nav" id="detail_nav">
+            <ul>
+                <li {% if not tab %}class="active"{% endif %}><a
+                        href="{% url 'user-profile' username=profile.username %}">entry'ler</a></li>
+                <li {% if tab == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
+                <li {% if tab == "popular" %}class="active"{% endif %}><a href="?t=popular">en çok favorilenenleri</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+
+
+
+    {% if entries %}
+        <section class="user_entries">
+            <ul class="profile">
+                {% for entry in entries %}
+                    {% include "dictionary/includes/entry.html" with show_title="yes" %}
+                {% endfor %}
+            </ul>
+        </section>
+    {% else %}
+        <small>yok ki</small>
+    {% endif %}
+    <hr>
+
+
+    {% include "dictionary/includes/paginaton.html" with paginator=page_obj %}
+    <br>
+{% endblock %}
+{% block rightframe %}
+
+    <h6><strong>notlar</strong></h6>
+    <form method="post" class="memento">
+        {% load widget_tweaks %}
+        {% load basic_filters %}
+
+        {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
+            {% render_field form.body placeholder=text_placeholder name="memento" class="entry_editor" rows="10" %}
+        {% endwith %}
+
+        {% csrf_token %}
+        <button class="btn btn-django">kaydet</button>
+    </form>
+
+{% endblock %}

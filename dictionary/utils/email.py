@@ -30,6 +30,6 @@ def send_email_confirmation(user, to_email):
 
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     params = {"domain": DOMAIN, "protocol": PROTOCOL, "user": user, "uidb64": uidb64, "token": verification_token_raw}
-    msg = render_to_string("registration/email_confirmation.html", params)
+    msg = render_to_string("registration/confirmation_email_template.html", params)
     return send_mail("email onayı", "email onayı", from_email=FROM_EMAIL, recipient_list=[to_email], html_message=msg,
                      fail_silently=True)

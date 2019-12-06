@@ -1,0 +1,58 @@
+{% extends "dictionary/base.html" %}
+{% block title %}{{ page_safename }}{% endblock %}
+{% block bodyattr %}class="topic-list-view"{% endblock %}
+
+{% block content %}
+    <div class="left-frame-in">
+        <h2>{{ page_safename }}</h2>
+
+        {% if slug_name == "bugun" %}
+
+            {% if refresh_count %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="refresh-button-mobile">yenile ({{ refresh_count }})</button>
+                </form>
+            {% endif %}
+
+        {% endif %}
+
+        {% if slug_name == "tarihte-bugun" %}
+            <select class="mobile-topic-list" id="mobile_year_changer">
+                {% for year in year_range %}
+                    {# |add used here for type conversion https://stackoverflow.com/a/7405779/6063532#}
+                    {% if year == current_year|add:"0" %}
+                        <option value="{{ year }}" selected>{{ year }}</option>
+                    {% else %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endif %}
+
+                {% endfor %}
+            </select>
+            <hr>
+        {% endif %}
+
+        <ul id="topic-list-standalone" class="list-group topic-list">
+            {% if topics %}
+                {% for topic in topics %}
+                    <li class="list-group-item"><a href="{{ slug_identifier }}{{ topic.slug }}">{{ topic.title }}
+                        <small class="total_entries">{{ topic.count }}</small>
+                    </a></li>
+                {% endfor %}
+            {% else %}
+                {% if slug_name == "tarihte-bugun" %}
+                    <hr>
+                    <small>{{ current_year }} yılına ait bişey yok valla. hatta böyle bir yıl bile olmayabilir.</small>
+                {% else %}
+                    <small>yok ki</small>
+                {% endif %}
+            {% endif %}
+        </ul>
+
+        {% if is_paginated %}
+            {% include "dictionary/includes/paginaton.html" with stretch="yes" paginator=page_obj %}
+        {% endif %}
+    </div>
+
+
+{% endblock %}

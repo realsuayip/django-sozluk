@@ -1,22 +1,23 @@
 from decimal import Decimal
 
 from django.contrib import messages as notifications
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.http import Http404
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import DetailView
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 
-from ..forms.edit import SendMessageForm
+from ..forms.edit import SendMessageForm, MementoForm
 from ..models import Entry, Author, Message, Conversation, Memento
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
 
 class Chat(LoginRequiredMixin, FormMixin, DetailView):
     model = Conversation
-    template_name = "conversation/conversation.html"
+    template_name = "dictionary/conversation/conversation.html"
     form_class = SendMessageForm
     context_object_name = "conversation"
 
@@ -54,49 +55,88 @@ class Chat(LoginRequiredMixin, FormMixin, DetailView):
             return self.form_invalid(form)
 
 
-def user_profile(request, username):
-    """ THIS VIEW WILL BE CONVERTED TO CLASS BASED"""
-    profile = get_object_or_404(Author, username=username)
-    data = {"author": profile}
+class UserProfile(ListView, FormMixin):
+    model = Entry
+    paginate_by = ENTRIES_PER_PAGE_PROFILE
+    context_object_name = "entries"
+    form_class = MementoForm
+    template_name = "dictionary/user/profile.html"
 
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            body = request.POST.get("memento")
-            obj, created = Memento.objects.update_or_create(holder=request.user, patient=profile,
-                                                            defaults={"body": body})
-            data["memento"] = obj.body
-            notifications.info(request, "kaydettik efendim")
-            return redirect(reverse("user_profile", kwargs={"username": profile.username}))
+    profile = None
+    tab = None
+
+    @method_decorator(login_required)
+    def post(self, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
         else:
-            try:
-                data["memento"] = Memento.objects.get(holder=request.user, patient=profile).body
-            except Memento.DoesNotExist:
-                pass
+            return self.form_invalid(form)
 
-        if request.user in profile.blocked.all() or profile in request.user.blocked.all():
+    def form_valid(self, form):
+        existing_memento = self.get_memento()
+        body = form.cleaned_data.get("body")
+        if existing_memento:
+            if not body:
+                existing_memento.delete()
+                notifications.info(self.request, "sildim ben onu")
+            else:
+                existing_memento.body = body
+                existing_memento.save()
+        else:
+            if not body:
+                notifications.info(self.request, "çeşke bi şeyler yazsaydın")
+            else:
+                memento = form.save(commit=False)
+                memento.holder = self.request.user
+                memento.patient = self.profile
+                memento.save()
+        return redirect(reverse("user-profile", kwargs={"username": self.profile.username}))
+
+    def get_form_kwargs(self):
+        # To populate textarea with existing memento data
+        kwargs = super().get_form_kwargs()
+        if self.request.method not in ('POST', 'PUT'):
+            memento = self.get_memento()
+            if memento:
+                kwargs.update({"data": {"body": memento.body}})
+        return kwargs
+
+    def get_queryset(self):
+        if self.tab == "favorites":
+            qs = self.profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
+        elif self.tab == "popular":
+            qs = Entry.objects_published.filter(author=self.profile, vote_rate__gt=Decimal("1"))
+        else:
+            qs = Entry.objects_published.filter(author=self.profile).order_by("-date_created")
+
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["tab"] = self.tab
+        context["profile"] = self.profile
+        context['novice_queue'] = self.get_novice_queue()
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
+        self.tab = request.GET.get("t")
+
+        if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
             raise Http404
 
-        if request.user == profile and profile.is_novice and profile.application_status == "PN":
-            if request.session.get("novice_queue"):
-                data['novice_queue'] = request.session["novice_queue"]
-            else:
-                data['novice_queue'] = False
+        return super().dispatch(request)
 
-    page_tab = request.GET.get("t")
+    def get_novice_queue(self):
+        if self.request.user.is_authenticated:
+            if self.request.user == self.profile and self.profile.is_novice and self.profile.application_status == "PN":
+                if self.request.session.get("novice_queue"):
+                    return self.request.session["novice_queue"]
+        return None
 
-    if page_tab == "favorites":
-        data['tab'] = "favorites"
-        entries = profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
-    elif page_tab == "popular":
-        data['tab'] = "popular"
-        entries = Entry.objects_published.filter(author=profile, vote_rate__gt=Decimal("1"))
-    else:
-        data['tab'] = "entries"
-        entries = Entry.objects_published.filter(author=profile).order_by("-date_created")
-
-    paginator = Paginator(entries, ENTRIES_PER_PAGE_PROFILE)
-    page = request.GET.get("page")
-    entries_list = paginator.get_page(page)
-    data['entries'] = entries_list
-
-    return render(request, "user/user_profile.html", context=data)
+    def get_memento(self):
+        try:
+            return Memento.objects.get(holder=self.request.user, patient=self.profile)
+        except Memento.DoesNotExist:
+            return None

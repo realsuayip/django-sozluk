@@ -1,0 +1,23 @@
+{% extends "dictionary/base.html" %}
+{% block title %}kanallar{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+
+
+
+{% block content %}
+
+    <h3>kanallar</h3>
+    <hr>
+    <ul class="category-list-all m0 p-0">
+        {% for category in categories %}
+
+            <li>
+                <h5><a href="{% url "topic_list" slug=category.slug %}">#{{ category.name }}</a></h5>
+                <p class="ml-2">{{ category.description }}</p>
+            </li>
+
+        {% endfor %}
+    </ul>
+
+
+{% endblock %}

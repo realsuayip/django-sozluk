@@ -12,7 +12,7 @@ from ..models import Entry, Author
 class UserPreferences(LoginRequiredMixin, UpdateView):
     model = Author
     form_class = PreferencesForm
-    template_name = "user/preferences/index.html"
+    template_name = "dictionary/user/preferences/index.html"
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -29,7 +29,7 @@ class UserPreferences(LoginRequiredMixin, UpdateView):
 class EntryUpdate(LoginRequiredMixin, UpdateView):
     model = Entry
     form_class = EntryForm
-    template_name = "entry_update.html"
+    template_name = "dictionary/edit/entry_update.html"
     context_object_name = "entry"
 
     def dispatch(self, request, *args, **kwargs):

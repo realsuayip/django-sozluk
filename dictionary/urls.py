@@ -3,7 +3,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
     PasswordResetConfirmView
 
 from .views.auth import Login, Logout, SignUp, ConfirmEmail, ResendEmailConfirmation, ChangePassword, ChangeEmail
-from .views.detail import Chat, user_profile
+from .views.detail import Chat, UserProfile
 from .views.edit import UserPreferences, EntryUpdate
 from .views.json import AsyncTopicList, AutoComplete, UserAction, EntryAction, TopicAction, ComposeMessage, Vote
 from .views.list import PeopleList, ConversationList, ActivityList, CategoryList, TopicList, TopicEntryList, index
@@ -21,20 +21,20 @@ urlpatterns_json = [
 
 urlpatterns_password_reset = [
     path("parola/", PasswordResetView.as_view(
-        template_name="registration/password_reset/form.html",
+        template_name="dictionary/registration/password_reset/form.html",
         html_email_template_name="registration/password_reset/email_template.html"),
         name="password_reset"),
 
     path("parola/oldu/", PasswordResetDoneView.as_view(
-        template_name="registration/password_reset/done.html"),
+        template_name="dictionary/registration/password_reset/done.html"),
         name="password_reset_done"),
 
     path("parola/onay/<uidb64>/<token>/", PasswordResetConfirmView.as_view(
-        template_name="registration/password_reset/confirm.html"),
+        template_name="dictionary/registration/password_reset/confirm.html"),
         name="password_reset_confirm"),
 
     path("parola/tamam/", PasswordResetCompleteView.as_view(
-        template_name="registration/password_reset/complete.html"),
+        template_name="dictionary/registration/password_reset/complete.html"),
          name="password_reset_complete"),
 ]
 
@@ -44,6 +44,7 @@ urlpatterns_regular = [
     path('', index, name="home"),
     path('basliklar/<slug:slug>/', TopicList.as_view(), name="topic_list"),
     path("kanallar/", CategoryList.as_view(), name="category_list"),
+    path('biri/<str:username>/', UserProfile.as_view(), name="user-profile"),
 
     # Topic entry list
     path("topic/", TopicEntryList.as_view(), name="topic-search"),
@@ -55,7 +56,6 @@ urlpatterns_regular = [
     path('login/', Login.as_view(), name="login"),
     path('register/', SignUp.as_view(), name="register"),
     path('logout/', Logout.as_view(next_page="/"), name="logout"),
-    path('biri/<str:username>/', user_profile, name="user_profile"),
     path("email/onayla/<uidb64>/<token>/", ConfirmEmail.as_view(), name="confirm_email"),
     path("email/tekrar/", ResendEmailConfirmation.as_view(), name="resend_email"),
 
@@ -70,7 +70,6 @@ urlpatterns_regular = [
 
     # Other views
     path('entry/update/<int:pk>/', EntryUpdate.as_view(), name="entry_update"),
-
 ]
 
 urlpatterns = urlpatterns_regular + urlpatterns_json + urlpatterns_password_reset

@@ -1,0 +1,27 @@
+{% extends "dictionary/base.html" %}
+{% block title %}ayarlar{% endblock %}
+{% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block content %}
+    <h5 class="mb-3"><strong>ayarlar</strong></h5>
+
+    {% url 'user_preferences' as preferences %}
+    {% url 'user_preferences_password' as password %}
+    {% url 'user_preferences_email' as email %}
+
+    <ul class="nav nav-tabs mb-2">
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == preferences %}active{% endif %}"
+               href="{{ preferences }}">tercihler</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == password %}active{% endif %}" href="{{ password }}">şifre</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == email %}active{% endif %}" href="{{ email }}" >e-posta</a>
+        </li>
+    </ul>
+
+    {% block content_preferences %}
+    {% endblock %}
+
+{% endblock %}

@@ -27,11 +27,11 @@ def index(request):
     # todo hayvan ara
     # todo: başlık yönlendirme (türkçe düzeltme gibi)
     # todo: entry baslıklarının nasıl olacağına dair bir regex (başlık formatı)
-    return render(request, "index.html")
+    return render(request, "dictionary/index.html")
 
 
 class PeopleList(LoginRequiredMixin, TemplateView):
-    template_name = "people.html"
+    template_name = "dictionary/list/people_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,7 +44,7 @@ class ConversationList(LoginRequiredMixin, ListView):
     model = Conversation
     allow_empty = True
     paginate_by = 3
-    template_name = "conversation/inbox.html"
+    template_name = "dictionary/conversation/inbox.html"
     context_object_name = "conversations"
 
     def get_queryset(self):
@@ -53,7 +53,7 @@ class ConversationList(LoginRequiredMixin, ListView):
 
 class ActivityList(LoginRequiredMixin, ListView):
     model = TopicFollowing
-    template_name = "activity.html"
+    template_name = "dictionary/list/activity_list.html"
     context_object_name = "topics_following"
 
     def get_queryset(self):
@@ -65,7 +65,7 @@ class ActivityList(LoginRequiredMixin, ListView):
 
 class CategoryList(ListView):
     model = Category
-    template_name = "category_list.html"
+    template_name = "dictionary/list/category_list.html"
     context_object_name = "categories"
 
 
@@ -79,7 +79,7 @@ class TopicList(ListView):
     """
     model = Topic
     context_object_name = "topics"
-    template_name = "topic_list.html"
+    template_name = "dictionary/list/topic_list.html"
     paginate_by = TOPICS_PER_PAGE
     refresh_count = 0
     slug_identifier = None
@@ -148,7 +148,7 @@ class TopicEntryList(ListView, FormMixin):
     model = Entry
     form_class = EntryForm
     context_object_name = "entries"
-    template_name = "entry_list.html"
+    template_name = "dictionary/list/entry_list.html"
 
     topic = None
     view_mode = None
@@ -265,8 +265,8 @@ class TopicEntryList(ListView, FormMixin):
 
         return self.model.objects.none()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         entries = context.get("object_list")
         context["topic"] = self.topic
         context["mode"] = self.view_mode
@@ -390,7 +390,7 @@ class TopicEntryList(ListView, FormMixin):
         elif self.request.GET.get("q"):
             query = self.request.GET.get("q")
             if query.startswith("@") and len(query) > 1:
-                return redirect("user_profile", username=query[1:])
+                return redirect("user-profile", username=query[1:])
 
             elif query.startswith("#"):
                 if query[1:].isdigit():

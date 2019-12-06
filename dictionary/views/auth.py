@@ -16,6 +16,7 @@ from ..utils.settings import time_threshold_24h
 
 class Login(LoginView):
     form_class = LoginForm
+    template_name = "dictionary/registration/login.html"
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get("remember_me", False)
@@ -39,7 +40,7 @@ class Logout(LogoutView):
 
 class SignUp(FormView):
     form_class = SignUpForm
-    template_name = 'registration/signup.html'
+    template_name = 'dictionary/registration/signup.html'
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -49,7 +50,7 @@ class SignUp(FormView):
         user.save()
         send_email_confirmation(user, user.email)
         notifications.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi."
-                                        "bu bağlantıya tıklayarak hesabınızı aktif hale getirip giriş yapabilirsiniz.")
+                                         "bu bağlantıya tıklayarak hesabınızı aktif hale getirip giriş yapabilirsiniz.")
         return redirect('login')
 
 
@@ -79,12 +80,13 @@ class ConfirmEmail(View):
         return self.response()
 
     def response(self):
-        return render(self.request, "registration/email_confirmation_result.html", context={"success": self.success})
+        return render(self.request, "dictionary/registration/email/confirmation_result.html",
+                      context={"success": self.success})
 
 
 class ResendEmailConfirmation(FormView):
     form_class = ResendEmailForm
-    template_name = "registration/email_resend_form.html"
+    template_name = "dictionary/registration/email/resend_form.html"
 
     def form_valid(self, form):
         email = form.cleaned_data["email"]
@@ -96,7 +98,7 @@ class ResendEmailConfirmation(FormView):
 
 class ChangePassword(LoginRequiredMixin, PasswordChangeView):
     success_url = reverse_lazy("user_preferences")
-    template_name = "user/preferences/password.html"
+    template_name = "dictionary/user/preferences/password.html"
 
     def form_valid(self, form):
         notifications.info(self.request, "işlem tamam")
@@ -104,7 +106,7 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
 
 class ChangeEmail(LoginRequiredMixin, FormView):
-    template_name = "user/preferences/email.html"
+    template_name = "dictionary/user/preferences/email.html"
     form_class = ChangeEmailForm
     success_url = reverse_lazy("user_preferences")
 

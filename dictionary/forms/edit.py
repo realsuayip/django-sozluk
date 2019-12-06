@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms.widgets import SelectDateWidget
 
-from ..models import Author, Entry, Message
+from ..models import Author, Entry, Message, Memento
 
 
 class PreferencesForm(UserChangeForm):
@@ -28,3 +28,9 @@ class SendMessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ('body',)
+
+
+class MementoForm(forms.ModelForm):
+    class Meta:
+        model = Memento
+        fields = ("body",)
