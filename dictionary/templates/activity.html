@@ -11,7 +11,6 @@
             <ul id="topic-list-standalone" class="list-group topic-list">
                 {% for following in topics_following %}
                     {% activity_latest_entry request.user following.topic as latest_entry_date %}
-                    {#                todo fix request.user, and blocked thingss..#}
                     <li class="list-group-item {% if following.read_at < latest_entry_date %}active{% endif %}">
                         <a href="{% url 'topic' slug=following.topic.slug %}?a=following&d={{ following.read_at|timestamp }}">{{ following.topic.title }}
                         </a></li>

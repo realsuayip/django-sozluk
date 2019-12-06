@@ -1,4 +1,4 @@
-from django.contrib import messages as notification
+from django.contrib import messages as notifications
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -25,7 +25,7 @@ class Login(LoginView):
             self.request.session.set_expiry(7200)
 
         success_message = "başarıyla giriş yaptınız efendim"
-        notification.info(self.request, success_message)
+        notifications.info(self.request, success_message)
         return super().form_valid(form)
 
 
@@ -33,7 +33,7 @@ class Logout(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
             success_message = "başarıyla çıkış yaptınız efendim"
-            notification.info(self.request, success_message)
+            notifications.info(self.request, success_message)
         return super().dispatch(request)
 
 
@@ -48,7 +48,7 @@ class SignUp(FormView):
         user.gender = form.cleaned_data.get('gender')
         user.save()
         send_email_confirmation(user, user.email)
-        notification.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi."
+        notifications.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi."
                                         "bu bağlantıya tıklayarak hesabınızı aktif hale getirip giriş yapabilirsiniz.")
         return redirect('login')
 
@@ -90,7 +90,7 @@ class ResendEmailConfirmation(FormView):
         email = form.cleaned_data["email"]
         author = Author.objects.get(email=email)
         send_email_confirmation(author, email)
-        notification.info(self.request, "onaylama bağlantısını içeren e-posta gönderildi")
+        notifications.info(self.request, "onaylama bağlantısını içeren e-posta gönderildi")
         return redirect("login")
 
 
@@ -99,7 +99,7 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
     template_name = "user/preferences/password.html"
 
     def form_valid(self, form):
-        notification.info(self.request, "işlem tamam")
+        notifications.info(self.request, "işlem tamam")
         return super().form_valid(form)
 
 
@@ -110,9 +110,9 @@ class ChangeEmail(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         if not self.request.user.check_password(form.cleaned_data.get("password_confirm")):
-            notification.error(self.request, "parolanızı yanlış girdiniz")
+            notifications.error(self.request, "parolanızı yanlış girdiniz")
             return redirect(reverse("user_preferences_email"))
 
         send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
-        notification.info(self.request, "e-posta onayından sonra adresiniz değişecektir.")
+        notifications.info(self.request, "e-posta onayından sonra adresiniz değişecektir.")
         return redirect(self.success_url)

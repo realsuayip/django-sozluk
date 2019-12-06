@@ -47,7 +47,11 @@
 
     <hr>
 
-    {% if request.user in recipient.blocked.all or recipient in request.user.blocked.all %}
+    {% if recipient.message_preference == "DS" or request.user == recipient or request.user in recipient.blocked.all or recipient in request.user.blocked.all %}
+        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
+    {% elif request.user.is_novice and recipient.message_preference == "AO" %}
+        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
+    {% elif request.user not in recipient.following.all and recipient.message_preference == "FO" %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
         <h5>cevap yaz</h5>
@@ -59,8 +63,5 @@
                 <button type="submit" class="btn btn-django">gönder</button>
             </form>
         </section>
-
     {% endif %}
-
-
 {% endblock %}

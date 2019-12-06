@@ -12,7 +12,7 @@ class Entry(models.Model):
     author = models.ForeignKey("Author", on_delete=models.PROTECT)
     content = models.TextField()
     date_created = models.DateTimeField(auto_now_add=True)
-    date_edited = models.DateTimeField(blank=True, null=True, default=None)  # edit feature gelince otomatik set et todo
+    date_edited = models.DateTimeField(blank=True, null=True, default=None)
     vote_rate = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0))
     is_draft = models.BooleanField(default=False)
 
@@ -40,7 +40,6 @@ class Entry(models.Model):
         if self.author.is_novice and self.author.application_status == "PN":
             # if the entry count drops less than 10, remove user from novice lookup
             # does not work if bulk deletion made on admin panel (users can only remove one entry at a time)
-            # todo not tested
             if self.author.entry_count < 10:
                 self.author.application_status = "OH"
                 self.author.application_date = None

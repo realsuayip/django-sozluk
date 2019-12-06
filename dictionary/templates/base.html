@@ -41,7 +41,7 @@
         <!--- seach box -->
         <div class="searchbox {% if not user.is_authenticated %}sb-guest{% endif %}">
 
-            <form method="GET" action="{% url 'topic_search' %}">
+            <form method="GET" action="{% url 'topic-search' %}">
                 <div class="input-group">
                     <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text"
                            id="header_search" aria-describedby="button-addon2">
@@ -274,11 +274,12 @@
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 
 
-<div class="notification-bubble dj-hidden" id="notifications"
+<div class="notification-bubble" id="notifications"
      {% if messages %}data-request-message="{% for message in messages %}
-        {% if messages|length > 1 %}{{ forloop.counter }}. {% endif %}{{ message }}
+        {% if messages|length > 1 and forloop.counter > 1 %}&&{% endif %}{{ message }}::{{ message.tags }}
     {% endfor %}
-"{% endif %}></div>
+"{% endif %}>
+</div>
 
 
 <script

@@ -175,7 +175,7 @@ nav.sub-nav ul .more_tags_dropdown a.active,
 
 
 nav.sub-nav ul .more_tags_dropdown a:focus,
-nav.sub-nav ul .more_tags_dropdown a:active
+nav.sub-nav ul .more_tags_dropdown a:active,
 .usermenu-dropdown a:focus,
 .usermenu-dropdown a:active {
     color: #fff;
@@ -1006,18 +1006,28 @@ section.chat-reply form textarea {
     z-index: 9999;
     top: 0;
     margin: 10em 8em;
+
+}
+
+.notification-bubble li {
+    list-style-type: none;
+    cursor: pointer;
+    margin-bottom: 1em;
     background: #fff;
     padding: .5em 1em;
     border: 1px solid #272727;
-    border-left: 4px solid #092e20;
+    border-left: 5px solid;
     font-size: 13px;
-    max-width: 180px;
+    width: 160px;
     word-wrap: break-word;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
 }
 
+.notification-bubble li.error {
+    border-color: #e20000;
+}
 
 .people-list {
     padding: 0 1em;

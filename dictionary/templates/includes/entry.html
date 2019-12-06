@@ -43,7 +43,6 @@
 
                {% if request.user.is_authenticated %}
                    <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
-{#                # use relative name instead; everywhere todo #}
 
                    <i {% if request.user in entry.favorited_by.all %}class="material-icons favorite-entry-btn mr-1"
                       title="favorilerden çıkar"
@@ -64,7 +63,7 @@
 
 
         <div class="info">
-            <a href="{% url 'entry_permalink' entry_id=entry.id %}">{{ entry.date_created|date:"d.m.Y H:i" }}
+            <a href="{% url 'entry-permalink' entry_id=entry.id %}">{{ entry.date_created|date:"d.m.Y H:i" }}
                 {% if entry.date_edited != entry.date_created %}
                     {% now "d.m.Y" as today %}
                     {% if today == entry.date_edited|date:"d.m.Y" %}

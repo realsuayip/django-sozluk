@@ -6,7 +6,7 @@
 {% block content %}
     {% load humanize %}
     <section class="user-info">
-        <h4><a href="{% url 'topic_search' %}?q={{ author.username }}">{{ author.username }}</a></h4>
+        <h4><a href="{% url 'topic-search' %}?q={{ author.username }}">{{ author.username }}</a></h4>
 
 
         {% if request.user.is_authenticated and request.user != author %}
@@ -28,11 +28,14 @@
             <li title="son 1 ayda girdiği entry sayısı">{{ author.entry_count_month }}</li>
             <li title="son 1 haftada girdiği entry sayısı">{{ author.entry_count_week }}</li>
             <li title="son 24 saatte girdiği entry sayısı">{{ author.entry_count_day }}</li>
-            <li class="nobullet" title="son entry girdiği zaman">{{ author.last_entry_date|naturalday }}</li>
-
+            {% if author.last_entry_date %}
+                <li class="nobullet" title="son entry girdiği zaman">{{ author.last_entry_date|naturalday }}</li>
+            {% else %}
+                <li class="nobullet" title="son entry girdiği zaman">hiç</li>
+            {% endif %}
             <li class="profile-badges nobullet ml-2">
                 {% if author.is_novice %}
-                    <a href="{% url 'topic_unicode_url' unicode="çaylak" %}">çaylak</a>
+                    <a href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
                 {% endif %}
             </li>
             {% if novice_queue %}

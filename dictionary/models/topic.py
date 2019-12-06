@@ -6,10 +6,11 @@ from django.db.models import Q
 from .author import Author
 from .category import Category
 from .entry import Entry
+from .managers.topic import TopicManager
 
 
 class TopicFollowing(models.Model):
-    topic = models.ForeignKey("Topic", on_delete=models.CASCADE)
+    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="followers")
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     read_at = models.DateTimeField(auto_now_add=True)
 
@@ -24,12 +25,11 @@ class Topic(models.Model):
     category = models.ManyToManyField(Category, blank=True)
     slug = models.SlugField(max_length=96, unique=True, blank=True)
 
+    objects = TopicManager()
+
     def save(self, *args, **kwargs):
         self.slug = uuslug(self.title, instance=self)
         super().save(*args, **kwargs)
-
-    def has_entries(self):
-        return Entry.objects_published.filter(topic=self).exists()  # used to be .count()
 
     def follow_check(self, user):
         return TopicFollowing.objects.filter(topic=self, author=user).exists()
@@ -40,6 +40,14 @@ class Topic(models.Model):
                 Q(author__in=sender.blocked.all()) | Q(author=sender)).latest("date_created").date_created
         except Entry.DoesNotExist:
             return self.date_created
+
+    @property
+    def exists(self):
+        return True
+
+    @property
+    def has_entries(self):
+        return self.entries.exclude(is_draft=True).exists()
 
     def __str__(self):
         return f"{self.title}"

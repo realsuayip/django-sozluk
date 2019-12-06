@@ -23,11 +23,26 @@ $.ajaxSetup({
   }
 });
 
-const notify = message => {
-  let notifiction = $("#notifications");
-  notifiction.html(message);
-  notifiction.fadeIn();
-  $(notifiction).delay(1600).fadeOut();
+const sleep = function (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+const notify = async (message, type = "default") => {
+  let notifictionHolder = $("#notifications");
+  notifictionHolder.append(`<li class="${type} dj-hidden">${message}</li>`);
+  let nfList = $("#notifications li");
+  let numberOfMessages = nfList.length;
+
+  for (const ele of nfList) {
+    $(ele).slideDown();
+  }
+
+  for (const ele of nfList) {
+    await sleep(2750 - numberOfMessages * 300);
+    $(ele).slideUp(400);
+    await sleep(400);
+    $(ele).remove();
+  }
 };
 
 let mql = window.matchMedia("(max-width: 810px)");
@@ -152,7 +167,7 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
       }
     },
     error (error) {
-      notify("bir şeyler yanlış gitti");
+      notify("bir şeyler yanlış gitti", "error");
       $("#load_indicator").css("display", "none");
       console.log(error);
     }
@@ -233,9 +248,13 @@ $("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_vie
 });
 
 $(function () {
-  let notification = $("#notifications").attr("data-request-message");
-  if (notification) {
-    notify(notification);
+  const notificationHolder = $("#notifications");
+  let notifications = notificationHolder.attr("data-request-message");
+  if (notifications) {
+    for (let item of notifications.split("&&")) {
+      const nf = item.split("::"); // get type
+      notify(nf[0], nf[1]);
+    }
   }
 
   if (!mql.matches) {

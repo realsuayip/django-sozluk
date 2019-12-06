@@ -3,11 +3,10 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
     PasswordResetConfirmView
 
 from .views.auth import Login, Logout, SignUp, ConfirmEmail, ResendEmailConfirmation, ChangePassword, ChangeEmail
-from .views.deprecation import index, topic
 from .views.detail import Chat, user_profile
 from .views.edit import UserPreferences, EntryUpdate
 from .views.json import AsyncTopicList, AutoComplete, UserAction, EntryAction, TopicAction, ComposeMessage, Vote
-from .views.list import PeopleList, ConversationList, ActivityList, CategoryList, TopicList
+from .views.list import PeopleList, ConversationList, ActivityList, CategoryList, TopicList, TopicEntryList, index
 
 
 urlpatterns_json = [
@@ -39,27 +38,39 @@ urlpatterns_password_reset = [
          name="password_reset_complete"),
 ]
 
-urlpatterns_regular = [path('', index, name="home"),
-                       path('login/', Login.as_view(), name="login"),
-                       path('register/', SignUp.as_view(), name="register"),
-                       path('logout/', Logout.as_view(next_page="/"), name="logout"),
-                       path('biri/<str:username>/', user_profile, name="user_profile"),
-                       path('topic/', topic, name="topic_search"),
-                       path('topic/<slug:slug>/', topic, name="topic"),
-                       path('topic/<str:unicode>/', topic, name="topic_unicode_url"),
-                       path('basliklar/<slug:slug>/', TopicList.as_view(), name="topic_list"),
-                       path('entry/<int:entry_id>/', topic, name="entry_permalink"),
-                       path('entry/update/<int:pk>/', EntryUpdate.as_view(), name="entry_update"),
-                       path('mesaj/', ConversationList.as_view(), name="messages"),
-                       path('mesaj/<str:username>/', Chat.as_view(), name="conversation"),
-                       path('takip-engellenmis/', PeopleList.as_view(), name="people"),
-                       path('olay/', ActivityList.as_view(), name="activity"),
-                       path("kanallar/", CategoryList.as_view(), name="category_list"),
-                       path("ayarlar/", UserPreferences.as_view(), name="user_preferences"),
-                       path("ayarlar/sifre/", ChangePassword.as_view(), name="user_preferences_password"),
-                       path("ayarlar/email/", ChangeEmail.as_view(), name="user_preferences_email"),
-                       path("email/onayla/<uidb64>/<token>/", ConfirmEmail.as_view(), name="confirm_email"),
-                       path("email/tekrar/", ResendEmailConfirmation.as_view(), name="resend_email")
-                       ]
+
+urlpatterns_regular = [
+    # General views
+    path('', index, name="home"),
+    path('basliklar/<slug:slug>/', TopicList.as_view(), name="topic_list"),
+    path("kanallar/", CategoryList.as_view(), name="category_list"),
+
+    # Topic entry list
+    path("topic/", TopicEntryList.as_view(), name="topic-search"),
+    path("topic/<slug:slug>/", TopicEntryList.as_view(), name="topic"),
+    path("topic/<str:unicode_string>/", TopicEntryList.as_view(), name="topic-unicode-url"),
+    path('entry/<int:entry_id>/', TopicEntryList.as_view(), name="entry-permalink"),
+
+    # User authentication
+    path('login/', Login.as_view(), name="login"),
+    path('register/', SignUp.as_view(), name="register"),
+    path('logout/', Logout.as_view(next_page="/"), name="logout"),
+    path('biri/<str:username>/', user_profile, name="user_profile"),
+    path("email/onayla/<uidb64>/<token>/", ConfirmEmail.as_view(), name="confirm_email"),
+    path("email/tekrar/", ResendEmailConfirmation.as_view(), name="resend_email"),
+
+    # User specific settings and views
+    path("ayarlar/", UserPreferences.as_view(), name="user_preferences"),
+    path("ayarlar/sifre/", ChangePassword.as_view(), name="user_preferences_password"),
+    path("ayarlar/email/", ChangeEmail.as_view(), name="user_preferences_email"),
+    path('takip-engellenmis/', PeopleList.as_view(), name="people"),
+    path('olay/', ActivityList.as_view(), name="activity"),
+    path('mesaj/', ConversationList.as_view(), name="messages"),
+    path('mesaj/<str:username>/', Chat.as_view(), name="conversation"),
+
+    # Other views
+    path('entry/update/<int:pk>/', EntryUpdate.as_view(), name="entry_update"),
+
+]
 
 urlpatterns = urlpatterns_regular + urlpatterns_json + urlpatterns_password_reset

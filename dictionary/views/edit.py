@@ -42,7 +42,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
             notifications.info(self.request, "yazdım bir kenara")
             return reverse("entry_update", kwargs={"pk": self.get_object().pk})
         else:
-            return reverse("entry_permalink", kwargs={"entry_id": self.get_object().pk})
+            return reverse("entry-permalink", kwargs={"entry_id": self.get_object().pk})
 
     def form_valid(self, form):
         entry_is_draft_initial = self.get_object().is_draft  # returns True is the object is draft
