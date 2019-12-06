@@ -296,8 +296,8 @@ ul.topic-list li a {
     text-decoration: none;
     color: #333;
     font-size: 1em;
-    text-overflow: ellipsis;
-    max-width: calc(100% - 20px)
+    max-width: calc(100% - 20px);
+    word-break: break-word;
 }
 
 ul.topic-list li small.total_entries {

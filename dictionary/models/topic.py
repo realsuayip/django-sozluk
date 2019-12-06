@@ -1,5 +1,6 @@
 from uuslug import uuslug
 
+from django.core.validators import RegexValidator, MaxLengthValidator
 from django.db import models
 from django.db.models import Q
 
@@ -7,6 +8,12 @@ from .author import Author
 from .category import Category
 from .entry import Entry
 from .managers.topic import TopicManager
+from ..utils import turkish_lower
+
+
+topic_title_validators = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/"*,.!?~\[\] {} <>^;\\|-]+$""",
+                                         message="bu başlık geçerisz karakterler içeriyor"),
+                          MaxLengthValidator(50, message="bu başlık çok uzun")]
 
 
 class TopicFollowing(models.Model):
@@ -19,7 +26,7 @@ class TopicFollowing(models.Model):
 
 
 class Topic(models.Model):
-    title = models.CharField(max_length=50, unique=True)
+    title = models.CharField(max_length=50, unique=True, validators=topic_title_validators)
     date_created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(Author, on_delete=models.PROTECT)
     category = models.ManyToManyField(Category, blank=True)
@@ -28,6 +35,7 @@ class Topic(models.Model):
     objects = TopicManager()
 
     def save(self, *args, **kwargs):
+        self.title = turkish_lower(self.title)
         self.slug = uuslug(self.title, instance=self)
         super().save(*args, **kwargs)
 

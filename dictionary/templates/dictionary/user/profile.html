@@ -85,10 +85,8 @@
     {% else %}
         <small>yok ki</small>
     {% endif %}
-    <hr>
 
-
-    {% include "dictionary/includes/paginaton.html" with paginator=page_obj %}
+    {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" %}
     <br>
 {% endblock %}
 {% block rightframe %}

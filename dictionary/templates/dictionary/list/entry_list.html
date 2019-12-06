@@ -172,7 +172,7 @@
                 {% endif %}
 
 
-                {% if topic.title|banned_topic %}
+                {% if topic.title|banned_topic or not topic.title|is_valid_topic_title %}
                     <p>lanet olsun böyle başlığa zaten</p>
                 {% endif %}
 
@@ -185,8 +185,7 @@
 
         {% include "dictionary/includes/send_message_modal.html" %}
         {% include "dictionary/includes/block_user_modal.html" %}
-
-        {% if not topic.title|banned_topic %}
+        {% if not topic.title|banned_topic and topic.title|is_valid_topic_title %}
             <hr>
             <section class="user-comments">
                 <div class="editor-buttons">

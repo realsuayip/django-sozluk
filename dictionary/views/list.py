@@ -5,6 +5,7 @@ import random
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError
 from django.db.models import Q, F, Max, Case, When, IntegerField
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
@@ -17,7 +18,8 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing
 from ..utils.managers import TopicListManager
-from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, nondb_categories, time_threshold_24h
+from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, nondb_categories, time_threshold_24h, \
+    banned_topics
 
 
 def index(request):
@@ -55,6 +57,7 @@ class ActivityList(LoginRequiredMixin, ListView):
     model = TopicFollowing
     template_name = "dictionary/list/activity_list.html"
     context_object_name = "topics_following"
+    paginate_by = 30
 
     def get_queryset(self):
         return TopicFollowing.objects.filter(author=self.request.user).annotate(
@@ -164,6 +167,10 @@ class TopicEntryList(ListView, FormMixin):
             return self.form_invalid(form)
 
     def form_valid(self, form):
+        if self.topic.title in banned_topics:
+            # not likely to occur in normal circumstances so you may include some humor here.
+            notifications.error(self.request, "olmaz ki canım... hürrüpü")
+            return self.form_invalid(form)
         # Entry creation handling
         entry = form.save(commit=False)
         entry.author = self.request.user
@@ -172,8 +179,15 @@ class TopicEntryList(ListView, FormMixin):
             entry.topic = self.topic
         else:
             # todo drafts also create topics? delete topics if no entries exist, signals
-            created_topic = Topic.objects.create(title=self.topic.title, created_by=self.request.user)
-            entry.topic = created_topic
+            try:
+                # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
+                Topic(title=self.topic.title, created_by=self.request.user).full_clean()
+            except ValidationError as error:
+                for msg in error.messages:
+                    notifications.error(self.request, msg)
+                return self.form_invalid(form)
+
+            entry.topic = Topic.objects.create_topic(title=self.topic.title, created_by=self.request.user)
         entry.save()
 
         if form.cleaned_data.get("is_draft"):
@@ -181,6 +195,26 @@ class TopicEntryList(ListView, FormMixin):
             return self._redirect_to_self()
 
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
+
+    def form_invalid(self, form):
+        """
+        This can be called by invalid Topic title or banned topic post. Because no queryset is returned, a custom
+        form_invalid method is necessary. In this method, appropriate redirections are made to ensure that user finds
+        themselves where they started. Error messages supplied via notifications in form_valid exception catch.
+        """
+        unicode_url_argument = None
+        if self.kwargs.get("unicode_string"):
+            unicode_url_argument = self.kwargs.get("unicode_string")
+        elif self.request.GET.get("q"):
+            unicode_url_argument = self.request.GET.get("q")
+
+        if unicode_url_argument:
+            return redirect(reverse("topic-unicode-url", kwargs={"unicode_string": unicode_url_argument}))
+
+        if self.kwargs.get("entry_id"):
+            return redirect(reverse("entry-permalink", kwargs={"entry_id": self.kwargs.get("entry_id")}))
+
+        return redirect(reverse("topic", kwargs={"slug": self.kwargs.get("slug")}))
 
     def today(self):
         return self.topic.entries.filter(date_created__gte=time_threshold_24h)

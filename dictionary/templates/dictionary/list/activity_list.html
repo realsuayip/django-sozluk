@@ -20,6 +20,6 @@
         {% else %}
             <small>yok ki</small>
         {% endif %}
-
+        {% include "dictionary/includes/paginaton.html" with paginator=page_obj stretch="yes" hr="yes" %}
     </div>
 {% endblock %}

@@ -2,8 +2,10 @@ import re
 import calendar
 from django import template
 from django.utils.html import escape, mark_safe
+from django.core.validators import ValidationError
 from ..utils.settings import banned_topics
-
+from ..models import Topic, Author
+from ..admin import GENERIC_SUPERUSER_ID
 
 register = template.Library()
 
@@ -39,6 +41,19 @@ def banned_topic(topic_title):
         return True
     else:
         return False
+
+
+@register.filter
+def is_valid_topic_title(topic_title):
+    # If it is already created, it is most likely valid, huh?
+    if Topic.objects.filter(title=topic_title).exists():
+        return True
+
+    try:
+        Topic(title=topic_title, created_by=Author.objects.get(pk=GENERIC_SUPERUSER_ID)).full_clean()
+    except ValidationError:
+        return False
+    return True
 
 
 @register.filter

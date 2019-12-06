@@ -2,13 +2,14 @@ from django.http import Http404
 from django.db import models
 
 from ...models import Entry
+from ...utils import turkish_lower
 
 
 class TopicManager(models.Manager):
 
     class PseudoTopic:
         def __init__(self, title):
-            self.title = title
+            self.title = turkish_lower(title)
             self.exists = False
 
         def __str__(self):
@@ -35,3 +36,7 @@ class TopicManager(models.Manager):
                 raise Http404
         else:
             raise ValueError("No arguments given.")
+
+    def create_topic(self, title, created_by):
+        topic = self.create(title=title, created_by=created_by)
+        return topic
