@@ -5,7 +5,7 @@ from django.utils.html import escape, mark_safe
 from django.core.validators import ValidationError
 from ..utils.settings import banned_topics
 from ..models import Topic, Author
-from ..admin import GENERIC_SUPERUSER_ID
+from ..utils.settings import GENERIC_SUPERUSER_ID
 
 register = template.Library()
 

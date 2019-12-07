@@ -10,8 +10,6 @@
     </div>
 {% endblock %}
 {% block content %}
-
-
     {% for entry in entries %}
 
         <h2>{{ forloop.counter }}. <a target="_blank"
@@ -23,7 +21,6 @@
     {% endfor %}
 
     <br>
-
     <form method="POST">
         <span style="margin-right: 1em;">işleminiz:</span>
         <select name="operation" required>
@@ -46,8 +43,4 @@
         </div>
         {% csrf_token %}
     </form>
-
-
-
-
 {% endblock %}

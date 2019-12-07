@@ -1,15 +1,8 @@
 {% extends "admin/base_site.html" %}
-
-
-
 {% block content %}
-
-
     <table id="result_list" style="width: 100%;">
         <thead>
         <tr>
-
-
             <th scope="col" class="column-username">
                 <div class="text"><a href="#">Kullanıcı adı</a></div>
                 <div class="clear"></div>
@@ -21,40 +14,29 @@
             </th>
 
             <th scope="col" class="sortable column-last_name">
-
-
-                <div class="text"><a href="#">Kayıt tarihi</a></div>
+                <div class="text"><a href="#">Başvuru tarihi</a></div>
                 <div class="clear"></div>
             </th>
 
+            <th scope="col" class="sortable column-last_name">
+                <div class="text"><a href="#">Kayıt tarihi</a></div>
+                <div class="clear"></div>
+            </th>
         </tr>
         </thead>
-
         <tbody>
-
-        {% for obj in objects %}
-
-
+        {% for obj in object_list %}
             <tr class="row{% if forloop.counter|divisibleby:2 %}2{% else %}1{% endif %}">
-                <th class="field-username"><a href="{% url 'admin:novice_lookup' username=obj.username %}">{{ obj.username }}</a></th>
+                <th class="field-username"><a
+                        href="{% url 'admin:novice_lookup' username=obj.username %}">{{ obj.username }}</a></th>
                 <td class="field-email">{{ obj.email }}</td>
+                <td class="field-date">{{ obj.application_date }}</td>
                 <td class="field-first_name">{{ obj.date_joined }}</td>
             </tr>
-
         {% endfor %}
-
-
         </tbody>
     </table>
-
     <hr>
-
-
-
     <br>
-
-<small>çaylak listesindeki mevcut kullanıcı sayısı: {{ objects.count }}</small>
-
-
-
+    <small>çaylak listesindeki mevcut kullanıcı sayısı: {{ novice_count }}</small>
 {% endblock %}

@@ -1,4 +1,6 @@
 ﻿## django-sozluk, ekşi sözlük clone powered by Python
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6c2a34dfbd184f139cd32f8f622d4002)](https://www.codacy.com/manual/realsuayip/django-sozluk?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=realsuayip/django-sozluk&amp;utm_campaign=Badge_Grade)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 This project is subject to further development, check out "todo"    keyword in the project files to see the to-do's.
 
@@ -8,7 +10,6 @@ No extra actions needed other than migrations and creation of admin account (mak
 
     python -m smtpd -n -c DebuggingServer localhost:1025
 
-Python 3.6+ and Django 2+ required. Other dependencies are stated in requirements file.
+Python 3.6+ and Django 2.2.8 required. Other dependencies are stated in requirements file.
 
  If you want to contribute to the project or have found a bug or need help about deployment etc., please contact me.
-

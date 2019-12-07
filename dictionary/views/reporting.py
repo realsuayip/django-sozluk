@@ -1,5 +1,5 @@
 from django.contrib import messages as notifications
-from django.shortcuts import redirect, reverse
+from django.shortcuts import reverse
 from django.views.generic import CreateView
 
 from ..models import GeneralReport
