@@ -1,5 +1,5 @@
 <div class="blackquote-container">
-    {% load basic_filters %}
+    {% load filters %}
     <blockquote class="user-pin m-0">
         <h5><a href="{% url 'topic' slug=entry.topic.slug %}"> {{ entry.topic }}</a></h5>
         <span class="entry-content">  {{ entry.content|formatted|linebreaks }} </span>

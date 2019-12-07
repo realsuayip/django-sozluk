@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 
 from ..forms.edit import EntryForm
-from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing
+from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
 from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, nondb_categories, time_threshold_24h, \
     banned_topics
@@ -51,6 +51,12 @@ class ConversationList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Conversation.objects.list_for_user(self.request.user)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data()
+        unread_messages_count = Message.objects.filter(recipient=self.request.user, read_at__isnull=True).count()
+        context["unread_messages_count"] = unread_messages_count
+        return context
 
 
 class ActivityList(LoginRequiredMixin, ListView):

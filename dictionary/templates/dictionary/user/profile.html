@@ -94,7 +94,7 @@
     <h6><strong>notlar</strong></h6>
     <form method="post" class="memento">
         {% load widget_tweaks %}
-        {% load basic_filters %}
+        {% load filters %}
 
         {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
             {% render_field form.body placeholder=text_placeholder name="memento" class="entry_editor" rows="10" %}

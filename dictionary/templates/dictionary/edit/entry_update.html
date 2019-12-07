@@ -3,7 +3,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 
 {% block content %}
-    {% load basic_filters %}
+    {% load filters %}
     {% load widget_tweaks %}
     <h4><a href="{% url "topic" slug=entry.topic.slug %}">{{ entry.topic.title }}</a></h4>
     <br>

@@ -9,7 +9,6 @@
     <!-- Bootstrap CSS -->
 
     {% load static %}
-    {% load global_objects %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
@@ -66,17 +65,16 @@
                     </i><span>ben</span></a>
                 </li>
 
-                {% message_status user=request.user as new_message_exists %}
-                <li {% if new_message_exists %}class="new"{% endif %}>
+
+                <li {% if user_has_unread_messages %}class="new"{% endif %}>
                     <a class="nav-quicklink" href="{% url 'messages' %}">
                         <i class="material-icons">
                             chat_bubble_outline
                         </i><span>mesaj</span></a>
                 </li>
 
-                {% following_status request.user as unread_content_exists %}
-                <li {% if unread_content_exists %}class="new"{% endif %}><a class="nav-quicklink"
-                                                                            href="{% url 'activity' %}">
+                <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
+                                                                                 href="{% url 'activity' %}">
                     <i class="material-icons">
                         timeline
                     </i><span>olay</span></a>
@@ -179,7 +177,7 @@
                     bugün</a>
             </li>
 
-            {% categories_list as nav_categories %}
+
             {% for category in nav_categories|slice:":4" %}
                 <li class="nav-item" data-category="{{ category.slug }}"
                     data-safename="{{ category.name }}">

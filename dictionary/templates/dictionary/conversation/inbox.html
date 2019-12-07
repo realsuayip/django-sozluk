@@ -2,8 +2,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 {% block content %}
     {% load humanize %}
-    {% load global_objects %}
-    <h4>mesajlar (<span>{% message_status user=request.user unread_count=True %}</span>)</h4>
+    <h4>mesajlar {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}</h4>
     <hr>
 
     {% if conversations %}

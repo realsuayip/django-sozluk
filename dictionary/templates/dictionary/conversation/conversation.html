@@ -3,7 +3,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 {% block content %}
     {% load humanize %}
-    {% load basic_filters %}
+    {% load filters %}
     {% include "dictionary/includes/block_user_modal.html" %}
     <h4><a href="{% url 'user-profile' username=recipient.username %}">@{{ recipient.username }}</a> ile sohbet muhabbet
     </h4>
