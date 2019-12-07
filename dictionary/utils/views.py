@@ -18,7 +18,8 @@ class JsonView(UserPassesTestMixin, View):
     bad_request_message = "400 Bad Request"
 
     def handle_no_permission(self):
-        return JsonResponse({"error": "You lack permissions to view this page."}, status=403)
+        self.data = dict(error="You lack permissions to view this page.")
+        return self._response(status=403)
 
     def test_func(self):
         logged_in = self.request.user.is_authenticated
@@ -45,8 +46,8 @@ class JsonView(UserPassesTestMixin, View):
                 raise ValueError(f"The view {self.__class__.__name__} returned nothing")
             return self.error()
 
-    def _response(self):
-        return JsonResponse(self.data)
+    def _response(self, status=200):
+        return JsonResponse(self.data, status=status)
 
     def _get_data(self, method):
         self.request_data = method
@@ -64,16 +65,20 @@ class JsonView(UserPassesTestMixin, View):
         if message_pop:
             notifications.success(self.request, self.success_message)
 
-        if redirect_url:
-            return JsonResponse({"success": True, "message": self.success_message, "redirect_to": redirect_url},
-                                status=200)
+        self.data = dict(success=True, message=self.success_message)
 
-        return JsonResponse({"success": True, "message": self.success_message}, status=200)
+        if redirect_url:
+            self.data.update({"redirect_to": redirect_url})
+
+        return self._response()
 
     def error(self, message_pop=False, status=500):
         if message_pop:
             notifications.success(self.request, self.error_message)
-        return JsonResponse({"success": False, "message": self.error_message}, status=status)
+
+        self.data = dict(success=False, message=self.error_message)
+        return self._response(status=status)
 
     def bad_request(self):
-        return JsonResponse({"success": False, "message": self.bad_request_message}, status=400)
+        self.data = dict(success=False, message=self.bad_request_message)
+        return self._response(status=400)
