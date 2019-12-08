@@ -98,7 +98,8 @@ class Paginator {
 }
 
 const topicListCall = function (apiUrl, parameters, extended = false, page = null) {
-  $("#load_indicator").css("display", "inline-block");
+  const loadInicator = $("#load_indicator");
+  loadInicator.css("display", "inline-block");
   // extended=true calls ALL of the corresponding topics
   let topicList = $("ul#topic-list");
   // if extended == true then set extended parameter, if other parameters exist convert ? to &
@@ -108,7 +109,7 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
     url: apiUrl + parameters + parameterIsExtended,
     success (data) {
       $("#current_category_name").html(localStorage.getItem("active_category_safe"));
-      $("#load_indicator").css("display", "none");
+      loadInicator.css("display", "none");
 
       if (data["topic_data"].length === 0) {
         topicList.html("<small>yok ki</small>");
@@ -129,7 +130,7 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
         }
         const slugIdentifier = data["slug_identifier"];
         if (page) {
-          const paginator = new Paginator(data["topic_data"], 2);
+          const paginator = new Paginator(data["topic_data"], 50);
 
           if (page > paginator.total_pages) {
             notify("yok hiç bişi kalmamış");
@@ -168,7 +169,7 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
     },
     error (error) {
       notify("bir şeyler yanlış gitti", "error");
-      $("#load_indicator").css("display", "none");
+      loadInicator.css("display", "none");
       console.log(error);
     }
   });
@@ -180,7 +181,17 @@ const leftFrameReset = function () {
   localStorage.removeItem("navigation_page");
 };
 
-const leftFramePopulate = function (category = null, extended = false, page = null, resetCache = false) {
+const dictToParameters = function (dict) {
+  const str = [];
+  for (let key in dict) {
+    if (dict.hasOwnProperty(key) && dict[key]) {
+      str.push(encodeURIComponent(key) + "=" + encodeURIComponent(dict[key]));
+    }
+  }
+  return str.join("&");
+};
+
+const leftFramePopulate = function (category = null, extended = false, page = null, resetCache = false, searchParameters = null) {
   // category -> cateogry slug to call topics
   // extended -> retrieve full data (required for paginated data)
   // page -> which page to call, use with extended true
@@ -191,8 +202,9 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
   yearSelect.css("display", "none");
   yearSelect.html("");
 
-  if (category == null) {
-    console.log("something happened.");
+  if (!category) {
+    notify("noluyo ayol.", "error");
+    return;
   }
 
   let apiUrl = `/category/${category}/`;
@@ -206,6 +218,14 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
 
   if (category === "caylaklar") {
     parameters = "?a=caylaklar";
+  }
+
+  if (category === "hayvan_ara") {
+    if (localStorage.getItem("search_parameters")) {
+      parameters = localStorage.getItem("search_parameters");
+    } else {
+      parameters = searchParameters;
+    }
   }
 
   if (category === "tarihte-bugun") {
@@ -234,20 +254,26 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
   topicListCall(apiUrl, parameters, extended, page);
 };
 
-$("ul#category_view li.nav-item, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function () {
+$("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), a#category_view_ls").on("click", function () {
   localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
   $("ul#category_view li").removeClass("active");
   $("div#category_view_in a").removeClass("active");
   $(this).addClass("active");
   localStorage.setItem("active_category", $(this).attr("data-category"));
-});
-
-$("ul#category_view li.nav-item, div#category_view_in a.nav-item, a#category_view_ls").on("click", function () {
   leftFrameReset();
   leftFramePopulate($(this).attr("data-category"));
 });
 
 $(function () {
+  $("input.with-datepicker").datepicker(
+    {
+      container: "#dropdown_detailed_search",
+      todayHighlight: true,
+      language: "tr",
+      autoclose: true,
+      orientation: "auto bottom"}
+  ).attr("placeholder", "gg.aa.yyyy");
+
   const notificationHolder = $("#notifications");
   let notifications = notificationHolder.attr("data-request-message");
   if (notifications) {
@@ -264,7 +290,7 @@ $(function () {
       const navigationPage = localStorage.getItem("navigation_page");
       let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
       selector.addClass("active");
-      if (!selector.attr("data-category")) {
+      if (!selector.attr("data-category") && category !== "hayvan_ara") {
         // DEFAULT
         // YÜKLENİYOR.
       } else {
@@ -293,11 +319,16 @@ $(function () {
     serviceUrl: "/autocomplete/general/",
     triggerSelectOnValidInput: false,
     paramName: "author",
-
     onSelect (suggestion) {
       $("input.author-search").val(suggestion.value);
     }
+  });
 
+  $("input#author_nick").autocomplete({
+    serviceUrl: "/autocomplete/general/",
+    triggerSelectOnValidInput: false,
+    paramName: "author",
+    appendTo: "#raw_inputs"
   });
 
   $(".send-message-trigger").on("click", function () {
@@ -505,7 +536,7 @@ $(".favorite-entry-btn").on("click", function () {
   });
 });
 
-$(document).on("click", "div.entry_info div.rate .dropdown-menu", e => {
+$(document).on("click", "div.entry_info div.rate .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown)", e => {
   e.stopPropagation();
 });
 
@@ -731,3 +762,30 @@ if ($("body").hasClass("has-entries")) {
     $(this).hide();
   });
 }
+
+$("button#perform_advanced_search").on("click", function () {
+  const keywords = $("input#keywords").val();
+  const authorNick = $("input#author_nick").val();
+  const isNiceOnes = $("input#nice_ones").is(":checked");
+  const isFavorites = $("input#in_favorites").is(":checked");
+  const fromDate = $("input#date_from").val();
+  const toDate = $("input#date_to").val();
+  const ordering = $("select#ordering").val();
+
+  const keys = {
+    keywords,
+    "author_nick": authorNick,
+    "is_nice_ones": isNiceOnes,
+    "is_in_favorites": isFavorites,
+    "from_date": fromDate,
+    "to_date": toDate,
+    ordering
+  };
+  const searchParameters = "?" + dictToParameters(keys);
+  localStorage.setItem("active_category_safe", "arama sonuçları");
+  localStorage.setItem("active_category", "hayvan_ara");
+  localStorage.setItem("search_parameters", searchParameters);
+  leftFrameReset();
+  // todo hayvan_ara => hayvan-ara
+  leftFramePopulate("hayvan_ara", false, null, false, searchParameters);
+});

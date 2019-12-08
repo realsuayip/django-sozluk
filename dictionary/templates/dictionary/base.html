@@ -16,7 +16,8 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <title>{% block title %}{% endblock %} - django sözlük </title>
 </head>
 
@@ -38,81 +39,159 @@
         </div>
 
         <!--- seach box -->
-        <div class="searchbox {% if not user.is_authenticated %}sb-guest{% endif %}">
+
+
+        <div class="searchbox {% if not user.is_authenticated %}sb-guest{% else %}sb-login{% endif %}">
 
             <form method="GET" action="{% url 'topic-search' %}">
                 <div class="input-group">
                     <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text"
                            id="header_search" aria-describedby="button-addon2">
-                    <div class="input-group-append">
-                        <button class="btn searchbtn" type="submit" id="button-addon2"><i class="material-icons">
-                            search
-                        </i></button>
+
+
+                    <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+            </form>
+
+            {# extended search dropdown start #}
+            <div class="dropdown-menu dropdown-menu-right px-3 py-2" style="width: inherit;"
+                 id="dropdown_detailed_search">
+<form>
+                <div class="form-group" id="raw_inputs">
+                    <label for="keywords">kelimeler</label>
+                    <input type="text" class="form-control" id="keywords">
+
+                    <label for="author_nick">yazar</label>
+                    <input type="text" class="form-control" id="author_nick">
+                </div>
+
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="nice_ones">
+                        <label class="custom-control-label" for="nice_ones">güzelinden olsun</label>
+                    </div>
+
+                    {% if request.user.is_authenticated %}
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="in_favorites">
+                            <label class="custom-control-label" for="in_favorites">sadece entry favorilediğim
+                                başlıklarda ara</label>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="date_from">şu tarihten:</label>
+                            <input type="text" class="form-control with-datepicker" id="date_from">
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="date_to">bu tarihe kadar:</label>
+                            <input type="text" class="form-control with-datepicker" id="date_to">
+                        </div>
                     </div>
                 </div>
+
+
+                <div class="form-group">
+                    <label for="ordering">sıralama şekli</label>
+                    <select name="ordering" id="ordering" class="form-control">
+                        <option value="alpha">alfabetik</option>
+                        <option value="newer" selected>yeniden eskiye</option>
+                        <option value="popular">dolu dolu</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-django" style="width: 100%;"
+                            id="perform_advanced_search">çok güzel ara
+                    </button>
+                </div>
             </form>
+
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item search-closer" id="close_search_dropdown">boşver</a>
+            </div>
+            {# extended search dropdown end#}
+
+
+            <div class="input-group-append">
+                <button class="btn searchbtn" type="submit" id="button-addon2"><i class="material-icons">
+                    search
+                </i></button>
+
+
+            </div>
         </div>
 
+    </div>
 
-        <!--- user navigation -->
+
+    <!--- user navigation -->
 
 
-        {% if request.user.is_authenticated %}
-            <ul class="user-navigation">
-                <li><a class="nav-quicklink" href="{% url 'user-profile' username=request.user.username %}">
+    {% if request.user.is_authenticated %}
+        <ul class="user-navigation">
+
+            <li><a class="nav-quicklink" href="{% url 'user-profile' username=request.user.username %}">
+                <i class="material-icons">
+                    person
+                </i><span>ben</span></a>
+            </li>
+
+
+            <li {% if user_has_unread_messages %}class="new"{% endif %}>
+                <a class="nav-quicklink" href="{% url 'messages' %}">
                     <i class="material-icons">
-                        person
-                    </i><span>ben</span></a>
+                        chat_bubble_outline
+                    </i><span>mesaj</span></a>
+            </li>
+
+            <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
+                                                                             href="{% url 'activity' %}">
+                <i class="material-icons">
+                    timeline
+                </i><span>olay</span></a>
+            </li>
+
+
+            <li class="desktop-only">
+                <a data-toggle="dropdown" href="#">
+                    <i class="material-icons">more_horiz</i></a>
+
+
+                <div class="user-dropdown dropdown-menu dropdown-menu-right"
+                     aria-labelledby="user-dropdown">
+                    <a class="dropdown-item" href="{% url 'category_list' %}">kanallar</a>
+                    <a class="dropdown-item" href="{% url 'user_preferences' %}">ayarlar</a>
+                    <a class="dropdown-item" href="{% url 'people' %}">takip/engellenmiş</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">terk</a>
+                </div>
+
+            </li>
+
+        </ul>
+
+
+    {% else %}
+        <nav class="usermenu">
+            <ul>
+                <li>
+                    <a href="{% url 'login' %}">giriş yap</a>
                 </li>
-
-
-                <li {% if user_has_unread_messages %}class="new"{% endif %}>
-                    <a class="nav-quicklink" href="{% url 'messages' %}">
-                        <i class="material-icons">
-                            chat_bubble_outline
-                        </i><span>mesaj</span></a>
+                <li>
+                    <a href="{% url 'register' %}">kayıt ol</a>
                 </li>
-
-                <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
-                                                                                 href="{% url 'activity' %}">
-                    <i class="material-icons">
-                        timeline
-                    </i><span>olay</span></a>
-                </li>
-
-
-                <li class="desktop-only">
-                    <a data-toggle="dropdown" href="#">
-                        <i class="material-icons">more_horiz</i></a>
-
-
-                    <div class="user-dropdown dropdown-menu dropdown-menu-right"
-                         aria-labelledby="user-dropdown">
-                        <a class="dropdown-item" href="{% url 'category_list' %}">kanallar</a>
-                        <a class="dropdown-item" href="{% url 'user_preferences' %}">ayarlar</a>
-                        <a class="dropdown-item" href="{% url 'people' %}">takip/engellenmiş</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'logout' %}">terk</a>
-                    </div>
-
-                </li>
-
             </ul>
+        </nav>
 
-
-        {% else %}
-            <nav class="usermenu">
-                <ul>
-                    <li>
-                        <a href="{% url 'login' %}">giriş yap</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'register' %}">kayıt ol</a>
-                    </li>
-                </ul>
-            </nav>
-
-        {% endif %}
+    {% endif %}
 
     </div>
 
@@ -290,6 +369,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
 
 <script src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
 <script src="{% static 'dictionary/js/djdict.js' %}"></script>

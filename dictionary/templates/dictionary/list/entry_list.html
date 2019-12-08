@@ -11,7 +11,9 @@
 
             {% if topic.exists %}
 
-                <h1><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a></h1>
+                <h1 class="topic-title"><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a>{% if mode == "search" %}
+                    <small style="font-size: 1rem;">[arama terimi:
+                        <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
 
 
                 {% if topic.has_entries %}
@@ -123,12 +125,21 @@
                                 {% endfor %}
 
                             {% else %}
+                                {# topic has entries but parameters returned no corresponding entries #}
                                 {% if mode == "caylaklar" %}
                                     <p>bu başlığa bugün pek çaylak entry'si girilmemiş.</p>
                                 {% else %}
-                                    {# topic has entries but parameters returned no corresponding entries #}
                                     <p>başlıkta aradığınız kritere uygun entry bulunamadı</p>
                                 {% endif %}
+
+                                {% if all_entries_count %}
+                                    <a title="tümünü göster"
+                                       href="{% url 'topic' slug=topic.slug %}"
+                                       class="more-entries-button">
+                                        tümünü göster ({{ all_entries_count }} entry)
+                                    </a>
+                                {% endif %}
+
                             {% endif %}
                         {% endif %}
                     </ul>
@@ -160,7 +171,7 @@
 
             {% else %}
                 {# Topic does not exist #}
-                <h1><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
+                <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
                 <p>böyle bir şey yok.</p>
 
                 {% if subsequent_entries_count > 0 %}
@@ -206,11 +217,13 @@
 
                     <div class="row">
                         <div class="col-6">
-                            <div class="form-check">
-                                {% render_field form.is_draft class="form-check-input" id="is_draft" %}
-                                <label class="form-check-label" for="is_draft">kenarda dursun şimdilik</label>
+
+                            <div class="custom-control custom-checkbox">
+                                {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
+                                <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
 
                             </div>
+
                         </div>
                         <div class="col-6">
                             <button type="submit" class="btn btn-django entry_submit">yolla</button>

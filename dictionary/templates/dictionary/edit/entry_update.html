@@ -28,12 +28,14 @@
             <div class="row">
                 <div class="col-6">
                     {% if entry.is_draft %}
-                        <div class="form-check">
-                            {% render_field form.is_draft class="form-check-input" id="is_draft" %}
-                            <label class="form-check-label" for="is_draft">kenarda dursun şimdilik</label>
+                        <div class="custom-control custom-checkbox">
+                            {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
+                            <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
 
                         </div>
-                          <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
+
+
+                        <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
                     {% else %}
                         <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
                     {% endif %}

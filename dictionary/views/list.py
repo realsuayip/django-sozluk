@@ -117,6 +117,9 @@ class TopicList(ListView):
         if slug == "bugun" and not self.request.user.is_authenticated:
             return self.model.objects.none()
 
+        if slug == "hayvan-ara":
+            raise ZeroDivisionError("Unimplemented yet")
+
         manager = TopicListManager(self.request.user, slug, extend=True, year=year)
         self.refresh_count = manager.refresh_count
         self.slug_identifier = manager.slug_identifier
@@ -126,7 +129,7 @@ class TopicList(ListView):
         slug = self.kwargs['slug']
         nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar", "takip": "takip",
                           "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar",
-                          "debe": "dünün en beğenilen entry'leri", }
+                          "debe": "dünün en beğenilen entry'leri", "hayvan-ara": "arama sonuçları" }
         if slug in nondb_categories:
             title = nondb_safename[slug]
         else:
@@ -358,6 +361,11 @@ class TopicEntryList(ListView, FormMixin):
             context["subsequent_entries_count"] = subsequent_entries_count
             context["subsequent_entries_page"] = subsequent_entries_page
 
+        elif not entries:
+            # Parameters returned no corresponding entries, show ALL entries count to guide the user
+            if self.view_mode in ["today", "today_in_history", "nice", "nicetoday", "search", "caylaklar"]:
+                context["all_entries_count"] = self._qs_filter(self.topic.entries.all()).count()
+
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -402,11 +410,11 @@ class TopicEntryList(ListView, FormMixin):
         """
         #  Normal handling of an existing topic
         if self.kwargs.get("slug"):
-            self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug"))
+            self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug").strip())
 
         #  Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
         elif self.kwargs.get("unicode_string"):
-            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string"))
+            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string").strip())
             if self.topic.exists:
                 return self._redirect_to_self()
 
@@ -428,7 +436,7 @@ class TopicEntryList(ListView, FormMixin):
 
         #  Search handling
         elif self.request.GET.get("q"):
-            query = self.request.GET.get("q")
+            query = self.request.GET.get("q").strip()
             if query.startswith("@") and len(query) > 1:
                 return redirect("user-profile", username=query[1:])
 
@@ -437,7 +445,7 @@ class TopicEntryList(ListView, FormMixin):
                     return redirect("entry-permalink", entry_id=query[1:])
 
             else:
-                self.topic = Topic.objects.get_or_pseudo(unicode_string=self.request.GET.get("q"))
+                self.topic = Topic.objects.get_or_pseudo(unicode_string=query)
                 if self.topic.exists:
                     return self._redirect_to_self()
 

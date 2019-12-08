@@ -1,9 +1,13 @@
+from decimal import Decimal
+from datetime import datetime
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
-from django.db.models import Max, Count, Q
+from django.db.models import Max, Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.timezone import make_aware
 
 from .settings import time_threshold_24h, TOPICS_PER_PAGE, nondb_categories, login_required_categories, do_not_cache
 from ..models import Entry, Topic, Category
@@ -25,7 +29,7 @@ class TopicListManager:
     custom_serialized_data = None
     cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
 
-    def __init__(self, user=None, slug=None, extend=False, year=None, fetch_cached=True):
+    def __init__(self, user=None, slug=None, extend=False, year=None, fetch_cached=True, search_keys=None):
         """
         :param user: only pass request.user, required for checking categories with login requirement
         :param slug: slug of the category
@@ -48,6 +52,7 @@ class TopicListManager:
         self.extend = extend
         self.slug = slug
         self.year = year
+        self.search_keys = search_keys
 
         if self.slug not in do_not_cache:
             self.check_cache()
@@ -120,6 +125,84 @@ class TopicListManager:
             last_entry_dt=Max('entries__date_created'),
             count=Count("entries", filter=Q(entries__date_created__gte=time_threshold_24h))).values("title", "slug",
                                                                                                     "count")
+
+    def hayvan_ara(self):
+        qs = Topic.objects.none()
+        keywords = self.search_keys.get("keywords")
+        author_nick = self.search_keys.get("author_nick")
+        favorites_only = True if self.search_keys.get("is_in_favorites") == "true" else False
+        nice_only = True if self.search_keys.get("is_nice_ones") == "true" else False
+        from_date = self.search_keys.get("from_date")
+        to_date = self.search_keys.get("to_date")
+        orderding = self.search_keys.get("ordering")
+        # todo input validation
+        # todo remove dropdown from mobible (static page)
+        # todo implement mobile view
+
+        terminate_search = False
+
+        while not terminate_search:
+
+            if favorites_only and self.user.is_authenticated:
+                qs = Topic.objects.filter(entries__favorited_by=self.user).distinct()
+                if not qs:
+                    break
+
+            if nice_only:
+                nice_only_annotate = dict(nice_sum=Sum("entries__vote_rate"))
+                nice_only_filter = dict(nice_sum__gte=Decimal("500"))
+                if not qs:
+                    qs = Topic.objects.annotate(**nice_only_annotate).filter(**nice_only_filter)
+                else:
+                    qs = qs.annotate(**nice_only_annotate).filter(**nice_only_filter)
+
+                if not qs:
+                    break
+
+            if author_nick:
+                author_filter = dict(entries__author__username=author_nick)
+                if not qs:
+                    qs = Topic.objects.filter(**author_filter)
+                else:
+                    qs = qs.filter(**author_filter)
+
+                if not qs:
+                    break
+
+            if keywords:
+                keyword_filter = dict(title__icontains=keywords)
+                if not qs:
+                    qs = Topic.objects.filter(**keyword_filter)
+                else:
+                    qs = qs.filter(**keyword_filter)
+
+            if from_date:
+                date_from = make_aware(datetime.strptime(from_date, "%d.%m.%Y"))
+                date_from_filter = dict(date_created__gte=date_from)
+                if not qs:
+                    qs = Topic.objects.filter(**date_from_filter)
+                else:
+                    qs = qs.filter(**date_from_filter)
+
+            if to_date:
+                date_to = make_aware(datetime.strptime(to_date, "%d.%m.%Y"))
+                date_to_filter = dict(date_created__lte=date_to)
+                if not qs:
+                    qs = Topic.objects.filter(**date_to_filter)
+                else:
+                    qs = qs.filter(**date_to_filter)
+
+            terminate_search = True
+
+        if qs:
+            if orderding == "alpha":
+                qs = qs.order_by("title")
+            elif orderding == "newer":
+                qs = qs.order_by("-date_created")
+            elif orderding == "popular":
+                qs = qs.annotate(entry_count=Count("entries")).order_by("-entry_count")
+
+        self.custom_serialized_data = qs.annotate(count=Count("entries")).values("title", "slug", "count")
 
     def generic_category(self):
         category = get_object_or_404(Category, slug=self.slug)

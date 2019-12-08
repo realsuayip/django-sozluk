@@ -9,7 +9,7 @@ class TopicManager(models.Manager):
 
     class PseudoTopic:
         def __init__(self, title):
-            self.title = turkish_lower(title)
+            self.title = turkish_lower(title).strip()
             self.exists = False
 
         def __str__(self):

@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import F
 from django.utils import timezone
 
-from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyNovices, EntryManagerOnlyPublished
+from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 
 
 class Entry(models.Model):
@@ -20,7 +20,6 @@ class Entry(models.Model):
     # manager to work properly. reviese todo
     objects_all = EntryManagerAll()
     objects_published = EntryManagerOnlyPublished()
-    objects_novices = EntryManagerOnlyNovices()
     objects = EntryManager()
 
     class Meta:

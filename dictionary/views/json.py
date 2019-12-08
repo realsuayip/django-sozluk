@@ -14,6 +14,7 @@ class AsyncTopicList(JsonView):
     def handle(self):
         slug = self.kwargs.get("slug")
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
+        search_keys = self.request_data if slug == "hayvan_ara" else None
 
         if year:
             try:
@@ -24,7 +25,8 @@ class AsyncTopicList(JsonView):
 
         extend = True if self.request_data.get("extended") == "yes" else False
         fetch_cached = False if self.request_data.get("nocache") == "yes" else True
-        manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached)
+        manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached,
+                                   search_keys=search_keys)
         self.data = dict(topic_data=manager.serialized, refresh_count=manager.refresh_count,
                          slug_identifier=manager.slug_identifier)
 

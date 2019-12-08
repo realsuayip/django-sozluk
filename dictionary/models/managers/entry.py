@@ -14,11 +14,6 @@ class EntryManagerAll(models.Manager):
     pass
 
 
-class EntryManagerOnlyNovices(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().exclude(author__is_novice=False)
-
-
 class EntryManagerOnlyPublished(models.Manager):
     # Includes ONLY the PUBLISHED entries (entries by NOVICE users still visible)
     use_for_related_fields = True
