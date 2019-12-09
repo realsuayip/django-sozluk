@@ -3,7 +3,7 @@ import calendar
 from django import template
 from django.utils.html import escape, mark_safe
 from django.core.validators import ValidationError
-from ..utils.settings import banned_topics
+from ..utils.settings import BANNED_TOPICS
 from ..models import Topic, Author
 from ..utils.settings import GENERIC_SUPERUSER_ID
 
@@ -37,7 +37,7 @@ def formatted(raw_entry):
 
 @register.filter
 def banned_topic(topic_title):
-    if topic_title in banned_topics:
+    if topic_title in BANNED_TOPICS:
         return True
     else:
         return False

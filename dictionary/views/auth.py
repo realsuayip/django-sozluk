@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_decode
 from ..forms.auth import SignUpForm, LoginForm, ChangeEmailForm, ResendEmailForm
 from ..models import UserVerification, Author
 from ..utils.email import send_email_confirmation
-from ..utils.settings import time_threshold_24h
+from ..utils.settings import TIME_THRESHOLD_24H
 
 
 class Login(LoginView):
@@ -61,7 +61,7 @@ class ConfirmEmail(View):
         try:
             user_id = urlsafe_base64_decode(uidb64).decode()
             verification_object = UserVerification.objects.get(author_id=user_id,
-                                                               expiration_date__gte=time_threshold_24h)
+                                                               expiration_date__gte=TIME_THRESHOLD_24H)
         except (ValueError, UnicodeDecodeError, UserVerification.DoesNotExist):
             return self.response()
 

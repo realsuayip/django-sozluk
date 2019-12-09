@@ -10,15 +10,15 @@ from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
 from ...utils import log_admin
-from ...utils.settings import time_threshold_24h, application_decline_message, application_accept_message, \
+from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE, \
     GENERIC_SUPERUSER_ID
 
 
 def novice_list(limit=None):
     novice_queryset = Author.objects.filter(last_activity__isnull=False, is_novice=True,
                                             application_status="PN").annotate(
-        activity=Case(When(Q(last_activity__gte=time_threshold_24h), then=2),
-                      When(Q(last_activity__lte=time_threshold_24h), then=1), output_field=IntegerField(), )).order_by(
+        activity=Case(When(Q(last_activity__gte=TIME_THRESHOLD_24H), then=2),
+                      When(Q(last_activity__lte=TIME_THRESHOLD_24H), then=1), output_field=IntegerField(), )).order_by(
         "-activity", "application_date")
 
     if limit is not None:
@@ -106,16 +106,16 @@ class NoviceLookup(LoginRequiredMixin, ListView):
     def get_next_username(self):
         next_novice = None
         # Get next novice on the list and return it's username, required for 'save and continue'
-        if self.novice.last_activity >= time_threshold_24h:
+        if self.novice.last_activity >= TIME_THRESHOLD_24H:
             next_novice = Author.objects.filter(is_novice=True, application_status="PN",
-                                                last_activity__gt=time_threshold_24h,
+                                                last_activity__gt=TIME_THRESHOLD_24H,
                                                 application_date__gt=self.novice.application_date).order_by(
                 "application_date").first()
 
         if not next_novice:
             # There was no user with latest activity. Check for non-active ones.
             next_novice = Author.objects.filter(is_novice=True, application_status="PN",
-                                                last_activity__lt=time_threshold_24h,
+                                                last_activity__lt=TIME_THRESHOLD_24H,
                                                 application_date__gt=self.novice.application_date).order_by(
                 "application_date").first()
 
@@ -130,8 +130,8 @@ class NoviceLookup(LoginRequiredMixin, ListView):
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul edildi"
         log_admin(admin_info_msg, self.request.user, Author, user)
         Message.objects.compose(Author.objects.get(id=GENERIC_SUPERUSER_ID), user,
-                                application_accept_message.format(user.username))
-        send_mail('yazarlık başvurunuz kabul edildi', application_accept_message.format(user.username),
+                                NOVICE_ACCEPTED_MESSAGE.format(user.username))
+        send_mail('yazarlık başvurunuz kabul edildi', NOVICE_ACCEPTED_MESSAGE.format(user.username),
                   'Django Sözlük <correct@email.com>', [user.email], fail_silently=False, )
         notifications.success(self.request, admin_info_msg)
         return True
@@ -145,8 +145,8 @@ class NoviceLookup(LoginRequiredMixin, ListView):
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul reddedildi"
         log_admin(admin_info_msg, self.request.user, Author, user)
         Message.objects.compose(Author.objects.get(id=GENERIC_SUPERUSER_ID), user,
-                                application_decline_message.format(user.username))
-        send_mail('yazarlık başvurunuz reddedildi', application_decline_message.format(user.username),
+                                NOVICE_REJECTED_MESSAGE.format(user.username))
+        send_mail('yazarlık başvurunuz reddedildi', NOVICE_REJECTED_MESSAGE.format(user.username),
                   'Django Sözlük <correct@email.com>', [user.email], fail_silently=False, )
         notifications.success(self.request, admin_info_msg)
         return True

@@ -4,13 +4,16 @@ from datetime import datetime
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
-from django.db.models import Max, Count, Q, Sum
+from django.db.models import Max, Count, Sum, Q, F, Value as V
+from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import make_aware
 
-from .settings import time_threshold_24h, TOPICS_PER_PAGE, nondb_categories, login_required_categories, do_not_cache
+from .settings import TIME_THRESHOLD_24H, TOPICS_PER_PAGE, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES, \
+    UNCACHED_CATEGORIES, SINGLEPAGE_CATEGORIES
 from ..models import Entry, Topic, Category
+from ..models.managers.topic import TopicManager
 
 
 class TopicListManager:
@@ -19,14 +22,11 @@ class TopicListManager:
     Each non-database category has its own function, note that function names correspond to their slugs, this allows
     us to write a clean code, and each time we have to edit one of them for specific feature it won't be painful.
 
-    If a non-db category has it's own list structure, serialize the data and assign it to self.custom_serialized_data
-    current examples include debe, takip, kenar
     """
     data = None
     slug_identifier = "/topic/"
     cache_exists = False
-    valid_cache_key = None
-    custom_serialized_data = None
+    cache_key = None
     cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
 
     def __init__(self, user=None, slug=None, extend=False, year=None, fetch_cached=True, search_keys=None):
@@ -36,12 +36,13 @@ class TopicListManager:
         :param extend: if pagination is needed set True, otherwise it will yield the first page, note that no method
         in this class handles pagination. it is either handled in javascript or in view function
         :param year: only required for tarihte-bugun
-        :param fetch_cached: set to False if you don't want to fetch cached
+        :param fetch_cached: set to False if you don't want to fetch cached (refresh button behaviour).
+        :param search_keys request.GET for "hayvan-ara" (advanced search).
         """
 
         self.user = user if user is not None else AnonymousUser
 
-        if not self.user.is_authenticated and slug in login_required_categories:
+        if not self.user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
             raise PermissionDenied("User not logged in")
 
         if slug in ["takip", "debe"]:
@@ -54,80 +55,66 @@ class TopicListManager:
         self.year = year
         self.search_keys = search_keys
 
-        if self.slug not in do_not_cache:
+        if self.slug not in UNCACHED_CATEGORIES:
             self.check_cache()
 
-        if not fetch_cached and self.cache_exists:
-            # user requests new data, so delete the old cached data
-            self.delete_cache()
-            self.cache_exists = False
-            self.valid_cache_key = None
+            if not fetch_cached and self.cache_exists:
+                # user requests new data, so delete the old cached data
+                self.delete_cache()
+                self.cache_exists = False
+                self.cache_key = None
 
         if not self.cache_exists:
-            if slug in nondb_categories:
-                if slug == "tarihte-bugun":
-                    self.tarihte_bugun()
-                elif slug == "basiboslar":
-                    self.no_category()
-                else:
-                    getattr(self, slug)()
+            if slug in NON_DB_CATEGORIES:
+                # tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
+                slug = slug.replace("-", "_")
+                getattr(self, slug)()
             else:
                 self.generic_category()
 
     def bugun(self):
-        self.data = Topic.objects.filter(entries__date_created__gte=time_threshold_24h).order_by(
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H).order_by(
             '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=time_threshold_24h))).values("title", "slug", "count")
+            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
 
     def tarihte_bugun(self):
         now = timezone.now()
         self.data = Topic.objects.filter(entries__date_created__year=self.year, entries__date_created__day=now.day,
                                          entries__date_created__month=now.month).order_by('-last_entry_dt').annotate(
             last_entry_dt=Max('entries__date_created'),
-            count=Count("entries", filter=Q(entries__date_created__gte=time_threshold_24h))).values("title", "slug",
+            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
                                                                                                     "count")
 
     def gundem(self):
         raise ZeroDivisionError("Unimplemented yet")
 
     def debe(self):
-        year, month, day = time_threshold_24h.year, time_threshold_24h.month, time_threshold_24h.day
-        entries = Entry.objects.filter(date_created__day=day, date_created__month=month,
-                                       date_created__year=year).order_by("-vote_rate")[:TOPICS_PER_PAGE]
-        serialized_data = []
-        for entry in entries:
-            serialized_data.append({"title": f"{entry.topic.title}", "slug": entry.id})
-
-        self.custom_serialized_data = serialized_data
+        year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
+        self.data = Entry.objects.filter(date_created__day=day, date_created__month=month,
+                                         date_created__year=year).order_by("-vote_rate").annotate(
+            title=F('topic__title'), slug=F("pk")).values('title', "slug")
 
     def kenar(self):
         if self.user.is_authenticated:
-            entries = Entry.objects_all.filter(author=self.user, is_draft=True).order_by("-date_created")
-            serialized_data = []
-            for entry in entries:
-                serialized_data.append({"title": f"{entry.topic.title}/#{entry.id}", "slug": entry.id})
-
-            self.custom_serialized_data = serialized_data
+            self.data = Entry.objects_all.filter(author=self.user, is_draft=True).order_by("-date_created").annotate(
+                title=F('topic__title'), slug=F("pk")).values('title', "slug")
 
     def takip(self):
         if self.user.is_authenticated:
-            entries = Entry.objects.filter(date_created__gte=time_threshold_24h,
-                                           author__in=self.user.following.all()).order_by("-date_created")
-            serialized_data = []
-            for entry in entries:
-                serialized_data.append({"title": f"{entry.topic.title}/@{entry.author.username}", "slug": entry.id})
-
-            self.custom_serialized_data = serialized_data
+            entries = Entry.objects.filter(date_created__gte=TIME_THRESHOLD_24H,
+                                           author__in=self.user.following.all()).order_by("-date_created").annotate(
+                title=Concat(F('topic__title'), V("/#"), F('author__username')), slug=F("pk")).values('title', "slug")
+            self.data = entries
 
     def caylaklar(self):
-        self.data = Topic.objects.filter(entries__date_created__gte=time_threshold_24h,
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H,
                                          entries__author__is_novice=True).order_by('-last_entry_dt').annotate(
             last_entry_dt=Max('entries__date_created'),
-            count=Count("entries", filter=Q(entries__date_created__gte=time_threshold_24h))).values("title", "slug",
+            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
                                                                                                     "count")
 
     def hayvan_ara(self):
-        qs = Topic.objects.none()
+        qs = Topic.objects
         keywords = self.search_keys.get("keywords")
         author_nick = self.search_keys.get("author_nick")
         favorites_only = True if self.search_keys.get("is_in_favorites") == "true" else False
@@ -135,66 +122,32 @@ class TopicListManager:
         from_date = self.search_keys.get("from_date")
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
+
         # todo input validation
-        # todo remove dropdown from mobible (static page)
+        # todo in mobile redirect to /hayvan-ara/ onclick, (javascript check mobile)
         # todo implement mobile view
 
-        terminate_search = False
+        if favorites_only and self.user.is_authenticated:
+            qs = qs.filter(entries__favorited_by=self.user)
 
-        while not terminate_search:
+        if nice_only:
+            qs = qs.annotate(nice_sum=Sum("entries__vote_rate")).filter(nice_sum__gte=Decimal("500"))
 
-            if favorites_only and self.user.is_authenticated:
-                qs = Topic.objects.filter(entries__favorited_by=self.user).distinct()
-                if not qs:
-                    break
+        if author_nick:
+            qs = qs.filter(entries__author__username=author_nick)
 
-            if nice_only:
-                nice_only_annotate = dict(nice_sum=Sum("entries__vote_rate"))
-                nice_only_filter = dict(nice_sum__gte=Decimal("500"))
-                if not qs:
-                    qs = Topic.objects.annotate(**nice_only_annotate).filter(**nice_only_filter)
-                else:
-                    qs = qs.annotate(**nice_only_annotate).filter(**nice_only_filter)
+        if keywords:
+            qs = qs.filter(title__icontains=keywords)
 
-                if not qs:
-                    break
+        if from_date:
+            date_from = make_aware(datetime.strptime(from_date, "%d.%m.%Y"))
+            qs = qs.filter(date_created__gte=date_from)
 
-            if author_nick:
-                author_filter = dict(entries__author__username=author_nick)
-                if not qs:
-                    qs = Topic.objects.filter(**author_filter)
-                else:
-                    qs = qs.filter(**author_filter)
+        if to_date:
+            date_to = make_aware(datetime.strptime(to_date, "%d.%m.%Y"))
+            qs = qs.filter(date_created__lte=date_to)
 
-                if not qs:
-                    break
-
-            if keywords:
-                keyword_filter = dict(title__icontains=keywords)
-                if not qs:
-                    qs = Topic.objects.filter(**keyword_filter)
-                else:
-                    qs = qs.filter(**keyword_filter)
-
-            if from_date:
-                date_from = make_aware(datetime.strptime(from_date, "%d.%m.%Y"))
-                date_from_filter = dict(date_created__gte=date_from)
-                if not qs:
-                    qs = Topic.objects.filter(**date_from_filter)
-                else:
-                    qs = qs.filter(**date_from_filter)
-
-            if to_date:
-                date_to = make_aware(datetime.strptime(to_date, "%d.%m.%Y"))
-                date_to_filter = dict(date_created__lte=date_to)
-                if not qs:
-                    qs = Topic.objects.filter(**date_to_filter)
-                else:
-                    qs = qs.filter(**date_to_filter)
-
-            terminate_search = True
-
-        if qs:
+        if qs and not isinstance(qs, TopicManager):
             if orderding == "alpha":
                 qs = qs.order_by("title")
             elif orderding == "newer":
@@ -202,18 +155,18 @@ class TopicListManager:
             elif orderding == "popular":
                 qs = qs.annotate(entry_count=Count("entries")).order_by("-entry_count")
 
-        self.custom_serialized_data = qs.annotate(count=Count("entries")).values("title", "slug", "count")
+            self.data = qs.annotate(count=Count("entries")).values("title", "slug", "count")
 
     def generic_category(self):
         category = get_object_or_404(Category, slug=self.slug)
-        self.data = Topic.objects.filter(entries__date_created__gte=time_threshold_24h, category=category).order_by(
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=category).order_by(
             '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=time_threshold_24h))).values("title", "slug", "count")
+            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
 
-    def no_category(self):  #
-        self.data = Topic.objects.filter(entries__date_created__gte=time_threshold_24h, category=None).order_by(
+    def basiboslar(self):  # No category supplied.
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=None).order_by(
             '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=time_threshold_24h))).values("title", "slug", "count")
+            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
 
     @property
     def serialized(self):
@@ -224,58 +177,61 @@ class TopicListManager:
             return self._delimit_length(self.get_cached_data)
         elif self.data:
             return self._delimit_length(self.cache_data(list(self.data)))
-        elif self.custom_serialized_data:
-            return self._delimit_length(self.cache_data(self.custom_serialized_data))
 
         return []  # found nothing
 
     def _delimit_length(self, data):
         """
-        :param data: Serialized data
-        :return: full data if pagination is needed, first page if not.
+        :param data: a list object containing data.
+        :return: full data, if pagination is needed else first page.
         """
-        delimited = data if self.extend else data[:TOPICS_PER_PAGE]
+        delimited = data if self.extend and self.slug not in SINGLEPAGE_CATEGORIES else data[:TOPICS_PER_PAGE]
         return delimited
 
     def cache_data(self, data):
+        if self.slug in UNCACHED_CATEGORIES:
+            # bypass caching
+            return data
+
         if self.slug == "debe" or self.slug == "tarihte-bugun":
-            # these are the same during the day, so caching them longer is reasonable
+            # these are the same during the day, so caching them longer is more reasonable
             set_at_day = timezone.now().day
-            cache.set(self.valid_cache_key, {"data": data, "set_at_day": set_at_day}, 86400)  # 24 hours
+            cache.set(self.cache_key, {"data": data, "set_at_day": set_at_day}, 86400)  # 24 hours
         elif self.slug == "bugun":
-            cache.set(self.valid_cache_key, {"data": data, "set_at": timezone.now()}, 300)  # 5 minutes
+            cache.set(self.cache_key, {"data": data, "set_at": timezone.now()}, 300)  # 5 minutes
         else:
-            cache.set(self.valid_cache_key, data, self.cache_timeout)
+            cache.set(self.cache_key, data, self.cache_timeout)
         return data
 
     def check_cache(self):
         cache_type = f"pri_uid_{self.user.id}" if self.slug == "bugun" else "global"
         cache_year = str(self.year) if self.year else ""
-        cache_key = f"{cache_type}_{self.slug}{cache_year}"
-        self.valid_cache_key = cache_key
-        if cache.get(cache_key):
+        key = f"{cache_type}_{self.slug}{cache_year}"
+        self.cache_key = key
+        if cache.get(key):
             if self.slug in ["debe", "tarihte-bugun"]:
-                if cache.get(cache_key).get("set_at_day") == timezone.now().day:
+                # check if the day has changed or not for debe or tarihte-bugun
+                if cache.get(key).get("set_at_day") == timezone.now().day:
                     self.cache_exists = True
             else:
                 self.cache_exists = True
 
-    @property
-    def get_cached_data(self):
-        if self.slug in ["debe", "tarihte-bugun", "bugun"]:  # exclusively cached
-            return cache.get(self.valid_cache_key).get("data")
-        return cache.get(self.valid_cache_key)
-
     def delete_cache(self):
         if self.cache_exists:
-            cache.delete(self.valid_cache_key)
+            cache.delete(self.cache_key)
             return True
         return False
 
     @property
+    def get_cached_data(self):
+        if self.slug in ["debe", "tarihte-bugun", "bugun"]:  # exclusively cached
+            return cache.get(self.cache_key).get("data")
+        return cache.get(self.cache_key)
+
+    @property
     def refresh_count(self):  # (yenile count)
         if self.cache_exists and self.slug == "bugun":
-            set_at = cache.get(self.valid_cache_key).get("set_at")
+            set_at = cache.get(self.cache_key).get("set_at")
             if set_at is None:
                 return 0
             else:

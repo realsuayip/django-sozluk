@@ -5,7 +5,6 @@ from django.db.models import Q
 class EntryManager(models.Manager):
     # Includes ONLY the PUBLISHED entries by NON-NOVICE authors
     def get_queryset(self):
-        # also for çaylar todo
         return super().get_queryset().exclude(Q(is_draft=True) | Q(author__is_novice=True))
 
 

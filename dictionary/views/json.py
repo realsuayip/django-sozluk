@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from ..models import Author, Entry, Topic, TopicFollowing, Message
 from ..utils.decorators import force_post, force_get
 from ..utils.managers import TopicListManager
-from ..utils.settings import YEAR_RANGE, vote_rates
+from ..utils.settings import YEAR_RANGE, VOTE_RATES
 from ..utils.views import JsonView
 
 
@@ -14,7 +14,7 @@ class AsyncTopicList(JsonView):
     def handle(self):
         slug = self.kwargs.get("slug")
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
-        search_keys = self.request_data if slug == "hayvan_ara" else None
+        search_keys = self.request_data if slug == "hayvan-ara" else None
 
         if year:
             try:
@@ -178,11 +178,11 @@ class EntryAction(JsonView):
     def favorite(self):
         if self.entry in self.request.user.favorite_entries.all():
             self.request.user.favorite_entries.remove(self.entry)
-            self.entry.update_vote(vote_rates["reduce"])
+            self.entry.update_vote(VOTE_RATES["reduce"])
             status = -1
         else:
             self.request.user.favorite_entries.add(self.entry)
-            self.entry.update_vote(vote_rates["increase"])
+            self.entry.update_vote(VOTE_RATES["increase"])
             status = 1
 
         return dict(count=self.entry.favorited_by.count(), status=status)
@@ -299,10 +299,10 @@ class Vote(JsonView):
 
     def cast(self):
         entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down
-        reduce, increase = vote_rates["reduce"], vote_rates["increase"]
+        reduce, increase = VOTE_RATES["reduce"], VOTE_RATES["increase"]
 
         if self.anonymous:
-            k = vote_rates["anonymous_multiplier"]
+            k = VOTE_RATES["anonymous_multiplier"]
             self.anon_votes = self.request.session.get("anon_votes")
             if self.anon_votes:
                 for record in self.anon_votes:  # do not use the name 'record' method's this scope
@@ -311,7 +311,7 @@ class Vote(JsonView):
                         self.already_voted_type = record.get("type")
                         break
         else:
-            k = vote_rates["authenticated_multiplier"]
+            k = VOTE_RATES["authenticated_multiplier"]
             sender = self.request.user
             if entry in sender.upvoted_entries.all():
                 self.already_voted = True

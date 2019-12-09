@@ -1,7 +1,7 @@
 from dateutil.parser import parse
 from django.utils import timezone
 from ..models import Author
-from ..utils.settings import time_threshold_24h
+from ..utils.settings import TIME_THRESHOLD_24H
 
 
 class NoviceActivityMiddleware:
@@ -18,14 +18,14 @@ class NoviceActivityMiddleware:
     def __call__(self, request):
         if request.user.is_authenticated and request.user.is_novice and request.user.application_status == "PN":
             last_activity = request.session.get(self.KEY)
-            if not last_activity or parse(last_activity) < time_threshold_24h:
+            if not last_activity or parse(last_activity) < TIME_THRESHOLD_24H:
                 Author.objects.filter(id=request.user.id).update(last_activity=timezone.now())
                 request.session[self.KEY] = timezone.now().isoformat()
                 # Determines the novice queue number on profile page
                 # it finds ALL the novices on the list whose queue number is before the user, having the equals to adds
                 # +1 to the number, giving the current users queue number
                 queue = Author.objects.filter(is_novice=True, application_status="PN",
-                                              last_activity__gte=time_threshold_24h,
+                                              last_activity__gte=TIME_THRESHOLD_24H,
                                               application_date__lte=request.user.application_date).count()
                 request.session['novice_queue'] = queue
         # Code to be executed for each request before

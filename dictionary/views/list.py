@@ -18,8 +18,8 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
-from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, nondb_categories, time_threshold_24h, \
-    banned_topics
+from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, NON_DB_CATEGORIES, TIME_THRESHOLD_24H, \
+    BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES
 
 
 def index(request):
@@ -28,7 +28,6 @@ def index(request):
     # todo karma skor
     # todo hayvan ara
     # todo: başlık yönlendirme (türkçe düzeltme gibi)
-    # todo: entry baslıklarının nasıl olacağına dair bir regex (başlık formatı)
     return render(request, "dictionary/index.html")
 
 
@@ -127,13 +126,12 @@ class TopicList(ListView):
 
     def get_context_data(self, **kwargs):
         slug = self.kwargs['slug']
-        nondb_safename = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar", "takip": "takip",
-                          "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar",
-                          "debe": "dünün en beğenilen entry'leri", "hayvan-ara": "arama sonuçları" }
-        if slug in nondb_categories:
-            title = nondb_safename[slug]
+
+        if slug in NON_DB_CATEGORIES:
+            title = NON_DB_SLUGS_SAFENAMES[slug]
         else:
             title = Category.objects.get(slug=slug).name
+
         context = super().get_context_data(**kwargs)
         context['page_safename'] = title
         if self.request.session.get("year"):
@@ -176,7 +174,7 @@ class TopicEntryList(ListView, FormMixin):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        if self.topic.title in banned_topics:
+        if self.topic.title in BANNED_TOPICS:
             # not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, "olmaz ki canım... hürrüpü")
             return self.form_invalid(form)
@@ -201,7 +199,10 @@ class TopicEntryList(ListView, FormMixin):
 
         if form.cleaned_data.get("is_draft"):
             notifications.info(self.request, "kenara attık onu")
-            return self._redirect_to_self()
+            if self.topic.exists:
+                return self._redirect_to_self()
+            else:
+                return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
 
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
@@ -226,7 +227,7 @@ class TopicEntryList(ListView, FormMixin):
         return redirect(reverse("topic", kwargs={"slug": self.kwargs.get("slug")}))
 
     def today(self):
-        return self.topic.entries.filter(date_created__gte=time_threshold_24h)
+        return self.topic.entries.filter(date_created__gte=TIME_THRESHOLD_24H)
 
     def today_in_history(self):
         year = self.request.GET.get("year")
@@ -286,7 +287,7 @@ class TopicEntryList(ListView, FormMixin):
         self.redirect = True
 
     def caylaklar(self):
-        return self.topic.entries.filter(author__is_novice=True, date_created__gte=time_threshold_24h)
+        return self.topic.entries.filter(author__is_novice=True, date_created__gte=TIME_THRESHOLD_24H)
 
     def get_queryset(self):
         # filter queryset by self.view_mode

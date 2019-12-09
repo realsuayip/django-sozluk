@@ -97,19 +97,38 @@ class Paginator {
   }
 }
 
-const topicListCall = function (apiUrl, parameters, extended = false, page = null) {
-  const loadInicator = $("#load_indicator");
-  loadInicator.css("display", "inline-block");
-  // extended=true calls ALL of the corresponding topics
+const topicListCall = function (slug, parameters, page = null) {
+  const loadIndicator = $("#load_indicator");
+  loadIndicator.css("display", "inline-block");
   let topicList = $("ul#topic-list");
-  // if extended == true then set extended parameter, if other parameters exist convert ? to &
+  // by default, each item in the topic list gets paramaters from api parameters. for example ?day=today calls for
+  // topics of today and also includes ?day=today parameter for links of topics. if you do not want this behaviour
+  // set this to false for desired slugs.
+  const excludeParamteresInLink = ["hayvan-ara"]; // slug list
+  let excludeParameters = false;
+  if (excludeParamteresInLink.includes(slug)) {
+    excludeParameters = true;
+  }
+
+  let apiUrl = `/category/${slug}/`;
+
+  // by default TopicListManager only returns the first page, in order to get all pages we need to include extended
+  // parameter. if param:: page is supplied, we set it to extended. we do pagination via Paginator class.
+  let extended = false;
+  if (page) {
+    // if page is not null
+    extended = true;
+  }
+
+  // if extended == true then set extended parameter, if other parameters exist other than extended convert ? to &
   let parameterIsExtended = extended ? `${parameters ? "&" : "?"}extended=yes` : "";
+
   $.ajax({
     type: "GET",
     url: apiUrl + parameters + parameterIsExtended,
     success (data) {
-      $("#current_category_name").html(localStorage.getItem("active_category_safe"));
-      loadInicator.css("display", "none");
+      $("#current_category_name").html(localStorage.getItem("active_category_safe")); // change title
+      loadIndicator.css("display", "none"); // hide spinner
 
       if (data["topic_data"].length === 0) {
         topicList.html("<small>yok ki</small>");
@@ -128,9 +147,12 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
             $("#show_more").addClass("dj-hidden");
           }
         }
+
+        // decides whether it is an entry permalink or topic and whatsoever
         const slugIdentifier = data["slug_identifier"];
         if (page) {
-          const paginator = new Paginator(data["topic_data"], 50);
+          // itemsPerPage also need to be changed at utils.settings, maybe we may set cookies for that?
+          const paginator = new Paginator(data["topic_data"], 2);
 
           if (page > paginator.total_pages) {
             notify("yok hiç bişi kalmamış");
@@ -155,7 +177,10 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
           topicList.empty();
           data = data["topic_data"];
         }
-        // default behaviour (no page number is  supplied)
+
+        if (excludeParameters) {
+          parameters = "";
+        }
 
         for (let i = 0; i < data.length; i++) {
           let topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
@@ -169,7 +194,7 @@ const topicListCall = function (apiUrl, parameters, extended = false, page = nul
     },
     error (error) {
       notify("bir şeyler yanlış gitti", "error");
-      loadInicator.css("display", "none");
+      loadIndicator.css("display", "none");
       console.log(error);
     }
   });
@@ -191,7 +216,7 @@ const dictToParameters = function (dict) {
   return str.join("&");
 };
 
-const leftFramePopulate = function (category = null, extended = false, page = null, resetCache = false, searchParameters = null) {
+const leftFramePopulate = function (slug = null, page = null, resetCache = false, searchParameters = null) {
   // category -> cateogry slug to call topics
   // extended -> retrieve full data (required for paginated data)
   // page -> which page to call, use with extended true
@@ -202,25 +227,24 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
   yearSelect.css("display", "none");
   yearSelect.html("");
 
-  if (!category) {
+  if (!slug) {
     notify("noluyo ayol.", "error");
     return;
   }
 
-  let apiUrl = `/category/${category}/`;
   let parameters = "";
 
   // add parameters for specific slugs
 
-  if (category === "bugun") {
+  if (slug === "bugun") {
     parameters = "?day=today";
   }
 
-  if (category === "caylaklar") {
+  if (slug === "caylaklar") {
     parameters = "?a=caylaklar";
   }
 
-  if (category === "hayvan_ara") {
+  if (slug === "hayvan-ara") {
     if (localStorage.getItem("search_parameters")) {
       parameters = localStorage.getItem("search_parameters");
     } else {
@@ -228,7 +252,7 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
     }
   }
 
-  if (category === "tarihte-bugun") {
+  if (slug === "tarihte-bugun") {
     yearSelect.css("display", "block");
     let years = ["2019", "2018", "2017"];
     for (let year of years) {
@@ -251,7 +275,7 @@ const leftFramePopulate = function (category = null, extended = false, page = nu
     parameters += "&nocache=yes";
   }
 
-  topicListCall(apiUrl, parameters, extended, page);
+  topicListCall(slug, parameters, page);
 };
 
 $("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), a#category_view_ls").on("click", function () {
@@ -271,7 +295,8 @@ $(function () {
       todayHighlight: true,
       language: "tr",
       autoclose: true,
-      orientation: "auto bottom"}
+      orientation: "auto bottom"
+    }
   ).attr("placeholder", "gg.aa.yyyy");
 
   const notificationHolder = $("#notifications");
@@ -290,13 +315,13 @@ $(function () {
       const navigationPage = localStorage.getItem("navigation_page");
       let selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
       selector.addClass("active");
-      if (!selector.attr("data-category") && category !== "hayvan_ara") {
+      if (!selector.attr("data-category") && category !== "hayvan-ara") {
         // DEFAULT
         // YÜKLENİYOR.
       } else {
         $("#current_category_name").text(selector.attr("data-safename"));
         if (navigationPage) {
-          leftFramePopulate(category, true, parseInt(navigationPage));
+          leftFramePopulate(category, parseInt(navigationPage));
           $("a#show_more").addClass("dj-hidden");
         } else {
           leftFramePopulate(category);
@@ -365,7 +390,7 @@ $("#year_select").on("change", function () {
 });
 
 $("select#left_frame_paginator").on("change", function () {
-  leftFramePopulate(localStorage.getItem("active_category"), true, this.value);
+  leftFramePopulate(localStorage.getItem("active_category"), this.value);
 });
 
 $("#lf_total_pages").on("click", function () {
@@ -390,7 +415,7 @@ $("#lf_navigate_after").on("click", function () {
 });
 
 $("a#show_more").on("click", function () {
-  leftFramePopulate(localStorage.getItem("active_category"), true, 2);
+  leftFramePopulate(localStorage.getItem("active_category"), 2);
   $(this).addClass("dj-hidden");
 });
 
@@ -733,12 +758,12 @@ $("select#mobile_year_changer").on("change", function () {
 });
 
 $("#refresh_bugun").on("click", function () {
-  let isExtended = false;
+  let page = null;
   if (localStorage.getItem("navigation_page")) {
-    isExtended = true;
+    page = localStorage.getItem("navigation_page");
   }
   leftFrameReset();
-  leftFramePopulate("bugun", isExtended, null, true);
+  leftFramePopulate("bugun", page, true);
   $(this).addClass("dj-hidden");
 });
 
@@ -783,9 +808,8 @@ $("button#perform_advanced_search").on("click", function () {
   };
   const searchParameters = "?" + dictToParameters(keys);
   localStorage.setItem("active_category_safe", "arama sonuçları");
-  localStorage.setItem("active_category", "hayvan_ara");
+  localStorage.setItem("active_category", "hayvan-ara");
   localStorage.setItem("search_parameters", searchParameters);
   leftFrameReset();
-  // todo hayvan_ara => hayvan-ara
-  leftFramePopulate("hayvan_ara", false, null, false, searchParameters);
+  leftFramePopulate("hayvan-ara", null, false, searchParameters);
 });

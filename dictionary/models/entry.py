@@ -17,7 +17,6 @@ class Entry(models.Model):
     is_draft = models.BooleanField(default=False)
 
     # notice: all these managers are created after the usages, so there may be some leftovers which need to be corrected
-    # manager to work properly. reviese todo
     objects_all = EntryManagerAll()
     objects_published = EntryManagerOnlyPublished()
     objects = EntryManager()
