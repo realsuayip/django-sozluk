@@ -12,8 +12,8 @@
             </div>
         {% endfor %}
     {% endif %}
-    <div class="mb-2"><strong>mevcut e-posta adresiniz: </strong>{{ request.user.email }}</div>
-
+    <div class="mb-2"><strong style="font-weight: 600;">mevcut e-posta adresiniz: </strong>{{ request.user.email }}</div>
+    <hr>
     {% if not user.email_confirmed %}
            <div class="alert alert-info" role="alert">
                  yeni e-posta adresinizi onaylamak için size onaylama bağlantısı içeren bir posta gönderdik. postadaki
@@ -25,17 +25,17 @@
 
     <form method="post">
         <div class="form-group">
-            <label for="email_1">{{ form.email1.label }}</label>
+            <label for="email_1"><strong>{{ form.email1.label }}</strong></label>
             {% render_field form.email1 id="email_1" class="form-control" %}
         </div>
 
         <div class="form-group">
-            <label for="email_2">{{ form.email2.label }}</label>
+            <label for="email_2"><strong>{{ form.email2.label }}</strong></label>
             {% render_field form.email2 id="email_2" class="form-control" %}
         </div>
 
         <div class="form-group">
-            <label for="password_confirm">{{ form.password_confirm.label }}</label>
+            <label for="password_confirm"><strong>{{ form.password_confirm.label }}</strong></label>
             {% render_field form.password_confirm id="password_confirm" class="form-control" %}
         </div>
         {% csrf_token %}

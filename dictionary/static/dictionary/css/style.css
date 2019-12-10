@@ -5,6 +5,7 @@ html {
 body {
     font-family: "Source Sans Pro", sans-serif;
     font-size: 14px;
+    overflow-y: scroll;
 }
 
 header.page_header {
@@ -163,7 +164,7 @@ nav.sub-nav ul li a {
     transition: all .2s ease-in-out;
     -moz-transition: all .2s ease-in-out;
     display: block;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
     text-decoration: none;
 }
@@ -218,6 +219,40 @@ nav.sub-nav ul .more_tags_dropdown,
     position: fixed;
     width: 20%;
     padding: 0 .5em;
+    scrollbar-width: thin;
+}
+
+
+.left-frame::-webkit-scrollbar-button {
+    display: none;
+    height: 13px;
+    border-radius: 0;
+    background-color: #b9b9b9;
+}
+
+.left-frame::-webkit-scrollbar-button:hover {
+    background-color: #AAA;
+}
+
+.left-frame::-webkit-scrollbar-thumb {
+    background-color: #bababa;
+    border-radius: 2px;
+}
+
+.left-frame::-webkit-scrollbar-thumb:hover {
+    background-color: #666666;
+}
+
+.left-frame::-webkit-scrollbar-track {
+    background-color: #efefef;
+}
+
+.left-frame::-webkit-scrollbar-track:hover {
+    background-color: #CCC;
+}
+
+.left-frame::-webkit-scrollbar {
+    width: 6px;
 }
 
 
@@ -232,37 +267,6 @@ nav.sub-nav ul .more_tags_dropdown,
     width: 20%;
 }
 
-::-webkit-scrollbar-button {
-    display: none;
-    height: 13px;
-    border-radius: 0;
-    background-color: #AAA;
-}
-
-::-webkit-scrollbar-button:hover {
-    background-color: #AAA;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #888888;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: #666666;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #efefef;
-}
-
-::-webkit-scrollbar-track:hover {
-    background-color: #CCC;
-}
-
-::-webkit-scrollbar {
-    width: 4px;
-}
 
 .content-frame {
     width: 60%;
@@ -332,10 +336,11 @@ header.entry_header {
 
 header.entry_header h1 {
     font-size: 1.5em;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-header.entry_header a {
+
+header.entry_header .lower a {
     color: #333;
 }
 
@@ -380,7 +385,7 @@ section.user_entries ul li {
 
 section.user_entries ul li h5 {
     font-size: 1.3em;
-    font-weight: bold;
+    font-weight: 700;
     padding: 0;
     margin: 0;
 }
@@ -555,8 +560,8 @@ section.user_entries .entry_info .info .dropdown-menu {
 
 section.user_entries .entry_info div.info .dropdown-menu a.dropdown-item {
     color: #092e20;
-    font-weight: bold;
-    font-size: 13px;
+    font-weight: 400;
+    font-size: .9rem;
 }
 
 section.user_entries .entry_info div.info .dropdown-menu a.dropdown-item:active,
@@ -658,7 +663,7 @@ ul.user-navigation > li > .user-dropdown a:active {
 
 ul.user-navigation > li > .user-dropdown a.dropdown-item {
     font-size: 13px;
-    padding: .5em 1em;
+    padding: .3em 1.5em;
 }
 
 
@@ -809,7 +814,7 @@ a.more-entries-button:hover {
 
 .autocomplete-group {
     padding: 2px 5px;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 16px;
     color: #000;
     display: block;
@@ -821,7 +826,7 @@ a.more-entries-button:hover {
 }
 
 section.user-info h4 {
-    font-weight: bold;
+    font-weight: 700;
 
 }
 
@@ -882,11 +887,11 @@ section.user-info-detail .detail-nav ul li {
     margin-right: 1em;
     padding: .4em 0;
     border-bottom: 3px solid transparent;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 section.user-info-detail .detail-nav ul li.active {
-    border-bottom: 3px solid green;
+    border-bottom: 3px solid #16784f;
 }
 
 
@@ -1139,7 +1144,7 @@ a.expand::after {
 
 .nice-filter a.active {
     color: #16784f;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 
@@ -1154,7 +1159,7 @@ ul.category-list-all li:hover {
 }
 
 ul.category-list-all li h5 {
-    font-weight: bold;
+    font-weight: 700;
 }
 
 
@@ -1256,19 +1261,28 @@ div.read_more:hover {
     margin-bottom: 1em;
 }
 
-a.search-closer{
+a.search-closer {
     text-align: center;
     cursor: pointer;
 }
 
-a.search-closer:active{
+a.search-closer:active {
     background: inherit;
 }
 
 
-
-.topic-title{
+.topic-title {
     word-wrap: break-word;
+}
+
+.form-group label strong {
+    font-weight: 600;
+}
+
+.modal-open {
+    overflow: hidden;
+    overflow-y: scroll;
+    padding-right: 0 !important;
 }
 
 /** MEDIA QUERIES **/
@@ -1542,6 +1556,7 @@ a.search-closer:active{
     .sb-guest .searchbox-text {
         width: 80%;
     }
+
     .sb-login.searchbox {
         display: none;
     }
