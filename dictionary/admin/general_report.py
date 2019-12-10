@@ -1,6 +1,8 @@
 from . import admin
+from ..models import GeneralReport
 
 
+@admin.register(GeneralReport)
 class GeneralReportAdmin(admin.ModelAdmin):
     list_display = ("subject", "reporter_email", "is_open",)
     readonly_fields = ('reporter_email', 'category', 'subject', 'content')

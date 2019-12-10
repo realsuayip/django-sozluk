@@ -8,7 +8,6 @@ from .decorators import require_ajax
 
 
 class JsonView(UserPassesTestMixin, View):
-    login_required = False
     require_method = None  # "post" or "get" applies to WHOLE view
     request_data = None
     method = None
@@ -22,8 +21,6 @@ class JsonView(UserPassesTestMixin, View):
         return self._response(status=403)
 
     def test_func(self):
-        logged_in = self.request.user.is_authenticated
-
         if self.request.method == "POST":
             self.method = "post"
         elif self.request.method == "GET":
@@ -33,9 +30,6 @@ class JsonView(UserPassesTestMixin, View):
             if self.method != self.require_method.lower():
                 return False
 
-        if self.login_required:
-            if not logged_in:
-                return False
         return True
 
     def handle(self):

@@ -4,12 +4,11 @@ from datetime import datetime
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
-from django.db.models import Max, Count, Sum, Q, F, Value as V
+from django.db.models import Max, Count, Sum, Q, F, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import make_aware
-
 from .settings import TIME_THRESHOLD_24H, TOPICS_PER_PAGE, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES, \
     UNCACHED_CATEGORIES, SINGLEPAGE_CATEGORIES
 from ..models import Entry, Topic, Category
@@ -73,17 +72,18 @@ class TopicListManager:
                 self.generic_category()
 
     def bugun(self):
-        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H).order_by(
-            '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H,
+                                         entries__is_draft=False).order_by('-last_entry_dt').annotate(
+            last_entry_dt=Max('entries__date_created'),
+            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
+                                                                                                    "count")
 
     def tarihte_bugun(self):
         now = timezone.now()
         self.data = Topic.objects.filter(entries__date_created__year=self.year, entries__date_created__day=now.day,
-                                         entries__date_created__month=now.month).order_by('-last_entry_dt').annotate(
-            last_entry_dt=Max('entries__date_created'),
-            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
-                                                                                                    "count")
+                                         entries__date_created__month=now.month, entries__is_draft=False).order_by(
+            '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
+            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
 
     def gundem(self):
         raise ZeroDivisionError("Unimplemented yet")
@@ -92,7 +92,7 @@ class TopicListManager:
         year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
         self.data = Entry.objects.filter(date_created__day=day, date_created__month=month,
                                          date_created__year=year).order_by("-vote_rate").annotate(
-            title=F('topic__title'), slug=F("pk")).values('title', "slug")
+            title=F("topic__title"), slug=F("pk")).values('title', "slug")
 
     def kenar(self):
         if self.user.is_authenticated:
@@ -103,12 +103,13 @@ class TopicListManager:
         if self.user.is_authenticated:
             entries = Entry.objects.filter(date_created__gte=TIME_THRESHOLD_24H,
                                            author__in=self.user.following.all()).order_by("-date_created").annotate(
-                title=Concat(F('topic__title'), V("/#"), F('author__username')), slug=F("pk")).values('title', "slug")
+                title=Concat(F('topic__title'), Value("/#"), F('author__username')), slug=F("pk")).values('title',
+                                                                                                          "slug")
             self.data = entries
 
     def caylaklar(self):
-        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H,
-                                         entries__author__is_novice=True).order_by('-last_entry_dt').annotate(
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, entries__author__is_novice=True,
+                                         entries__is_draft=False).order_by('-last_entry_dt').annotate(
             last_entry_dt=Max('entries__date_created'),
             count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
                                                                                                     "count")
@@ -155,18 +156,23 @@ class TopicListManager:
             elif orderding == "popular":
                 qs = qs.annotate(entry_count=Count("entries")).order_by("-entry_count")
 
-            self.data = qs.annotate(count=Count("entries")).values("title", "slug", "count")
+            self.data = qs.filter(entries__is_draft=False).annotate(count=Count("entries")).values("title", "slug",
+                                                                                                   "count")
 
     def generic_category(self):
         category = get_object_or_404(Category, slug=self.slug)
-        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=category).order_by(
-            '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=category,
+                                         entries__is_draft=False).order_by('-last_entry_dt').annotate(
+            last_entry_dt=Max('entries__date_created'),
+            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
+                                                                                                    "count")
 
     def basiboslar(self):  # No category supplied.
-        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=None).order_by(
-            '-last_entry_dt').annotate(last_entry_dt=Max('entries__date_created'), count=Count("entries", filter=Q(
-            entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug", "count")
+        self.data = Topic.objects.filter(entries__date_created__gte=TIME_THRESHOLD_24H, category=None,
+                                         entries__is_draft=False).order_by('-last_entry_dt').annotate(
+            last_entry_dt=Max('entries__date_created'),
+            count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
+                                                                                                    "count")
 
     @property
     def serialized(self):

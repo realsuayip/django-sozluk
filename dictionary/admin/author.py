@@ -1,10 +1,12 @@
 from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 
-from . import Author
-from ..views.admin.novices import NoviceList, NoviceLookup
+from . import admin
+from ..models import Author
+from ..admin.views.novices import NoviceList, NoviceLookup
 
 
+@admin.register(Author)
 class AuthorAdmin(UserAdmin):
     model = Author
     raw_id_fields = ['favorite_entries', 'upvoted_entries', 'downvoted_entries', 'following', 'blocked', 'pinned_entry']

@@ -2,7 +2,7 @@ from django.db.models import Count
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from ..messaging import Conversation, Message
+from ..models.messaging import Conversation, Message
 
 
 @receiver(post_save, sender=Message, dispatch_uid="create_conversation")

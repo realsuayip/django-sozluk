@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
@@ -72,9 +73,9 @@ class AutoComplete(JsonView):
         return dict(suggestions=response)
 
 
-class UserAction(JsonView):
-    login_required = True
+class UserAction(LoginRequiredMixin, JsonView):
     require_method = "POST"
+
     sender = None
     recipient = None
 
@@ -122,8 +123,7 @@ class UserAction(JsonView):
             return self.success(redirect_url=self.request.build_absolute_uri(reverse("home")))
 
 
-class EntryAction(JsonView):
-    login_required = True
+class EntryAction(LoginRequiredMixin, JsonView):
     owner_action = False
     redirect_url = None
     entry = None
@@ -199,8 +199,7 @@ class EntryAction(JsonView):
         return dict(users=[authors, novices])
 
 
-class TopicAction(JsonView):
-    login_required = True
+class TopicAction(LoginRequiredMixin, JsonView):
     require_method = "POST"
     topic_object = None
 
@@ -227,8 +226,7 @@ class TopicAction(JsonView):
         return self.success()
 
 
-class ComposeMessage(JsonView):
-    login_required = True
+class ComposeMessage(LoginRequiredMixin, JsonView):
     require_method = "POST"
 
     def handle(self):

@@ -5,4 +5,4 @@ class DictionaryConfig(AppConfig):
     name = 'dictionary'
 
     def ready(self):
-        import dictionary.models.signals.messaging
+        import dictionary.signals.messaging
