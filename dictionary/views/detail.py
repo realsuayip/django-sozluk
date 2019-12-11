@@ -123,8 +123,9 @@ class UserProfile(ListView, FormMixin):
         self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
         self.tab = request.GET.get("t")
 
-        if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
-            raise Http404
+        if self.request.user.is_authenticated:
+            if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
+                raise Http404
 
         return super().dispatch(request)
 
@@ -136,7 +137,9 @@ class UserProfile(ListView, FormMixin):
         return None
 
     def get_memento(self):
-        try:
-            return Memento.objects.get(holder=self.request.user, patient=self.profile)
-        except Memento.DoesNotExist:
-            return None
+        if self.request.user.is_authenticated:
+            try:
+                return Memento.objects.get(holder=self.request.user, patient=self.profile)
+            except Memento.DoesNotExist:
+                return None
+        return None

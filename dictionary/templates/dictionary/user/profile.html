@@ -89,8 +89,10 @@
     {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" %}
     <br>
 {% endblock %}
-{% block rightframe %}
 
+
+{% block rightframe %}
+{% if request.user.is_authenticated %}
     <h6><strong>notlar</strong></h6>
     <form method="post" class="memento">
         {% load widget_tweaks %}
@@ -103,5 +105,5 @@
         {% csrf_token %}
         <button class="btn btn-django">kaydet</button>
     </form>
-
+{% endif %}
 {% endblock %}

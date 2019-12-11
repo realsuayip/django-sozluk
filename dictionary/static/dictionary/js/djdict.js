@@ -76,26 +76,11 @@ const screenTest = function (e) {
 
 mql.addEventListener("change", screenTest);
 
-class Paginator {
-  constructor (items, itemsPerPage) {
-    this.items = items;
-    this.items_per_page = itemsPerPage;
-    this.total_pages = Math.ceil(items.length / itemsPerPage);
-  }
-
-  getPage (page) {
-    --page;
-    return this.items.slice(page * this.items_per_page, (page + 1) * this.items_per_page);
-  }
-
-  get range () {
-    let range = [];
-    for (let i = 1; i <= this.total_pages; i++) {
-      range.push(i);
-    }
-    return range;
-  }
-}
+const leftFrameReset = function () {
+  $("a#show_more").addClass("dj-hidden");
+  $("#lf_pagination_wrapper").addClass("dj-hidden");
+  localStorage.removeItem("navigation_page");
+};
 
 const topicListCall = function (slug, parameters, page = null) {
   const loadIndicator = $("#load_indicator");
@@ -112,27 +97,25 @@ const topicListCall = function (slug, parameters, page = null) {
 
   let apiUrl = `/category/${slug}/`;
 
-  // by default TopicListManager only returns the first page, in order to get all pages we need to include extended
-  // parameter. if param:: page is supplied, we set it to extended. we do pagination via Paginator class.
-  let extended = false;
-  if (page) {
-    // if page is not null
-    extended = true;
+  if (!page) {
+    page = 1;
   }
 
-  // if extended == true then set extended parameter, if other parameters exist other than extended convert ? to &
-  let parameterIsExtended = extended ? `${parameters ? "&" : "?"}extended=yes` : "";
+  let pageParameter = "?page=" + page;
+
+  if (parameters) {
+    pageParameter = "&page=" + page;
+  }
 
   $.ajax({
     type: "GET",
-    url: apiUrl + parameters + parameterIsExtended,
+    url: apiUrl + parameters + pageParameter,
     success (data) {
       $("#current_category_name").html(localStorage.getItem("active_category_safe")); // change title
       loadIndicator.css("display", "none"); // hide spinner
 
       if (data["topic_data"].length === 0) {
         topicList.html("<small>yok ki</small>");
-        $("a#show_more").addClass("dj-hidden");
       } else {
         if (data["refresh_count"]) {
           $("#refresh_bugun").removeClass("dj-hidden");
@@ -141,69 +124,60 @@ const topicListCall = function (slug, parameters, page = null) {
           $("#refresh_bugun").addClass("dj-hidden");
         }
 
-        if (extended) {
-          if (!page) {
-            page = 1;
-            $("#show_more").addClass("dj-hidden");
-          }
-        }
-
         // decides whether it is an entry permalink or topic and whatsoever
         const slugIdentifier = data["slug_identifier"];
-        if (page) {
-          // itemsPerPage also need to be changed at utils.settings, maybe we may set cookies for that?
-          const paginator = new Paginator(data["topic_data"], 2);
+        const totalPages = data["total_pages"];
 
-          if (page > paginator.total_pages) {
-            notify("yok hiç bişi kalmamış");
-          } else {
-            topicList.empty();
-            localStorage.setItem("navigation_page", page);
-            const leftFrameSelect = $("select#left_frame_paginator");
-            leftFrameSelect.empty();
-            for (const element of paginator.range) {
-              leftFrameSelect.append($("<option>", {
-                value: element,
-                text: element
-              }
-              ));
-            }
-            leftFrameSelect.val(page);
-            $("#lf_total_pages").html(paginator.total_pages);
-            data = paginator.getPage(page);
-            $("#lf_pagination_wrapper").removeClass("dj-hidden");
+        if (page > totalPages) {
+          notify("yok hiç bişi kalmamış");
+          topicListCall(slug, parameters, 1);
+        }
+
+        topicList.empty();
+        localStorage.setItem("navigation_page", page);
+
+        if (page > 1 && totalPages >= page) {
+          let pageRange = [];
+          for (let i = 1; i <= totalPages; i++) {
+            pageRange.push(i);
           }
+
+          const leftFrameSelect = $("select#left_frame_paginator");
+          leftFrameSelect.empty();
+          for (const element of pageRange) {
+            leftFrameSelect.append($("<option>", {
+              value: element,
+              text: element
+            }
+            ));
+          }
+
+          leftFrameSelect.val(page);
+          $("#lf_total_pages").html(totalPages);
+          $("#lf_pagination_wrapper").removeClass("dj-hidden");
         } else {
-          topicList.empty();
-          data = data["topic_data"];
+          leftFrameReset();
+          if (page < totalPages) {
+            $("a#show_more").removeClass("dj-hidden");
+          }
         }
 
         if (excludeParameters) {
           parameters = "";
         }
 
+        data = data["topic_data"];
         for (let i = 0; i < data.length; i++) {
-          let topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
+          let topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i]["slug"]}${parameters}">${data[i]["title"]}<small class="total_entries">${data[i]["count"] ? data[i].count : ""}</small></a></li>`;
           topicList.append(topicItem);
-        }
-
-        if (localStorage.getItem("active_category") === "debe") {
-          $("#show_more").addClass("dj-hidden");
         }
       }
     },
-    error (error) {
+    error () {
       notify("bir şeyler yanlış gitti", "error");
       loadIndicator.css("display", "none");
-      console.log(error);
     }
   });
-};
-
-const leftFrameReset = function () {
-  $("a#show_more").removeClass("dj-hidden");
-  $("#lf_pagination_wrapper").addClass("dj-hidden");
-  localStorage.removeItem("navigation_page");
 };
 
 const dictToParameters = function (dict) {
@@ -322,7 +296,6 @@ $(function () {
         $("#current_category_name").text(selector.attr("data-safename"));
         if (navigationPage) {
           leftFramePopulate(category, parseInt(navigationPage));
-          $("a#show_more").addClass("dj-hidden");
         } else {
           leftFramePopulate(category);
         }
@@ -384,7 +357,6 @@ $(function () {
 $("#year_select").on("change", function () {
   let selectedYear = this.value;
   localStorage.setItem("selected_year", selectedYear);
-  $("a#show_more").removeClass("dj-hidden");
   leftFrameReset();
   leftFramePopulate("tarihte-bugun");
 });
@@ -552,7 +524,6 @@ $(".favorite-entry-btn").on("click", function () {
     },
     success (data) {
       $(self).next().html(data["count"]);
-      console.log(data);
       if (data["count"] === 0 || data["count"] === 1 && data["status"] === 1) {
         $(self).next().toggleClass("dj-hidden");
       }
@@ -609,16 +580,7 @@ const entryRate = function (entryId, vote, anonAction = -1) {
       "entry_id": entryId,
       vote,
       "anon_action": anonAction
-    },
-
-    success: data => {
-      console.log(data);
-    },
-
-    error: err => {
-      console.log(err);
     }
-
   });
 };
 
@@ -697,7 +659,6 @@ const entryAction = (type, entryId, redirect = false) => {
 
     },
     success: data => {
-      console.log(data);
       if (data["message"]) {
         notify(data["message"]);
       }
@@ -705,19 +666,20 @@ const entryAction = (type, entryId, redirect = false) => {
       if (redirect) {
         window.location.replace(data["redirect_to"]);
       }
-
-      return data;
+      return true;
     },
-    error: err => {
-      console.log(err);
+    error: () => {
+      notify("olmuyor", "error");
+      return false;
     }
   });
 };
 
 $(".delete-entry").on("click", function () {
   if (confirm("harbiden silinsin mi?")) {
-    entryAction("delete", $(this).attr("data-target-entry"));
-    $(this).closest(".entry-full").css("display", "none");
+    if (entryAction("delete", $(this).attr("data-target-entry"))) {
+      $(this).closest(".entry-full").css("display", "none");
+    }
   }
 });
 
@@ -739,11 +701,8 @@ const topicAction = (type, topicId) => {
       type,
       "topic_id": topicId
     },
-    success: data => {
-      console.log(data);
-    },
-    error: err => {
-      console.log(err);
+    error: () => {
+      notify("olmuyor", "error");
     }
   });
 };

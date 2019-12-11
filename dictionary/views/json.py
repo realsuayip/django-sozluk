@@ -1,11 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
 from ..models import Author, Entry, Topic, TopicFollowing, Message
 from ..utils.decorators import force_post, force_get
 from ..utils.managers import TopicListManager
-from ..utils.settings import YEAR_RANGE, VOTE_RATES
+from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT
 from ..utils.views import JsonView
 
 
@@ -15,7 +16,13 @@ class AsyncTopicList(JsonView):
     def handle(self):
         slug = self.kwargs.get("slug")
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
+        page = self.request_data.get("page")
         search_keys = self.request_data if slug == "hayvan-ara" else None
+        fetch_cached = False if self.request_data.get("nocache") == "yes" else True
+        paginate_by = TOPICS_PER_PAGE_DEFAULT
+
+        if self.request.user.is_authenticated:
+            paginate_by = self.request.user.topics_per_page
 
         if year:
             try:
@@ -24,12 +31,12 @@ class AsyncTopicList(JsonView):
             except(ValueError, OverflowError):
                 return self.bad_request()
 
-        extend = True if self.request_data.get("extended") == "yes" else False
-        fetch_cached = False if self.request_data.get("nocache") == "yes" else True
-        manager = TopicListManager(self.request.user, slug, year=year, extend=extend, fetch_cached=fetch_cached,
-                                   search_keys=search_keys)
-        self.data = dict(topic_data=manager.serialized, refresh_count=manager.refresh_count,
-                         slug_identifier=manager.slug_identifier)
+        manager = TopicListManager(self.request.user, slug, year, fetch_cached, search_keys)
+        paginated = Paginator(manager.serialized, paginate_by)
+        topic_data = paginated.get_page(page).object_list
+
+        self.data = dict(topic_data=topic_data, refresh_count=manager.refresh_count,
+                         slug_identifier=manager.slug_identifier, total_pages=paginated.num_pages)
 
         return super().handle()
 

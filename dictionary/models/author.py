@@ -23,12 +23,14 @@ class Author(AbstractUser):
     UNKNOWN = 'NO'
     GENDERS = ((MAN, 'erkek'), (WOMAN, 'kadın'), (OTHER, 'diğer'), (UNKNOWN, 'boşver'))
 
-    # entry per page preference
+    # entry/topic per page preference
     TEN = 10
     THIRTY = 30
     FIFTY = 50
+    SEVENTYFIVE = 75
     ONEHUNDRED = 100
     ENTRY_COUNTS = ((TEN, "10"), (THIRTY, "30"), (FIFTY, "50"), (ONEHUNDRED, "100"))
+    TOPIC_COUNTS = ((THIRTY, "30"), (FIFTY, "50"), (SEVENTYFIVE, "75"), (ONEHUNDRED, "100"))
 
     # status of author queue
     PENDING = "PN"
@@ -61,6 +63,7 @@ class Author(AbstractUser):
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
     blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
     entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
+    topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
     favorite_entries = models.ManyToManyField('Entry', related_name="favorited_by", blank=True)
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)

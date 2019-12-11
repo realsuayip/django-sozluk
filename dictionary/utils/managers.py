@@ -9,8 +9,8 @@ from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from .settings import TIME_THRESHOLD_24H, TOPICS_PER_PAGE, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES, \
-    UNCACHED_CATEGORIES, SINGLEPAGE_CATEGORIES
+from .settings import TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES, \
+    UNCACHED_CATEGORIES
 from ..models import Entry, Topic, Category
 from ..models.managers.topic import TopicManager
 
@@ -20,20 +20,18 @@ class TopicListManager:
     Topic List Manager. views => left_frame for desktop and /basliklar/ for mobile.
     Each non-database category has its own function, note that function names correspond to their slugs, this allows
     us to write a clean code, and each time we have to edit one of them for specific feature it won't be painful.
-
     """
+
     data = None
     slug_identifier = "/topic/"
     cache_exists = False
     cache_key = None
     cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
 
-    def __init__(self, user=None, slug=None, extend=False, year=None, fetch_cached=True, search_keys=None):
+    def __init__(self, user=None, slug=None, year=None, fetch_cached=True, search_keys=None):
         """
-        :param user: only pass request.user, required for checking categories with login requirement
+        :param user: only pass request.user, required for topics per page and checking categories with login requirement
         :param slug: slug of the category
-        :param extend: if pagination is needed set True, otherwise it will yield the first page, note that no method
-        in this class handles pagination. it is either handled in javascript or in view function
         :param year: only required for tarihte-bugun
         :param fetch_cached: set to False if you don't want to fetch cached (refresh button behaviour).
         :param search_keys request.GET for "hayvan-ara" (advanced search).
@@ -49,7 +47,6 @@ class TopicListManager:
         elif slug == "kenar":
             self.slug_identifier = "/entry/update/"
 
-        self.extend = extend
         self.slug = slug
         self.year = year
         self.search_keys = search_keys
@@ -90,9 +87,11 @@ class TopicListManager:
 
     def debe(self):
         year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
-        self.data = Entry.objects.filter(date_created__day=day, date_created__month=month,
+        debe_list = Entry.objects.filter(date_created__day=day, date_created__month=month,
                                          date_created__year=year).order_by("-vote_rate").annotate(
             title=F("topic__title"), slug=F("pk")).values('title', "slug")
+
+        self.data = debe_list[:TOPICS_PER_PAGE_DEFAULT]
 
     def kenar(self):
         if self.user.is_authenticated:
@@ -156,8 +155,11 @@ class TopicListManager:
             elif orderding == "popular":
                 qs = qs.annotate(entry_count=Count("entries")).order_by("-entry_count")
 
-            self.data = qs.filter(entries__is_draft=False).annotate(count=Count("entries")).values("title", "slug",
-                                                                                                   "count")
+            result = qs.filter(entries__is_draft=False).annotate(count=Count("entries")).values("title", "slug",
+                                                                                                "count")
+            self.data = result[:TOPICS_PER_PAGE_DEFAULT]
+        else:
+            self.data = qs.none()  # nothing found
 
     def generic_category(self):
         category = get_object_or_404(Category, slug=self.slug)
@@ -173,26 +175,6 @@ class TopicListManager:
             last_entry_dt=Max('entries__date_created'),
             count=Count("entries", filter=Q(entries__date_created__gte=TIME_THRESHOLD_24H))).values("title", "slug",
                                                                                                     "count")
-
-    @property
-    def serialized(self):
-        """
-        Serialize Entry queryset data, cache it and return it.
-        """
-        if self.cache_exists:
-            return self._delimit_length(self.get_cached_data)
-        elif self.data:
-            return self._delimit_length(self.cache_data(list(self.data)))
-
-        return []  # found nothing
-
-    def _delimit_length(self, data):
-        """
-        :param data: a list object containing data.
-        :return: full data, if pagination is needed else first page.
-        """
-        delimited = data if self.extend and self.slug not in SINGLEPAGE_CATEGORIES else data[:TOPICS_PER_PAGE]
-        return delimited
 
     def cache_data(self, data):
         if self.slug in UNCACHED_CATEGORIES:
@@ -227,6 +209,14 @@ class TopicListManager:
             cache.delete(self.cache_key)
             return True
         return False
+
+    @property
+    def serialized(self):
+        # serialize topic queryset data, cache it and return it.
+        if self.cache_exists:
+            return self.get_cached_data
+
+        return self.cache_data(list(self.data))
 
     @property
     def get_cached_data(self):

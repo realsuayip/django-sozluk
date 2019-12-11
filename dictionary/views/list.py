@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
-from ..utils.settings import TOPICS_PER_PAGE, YEAR_RANGE, ENTRIES_PER_PAGE, NON_DB_CATEGORIES, TIME_THRESHOLD_24H, \
+from ..utils.settings import TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, TIME_THRESHOLD_24H, \
     BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES
 
 
@@ -88,30 +88,36 @@ class TopicList(ListView):
     model = Topic
     context_object_name = "topics"
     template_name = "dictionary/list/topic_list.html"
-    paginate_by = TOPICS_PER_PAGE
     refresh_count = 0
     slug_identifier = None
 
     def get_queryset(self):
         year = None
         slug = self.kwargs['slug']
+
         if slug == "tarihte-bugun":
+            request_year = self.request.GET.get("year")
+            session_year = self.request.session.get("year")
+            random_year = random.choice(YEAR_RANGE)
 
-            if self.request.GET.get("year"):
-                year = self.request.GET.get("year")
-                self.request.session["year"] = year
+            if request_year:
+                try:
+                    if int(request_year) not in YEAR_RANGE:
+                        if session_year:
+                            year = session_year
+                    else:
+                        year = request_year
+                except (ValueError, OverflowError):
+                    if session_year:
+                        year = session_year
+                    else:
+                        year = random_year
+            elif session_year:
+                year = session_year
             else:
-                year = self.request.session.get("year")
+                year = random_year
 
-            if not year:
-                year = random.choice(YEAR_RANGE)
-                self.request.session["year"] = year
-
-            try:
-                if int(year) not in YEAR_RANGE:
-                    year = None
-            except ValueError:
-                year = None
+            self.request.session["year"] = year
 
         if slug == "bugun" and not self.request.user.is_authenticated:
             return self.model.objects.none()
@@ -119,7 +125,7 @@ class TopicList(ListView):
         if slug == "hayvan-ara":
             raise ZeroDivisionError("Unimplemented yet")
 
-        manager = TopicListManager(self.request.user, slug, extend=True, year=year)
+        manager = TopicListManager(self.request.user, slug, year=year)
         self.refresh_count = manager.refresh_count
         self.slug_identifier = manager.slug_identifier
         return manager.serialized
@@ -144,11 +150,16 @@ class TopicList(ListView):
         context['slug_identifier'] = self.slug_identifier
         return context
 
+    def get_paginate_by(self, queryset):
+        if self.request.user.is_authenticated:
+            return self.request.user.topics_per_page
+        return TOPICS_PER_PAGE_DEFAULT
+
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
         if self.kwargs['slug'] == "bugun":
             # reset cache (refresh button mobile click event)
-            manager = TopicListManager(self.request.user, "bugun", extend=True)
+            manager = TopicListManager(self.request.user, "bugun")
             manager.delete_cache()
             return redirect(self.request.path)
         return HttpResponseBadRequest()
@@ -394,7 +405,7 @@ class TopicEntryList(ListView, FormMixin):
     def get_paginate_by(self, *args):
         if self.request.user.is_authenticated:
             return self.request.user.entries_per_page
-        return ENTRIES_PER_PAGE
+        return ENTRIES_PER_PAGE_DEFAULT
 
     def render_to_response(self, context, **response_kwargs):
         # can only be caused by self.following()

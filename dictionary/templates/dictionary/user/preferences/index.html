@@ -14,9 +14,18 @@
 
 
         <div class="form-group">
-            <label class="mr-2" for="pref_entries_per_page"><strong>{{ form.entries_per_page.label }}</strong></label>
-            {% render_field form.entries_per_page class="form-control" id="pref_entries_per_page" %}
+            <div class="row">
+                <div class="col-sm-6">
+                    <label for="pref_entries_per_page"><strong>{{ form.entries_per_page.label }}</strong></label>
+                    {% render_field form.entries_per_page class="form-control" id="pref_entries_per_page" %}
+                </div>
+                <div class="col-sm-6">
+                    <label for="pref_topics_per_page"><strong>{{ form.topics_per_page.label }}</strong></label>
+                    {% render_field form.topics_per_page class="form-control" id="pref_topics_per_page" %}
+                </div>
+            </div>
         </div>
+
 
         <div class="form-group">
             <label style="display: block;" for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>

@@ -11,11 +11,12 @@ class PreferencesForm(UserChangeForm):
     gender = forms.ChoiceField(choices=Author.GENDERS, label="cinsiyet")
     birth_date = forms.DateField(widget=SelectDateWidget(years=range(1910, 2000)), label="doğum günü")
     entries_per_page = forms.ChoiceField(choices=Author.ENTRY_COUNTS, label="sayfa başına gösterilecek entry sayısı")
+    topics_per_page = forms.ChoiceField(choices=Author.TOPIC_COUNTS, label="sayfa başına gösterilecek başlık sayısı")
     message_preference = forms.ChoiceField(choices=Author.MESSAGE_PREFERENCE, label="mesaj")
 
     class Meta:
         model = Author
-        fields = ("gender", "birth_date", "entries_per_page", "message_preference")
+        fields = ("gender", "birth_date", "entries_per_page", "topics_per_page", "message_preference")
 
 
 class EntryForm(forms.ModelForm):

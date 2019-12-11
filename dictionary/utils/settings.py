@@ -2,11 +2,13 @@ import datetime
 from decimal import Decimal
 from django.utils import timezone
 
+from ..models import Author
+
 # just don't change this unless you are living in a planet where a day takes more or less than 24 hours.
 TIME_THRESHOLD_24H = timezone.now() - datetime.timedelta(hours=24)
 
-TOPICS_PER_PAGE = 2  # experimental value
-ENTRIES_PER_PAGE = 10  # except authenticated users
+TOPICS_PER_PAGE_DEFAULT = Author.FIFTY
+ENTRIES_PER_PAGE_DEFAULT = Author.TEN
 ENTRIES_PER_PAGE_PROFILE = 15
 GENERIC_SUPERUSER_ID = 1
 
@@ -24,15 +26,20 @@ NON_DB_SLUGS_SAFENAMES = {"bugun": "bugün", "gundem": "gündem", "basiboslar": 
                           "debe": "dünün en beğenilen entry'leri", "hayvan-ara": "arama sonuçları"}
 
 NON_DB_CATEGORIES = list(NON_DB_SLUGS_SAFENAMES.keys())
-LOGIN_REQUIRED_CATEGORIES = ["bugun", "kenar", "takip"]  # these categories are not open to visitors
-UNCACHED_CATEGORIES = ["kenar", "hayvan-ara"]  # don't cache these categories
-SINGLEPAGE_CATEGORIES = ["debe", "hayvan-ara"]  # these categories only show 1 page of data
-YEAR_RANGE = list(reversed(range(2017, 2020)))  # for mobile only
+
+# these categories are not open to visitors
+LOGIN_REQUIRED_CATEGORIES = ["bugun", "kenar", "takip"]
+
+# don't cache these categories
+UNCACHED_CATEGORIES = ["kenar", "hayvan-ara"]
+
+YEAR_RANGE = list(reversed(range(2017, 2020)))  # for TopicList view only
 
 # Used in views.json.Vote
 VOTE_RATES = {"favorite": Decimal(".2"), "increase": Decimal(".2"), "reduce": Decimal("-.2"),
               "anonymous_multiplier": Decimal(".5"), "authenticated_multiplier": Decimal("1")}
 
+# messages
 NOVICE_ACCEPTED_MESSAGE = "sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın " \
                           "olanaklarından faydalanabilirsin."
 NOVICE_REJECTED_MESSAGE = 'sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry ' \
