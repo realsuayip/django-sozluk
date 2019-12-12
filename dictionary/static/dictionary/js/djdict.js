@@ -45,37 +45,6 @@ const notify = async (message, type = "default") => {
   }
 };
 
-let mql = window.matchMedia("(max-width: 810px)");
-
-const desktopView = function () {
-  $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
-    e.preventDefault();
-  });
-};
-
-const mobileView = function () {
-  $("ul#category_view a, div#category_view_in a").on("click", function () {
-    window.location = this.href;
-  });
-};
-
-if (mql.matches) {
-  mobileView();
-} else {
-  desktopView();
-}
-
-const screenTest = function (e) {
-  if (e.matches) {
-    /* mobile switch */
-    mobileView();
-  } else {
-    desktopView();
-  }
-};
-
-mql.addEventListener("change", screenTest);
-
 const leftFrameReset = function () {
   $("a#show_more").addClass("dj-hidden");
   $("#lf_pagination_wrapper").addClass("dj-hidden");
@@ -175,6 +144,7 @@ const topicListCall = function (slug, parameters, page = null) {
     },
     error () {
       notify("bir şeyler yanlış gitti", "error");
+      topicList.html("<small>yok yapamıyorum olmuyor :(</small>");
       loadIndicator.css("display", "none");
     }
   });
@@ -263,6 +233,33 @@ $("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), 
 });
 
 $(function () {
+  let mql = window.matchMedia("(max-width: 810px)");
+
+  const desktopView = function () {
+    $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
+      e.preventDefault();
+    });
+  };
+
+  const mobileView = function () {
+    // add mobile listeners here.
+  };
+
+  if (mql.matches) {
+    mobileView();
+  } else {
+    desktopView();
+  }
+
+  const screenTest = function (e) {
+    if (e.matches) {
+    /* mobile switch */
+      mobileView();
+    } else {
+      desktopView();
+    }
+  };
+
   $("input.with-datepicker").datepicker(
     {
       container: "#dropdown_detailed_search",
@@ -352,6 +349,8 @@ $(function () {
 
     });
   });
+
+  mql.addEventListener("change", screenTest);
 });
 
 $("#year_select").on("change", function () {

@@ -22,7 +22,7 @@ header.page_header {
 
 .logo {
     display: block;
-    width: 140px;
+    width: 120px;
     position: relative;
 }
 
@@ -41,46 +41,39 @@ header.page_header {
     justify-content: space-between;
 }
 
-.searchbox {
-    width: 50%;
+
+.header-search-form {
+    flex: auto;
     max-width: 550px;
-    float: right;
-    height: 30px;
+    margin: 0 1em;
 }
 
-.searchbox .searchbox-text {
-    height: 30px;
-    border: 1px solid #092e20;
-    width: 85%;
-    font-size: 14px;
-    padding-left: 10px;
-    -webkit-border-top-left-radius: 4px;
-    -webkit-border-bottom-left-radius: 4px;
-    -moz-border-radius-topleft: 4px;
-    -moz-border-radius-bottomleft: 4px;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-right: none;
+.searchbox, .searchbox .searchbox-text, .searchbox .searchbtn, .searchbox .dropbtn {
+    height: 32px;
 }
 
-.searchbox .searchbox-text:focus {
-    outline: none;
+
+.searchbox > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle) {
+    -webkit-border-top-right-radius: .25rem;
+    -webkit-border-bottom-right-radius: .25rem;
+    -moz-border-radius-topright: .25rem;
+    -moz-border-radius-bottomright: .25rem;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
 }
 
 .searchbox .searchbtn {
-    height: 30px;
     background: #092e20;
     color: #fff;
-    padding: 2px;
+    padding: 3px 4px;
 
 }
 
 .searchbox .dropbtn {
-    height: 30px;
     background: #fff;
     color: #092e20;
     padding: 0 10px;
-    border-color: #092e20;
+    border-color: #ced4da;
     border-left: none;
     border-right: none;
     -webkit-border-radius: 0;
@@ -219,7 +212,7 @@ nav.sub-nav ul .more_tags_dropdown,
     position: fixed;
     width: 20%;
     padding: 0 .5em;
-    scrollbar-width: thin;
+    scrollbar-width: thin; /* firefox only */
 }
 
 
@@ -612,6 +605,7 @@ ul.user-navigation {
     padding-left: 0;
     line-height: 1.5;
     margin: 0;
+
 }
 
 ul.user-navigation li {
@@ -625,6 +619,10 @@ ul.user-navigation li a.nav-quicklink {
     display: inline-flex;
     align-items: center;
     text-decoration: none;
+}
+
+ul.user-navigation li a.nav-quicklink:hover > span {
+    text-decoration: underline;
 }
 
 
@@ -1208,6 +1206,14 @@ select.mobile-topic-list {
     background: #fff;
 }
 
+
+.form-group .helptext-list ul {
+    list-style-type: none;
+    margin: 1em;
+    padding: 0;
+}
+
+
 .refresh-button {
     border: 1px solid #ccc;
     padding: .3em;
@@ -1285,8 +1291,8 @@ a.search-closer:active {
     padding-right: 0 !important;
 }
 
+
 /** MEDIA QUERIES **/
-/** anchor **/
 
 @media (max-width: 1366px) {
     .content {
@@ -1306,18 +1312,6 @@ a.search-closer:active {
     }
 }
 
-
-@media (max-width: 880px) {
-    .searchbox {
-        width: 45%;
-    }
-
-    .searchbox .searchbox-text {
-        width: 80%;
-
-    }
-}
-
 @media (max-width: 900px) {
     .top-bar {
         padding-right: 3em;
@@ -1325,43 +1319,32 @@ a.search-closer:active {
     }
 }
 
-
 @media (min-width: 810px) {
-
-
     body.topic-list-view .content-frame {
         width: 100%;
         padding: 1.5em;
 
     }
-
     body.topic-list-view .left-frame-in {
         font-size: 1.2em;
         width: 100%
     }
-
     body.topic-list-view .right-frame {
         display: none;
     }
 
-
 }
 
-
 /** MOBILE VERSION SWITCH **/
-
 @media (max-width: 810px) {
-
     section.user_entries .entry_info .rate div.favorites i:hover::before {
 
         content: 'favorite';
     }
 
-
     section.user_entries .entry_info .rate div.favorites i.fav-inverted:hover::before {
         content: 'favorite_border';
     }
-
 
     body.topic-list-view .left-frame,
     body.topic-list-view .right-frame {
@@ -1382,12 +1365,10 @@ a.search-closer:active {
         padding: 0 .5em 0 0;
     }
 
-
     .content {
         padding: 1.5em;
         margin-top: 90px;
     }
-
 
     nav.sub-nav ul.desktop-only {
         display: none;
@@ -1416,19 +1397,10 @@ a.search-closer:active {
         display: none;
     }
 
-
     .top-bar {
         padding-right: 1em;
         padding-left: 1em;
         margin-bottom: .25em;
-    }
-
-    .searchbox {
-        width: 50%;
-    }
-
-    .sb-guest {
-        width: 80%;
     }
 
     body.default .content-frame,
@@ -1469,16 +1441,13 @@ a.search-closer:active {
 
 }
 
-
 @media (max-width: 610px) {
-
     .logo {
-        width: 55px;
+        width: 40px;
     }
 
     .logo a {
         background: url('../img/django_logo_small.svg') no-repeat;
-        background-size: 70px 40px;
     }
 
     section.user_entries .entry_info {
@@ -1493,52 +1462,15 @@ a.search-closer:active {
     header.entry_header .pagination select {
         max-height: 26px;
     }
-
-    .searchbox .searchbox-text {
-        width: 70%;
-    }
-
-    .searchbox {
-        width: 50%;
-    }
-
-    .sb-guest {
-        width: 85%;
-    }
-
-
 }
 
-
 @media (max-width: 420px) {
-
-    .sb-login {
-        width: 60%;
-    }
-
-    .sb-login .searchbox-text {
-        width: 70%;
-    }
-
-    .sb-login .dropbtn {
-        display: none;
-    }
-
-    .sb-guest {
-        width: 80%;
-    }
-
-    .sb-guest .searchbox-text {
-        width: 70%;
-    }
-
-    /*.searchbox .searchbox-text {*/
-    /*    width: 45%;*/
-    /*    font-size: 12px;*/
-    /*    padding: 5px;*/
-    /*}*/
     ul.user-navigation li:nth-child(-n+3) {
         margin-right: 0;
+    }
+
+    .logo {
+        width: 65px;
     }
 
     .logo a {
@@ -1548,45 +1480,18 @@ a.search-closer:active {
     .topic-search-expander {
         display: block;
     }
-
-
 }
 
-@media (max-width: 275px) {
-    .sb-guest .searchbox-text {
-        width: 80%;
-    }
-
-    .sb-login.searchbox {
+@media (max-width: 300px) {
+    form.header-search-form.logged-in {
         display: none;
     }
-
-    /*.searchbox .searchbox-text {*/
-    /*    width: 50%;*/
-    /*}*/
-    .searchbox .dropbtn {
-        display: none;
-    }
-
 }
 
 @media (max-width: 225px) {
-
     .small-device-alert {
         display: block;
         background: red;
         color: #fff;
     }
-
-    .searchbox {
-        display: none;
-    }
-
-
-}
-
-.form-group .helptext-list ul {
-    list-style-type: none;
-    margin: 1em;
-    padding: 0;
 }
