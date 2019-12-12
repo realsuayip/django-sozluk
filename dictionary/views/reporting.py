@@ -28,4 +28,3 @@ class GeneralReportView(CreateView):
                 template = f'"{referrer_topic}" başlığındaki #{referrer_entry} numaralı entry hakkında'
                 kwargs.update({"data": {"subject": template}})
         return kwargs
-

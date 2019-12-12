@@ -18,8 +18,8 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
-from ..utils.settings import TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, TIME_THRESHOLD_24H, \
-    BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES
+from ..utils.settings import TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, \
+    TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES
 
 
 def index(request):
@@ -333,7 +333,6 @@ class TopicEntryList(ListView, FormMixin):
             Get current page's first and last entry, and find the number of entries before and after by date.
             Using these count data, find what page next entry is located on.
             """
-
             previous_entries_count, previous_entries_page = 0, 0
             subsequent_entries_count, subsequent_entries_page = 0, 0
             show_subsequent, show_previous = False, False

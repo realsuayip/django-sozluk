@@ -523,7 +523,7 @@ $(".favorite-entry-btn").on("click", function () {
     },
     success (data) {
       $(self).next().html(data["count"]);
-      if (data["count"] === 0 || data["count"] === 1 && data["status"] === 1) {
+      if (data["count"] === 0 || (data["count"] === 1 && data["status"] === 1)) {
         $(self).next().toggleClass("dj-hidden");
       }
       $(self).toggleClass("fav-inverted");

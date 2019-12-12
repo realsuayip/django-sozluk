@@ -1,36 +1,18 @@
 from django.conf import settings
 from django.contrib import messages as notifications
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from .decorators import require_ajax
 
 
-class JsonView(UserPassesTestMixin, View):
-    require_method = None  # "post" or "get" applies to WHOLE view
+class JsonView(View):
     request_data = None
-    method = None
     data = None
     success_message = "oldu"
     error_message = "olmadı"
     bad_request_message = "400 Bad Request"
-
-    def handle_no_permission(self):
-        self.data = dict(error="You lack permissions to view this page.")
-        return self._response(status=403)
-
-    def test_func(self):
-        if self.request.method == "POST":
-            self.method = "post"
-        elif self.request.method == "GET":
-            self.method = "get"
-
-        if self.require_method is not None:
-            if self.method != self.require_method.lower():
-                return False
-
-        return True
+    method = None  # required for foce_get/force_post decorators.
 
     def handle(self):
         if self.data is not None:
@@ -43,16 +25,18 @@ class JsonView(UserPassesTestMixin, View):
     def _response(self, status=200):
         return JsonResponse(self.data, status=status)
 
-    def _get_data(self, method):
-        self.request_data = method
+    def _get_data(self, request_data):
+        self.request_data = request_data
         return self.handle()
 
     @method_decorator(require_ajax)
     def get(self, *args, **kwargs):
+        self.method = "get"
         return self._get_data(self.request.GET)
 
     @method_decorator(require_ajax)
     def post(self, *args, **kwargs):
+        self.method = "post"
         return self._get_data(self.request.POST)
 
     def success(self, message_pop=False, redirect_url=False):
@@ -68,7 +52,7 @@ class JsonView(UserPassesTestMixin, View):
 
     def error(self, message_pop=False, status=500):
         if message_pop:
-            notifications.success(self.request, self.error_message)
+            notifications.error(self.request, self.error_message)
 
         self.data = dict(success=False, message=self.error_message)
         return self._response(status=status)

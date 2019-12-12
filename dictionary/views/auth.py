@@ -49,8 +49,9 @@ class SignUp(FormView):
         user.gender = form.cleaned_data.get('gender')
         user.save()
         send_email_confirmation(user, user.email)
-        notifications.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi."
-                                         "bu bağlantıya tıklayarak hesabınızı aktif hale getirip giriş yapabilirsiniz.")
+        notifications.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi. "
+                                         "bu bağlantıya tıklayarak hesabınızı aktif hale "
+                                         "getirip giriş yapabilirsiniz.")
         return redirect('login')
 
 

@@ -4,14 +4,13 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
 from ..models import Author, Entry, Topic, TopicFollowing, Message
-from ..utils.decorators import force_post, force_get
 from ..utils.managers import TopicListManager
 from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT
 from ..utils.views import JsonView
 
 
 class AsyncTopicList(JsonView):
-    require_method = "GET"
+    http_method_names = ['get']
 
     def handle(self):
         slug = self.kwargs.get("slug")
@@ -42,7 +41,7 @@ class AsyncTopicList(JsonView):
 
 
 class AutoComplete(JsonView):
-    require_method = "GET"
+    http_method_names = ['get']
 
     def handle(self):
         if self.request_data.get("author"):
@@ -81,7 +80,7 @@ class AutoComplete(JsonView):
 
 
 class UserAction(LoginRequiredMixin, JsonView):
-    require_method = "POST"
+    http_method_names = ['post']
 
     sender = None
     recipient = None
@@ -131,6 +130,7 @@ class UserAction(LoginRequiredMixin, JsonView):
 
 
 class EntryAction(LoginRequiredMixin, JsonView):
+    http_method_names = ['get', 'post']
     owner_action = False
     redirect_url = None
     entry = None
@@ -163,7 +163,6 @@ class EntryAction(LoginRequiredMixin, JsonView):
 
         return super().handle()
 
-    @force_post
     def delete(self):
         if self.owner_action:
             self.entry.delete()
@@ -171,7 +170,6 @@ class EntryAction(LoginRequiredMixin, JsonView):
                 return self.success(message_pop=True, redirect_url=self.redirect_url)
             return self.success()
 
-    @force_post
     def pin(self):
         if self.owner_action:
             if self.request.user.pinned_entry == self.entry:  # unpin
@@ -181,7 +179,6 @@ class EntryAction(LoginRequiredMixin, JsonView):
             self.request.user.save()
             return self.success()
 
-    @force_post
     def favorite(self):
         if self.entry in self.request.user.favorite_entries.all():
             self.request.user.favorite_entries.remove(self.entry)
@@ -194,7 +191,6 @@ class EntryAction(LoginRequiredMixin, JsonView):
 
         return dict(count=self.entry.favorited_by.count(), status=status)
 
-    @force_get
     def favorite_list(self):
         users_favorited = self.entry.favorited_by.all()
         authors, novices = [], []
@@ -207,7 +203,7 @@ class EntryAction(LoginRequiredMixin, JsonView):
 
 
 class TopicAction(LoginRequiredMixin, JsonView):
-    require_method = "POST"
+    http_method_names = ['post']
     topic_object = None
 
     def handle(self):
@@ -234,7 +230,7 @@ class TopicAction(LoginRequiredMixin, JsonView):
 
 
 class ComposeMessage(LoginRequiredMixin, JsonView):
-    require_method = "POST"
+    http_method_names = ['post']
 
     def handle(self):
         return self.compose()
@@ -268,7 +264,7 @@ class Vote(JsonView):
     IP adress is a nuance; it depends on the server and it can also be manipulated by keen hackers. It's just better to
     stick to this way instead of making things complicated as there is no way to make this work 100% intended.
     """
-    require_method = "POST"
+    http_method_names = ['post']
 
     # View specific attributes
     vote = None

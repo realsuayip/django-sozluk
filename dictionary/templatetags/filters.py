@@ -29,8 +29,9 @@ def formatted(raw_entry):
     entry_swh = re.sub(r'`:([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]*)`', r'<a href="/topic/?q=\1" title="(bkz: \1)">*</a>', entry_bkz)
     entry_hede = re.sub(r'`([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]*)`', r'<a href="/topic/?q=\1">\1</a>', entry_swh)
     entry_link = re.sub(
-        r'\[(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}) ([a-zA-Z0-9 ğüşöçİĞÜŞÖÇ]*)\]',
-        r'<a target="_blank" href="\1">\2</a>', entry_hede)
+        r'\[(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+'
+        r'[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}) '
+        r'([a-zA-Z0-9 ğüşöçİĞÜŞÖÇ]*)\]', r'<a target="_blank" href="\1">\2</a>', entry_hede)
 
     return mark_safe(entry_link)
 
