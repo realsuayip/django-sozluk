@@ -135,6 +135,10 @@ const topicListCall = function (slug, parameters, page = null) {
           parameters = "";
         }
 
+        if (slug === "bugun") {
+          parameters = "?day=today"; // remove extra parameters (excludeParameters removes all of them)
+        }
+
         data = data["topic_data"];
         for (let i = 0; i < data.length; i++) {
           let topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i]["slug"]}${parameters}">${data[i]["title"]}<small class="total_entries">${data[i]["count"] ? data[i].count : ""}</small></a></li>`;

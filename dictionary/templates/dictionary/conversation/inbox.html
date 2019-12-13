@@ -1,12 +1,12 @@
 {% extends "dictionary/base.html" %}
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
+{% block title %}mesajlar{% endblock %}
 {% block content %}
     {% load humanize %}
-    <h4>mesajlar {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}</h4>
+    <h4><strong>mesajlar</strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}</h4>
     <hr>
 
     {% if conversations %}
-
 
         <ul class="threads">
             {% for chat in conversations %}
@@ -28,7 +28,6 @@
 
             {% endfor %}
         </ul>
-
 
         {% include "dictionary/includes/paginaton.html" with paginator=page_obj %}
     {% else %}

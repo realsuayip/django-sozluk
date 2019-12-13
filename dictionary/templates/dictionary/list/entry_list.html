@@ -1,5 +1,6 @@
 {% extends "dictionary/base.html" %}
-{% block title %}{{ topic.title }}{% endblock %}
+{% block title %}{{ topic.title }}{% if entry_permalink %} - #{{ entries.0.pk }}{% endif %}{% if mode == "today" %} -
+    bugünün entry'leri{% endif %}{% if page_obj.number > 1 %} - sayfa {{ page_obj.number }}{% endif %}{% endblock %}
 {% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
 {% block content %}
 
@@ -11,10 +12,10 @@
 
             {% if topic.exists %}
 
-                <h1 class="topic-title"><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a>{% if mode == "search" %}
-                    <small style="font-size: 1rem;">[arama terimi:
-                        <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
-
+                <h1 class="topic-title"><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a>
+                    {% if mode == "search" %}
+                        <small style="font-size: 1rem;">[arama terimi:
+                            <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
 
                 {% if topic.has_entries %}
                     <div class="lower">
@@ -171,7 +172,8 @@
 
             {% else %}
                 {# Topic does not exist #}
-                <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
+                <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a>
+                </h1>
                 <p>böyle bir şey yok.</p>
 
                 {% if subsequent_entries_count > 0 %}

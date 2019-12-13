@@ -1,11 +1,13 @@
 {% extends "dictionary/base.html" %}
 {% block bodyattr %}class="topic-list-view"{% endblock %}
+{% block title %}takip{% endblock %}
 {% load filters %}
 {% load functions %}
 {% block content %}
 
     <div class="left-frame-in">
-        <h5><strong>takip</strong></h5>
+        <h4><strong>takip</strong></h4>
+
         {% if topics_following %}
             <small>{{ topics_following|length }} başlık</small>
             <ul id="topic-list-standalone" class="list-group topic-list">
@@ -20,6 +22,8 @@
         {% else %}
             <small>yok ki</small>
         {% endif %}
+
         {% include "dictionary/includes/paginaton.html" with paginator=page_obj stretch="yes" hr="yes" %}
     </div>
+
 {% endblock %}

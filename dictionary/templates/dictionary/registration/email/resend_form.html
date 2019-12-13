@@ -3,7 +3,7 @@
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
 {% block content %}
     {% load widget_tweaks %}
-    <h4 class="mb-3">onaylama e-postasını tekrar gönder</h4>
+    <h4 class="mb-3"><strong>onaylama e-postasını tekrar gönder</strong></h4>
     <hr>
 
 
@@ -22,7 +22,7 @@
         </div>
 
         {% csrf_token %}
-        <button class="btn btn-django" style="width: 100%;">yolla bakayım bir daha</button>
+        <button class="btn btn-django stretch">yolla bakayım bir daha</button>
 
     </form>
 

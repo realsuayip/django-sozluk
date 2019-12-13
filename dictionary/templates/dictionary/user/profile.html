@@ -64,15 +64,25 @@
             <ul>
                 <li {% if not tab %}class="active"{% endif %}><a
                         href="{% url 'user-profile' username=profile.username %}">entry'ler</a></li>
+
                 <li {% if tab == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
-                <li {% if tab == "popular" %}class="active"{% endif %}><a href="?t=popular">en çok favorilenenleri</a>
+
+                <li class="profile-stat-expand{% if tab and tab != 'favorites' %} active{% endif %}">
+                    <a class="expand" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        istatistikler
+
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
+                        {#  to be added..#}
+                    </div>
                 </li>
+
             </ul>
         </div>
     </section>
-
-
-
 
     {% if entries %}
         <section class="user_entries">
@@ -92,18 +102,18 @@
 
 
 {% block rightframe %}
-{% if request.user.is_authenticated %}
-    <h6><strong>notlar</strong></h6>
-    <form method="post" class="memento">
-        {% load widget_tweaks %}
-        {% load filters %}
+    {% if request.user.is_authenticated %}
+        <h6><strong>notlar</strong></h6>
+        <form method="post" class="memento">
+            {% load widget_tweaks %}
+            {% load filters %}
 
-        {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
-            {% render_field form.body placeholder=text_placeholder name="memento" class="entry_editor" rows="10" %}
-        {% endwith %}
+            {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
+                {% render_field form.body placeholder=text_placeholder name="memento" class="entry_editor" rows="10" %}
+            {% endwith %}
 
-        {% csrf_token %}
-        <button class="btn btn-django">kaydet</button>
-    </form>
-{% endif %}
+            {% csrf_token %}
+            <button class="btn btn-django">kaydet</button>
+        </form>
+    {% endif %}
 {% endblock %}

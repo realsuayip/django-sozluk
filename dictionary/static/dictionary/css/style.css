@@ -207,7 +207,7 @@ nav.sub-nav ul .more_tags_dropdown,
 }
 
 .left-frame {
-    height: calc(100% - 150px);
+    height: calc(100% - 9rem);
     overflow-y: scroll;
     position: fixed;
     width: 20%;
@@ -333,7 +333,7 @@ header.entry_header h1 {
 }
 
 
-header.entry_header .lower a {
+header.entry_header .lower a:not(.active) {
     color: #333;
 }
 
@@ -595,7 +595,11 @@ form select.datepicker:nth-child(-n+3) {
     font-size: 1em;
 }
 
-.btn-django:hover {
+.btn-django.stretch{
+    width: 100%;
+}
+
+.btn-django:hover, .btn-django-link:hover{
     color: #ccc;
 }
 
@@ -1291,6 +1295,24 @@ a.search-closer:active {
     padding-right: 0 !important;
 }
 
+
+.dropdown-advanced-search{
+    width: calc(100% - 32px);
+}
+
+.btn-django-link{
+    background: #0d2f18;
+    color: #fff;
+}
+
+li.profile-stat-expand .dropdown-menu .dropdown-item {
+    padding: .3em 1em;
+    color: #16784f;
+}
+
+li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
+    background: inherit;
+}
 
 /** MEDIA QUERIES **/
 
