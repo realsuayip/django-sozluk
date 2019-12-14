@@ -7,9 +7,8 @@ from django.db.models import Q
 from .author import Author
 from .category import Category
 from .entry import Entry
-from .managers.topic import TopicManager
+from .managers.topic import TopicManager, TopicManagerPublished
 from ..utils import turkish_lower
-
 
 topic_title_validators = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/"*,.!?~\[\] {} <>^;\\|-]+$""",
                                          message="bu başlık geçerisz karakterler içeriyor"),
@@ -28,11 +27,12 @@ class TopicFollowing(models.Model):
 class Topic(models.Model):
     title = models.CharField(max_length=50, unique=True, validators=topic_title_validators)
     date_created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(Author, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL)
     category = models.ManyToManyField(Category, blank=True)
     slug = models.SlugField(max_length=96, unique=True, blank=True)
 
     objects = TopicManager()
+    objects_published = TopicManagerPublished()
 
     def save(self, *args, **kwargs):
         self.title = turkish_lower(self.title)

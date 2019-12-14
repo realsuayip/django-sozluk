@@ -76,6 +76,8 @@ class Author(AbstractUser):
     class Meta:
         # Superusers need to have this permission to accept a novice as an author.
         permissions = (("can_activate_user", "Make author"),)
+        verbose_name = "yazar"
+        verbose_name_plural = "yazarlar"
 
     @property
     def entry_count(self):

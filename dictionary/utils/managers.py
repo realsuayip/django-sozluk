@@ -136,12 +136,15 @@ class TopicListManager:
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
 
+        count_filter = dict(count=Count("entries"))
+
         # todo input validation
         # todo in mobile redirect to /hayvan-ara/ onclick, (javascript check mobile)
         # todo implement mobile view
 
         if favorites_only and self.user.is_authenticated:
             qs = qs.filter(entries__favorited_by=self.user)
+            count_filter = dict(count=Count(None))
 
         if nice_only:
             qs = qs.annotate(nice_sum=Sum("entries__vote_rate")).filter(nice_sum__gte=Decimal("500"))
@@ -161,14 +164,13 @@ class TopicListManager:
             qs = qs.filter(date_created__lte=date_to)
 
         if qs and not isinstance(qs, TopicManager):
-            qs = qs.filter(**self.base_filter).annotate(count=Count("entries"))
-
+            qs = qs.filter(**self.base_filter).annotate(**count_filter)
             if orderding == "alpha":
                 qs = qs.order_by("title")
             elif orderding == "newer":
                 qs = qs.order_by("-date_created")
             elif orderding == "popular":
-                qs = qs.order_by("-count")
+                qs = qs.order_by("-count", "-date_created")
 
             result = qs.values(*self.values)
             self.data = result[:TOPICS_PER_PAGE_DEFAULT]

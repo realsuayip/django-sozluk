@@ -669,20 +669,17 @@ const entryAction = (type, entryId, redirect = false) => {
       if (redirect) {
         window.location.replace(data["redirect_to"]);
       }
-      return true;
     },
     error: () => {
       notify("olmuyor", "error");
-      return false;
     }
   });
 };
 
 $(".delete-entry").on("click", function () {
   if (confirm("harbiden silinsin mi?")) {
-    if (entryAction("delete", $(this).attr("data-target-entry"))) {
-      $(this).closest(".entry-full").css("display", "none");
-    }
+    entryAction("delete", $(this).attr("data-target-entry"));
+    $(this).closest(".entry-full").css("display", "none");
   }
 });
 

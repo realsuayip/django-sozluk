@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.db import models
+from django.db.models import Q, Count
 
 from ...models import Entry
 from ...utils import turkish_lower
@@ -37,6 +38,14 @@ class TopicManager(models.Manager):
         else:
             raise ValueError("No arguments given.")
 
-    def create_topic(self, title, created_by):
+    def create_topic(self, title, created_by=None):
         topic = self.create(title=title, created_by=created_by)
         return topic
+
+
+class TopicManagerPublished(models.Manager):
+    # Return topics which has published (by authors) entries
+    def get_queryset(self):
+        f = dict(entries__is_draft=False, entries__author__is_novice=False)
+        return super().get_queryset().annotate(num_published=Count("entries", filter=Q(**f))).exclude(
+            num_published__lt=1)

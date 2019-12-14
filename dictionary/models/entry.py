@@ -33,6 +33,11 @@ class Entry(models.Model):
                 self.author.application_date = timezone.now()
                 self.author.save()
 
+        # assign topic creator (includes novices)
+        if not self.is_draft and not self.topic.created_by:
+            self.topic.created_by = self.author
+            self.topic.save()
+
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         if self.author.is_novice and self.author.application_status == "PN":

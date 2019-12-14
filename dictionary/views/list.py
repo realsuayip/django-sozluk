@@ -192,23 +192,25 @@ class TopicEntryList(ListView, FormMixin):
         # Entry creation handling
         entry = form.save(commit=False)
         entry.author = self.request.user
+        is_draft = form.cleaned_data.get("is_draft")
 
         if self.topic.exists:
             entry.topic = self.topic
         else:
-            # todo drafts also create topics? delete topics if no entries exist, signals
+            # Create topic
             try:
                 # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
-                Topic(title=self.topic.title, created_by=self.request.user).full_clean()
+                Topic(title=self.topic.title).full_clean()
             except ValidationError as error:
                 for msg in error.messages:
                     notifications.error(self.request, msg)
                 return self.form_invalid(form)
 
-            entry.topic = Topic.objects.create_topic(title=self.topic.title, created_by=self.request.user)
+            entry.topic = Topic.objects.create_topic(title=self.topic.title)
+
         entry.save()
 
-        if form.cleaned_data.get("is_draft"):
+        if is_draft:
             notifications.info(self.request, "kenara attık onu")
             if self.topic.exists:
                 return self._redirect_to_self()
