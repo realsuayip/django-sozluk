@@ -13,7 +13,10 @@ class AuthorAdmin(UserAdmin):
 
     fieldsets = UserAdmin.fieldsets + ((None, {'fields': (
         'is_novice', 'application_status', 'application_date', 'last_activity', 'banned_until', 'birth_date', 'gender',
-        'following', "blocked", 'favorite_entries', 'upvoted_entries', 'downvoted_entries', 'pinned_entry')}),)
+        'following', "blocked", 'favorite_entries', 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
+        "following_categories")}),)
+
+    add_fieldsets = ((None, {'fields': ('email',)}),) + UserAdmin.add_fieldsets
 
     def get_urls(self):
         urls = super().get_urls()

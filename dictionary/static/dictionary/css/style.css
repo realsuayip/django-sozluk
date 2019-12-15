@@ -1151,6 +1151,7 @@ a.expand::after {
 
 
 ul.category-list-all li {
+    align-items: center;
     list-style-type: none;
     padding: 1em;
     border-bottom: 1px solid #1ea570;
@@ -1303,6 +1304,10 @@ a.search-closer:active {
 .btn-django-link{
     background: #0d2f18;
     color: #fff;
+}
+
+.btn-django-link.faded{
+    background: #16784f;
 }
 
 li.profile-stat-expand .dropdown-menu .dropdown-item {

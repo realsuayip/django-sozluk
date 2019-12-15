@@ -58,7 +58,7 @@ class TopicListManager:
 
         if self.user.is_authenticated:
             blocked = self.user.blocked.all()
-            self.exclude_filter = dict(created_by__in=blocked)  # use ONLY with LOGIN_REQUIRED_CATEGORIES
+            self.auth_exclude_filter = dict(created_by__in=blocked)  # use ONLY with LOGIN_REQUIRED_CATEGORIES
 
         if slug in ["takip", "debe"]:
             self.slug_identifier = "/entry/"
@@ -87,8 +87,9 @@ class TopicListManager:
                 self.generic_category()
 
     def bugun(self):
-        self.data = Topic.objects.filter(**self.base_filter, **self.day_filter).order_by('-latest').annotate(
-            **self.base_annotation, **self.base_count).exclude(**self.exclude_filter).values(*self.values)
+        self.data = Topic.objects.filter(Q(category__in=self.user.following_categories.all()) | Q(category=None),
+                                         **self.base_filter, **self.day_filter, ).order_by('-latest').annotate(
+            **self.base_annotation, **self.base_count).exclude(**self.auth_exclude_filter).values(*self.values)
 
     def tarihte_bugun(self):
         now = timezone.now()

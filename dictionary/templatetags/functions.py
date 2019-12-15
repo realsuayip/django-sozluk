@@ -28,5 +28,10 @@ def check_follow_status(user, topic):
 
 
 @register.simple_tag
+def check_category_follow_status(user, category):
+    return category in user.following_categories.all()
+
+
+@register.simple_tag
 def activity_latest_entry(sender, topic):
     return topic.latest_entry_date(sender)

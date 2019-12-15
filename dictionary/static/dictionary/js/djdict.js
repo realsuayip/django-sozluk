@@ -772,3 +772,23 @@ $("button#perform_advanced_search").on("click", function () {
   leftFrameReset();
   leftFramePopulate("hayvan-ara", null, false, searchParameters);
 });
+
+const categoryAction = (type, categoryId) => {
+  $.ajax({
+    url: "/c/action/",
+    type: "POST",
+    data: {
+      type,
+      "category_id": categoryId
+    },
+    error: () => {
+      notify("olmuyor", "error");
+    }
+  });
+};
+
+$("button#follow-category-trigger").on("click", function () {
+  categoryAction("follow", $(this).data("category-id"));
+  $(this).toggleText("bırak ya", "takip et");
+  $(this).toggleClass("faded");
+});

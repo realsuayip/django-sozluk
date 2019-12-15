@@ -4,11 +4,12 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from .entry import Entry
-
+from .category import Category
 
 class AuthorNickValidator(UnicodeUsernameValidator):
     regex = r'^[a-z\ ]+$'
@@ -69,9 +70,25 @@ class Author(AbstractUser):
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
     downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
     pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
+    following_categories = models.ManyToManyField('Category', blank=True, null=True)
     email = models.EmailField(_('e-posta adresi'), unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
+
+    def __str__(self):
+        return f"{self.username}:{self.id}"
+
+    def save(self, *args, **kwargs):
+        created = True if self.pk is None else False
+        super().save(*args, **kwargs)
+        if created:
+            # newly created user
+            categories_list = list(Category.objects.all())
+            self.following_categories.add(*categories_list)
+
+    def get_absolute_url(self):
+        # todo use This!
+        return reverse("user-profile", kwargs={"username": self.username})
 
     class Meta:
         # Superusers need to have this permission to accept a novice as an author.
@@ -121,9 +138,6 @@ class Author(AbstractUser):
             return False
         else:
             return True
-
-    def __str__(self):
-        return f"{self.username}:{self.id}"
 
 
 class Memento(models.Model):

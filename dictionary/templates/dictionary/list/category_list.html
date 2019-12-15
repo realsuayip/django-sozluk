@@ -1,23 +1,30 @@
 {% extends "dictionary/base.html" %}
 {% block title %}kanallar{% endblock %}
 {% block bodyattr %}class="default topic-entry-view"{% endblock %}
-
-
-
 {% block content %}
-
     <h4><strong>kanallar</strong></h4>
     <hr>
+
     <ul class="category-list-all m0 p-0">
         {% for category in categories %}
+            <li class="row">
+                {% with request.user.is_authenticated as logged_in %}
+                    <div class="col-lg-1{% if logged_in %}0{% else %}2{% endif %}">
+                        <h5><a href="{% url "topic_list" slug=category.slug %}">#{{ category.name }}</a></h5>
+                        <p class="ml-2">{{ category.description }}</p>
+                    </div>
 
-            <li>
-                <h5><a href="{% url "topic_list" slug=category.slug %}">#{{ category.name }}</a></h5>
-                <p class="ml-2">{{ category.description }}</p>
+                    {% if logged_in %}
+                        {% load functions %}
+                        {% check_category_follow_status request.user category as following %}
+                        <div class="col-lg-2">
+                            <button type="button" class="btn btn-django-link{% if following %} faded{% endif %}"
+                                    id="follow-category-trigger"
+                                    data-category-id="{{ category.pk }}">{% if following %}bırak ya{% else %}takip et{% endif %}</button>
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </li>
-
         {% endfor %}
     </ul>
-
-
 {% endblock %}

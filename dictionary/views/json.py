@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
-from ..models import Author, Entry, Topic, TopicFollowing, Message
+from ..models import Author, Entry, Category, Topic, TopicFollowing, Message
 from ..utils.managers import TopicListManager
 from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT
 from ..utils.views import JsonView
@@ -65,8 +65,7 @@ class AutoComplete(JsonView):
             else:
                 response = ["@" + obj.username for obj in Author.objects.filter(username__istartswith=query[1:])[:7]]
         else:
-            response = [obj.title for obj in
-                        Topic.objects_published.filter(title__istartswith=query)[:7]]
+            response = [obj.title for obj in Topic.objects_published.filter(title__istartswith=query)[:7]]
 
             for extra in Topic.objects_published.filter(title__icontains=query)[:7]:
                 if len(response) >= 7:
@@ -227,6 +226,34 @@ class TopicAction(LoginRequiredMixin, JsonView):
             existing.delete()
         except TopicFollowing.DoesNotExist:
             TopicFollowing.objects.create(topic=self.topic_object, author=self.request.user)
+        return self.success()
+
+
+class CategoryAction(LoginRequiredMixin, JsonView):
+    http_method_names = ["post"]
+    category_object = None
+
+    def handle(self):
+        action = self.request_data.get("type")
+
+        try:
+            self.category_object = Category.objects.get(pk=int(self.request_data.get("category_id")))
+        except (ValueError, OverflowError, Category.DoesNotExist):
+            return self.bad_request()
+
+        if action in ["follow"]:
+            return self.follow()
+        else:
+            return self.bad_request()
+
+    def follow(self):
+        if self.category_object in self.request.user.following_categories.all():
+            self.request.user.following_categories.remove(self.category_object)
+        else:
+            self.request.user.following_categories.add(self.category_object)
+
+        manager = TopicListManager(self.request.user, "bugun")
+        manager.delete_cache()
         return self.success()
 
 
