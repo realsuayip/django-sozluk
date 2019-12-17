@@ -9,10 +9,11 @@ from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from .settings import TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES, \
-    UNCACHED_CATEGORIES
+
 from ..models import Entry, Topic, Category
 from ..models.managers.topic import TopicManager
+from ..utils.settings import (TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES,
+                              UNCACHED_CATEGORIES)
 
 
 class TopicListManager:
@@ -100,7 +101,7 @@ class TopicListManager:
             **self.base_annotation, count=Count("entries", filter=Q(**date_filter))).values(*self.values)
 
     def gundem(self):
-        raise ZeroDivisionError("Unimplemented yet")
+        raise ZeroDivisionError("Unimplemented yet", self.slug)
 
     def debe(self):
         year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
@@ -131,8 +132,8 @@ class TopicListManager:
         qs = Topic.objects
         keywords = self.search_keys.get("keywords")
         author_nick = self.search_keys.get("author_nick")
-        favorites_only = True if self.search_keys.get("is_in_favorites") == "true" else False
-        nice_only = True if self.search_keys.get("is_nice_ones") == "true" else False
+        favorites_only = self.search_keys.get("is_in_favorites") == "true"
+        nice_only = self.search_keys.get("is_nice_ones") == "true"
         from_date = self.search_keys.get("from_date")
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
@@ -241,6 +242,6 @@ class TopicListManager:
             set_at = cache.get(self.cache_key).get("set_at")
             if set_at is None:
                 return 0
-            else:
-                return Entry.objects.filter(date_created__gte=set_at).count()
+            return Entry.objects.filter(date_created__gte=set_at).count()
+
         return 0

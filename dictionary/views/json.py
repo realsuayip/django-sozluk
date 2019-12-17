@@ -17,7 +17,7 @@ class AsyncTopicList(JsonView):
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
         page = self.request_data.get("page")
         search_keys = self.request_data if slug == "hayvan-ara" else None
-        fetch_cached = False if self.request_data.get("nocache") == "yes" else True
+        fetch_cached = self.request_data.get("nocache") == "yes"
         paginate_by = TOPICS_PER_PAGE_DEFAULT
 
         if self.request.user.is_authenticated:
@@ -25,7 +25,7 @@ class AsyncTopicList(JsonView):
 
         if year:
             try:
-                if not int(year) in YEAR_RANGE:
+                if int(year) not in YEAR_RANGE:
                     return self.bad_request()
             except(ValueError, OverflowError):
                 return self.bad_request()
@@ -95,7 +95,8 @@ class UserAction(LoginRequiredMixin, JsonView):
 
         if action == "follow":
             return self.follow()
-        elif action == "block":
+
+        if action == "block":
             return self.block()
 
         return super().handle()
@@ -118,15 +119,15 @@ class UserAction(LoginRequiredMixin, JsonView):
         if recipient in sender.blocked.all():
             sender.blocked.remove(recipient)
             return self.success()
-        else:
-            if recipient in sender.following.all():
-                sender.following.remove(recipient)
 
-            if sender in recipient.following.all():
-                recipient.following.remove(sender)
+        if recipient in sender.following.all():
+            sender.following.remove(recipient)
 
-            sender.blocked.add(recipient)
-            return self.success(redirect_url=self.request.build_absolute_uri(reverse("home")))
+        if sender in recipient.following.all():
+            recipient.following.remove(sender)
+
+        sender.blocked.add(recipient)
+        return self.success(redirect_url=self.request.build_absolute_uri(reverse("home")))
 
 
 class EntryAction(LoginRequiredMixin, JsonView):
@@ -144,7 +145,7 @@ class EntryAction(LoginRequiredMixin, JsonView):
         except (ValueError, TypeError, Entry.DoesNotExist):
             return self.bad_request()
 
-        self.owner_action = True if self.entry.author == self.request.user else False
+        self.owner_action = self.entry.author == self.request.user
         self.redirect_url = reverse_lazy("topic", kwargs={"slug": self.entry.topic.slug}) if self.request_data.get(
             "redirect") == "true" else None
 
@@ -152,13 +153,13 @@ class EntryAction(LoginRequiredMixin, JsonView):
             self.success_message = "silindi"
             return self.delete()
 
-        elif action == "pin":
+        if action == "pin":
             return self.pin()
 
-        elif action == "favorite":
+        if action == "favorite":
             self.data = self.favorite()
 
-        elif action == "favorite_list":
+        if action == "favorite_list":
             self.data = self.favorite_list()
 
         return super().handle()
@@ -170,6 +171,8 @@ class EntryAction(LoginRequiredMixin, JsonView):
                 return self.success(message_pop=True, redirect_url=self.redirect_url)
             return self.success()
 
+        return self.error()
+
     def pin(self):
         if self.owner_action:
             if self.request.user.pinned_entry == self.entry:  # unpin
@@ -178,6 +181,7 @@ class EntryAction(LoginRequiredMixin, JsonView):
                 self.request.user.pinned_entry = self.entry
             self.request.user.save()
             return self.success()
+        return self.error()
 
     def favorite(self):
         if self.entry in self.request.user.favorite_entries.all():
@@ -243,8 +247,8 @@ class CategoryAction(LoginRequiredMixin, JsonView):
 
         if action in ["follow"]:
             return self.follow()
-        else:
-            return self.bad_request()
+
+        return self.bad_request()
 
     def follow(self):
         if self.category_object in self.request.user.following_categories.all():
@@ -280,9 +284,9 @@ class ComposeMessage(LoginRequiredMixin, JsonView):
         if not msg:
             self.error_message = "mesajınızı gönderemedik ne yazık ki"
             return self.error(status=200)
-        else:
-            self.success_message = "mesajınız sağ salim gönderildi"
-            return self.success()
+
+        self.success_message = "mesajınız sağ salim gönderildi"
+        return self.success()
 
 
 class Vote(JsonView):
@@ -306,8 +310,8 @@ class Vote(JsonView):
 
     def handle(self):
         self.vote = self.request_data.get("vote")
-        self.cast_up = True if self.vote == "up" else False
-        self.cast_down = True if self.vote == "down" else False
+        self.cast_up = self.vote == "up"
+        self.cast_down = self.vote == "down"
 
         try:
             self.entry = get_object_or_404(Entry, id=int(self.request_data.get("entry_id")))
@@ -375,8 +379,8 @@ class Vote(JsonView):
 
     def record_vote(self):
         entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down
-        prior_cast_up = True if self.already_voted_type == "up" else False
-        prior_cast_down = True if self.already_voted_type == "down" else False
+        prior_cast_up = self.already_voted_type == "up"
+        prior_cast_down = self.already_voted_type == "down"
 
         if self.anonymous:
             anon_votes_new = []

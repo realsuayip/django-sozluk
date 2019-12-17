@@ -21,6 +21,9 @@ class Entry(models.Model):
     objects_published = EntryManagerOnlyPublished()
     objects = EntryManager()
 
+    def __str__(self):
+        return f"{self.id}#{self.author}"
+
     class Meta:
         ordering = ["date_created"]
 
@@ -48,10 +51,7 @@ class Entry(models.Model):
                 self.author.application_date = None
                 self.author.save()
 
-    def __str__(self):
-        return f"{self.id}#{self.author}"
-
     def update_vote(self, rate, change=False):
-        a = Decimal("2") if change else Decimal("1")
-        self.vote_rate = F("vote_rate") + rate * a
+        k = Decimal("2") if change else Decimal("1")
+        self.vote_rate = F("vote_rate") + rate * k
         self.save()

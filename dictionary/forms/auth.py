@@ -48,9 +48,9 @@ class ChangeEmailForm(forms.Form):
         form_data = self.cleaned_data
         if form_data["email1"] != form_data["email2"]:
             raise forms.ValidationError("e-postalar uyuşmadı")
-        else:
-            if Author.objects.filter(email=form_data["email1"]).exists():
-                # todo: if multiple unactivated accounts exist, delete rest when one of them is activated
-                raise forms.ValidationError("bu e-posta kullanımda")
+
+        if Author.objects.filter(email=form_data["email1"]).exists():
+            # todo: if multiple unactivated accounts exist, delete rest when one of them is activated
+            raise forms.ValidationError("bu e-posta kullanımda")
 
         super().clean()

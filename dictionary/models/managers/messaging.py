@@ -7,13 +7,13 @@ class MessageManager(models.Manager):
     def compose(self, sender, recipient, body):
         if recipient.message_preference == Author.DISABLED:
             return False
-        elif sender == recipient:
+        if sender == recipient:
             return False
-        elif sender in recipient.blocked.all() or recipient in sender.blocked.all():
+        if sender in recipient.blocked.all() or recipient in sender.blocked.all():
             return False
-        elif sender.is_novice and recipient.message_preference == Author.AUTHOR_ONLY:
+        if sender.is_novice and recipient.message_preference == Author.AUTHOR_ONLY:
             return False
-        elif sender not in recipient.following.all() and recipient.message_preference == Author.FOLLOWING_ONLY:
+        if sender not in recipient.following.all() and recipient.message_preference == Author.FOLLOWING_ONLY:
             return False
 
         message = self.create(sender=sender, recipient=recipient, body=body)

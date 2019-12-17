@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from dictionary.models import Author, Entry, Topic
-import random
 
 
 # spam random entries, by random users to random topics

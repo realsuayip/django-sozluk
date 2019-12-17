@@ -38,10 +38,7 @@ def formatted(raw_entry):
 
 @register.filter
 def banned_topic(topic_title):
-    if topic_title in BANNED_TOPICS:
-        return True
-    else:
-        return False
+    return topic_title in BANNED_TOPICS
 
 
 @register.filter

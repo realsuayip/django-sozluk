@@ -7,8 +7,7 @@ def require_ajax(view):
     def _wrapped_view(request, *args, **kwargs):
         if request.is_ajax():
             return view(request, *args, **kwargs)
-        else:
-            return HttpResponseBadRequest()
+        return HttpResponseBadRequest()
 
     return _wrapped_view
 
@@ -18,8 +17,8 @@ def force_post(func):
     def inner(self, *args, **kwargs):
         if self.method != "post":
             return HttpResponseBadRequest()
-        else:
-            return func(self, *args, **kwargs)
+        return func(self, *args, **kwargs)
+
     return inner
 
 
@@ -28,6 +27,6 @@ def force_get(func):
     def inner(self, *args, **kwargs):
         if self.method != "get":
             return HttpResponseBadRequest()
-        else:
-            return func(self, *args, **kwargs)
+        return func(self, *args, **kwargs)
+
     return inner

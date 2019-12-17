@@ -1,23 +1,23 @@
-from django.contrib.auth.views import (PasswordResetView, PasswordResetDoneView,
-                                       PasswordResetCompleteView, PasswordResetConfirmView)
+from django.contrib.auth.views import (PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView,
+                                       PasswordResetConfirmView)
 from django.urls import path
 
 from ..views.auth import Login, Logout, SignUp, ConfirmEmail, ResendEmailConfirmation, ChangePassword, ChangeEmail
 
-
+# @formatter:off
 urlpatterns_password_reset = [
     path("parola/", PasswordResetView.as_view(
         template_name="dictionary/registration/password_reset/form.html",
         html_email_template_name="registration/password_reset/email_template.html"),
-        name="password_reset"),
+         name="password_reset"),
 
     path("parola/oldu/", PasswordResetDoneView.as_view(
         template_name="dictionary/registration/password_reset/done.html"),
-        name="password_reset_done"),
+         name="password_reset_done"),
 
     path("parola/onay/<uidb64>/<token>/", PasswordResetConfirmView.as_view(
         template_name="dictionary/registration/password_reset/confirm.html"),
-        name="password_reset_confirm"),
+         name="password_reset_confirm"),
 
     path("parola/tamam/", PasswordResetCompleteView.as_view(
         template_name="dictionary/registration/password_reset/complete.html"),

@@ -51,8 +51,7 @@ class Chat(LoginRequiredMixin, FormMixin, DetailView):
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        return self.form_invalid(form)
 
 
 class UserProfile(ListView, FormMixin):
@@ -70,8 +69,7 @@ class UserProfile(ListView, FormMixin):
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        return self.form_invalid(form)
 
     def form_valid(self, form):
         existing_memento = self.get_memento()

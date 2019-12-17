@@ -1,5 +1,6 @@
-from ..models import Category, Conversation, TopicFollowing
 from django.core.exceptions import ObjectDoesNotExist
+
+from ..models import Category, Conversation, TopicFollowing
 
 
 def header_categories(request):

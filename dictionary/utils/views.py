@@ -3,6 +3,7 @@ from django.contrib import messages as notifications
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
+
 from .decorators import require_ajax
 
 
@@ -17,10 +18,10 @@ class JsonView(View):
     def handle(self):
         if self.data is not None:
             return self._response()
-        else:
-            if settings.DEBUG:
-                raise ValueError(f"The view {self.__class__.__name__} returned nothing")
-            return self.error()
+
+        if settings.DEBUG:
+            raise ValueError(f"The view {self.__class__.__name__} returned nothing")
+        return self.error()
 
     def _response(self, status=200):
         return JsonResponse(self.data, status=status)

@@ -79,7 +79,7 @@ class Author(AbstractUser):
         return f"{self.username}:{self.id}"
 
     def save(self, *args, **kwargs):
-        created = True if self.pk is None else False
+        created = self.pk is None
         super().save(*args, **kwargs)
         if created:
             # newly created user
@@ -128,16 +128,14 @@ class Author(AbstractUser):
         entry = Entry.objects_published.filter(author=self).order_by("-vote_rate").first()
         if entry and entry.vote_rate > Decimal("1"):
             return entry
-        else:
-            return None
+        return None
 
     @property
     def email_confirmed(self):
         if self.userverification_set.filter(
                 expiration_date__gte=timezone.now() - datetime.timedelta(hours=24)).exists():
             return False
-        else:
-            return True
+        return True
 
 
 class Memento(models.Model):

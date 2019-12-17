@@ -10,7 +10,7 @@ from .entry import Entry
 from .managers.topic import TopicManager, TopicManagerPublished
 from ..utils import turkish_lower
 
-topic_title_validators = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/"*,.!?~\[\] {} <>^;\\|-]+$""",
+TOPIC_TITLE_VALIDATORS = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/"*,.!?~\[\] {} <>^;\\|-]+$""",
                                          message="bu başlık geçerisz karakterler içeriyor"),
                           MaxLengthValidator(50, message="bu başlık çok uzun")]
 
@@ -25,7 +25,7 @@ class TopicFollowing(models.Model):
 
 
 class Topic(models.Model):
-    title = models.CharField(max_length=50, unique=True, validators=topic_title_validators)
+    title = models.CharField(max_length=50, unique=True, validators=TOPIC_TITLE_VALIDATORS)
     date_created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL)
     category = models.ManyToManyField(Category, blank=True)

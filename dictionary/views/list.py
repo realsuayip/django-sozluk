@@ -18,16 +18,18 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
-from ..utils.settings import TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, \
-    TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES
+from ..utils.settings import (TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES,
+                              TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES)
 
 
 def index(request):
+    """
     # todo flatpages for about us etc.
     # todo scrollbar tracking
     # todo karma skor
     # todo hayvan ara
     # todo: başlık yönlendirme (türkçe düzeltme gibi)
+    """
     return render(request, "dictionary/index.html")
 
 
@@ -181,8 +183,7 @@ class TopicEntryList(ListView, FormMixin):
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        return self.form_invalid(form)
 
     def form_valid(self, form):
         if self.topic.title in BANNED_TOPICS:
@@ -214,8 +215,8 @@ class TopicEntryList(ListView, FormMixin):
             notifications.info(self.request, "kenara attık onu")
             if self.topic.exists:
                 return self._redirect_to_self()
-            else:
-                return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
+
+            return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
 
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
@@ -251,6 +252,7 @@ class TopicEntryList(ListView, FormMixin):
                                                  date_created__day=now.day)
         except (ValueError, OverflowError):
             return self.model.objects.none()
+        return self.model.objects.none()
 
     def nice(self):
         return self.topic.entries.order_by("-vote_rate")
@@ -298,6 +300,7 @@ class TopicEntryList(ListView, FormMixin):
                 return queryset
 
         self.redirect = True
+        return self.model.objects.none()
 
     def caylaklar(self):
         return self.topic.entries.filter(author__is_novice=True, date_created__gte=TIME_THRESHOLD_24H)
@@ -327,14 +330,13 @@ class TopicEntryList(ListView, FormMixin):
         entries = context.get("object_list")
         context["topic"] = self.topic
         context["mode"] = self.view_mode
-        context["entry_permalink"] = True if self.entry_permalink else False
+        context["entry_permalink"] = bool(self.entry_permalink)
 
         if self.topic.exists and len(entries) > 0:
-            """
-            Find subsequent and previous entries
-            Get current page's first and last entry, and find the number of entries before and after by date.
-            Using these count data, find what page next entry is located on.
-            """
+            # Find subsequent and previous entries
+            # Get current page's first and last entry, and find the number of entries before and after by date.
+            # Using these count data, find what page next entry is located on.
+
             previous_entries_count, previous_entries_page = 0, 0
             subsequent_entries_count, subsequent_entries_page = 0, 0
             show_subsequent, show_previous = False, False
@@ -387,7 +389,7 @@ class TopicEntryList(ListView, FormMixin):
             return search_redirect
 
         #  Empty request (direct request to /topic/)
-        elif self.topic is None:
+        if self.topic is None:
             return redirect(reverse("home"))
 
         # view_mode is used to determine queryset
@@ -453,7 +455,7 @@ class TopicEntryList(ListView, FormMixin):
             if query.startswith("@") and len(query) > 1:
                 return redirect("user-profile", username=query[1:])
 
-            elif query.startswith("#"):
+            if query.startswith("#"):
                 if query[1:].isdigit():
                     return redirect("entry-permalink", entry_id=query[1:])
 

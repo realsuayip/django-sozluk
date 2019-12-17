@@ -7,7 +7,6 @@ from ...utils import turkish_lower
 
 
 class TopicManager(models.Manager):
-
     class PseudoTopic:
         def __init__(self, title):
             self.title = turkish_lower(title).strip()
@@ -46,6 +45,6 @@ class TopicManager(models.Manager):
 class TopicManagerPublished(models.Manager):
     # Return topics which has published (by authors) entries
     def get_queryset(self):
-        f = dict(entries__is_draft=False, entries__author__is_novice=False)
-        return super().get_queryset().annotate(num_published=Count("entries", filter=Q(**f))).exclude(
+        pub_filter = dict(entries__is_draft=False, entries__author__is_novice=False)
+        return super().get_queryset().annotate(num_published=Count("entries", filter=Q(**pub_filter))).exclude(
             num_published__lt=1)

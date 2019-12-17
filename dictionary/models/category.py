@@ -8,12 +8,12 @@ class Category(models.Model):
     description = models.TextField()
     weight = models.SmallIntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.name}"
+
     class Meta:
         ordering = ["-weight"]
 
     def save(self, *args, **kwargs):
         self.slug = uuslug(self.name, instance=self)
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.name}"

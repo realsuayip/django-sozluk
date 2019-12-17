@@ -1,7 +1,8 @@
-from django.core.management.base import BaseCommand
-from dictionary.models import Author, Topic
 import random
 import string
+
+from django.core.management.base import BaseCommand
+from dictionary.models import Author, Topic
 
 
 class Command(BaseCommand):
