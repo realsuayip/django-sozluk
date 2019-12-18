@@ -1,8 +1,9 @@
 import datetime
-import mock
 
 from django.test import TestCase
 from django.utils import timezone
+
+import mock
 
 from ..models import Author, Entry, Topic, Message, Category
 
@@ -10,7 +11,7 @@ from ..models import Author, Entry, Topic, Message, Category
 class AuthorModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.author = Author.objects.create(username="user", email="test@user.com", password="test")
+        cls.author = Author.objects.create(username="user", email="0")
         cls.topic = Topic.objects.create_topic("test_topic")
         cls.entry_base = dict(topic=cls.topic, author=cls.author)
 
@@ -48,8 +49,8 @@ class AuthorModelTests(TestCase):
 
     def test_followers(self):
         self.assertEqual(self.author.followers.count(), 0)  # no follower supplied yet
-        follower = Author.objects.create(username="user_follower", email="test2@user.com", password="test")
-        some_other_follower = Author.objects.create(username="user_followe2r", email="test5@user.com", password="test")
+        follower = Author.objects.create(username="1", email="1")
+        some_other_follower = Author.objects.create(username="2", email="2")
         follower.following.add(self.author)
         some_other_follower.following.add(self.author)
         self.assertIn(follower, self.author.followers)
@@ -88,8 +89,8 @@ class AuthorModelTests(TestCase):
         self.assertIsNone(self.author.application_date)
 
     def test_message_preferences(self):
-        some_author = Author.objects.create(username="author", email="test3@user.com", password="test", is_novice=False)
-        some_novice = Author.objects.create(username="novice", email="test4@user.com", password="test")
+        some_author = Author.objects.create(username="author", email="3", is_novice=False)
+        some_novice = Author.objects.create(username="novice", email="4")
 
         # ALL users (database default)
         msg_sent_by_novice = Message.objects.compose(some_novice, self.author, "test")
@@ -122,6 +123,6 @@ class AuthorModelTests(TestCase):
     def test_follow_all_categories_on_creation(self):
         category_1 = Category.objects.create(name="test")
         Category.objects.create(name="test2")
-        some_user = Author.objects.create(username="usr", email="test5@user.com", password="test")
+        some_user = Author.objects.create(username="some_user", email="5")
         self.assertIn(category_1, some_user.following_categories.all())
         self.assertEqual(some_user.following_categories.all().count(), 2)
