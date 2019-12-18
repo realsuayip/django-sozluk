@@ -5,7 +5,7 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=24, unique=True)
     slug = models.SlugField(max_length=64, unique=False, blank=True)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     weight = models.SmallIntegerField(default=0)
 
     def __str__(self):

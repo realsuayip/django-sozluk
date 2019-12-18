@@ -70,7 +70,7 @@ class Author(AbstractUser):
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
     downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
     pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
-    following_categories = models.ManyToManyField('Category', blank=True, null=True)
+    following_categories = models.ManyToManyField('Category', blank=True)
     email = models.EmailField(_('e-posta adresi'), unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
@@ -117,7 +117,10 @@ class Author(AbstractUser):
 
     @property
     def last_entry_date(self):
-        return Entry.objects_published.filter(author=self).latest("date_created").date_created
+        try:
+            return Entry.objects_published.filter(author=self).latest("date_created").date_created
+        except Entry.DoesNotExist:
+            return None
 
     @property
     def followers(self):
