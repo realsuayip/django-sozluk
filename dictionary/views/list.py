@@ -18,8 +18,9 @@ from django.utils.decorators import method_decorator
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
+from ..utils.mixins import FormPostHandlerMixin
 from ..utils.settings import (TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES,
-                              TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES)
+                              TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES, LOGIN_REQUIRED_CATEGORIES)
 
 
 def index(request):
@@ -81,27 +82,34 @@ class CategoryList(ListView):
 
 class TopicList(ListView):
     """
-        Topic list (başlıklar) for mobile views such as "bugün", "gündem",
-        Desktop equivalent => views.json.TopicListAsync
-
-        cache_key for bugun-> bugun_extended_{self.request.user.id} (also used in _category)
-        refresh_count -> for bugun only, "yenile" button count
+    Topic list (başlıklar) for mobile views such as "bugün", "gündem",
+    Desktop equivalent => views.json.AsyncTopicList
     """
+
     model = Topic
     context_object_name = "topics"
     template_name = "dictionary/list/topic_list.html"
     refresh_count = 0
     slug_identifier = None
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
+            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
+            return redirect(reverse("login"))
+        return super().dispatch(request)
+
     def get_queryset(self):
         year = None
-        slug = self.kwargs['slug']
+        slug = self.kwargs.get("slug")
 
         if slug == "tarihte-bugun":
             request_year = self.request.GET.get("year")
             session_year = self.request.session.get("year")
             random_year = random.choice(YEAR_RANGE)
 
+            # Get requested year, if valid return that year and add it to the session.
+            # If requested year is not valid, check session year, if it is valid, use it instead.
+            # If session year is non-existent select a random year, return it and add it to the session.
             if request_year:
                 try:
                     if int(request_year) not in YEAR_RANGE:
@@ -120,9 +128,6 @@ class TopicList(ListView):
                 year = random_year
 
             self.request.session["year"] = year
-
-        if slug == "bugun" and not self.request.user.is_authenticated:
-            return self.model.objects.none()
 
         if slug == "hayvan-ara":
             raise ZeroDivisionError("Unimplemented yet")
@@ -167,7 +172,7 @@ class TopicList(ListView):
         return HttpResponseBadRequest()
 
 
-class TopicEntryList(ListView, FormMixin):
+class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
     model = Entry
     form_class = EntryForm
     context_object_name = "entries"
@@ -177,13 +182,6 @@ class TopicEntryList(ListView, FormMixin):
     view_mode = None
     entry_permalink = False
     redirect = False
-
-    @method_decorator(login_required)
-    def post(self, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        return self.form_invalid(form)
 
     def form_valid(self, form):
         if self.topic.title in BANNED_TOPICS:

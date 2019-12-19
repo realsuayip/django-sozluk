@@ -1,21 +1,20 @@
 from decimal import Decimal
 
 from django.contrib import messages as notifications
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 
 from ..forms.edit import SendMessageForm, MementoForm
 from ..models import Entry, Author, Message, Conversation, Memento
+from ..utils.mixins import FormPostHandlerMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
 
-class Chat(LoginRequiredMixin, FormMixin, DetailView):
+class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
     model = Conversation
     template_name = "dictionary/conversation/conversation.html"
     form_class = SendMessageForm
@@ -47,14 +46,8 @@ class Chat(LoginRequiredMixin, FormMixin, DetailView):
         context['recipient'] = self.get_recipient()
         return context
 
-    def post(self, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        return self.form_invalid(form)
 
-
-class UserProfile(ListView, FormMixin):
+class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
     model = Entry
     paginate_by = ENTRIES_PER_PAGE_PROFILE
     context_object_name = "entries"
@@ -63,13 +56,6 @@ class UserProfile(ListView, FormMixin):
 
     profile = None
     tab = None
-
-    @method_decorator(login_required)
-    def post(self, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        return self.form_invalid(form)
 
     def form_valid(self, form):
         existing_memento = self.get_memento()

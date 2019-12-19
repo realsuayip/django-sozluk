@@ -1,8 +1,8 @@
-from uuslug import uuslug
-
 from django.core.validators import RegexValidator, MaxLengthValidator
 from django.db import models
 from django.db.models import Q
+
+from uuslug import uuslug
 
 from .author import Author
 from .category import Category

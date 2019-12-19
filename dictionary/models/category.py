@@ -1,5 +1,6 @@
-from uuslug import uuslug
 from django.db import models
+
+from uuslug import uuslug
 
 
 class Category(models.Model):

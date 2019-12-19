@@ -83,16 +83,16 @@ const topicListCall = function (slug, parameters, page = null) {
       $("#current_category_name").html(localStorage.getItem("active_category_safe")); // change title
       loadIndicator.css("display", "none"); // hide spinner
 
+      if (data["refresh_count"]) {
+        $("#refresh_bugun").removeClass("dj-hidden");
+        $("span#new_content_count").text(`(${data["refresh_count"]})`);
+      } else {
+        $("#refresh_bugun").addClass("dj-hidden");
+      }
+
       if (data["topic_data"].length === 0) {
         topicList.html("<small>yok ki</small>");
       } else {
-        if (data["refresh_count"]) {
-          $("#refresh_bugun").removeClass("dj-hidden");
-          $("span#new_content_count").text(`(${data["refresh_count"]})`);
-        } else {
-          $("#refresh_bugun").addClass("dj-hidden");
-        }
-
         // decides whether it is an entry permalink or topic and whatsoever
         const slugIdentifier = data["slug_identifier"];
         const totalPages = data["total_pages"];

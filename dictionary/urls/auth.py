@@ -8,7 +8,7 @@ from ..views.auth import Login, Logout, SignUp, ConfirmEmail, ResendEmailConfirm
 urlpatterns_password_reset = [
     path("parola/", PasswordResetView.as_view(
         template_name="dictionary/registration/password_reset/form.html",
-        html_email_template_name="registration/password_reset/email_template.html"),
+        html_email_template_name="dictionary/registration/password_reset/email_template.html"),
          name="password_reset"),
 
     path("parola/oldu/", PasswordResetDoneView.as_view(

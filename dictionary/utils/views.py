@@ -17,28 +17,25 @@ class JsonView(View):
 
     def handle(self):
         if self.data is not None:
-            return self._response()
+            return self.render_to_json_response()
 
         if settings.DEBUG:
             raise ValueError(f"The view {self.__class__.__name__} returned nothing")
+
         return self.error()
 
-    def _response(self, status=200):
+    def render_to_json_response(self, status=200):
         return JsonResponse(self.data, status=status)
 
-    def _get_data(self, request_data):
-        self.request_data = request_data
-        return self.handle()
-
     @method_decorator(require_ajax)
-    def get(self, *args, **kwargs):
-        self.method = "get"
-        return self._get_data(self.request.GET)
+    def dispatch(self, request, *args, **kwargs):
+        self.method = request.method.lower()
 
-    @method_decorator(require_ajax)
-    def post(self, *args, **kwargs):
-        self.method = "post"
-        return self._get_data(self.request.POST)
+        if self.method in self.http_method_names:
+            self.request_data = getattr(request, request.method)
+            return self.handle()
+
+        return self.http_method_not_allowed(request, *args, **kwargs)
 
     def success(self, message_pop=False, redirect_url=False):
         if message_pop:
@@ -49,15 +46,15 @@ class JsonView(View):
         if redirect_url:
             self.data.update({"redirect_to": redirect_url})
 
-        return self._response()
+        return self.render_to_json_response()
 
     def error(self, message_pop=False, status=500):
         if message_pop:
             notifications.error(self.request, self.error_message)
 
         self.data = dict(success=False, message=self.error_message)
-        return self._response(status=status)
+        return self.render_to_json_response(status=status)
 
     def bad_request(self):
         self.data = dict(success=False, message=self.bad_request_message)
-        return self._response(status=400)
+        return self.render_to_json_response(status=400)

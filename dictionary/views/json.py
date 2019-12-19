@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 
 from ..models import Author, Entry, Category, Topic, TopicFollowing, Message
 from ..utils.managers import TopicListManager
-from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT
+from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES
 from ..utils.views import JsonView
 
 
@@ -14,6 +14,10 @@ class AsyncTopicList(JsonView):
 
     def handle(self):
         slug = self.kwargs.get("slug")
+
+        if slug in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
+            return self.error(status=403)
+
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
         page = self.request_data.get("page")
         search_keys = self.request_data if slug == "hayvan-ara" else None
