@@ -17,7 +17,7 @@ class AsyncTopicList(JsonView):
         year = self.request_data.get("year") if slug == "tarihte-bugun" else None
         page = self.request_data.get("page")
         search_keys = self.request_data if slug == "hayvan-ara" else None
-        fetch_cached = self.request_data.get("nocache") == "yes"
+        fetch_cached = self.request_data.get("nocache") != "yes"
         paginate_by = TOPICS_PER_PAGE_DEFAULT
 
         if self.request.user.is_authenticated:
@@ -33,7 +33,6 @@ class AsyncTopicList(JsonView):
         manager = TopicListManager(self.request.user, slug, year, fetch_cached, search_keys)
         paginated = Paginator(manager.serialized, paginate_by)
         topic_data = paginated.get_page(page).object_list
-
         self.data = dict(topic_data=topic_data, refresh_count=manager.refresh_count,
                          slug_identifier=manager.slug_identifier, total_pages=paginated.num_pages)
 
