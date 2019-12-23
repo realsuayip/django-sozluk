@@ -1,14 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-
     {% load static %}
+
+    <script defer
+            src="http://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
+
+    <script defer src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
+    <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
+
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
           crossorigin="anonymous">
@@ -46,7 +64,6 @@
                        class="searchbox-text form-control"
                        id="header_search">
                 <div class="input-group-append">
-
                     <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">hayvan ara</span>
@@ -56,63 +73,24 @@
                             class="material-icons">
                         search
                     </i></button>
-
                     <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search px-3 py-2"
                          id="dropdown_detailed_search">
-                        <form>
-                            <div class="form-group" id="raw_inputs">
-                                <label for="keywords">kelimeler</label>
-                                <input type="text" class="form-control" id="keywords">
 
-                                <label for="author_nick">yazar</label>
-                                <input type="text" class="form-control" id="author_nick">
-                            </div>
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="nice_ones">
-                                    <label class="custom-control-label" for="nice_ones">güzelinden olsun</label>
-                                </div>
-                                {% if request.user.is_authenticated %}
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="in_favorites">
-                                        <label class="custom-control-label" for="in_favorites">sadece entry
-                                            favorilediğim
-                                            başlıklarda ara</label>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <label for="date_from">şu tarihten:</label>
-                                        <input type="text" class="form-control with-datepicker" id="date_from">
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label for="date_to">bu tarihe kadar:</label>
-                                        <input type="text" class="form-control with-datepicker" id="date_to">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="ordering">sıralama şekli</label>
-                                <select name="ordering" id="ordering" class="form-control">
-                                    <option value="alpha">alfabetik</option>
-                                    <option value="newer" selected>yeniden eskiye</option>
-                                    <option value="popular">dolu dolu</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-django stretch"
-                                        id="perform_advanced_search">çok güzel ara
-                                </button>
-                            </div>
-                        </form>
+                        {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
+
+                        <div class="form-group">
+                            <button type="button" class="btn btn-django stretch"
+                                    id="perform_advanced_search">çok güzel ara
+                            </button>
+                        </div>
+
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item search-closer" id="close_search_dropdown">boşver</a>
                     </div>
                 </div>
             </div>
         </form>
+
 
         <!--- user navigation -->
 
@@ -198,6 +176,7 @@
                     <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
                     <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
                     <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
+                    <a href="{% url "topic_list" slug="hayvan-ara" %}" class="dropdown-item">hayvan ara</a>
                     <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
                     <a href="{% url "people" %}" class="dropdown-item">takip/engellenmiş</a>
                     <div class="dropdown-divider"></div>
@@ -328,35 +307,11 @@
 
 </div>
 
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-
 <div class="notification-bubble" id="notifications"
      {% if messages %}data-request-message="{% for message in messages %}
         {% if messages|length > 1 and forloop.counter > 1 %}&&{% endif %}{{ message }}::{{ message.tags }}
-    {% endfor %}
-"{% endif %}>
+    {% endfor %}"{% endif %}>
 </div>
 
-
-<script
-        src="http://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
-
-<script src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
-<script src="{% static 'dictionary/js/djdict.js' %}"></script>
-{% block javascript %}{% endblock %}
 </body>
-
 </html>

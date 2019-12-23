@@ -28,7 +28,6 @@ def index(request):
     # todo flatpages for about us etc.
     # todo scrollbar tracking
     # todo karma skor
-    # todo hayvan ara
     # todo: başlık yönlendirme (türkçe düzeltme gibi)
     """
     return render(request, "dictionary/index.html")
@@ -99,46 +98,16 @@ class TopicList(ListView):
         return super().dispatch(request)
 
     def get_queryset(self):
-        year = None
         slug = self.kwargs.get("slug")
+        search_keys = self.request.GET if slug == "hayvan-ara" else None
 
-        if slug == "tarihte-bugun":
-            request_year = self.request.GET.get("year")
-            session_year = self.request.session.get("year")
-            random_year = random.choice(YEAR_RANGE)
-
-            # Get requested year, if valid return that year and add it to the session.
-            # If requested year is not valid, check session year, if it is valid, use it instead.
-            # If session year is non-existent select a random year, return it and add it to the session.
-            if request_year:
-                try:
-                    if int(request_year) not in YEAR_RANGE:
-                        if session_year:
-                            year = session_year
-                    else:
-                        year = request_year
-                except (ValueError, OverflowError):
-                    if session_year:
-                        year = session_year
-                    else:
-                        year = random_year
-            elif session_year:
-                year = session_year
-            else:
-                year = random_year
-
-            self.request.session["year"] = year
-
-        if slug == "hayvan-ara":
-            raise ZeroDivisionError("Unimplemented yet")
-
-        manager = TopicListManager(self.request.user, slug, year=year)
-        self.refresh_count = manager.refresh_count
-        self.slug_identifier = manager.slug_identifier
-        return manager.serialized
+        topic_list = TopicListManager(self.request.user, slug, year=self.year, search_keys=search_keys)
+        self.refresh_count = topic_list.refresh_count
+        self.slug_identifier = topic_list.slug_identifier
+        return topic_list.serialized
 
     def get_context_data(self, **kwargs):
-        slug = self.kwargs['slug']
+        slug = self.kwargs.get("slug")
 
         if slug in NON_DB_CATEGORIES:
             title = NON_DB_SLUGS_SAFENAMES[slug]
@@ -164,12 +133,46 @@ class TopicList(ListView):
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
-        if self.kwargs['slug'] == "bugun":
+        if self.kwargs.get("slug") == "bugun":
             # reset cache (refresh button mobile click event)
             manager = TopicListManager(self.request.user, "bugun")
             manager.delete_cache()
             return redirect(self.request.path)
         return HttpResponseBadRequest()
+
+    @property
+    def year(self):
+        if self.kwargs.get("slug") != "tarihte-bugun":
+            return None
+
+        year = None
+        request_year = self.request.GET.get("year")
+        session_year = self.request.session.get("year")
+        random_year = random.choice(YEAR_RANGE)
+
+        # Get requested year, if valid return that year and add it to the session.
+        # If requested year is not valid, check session year, if it is valid, use it instead.
+        # If session year is non-existent select a random year, return it and add it to the session.
+        if request_year:
+            try:
+                if int(request_year) not in YEAR_RANGE:
+                    if session_year:
+                        year = session_year
+                else:
+                    year = request_year
+            except (ValueError, OverflowError):
+                if session_year:
+                    year = session_year
+                else:
+                    year = random_year
+        elif session_year:
+            year = session_year
+        else:
+            year = random_year
+
+        self.request.session["year"] = year
+
+        return year
 
 
 class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):

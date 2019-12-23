@@ -138,15 +138,12 @@ class TopicListManager:
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
 
-        count_filter = dict(count=Count("entries"))
+        count_filter = dict(count=Count("entries", distinct=True))
 
         # todo input validation
-        # todo in mobile redirect to /hayvan-ara/ onclick, (javascript check mobile)
-        # todo implement mobile view
 
         if favorites_only and self.user.is_authenticated:
             qs = qs.filter(entries__favorited_by=self.user)
-            count_filter = dict(count=Count(None))
 
         if nice_only:
             qs = qs.annotate(nice_sum=Sum("entries__vote_rate")).filter(nice_sum__gte=Decimal("500"))

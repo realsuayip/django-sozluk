@@ -309,7 +309,7 @@ ul.topic-list li a {
     text-decoration: none;
     color: #333;
     font-size: 1em;
-    max-width: calc(100% - 20px);
+    max-width: calc(100% - 2em);
     word-break: break-word;
 }
 
@@ -1299,6 +1299,7 @@ a.search-closer:active {
 
 .dropdown-advanced-search{
     width: calc(100% - 32px);
+    min-width: 300px;
 }
 
 .btn-django-link{

@@ -236,9 +236,10 @@ $("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), 
   leftFramePopulate($(this).attr("data-category"));
 });
 
+let userIsMobile = false;
+
 $(function () {
   let mql = window.matchMedia("(max-width: 810px)");
-
   const desktopView = function () {
     $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
       e.preventDefault();
@@ -246,6 +247,7 @@ $(function () {
   };
 
   const mobileView = function () {
+    userIsMobile = true;
     // add mobile listeners here.
   };
 
@@ -255,22 +257,23 @@ $(function () {
     desktopView();
   }
 
-  const screenTest = function (e) {
-    if (e.matches) {
-    /* mobile switch */
-      mobileView();
-    } else {
-      desktopView();
-    }
-  };
-
-  $("input.with-datepicker").datepicker(
+  $("input.with-datepicker-dropdown").datepicker(
     {
       container: "#dropdown_detailed_search",
       todayHighlight: true,
       language: "tr",
       autoclose: true,
       orientation: "auto bottom"
+    }
+  ).attr("placeholder", "gg.aa.yyyy");
+
+  $("input.with-datepicker-mobile").datepicker(
+    {
+      container: ".row",
+      todayHighlight: true,
+      language: "tr",
+      autoclose: true,
+      orientation: "auto left"
     }
   ).attr("placeholder", "gg.aa.yyyy");
 
@@ -283,7 +286,7 @@ $(function () {
     }
   }
 
-  if (!mql.matches) {
+  if (!userIsMobile) {
     // triggers only in desktop views
     if (localStorage.getItem("active_category")) {
       let category = localStorage.getItem("active_category");
@@ -302,6 +305,10 @@ $(function () {
         }
       }
     }
+  } else {
+    $("#load_indicator").hide();
+    $("#current_category_name").text("hay aksi!");
+    $("#topic-list").text("bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin");
   }
 
   $("#header_search").autocomplete({
@@ -353,8 +360,6 @@ $(function () {
 
     });
   });
-
-  mql.addEventListener("change", screenTest);
 });
 
 $("#year_select").on("change", function () {
@@ -748,13 +753,13 @@ if ($("body").hasClass("has-entries")) {
 }
 
 $("button#perform_advanced_search").on("click", function () {
-  const keywords = $("input#keywords").val();
-  const authorNick = $("input#author_nick").val();
-  const isNiceOnes = $("input#nice_ones").is(":checked");
-  const isFavorites = $("input#in_favorites").is(":checked");
-  const fromDate = $("input#date_from").val();
-  const toDate = $("input#date_to").val();
-  const ordering = $("select#ordering").val();
+  const keywords = $("input#keywords_dropdown").val();
+  const authorNick = $("input#author_nick_dropdown").val();
+  const isNiceOnes = $("input#nice_ones_dropdown").is(":checked");
+  const isFavorites = $("input#in_favorites_dropdown").is(":checked");
+  const fromDate = $("input#date_from_dropdown").val();
+  const toDate = $("input#date_to_dropdown").val();
+  const ordering = $("select#ordering_dropdown").val();
 
   const keys = {
     keywords,
@@ -766,6 +771,11 @@ $("button#perform_advanced_search").on("click", function () {
     ordering
   };
   const searchParameters = "?" + dictToParameters(keys);
+
+  if (userIsMobile) {
+    window.location.replace("/basliklar/hayvan-ara/" + searchParameters);
+  }
+
   localStorage.setItem("active_category_safe", "arama sonuçları");
   localStorage.setItem("active_category", "hayvan-ara");
   localStorage.setItem("search_parameters", searchParameters);
@@ -791,4 +801,12 @@ $("button#follow-category-trigger").on("click", function () {
   categoryAction("follow", $(this).data("category-id"));
   $(this).toggleText("bırak ya", "takip et");
   $(this).toggleClass("faded");
+});
+
+$("form.search_mobile").submit(function () {
+  let emptyFields = $(this).find(":input").filter(function () {
+    return $(this).val() === "";
+  });
+  emptyFields.prop("disabled", true);
+  return true;
 });

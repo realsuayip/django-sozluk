@@ -4,17 +4,25 @@
 
 {% block content %}
     <div class="left-frame-in">
-        <h2>{{ page_safename }}</h2>
+        <h2>
+            {% if request.GET.ordering and slug_name == "hayvan-ara" %}
+                <a class="expand" type="button" data-toggle="collapse"
+                   data-target="#search_form_extended"
+                   aria-expanded="false">
+                    arama sonuçları
+                </a>
+            {% else %}
+                {{ page_safename }}
+            {% endif %}
+        </h2>
 
         {% if slug_name == "bugun" %}
-
             {% if refresh_count %}
                 <form method="post">
                     {% csrf_token %}
                     <button class="refresh-button-mobile">yenile ({{ refresh_count }})</button>
                 </form>
             {% endif %}
-
         {% endif %}
 
         {% if slug_name == "tarihte-bugun" %}
@@ -26,17 +34,30 @@
                     {% else %}
                         <option value="{{ year }}">{{ year }}</option>
                     {% endif %}
-
                 {% endfor %}
             </select>
             <hr>
         {% endif %}
 
+
+        {% if slug_name == "hayvan-ara" %}
+            {# render search form, if request.GET.ordering has value, it means there is a search #}
+
+            <hr>
+            <form method="get" action="{% url 'topic_list' slug='hayvan-ara' %}"
+                  class="search_mobile{% if request.GET.ordering %} collapse{% endif %}"
+                  id="search_form_extended">
+                {% include "dictionary/includes/forms/extended_search.html" with source="mobile" %}
+                <button type="submit" class="btn btn-django stretch">çok güzel ara</button>
+            </form>
+        {% endif %}
+
+
         <ul id="topic-list-standalone" class="list-group topic-list">
             {% if topics %}
                 {% for topic in topics %}
                     <li class="list-group-item"><a href="{{ slug_identifier }}{{ topic.slug }}">{{ topic.title }}
-                        <small class="total_entries">{{ topic.count }}</small>
+                        <small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small>
                     </a></li>
                 {% endfor %}
             {% else %}
@@ -44,7 +65,11 @@
                     <hr>
                     <small>{{ current_year }} yılına ait bişey yok valla. hatta böyle bir yıl bile olmayabilir.</small>
                 {% else %}
-                    <small>yok ki</small>
+                    {% if slug_name == "hayvan-ara" and not request.GET.ordering %}
+                        {# form appears above#}
+                    {% else %}
+                        <small>yok ki</small>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </ul>
@@ -53,6 +78,5 @@
             {% include "dictionary/includes/paginaton.html" with stretch="yes" hr="yes" paginator=page_obj %}
         {% endif %}
     </div>
-
 
 {% endblock %}

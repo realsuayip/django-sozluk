@@ -23,7 +23,7 @@ BANNED_TOPICS = ["seks", "1984"]
 # with data-safename attributes
 NON_DB_SLUGS_SAFENAMES = {"bugun": "bugün", "gundem": "gündem", "basiboslar": "başıboşlar", "takip": "takip",
                           "tarihte-bugun": "tarihte bugün", "kenar": "kenar", "caylaklar": "çaylaklar",
-                          "debe": "dünün en beğenilen entry'leri", "hayvan-ara": "arama sonuçları"}
+                          "debe": "dünün en beğenilen entry'leri", "hayvan-ara": "hayvan ara"}
 
 NON_DB_CATEGORIES = list(NON_DB_SLUGS_SAFENAMES.keys())
 
