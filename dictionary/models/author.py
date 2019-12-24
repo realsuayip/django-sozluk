@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .entry import Entry
 from .category import Category
 
+
 class AuthorNickValidator(UnicodeUsernameValidator):
     regex = r'^[a-z\ ]+$'
     message = _("boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir")
@@ -49,14 +50,14 @@ class Author(AbstractUser):
                           (FOLLOWING_ONLY, "takip ettiklerim"))
 
     nick_validator = AuthorNickValidator()
-    username = models.CharField(_('username'), max_length=50, unique=True, help_text=_(
+    username = models.CharField(_('username'), max_length=35, unique=True, help_text=_(
         'şart. en fazla 50 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez'),
                                 validators=[nick_validator], error_messages={'unique': _("bu nick kapılmış"), }, )
 
     birth_date = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
-    is_novice = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=False)
+    is_novice = models.BooleanField(default=True, verbose_name="çaylak")
+    is_active = models.BooleanField(default=False, verbose_name="aktif")
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)  # NOT NULL
@@ -87,7 +88,6 @@ class Author(AbstractUser):
             self.following_categories.add(*categories_list)
 
     def get_absolute_url(self):
-        # todo use This!
         return reverse("user-profile", kwargs={"username": self.username})
 
     class Meta:

@@ -14,3 +14,7 @@ class GeneralReport(models.Model):
 
     def __str__(self):
         return f"{self.subject} <{self.__class__.__name__}>#{self.pk}"
+
+    class Meta:
+        verbose_name = "rapor"
+        verbose_name_plural = "raporlar"

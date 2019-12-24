@@ -13,7 +13,7 @@
     {% for entry in entries %}
 
         <h2>{{ forloop.counter }}. <a target="_blank"
-                                      href="{% url 'entry-permalink' entry_id=entry.id %}">{{ entry.topic.title }}
+                                      href="{{ entry.get_absolute_url }}">{{ entry.topic.title }}
             (#{{ entry.id }})</a></h2>
         <p>{{ entry.content }} <br> <span style="float:right;">{{ entry.date_created }}</span></p>
         <br>

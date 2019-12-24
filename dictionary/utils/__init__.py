@@ -11,4 +11,4 @@ def turkish_lower(turkish_string):
 
 def log_admin(msg, authorizer, model_type, model_object, flag=CHANGE):
     LogEntry.objects.log_action(user_id=authorizer.id, content_type_id=ContentType.objects.get_for_model(model_type).pk,
-                                object_id=model_object.id, object_repr=f"{msg}", action_flag=flag)
+                                object_id=model_object.id, object_repr=f"{msg}", change_message=msg, action_flag=flag)

@@ -5,7 +5,8 @@
     {% load humanize %}
     {% load filters %}
     {% include "dictionary/includes/block_user_modal.html" %}
-    <h4 style="font-weight: 600;"><a href="{% url 'user-profile' username=recipient.username %}">@{{ recipient.username }}</a> ile sohbet muhabbet
+    <h4 style="font-weight: 600;"><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet
+        muhabbet
     </h4>
 
     <span class="chat-quick-links">

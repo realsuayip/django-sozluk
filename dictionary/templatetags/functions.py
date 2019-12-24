@@ -18,7 +18,7 @@ def url_replace(request, field, value):
 
 
 @register.simple_tag
-def entry_abs_url(req, entry_id):
+def entry_full_url(req, entry_id):
     return req.build_absolute_uri(reverse('entry-permalink', kwargs={'entry_id': entry_id}))
 
 

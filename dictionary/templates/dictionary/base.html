@@ -58,11 +58,11 @@
 
 
         <form method="GET" class="header-search-form{% if request.user.is_authenticated %} logged-in{% endif %}"
-              action="{% url 'topic-search' %}">
+              action="{% url 'topic-search' %}" id="header_search_form">
             <div class="input-group searchbox">
                 <input name="q" type="text" placeholder="başlık, #entry ya da @yazar"
                        class="searchbox-text form-control"
-                       id="header_search">
+                       id="header_search" form="header_search_form">
                 <div class="input-group-append">
                     <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -77,13 +77,11 @@
                          id="dropdown_detailed_search">
 
                         {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
-
                         <div class="form-group">
                             <button type="button" class="btn btn-django stretch"
                                     id="perform_advanced_search">çok güzel ara
                             </button>
                         </div>
-
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item search-closer" id="close_search_dropdown">boşver</a>
                     </div>
@@ -98,7 +96,7 @@
         {% if request.user.is_authenticated %}
             <ul class="user-navigation">
 
-                <li><a class="nav-quicklink" href="{% url 'user-profile' username=request.user.username %}">
+                <li><a class="nav-quicklink" href="{{ request.user.get_absolute_url }}">
                     <i class="material-icons">
                         person
                     </i><span>ben</span></a>
@@ -221,7 +219,7 @@
             {% for category in nav_categories|slice:":4" %}
                 <li class="nav-item" data-category="{{ category.slug }}"
                     data-safename="{{ category.name }}">
-                    <a href="{% url "topic_list" slug=category.slug %}"
+                    <a href="{{ category.get_absolute_url }}"
                        title="{{ category.description }}">#{{ category.name }}</a>
                 </li>
             {% endfor %}
@@ -236,7 +234,7 @@
                 {% for category in nav_categories|slice:"4:12" %}
                     <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
                        class="dropdown-item nav-item"
-                       href="{% url 'topic_list' slug=category.slug %}">#{{ category.name }}</a>
+                       href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
 
                 {% endfor %}
 

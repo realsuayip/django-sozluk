@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator, MaxLengthValidator
 from django.db import models
 from django.db.models import Q
+from django.shortcuts import reverse
 
 from uuslug import uuslug
 
@@ -10,7 +11,7 @@ from .entry import Entry
 from .managers.topic import TopicManager, TopicManagerPublished
 from ..utils import turkish_lower
 
-TOPIC_TITLE_VALIDATORS = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/"*,.!?~\[\] {} <>^;\\|-]+$""",
+TOPIC_TITLE_VALIDATORS = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/",.!?~\[\] {} <>^;\\|-]+$""",
                                          message="bu başlık geçerisz karakterler içeriyor"),
                           MaxLengthValidator(50, message="bu başlık çok uzun")]
 
@@ -25,14 +26,25 @@ class TopicFollowing(models.Model):
 
 
 class Topic(models.Model):
-    title = models.CharField(max_length=50, unique=True, validators=TOPIC_TITLE_VALIDATORS)
-    date_created = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL)
-    category = models.ManyToManyField(Category, blank=True)
+    title = models.CharField(max_length=50, unique=True, validators=TOPIC_TITLE_VALIDATORS, verbose_name="başlık")
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="oluşturulma tarihi")
+    created_by = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL,
+                                   verbose_name="ilk entry giren")
+    category = models.ManyToManyField(Category, blank=True, verbose_name="kanal")
     slug = models.SlugField(max_length=96, unique=True, blank=True)
 
     objects = TopicManager()
     objects_published = TopicManagerPublished()
+
+    def __str__(self):
+        return f"{self.title}"
+
+    class Meta:
+        verbose_name = "başlık"
+        verbose_name_plural = "başlıklar"
+
+    def get_absolute_url(self):
+        return reverse("topic", kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
         self.title = turkish_lower(self.title)
@@ -56,6 +68,3 @@ class Topic(models.Model):
     @property
     def has_entries(self):
         return self.entries.exclude(is_draft=True).exists()
-
-    def __str__(self):
-        return f"{self.title}"

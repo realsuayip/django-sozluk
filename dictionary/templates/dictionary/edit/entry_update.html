@@ -5,7 +5,7 @@
 {% block content %}
     {% load filters %}
     {% load widget_tweaks %}
-    <h4 style="font-weight: 600;"><a href="{% url "topic" slug=entry.topic.slug %}">{{ entry.topic.title }}</a></h4>
+    <h4 style="font-weight: 600;"><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></h4>
     <br>
 
     <section class="user-comments">

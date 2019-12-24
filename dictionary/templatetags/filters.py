@@ -3,9 +3,11 @@ import calendar
 from django import template
 from django.utils.html import escape, mark_safe
 from django.core.validators import ValidationError
+
+from uuslug import slugify
+
 from ..utils.settings import BANNED_TOPICS
-from ..models import Topic, Author
-from ..utils.settings import GENERIC_SUPERUSER_ID
+from ..models import Topic
 
 register = template.Library()
 
@@ -47,10 +49,14 @@ def is_valid_topic_title(topic_title):
     if Topic.objects.filter(title=topic_title).exists():
         return True
 
+    if not slugify(topic_title):
+        return False
+
     try:
-        Topic(title=topic_title, created_by=Author.objects.get(pk=GENERIC_SUPERUSER_ID)).full_clean()
+        Topic(title=topic_title).full_clean()
     except ValidationError:
         return False
+
     return True
 
 

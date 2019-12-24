@@ -7,7 +7,7 @@
         <h2>
             {% if request.GET.ordering and slug_name == "hayvan-ara" %}
                 <a class="expand" type="button" data-toggle="collapse"
-                   data-target="#search_form_extended"
+                   data-target="#search_form_extended_mobile"
                    aria-expanded="false">
                     arama sonuçları
                 </a>
@@ -46,7 +46,7 @@
             <hr>
             <form method="get" action="{% url 'topic_list' slug='hayvan-ara' %}"
                   class="search_mobile{% if request.GET.ordering %} collapse{% endif %}"
-                  id="search_form_extended">
+                  id="search_form_extended_mobile">
                 {% include "dictionary/includes/forms/extended_search.html" with source="mobile" %}
                 <button type="submit" class="btn btn-django stretch">çok güzel ara</button>
             </form>

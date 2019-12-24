@@ -10,7 +10,7 @@
             <li class="row">
                 {% with request.user.is_authenticated as logged_in %}
                     <div class="col-lg-1{% if logged_in %}0{% else %}2{% endif %}">
-                        <h5><a href="{% url "topic_list" slug=category.slug %}">#{{ category.name }}</a></h5>
+                        <h5><a href="{{ category.get_absolute_url }}">#{{ category.name }}</a></h5>
                         <p class="ml-2">{{ category.description }}</p>
                     </div>
 

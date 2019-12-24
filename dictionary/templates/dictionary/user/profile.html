@@ -63,7 +63,7 @@
         <div class="detail-nav" id="detail_nav">
             <ul>
                 <li {% if not tab %}class="active"{% endif %}><a
-                        href="{% url 'user-profile' username=profile.username %}">entry'ler</a></li>
+                        href="{{ profile.get_absolute_url }}">entry'ler</a></li>
 
                 <li {% if tab == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
 

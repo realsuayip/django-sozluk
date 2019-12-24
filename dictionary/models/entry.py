@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.db.models import F
+from django.shortcuts import reverse
 from django.utils import timezone
 
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
@@ -26,6 +27,7 @@ class Entry(models.Model):
 
     class Meta:
         ordering = ["date_created"]
+        verbose_name_plural = "entry"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -40,6 +42,9 @@ class Entry(models.Model):
         if not self.is_draft and not self.topic.created_by:
             self.topic.created_by = self.author
             self.topic.save()
+
+    def get_absolute_url(self):
+        return reverse("entry-permalink", kwargs={"entry_id": self.pk})
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

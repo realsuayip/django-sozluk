@@ -12,7 +12,7 @@
 
             {% if topic.exists %}
 
-                <h1 class="topic-title"><a href="{% url 'topic' slug=topic.slug %}">{{ topic.title }}</a>
+                <h1 class="topic-title"><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                     {% if mode == "search" %}
                         <small style="font-size: 1rem;">[arama terimi:
                             <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
@@ -20,27 +20,27 @@
                 {% if topic.has_entries %}
                     <div class="lower">
                     <div class="title_sub">
-                        {% url 'topic' slug=topic.slug as relative_url %}
+
 
                         <span class="mr-3 nice-filter">şükela:&nbsp;<a
-                                href="{{ relative_url }}{% if mode != "nice" %}?a=nice{% endif %}"
+                                href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}"
                                 {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a
-                                href="{{ relative_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
+                                href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
                                 {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
 
                         <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" href="#">başlıkta ara</a>
 
                         <div class="dropdown-menu topic-dropdown">
-                            <a class="dropdown-item" href="{{ relative_url }}?day=today">bugün</a>
-                            <a class="dropdown-item" href="{{ relative_url }}?a=search&keywords=http://">linkler</a>
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?day=today">bugün</a>
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=http://">linkler</a>
 
                             {% if request.user.is_authenticated %}
                                 <a class="dropdown-item"
-                                   href="{{ relative_url }}?a=search&keywords=@{{ request.user.username }}">benimkiler</a>
+                                   href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ request.user.username }}">benimkiler</a>
                             {% endif %}
 
                             <a class="dropdown-item pb-2" href="#">
-                                <form method="GET" action="{% url 'topic' slug=topic.slug %}">
+                                <form method="GET" action="{{ topic.get_absolute_url }}">
                                     <div class="input-group input-group-sm">
                                         <input type="hidden" name="a" value="search">
                                         <input name="keywords" class="searchbox-text" type="text"
@@ -100,7 +100,7 @@
                     {% if previous_entries_count > 0 %}
                         {% if entry_permalink %}
                             <a title="tümünü göster"
-                               href="{% url 'topic' slug=topic.slug %}?page={{ previous_entries_page }}"
+                               href="{{ topic.get_absolute_url }}?page={{ previous_entries_page }}"
                                class="more-entries-button">
                                 {{ previous_entries_count }} entry daha
                             </a>
@@ -135,7 +135,7 @@
 
                                 {% if all_entries_count %}
                                     <a title="tümünü göster"
-                                       href="{% url 'topic' slug=topic.slug %}"
+                                       href="{{ topic.get_absolute_url }}"
                                        class="more-entries-button">
                                         tümünü göster ({{ all_entries_count }} entry)
                                     </a>
@@ -150,7 +150,7 @@
                     {% if subsequent_entries_count > 0 %}
                         {% if entry_permalink %}
                             <a title="tümünü göster"
-                               href="{% url 'topic' slug=topic.slug %}?page={{ subsequent_entries_page }}"
+                               href="{{ topic.get_absolute_url }}?page={{ subsequent_entries_page }}"
                                class="more-entries-button">
                                 {{ subsequent_entries_count }} entry daha
                             </a>
@@ -178,7 +178,7 @@
 
                 {% if subsequent_entries_count > 0 %}
                     <a title="tümünü göster"
-                       href="{% url 'topic' slug=topic.slug %}"
+                       href="{{ topic.get_absolute_url }}"
                        class="more-entries-button">
                         {{ subsequent_entries_count }} entry daha
                     </a>
@@ -251,7 +251,7 @@
                 {% for category in topic.category.all %}
                     <li>
                         <a id="category_view_ls" data-safename="{{ category }}" data-category="{{ category.slug }}"
-                           href="/basliklar/{{ category.slug }}/">#{{ category }}</a>
+                           href="{{ category.get_absolute_url }}">#{{ category }}</a>
                     </li>
                 {% endfor %}
 

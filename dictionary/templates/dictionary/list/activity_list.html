@@ -14,7 +14,7 @@
                 {% for following in topics_following %}
                     {% activity_latest_entry request.user following.topic as latest_entry_date %}
                     <li class="list-group-item {% if following.read_at < latest_entry_date %}active{% endif %}">
-                        <a href="{% url 'topic' slug=following.topic.slug %}?a=following&d={{ following.read_at|timestamp }}">{{ following.topic.title }}
+                        <a href="{{ following.topic.get_absolute_url }}?a=following&d={{ following.read_at|timestamp }}">{{ following.topic.title }}
                         </a></li>
 
                 {% endfor %}

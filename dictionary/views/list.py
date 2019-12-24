@@ -15,6 +15,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 
+from uuslug import slugify
+
 from ..forms.edit import EntryForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
@@ -202,6 +204,11 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             # Create topic
             try:
                 # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
+
+                if not slugify(self.topic.title):
+                    notifications.error(self.request, "öyle başlık mı olur hıyarağası.")
+                    return self.form_invalid(form)
+
                 Topic(title=self.topic.title).full_clean()
             except ValidationError as error:
                 for msg in error.messages:
