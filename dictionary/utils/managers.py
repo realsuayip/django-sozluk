@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import make_aware
 
+from dateutil.parser import parse
+
 from ..models import Entry, Topic, Category
 from ..models.managers.topic import TopicManager
 from ..utils.settings import (TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES,
@@ -138,9 +140,27 @@ class TopicListManager:
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
 
-        count_filter = dict(count=Count("entries", distinct=True))
+        # Input validation
 
-        # todo input validation
+        if from_date:
+            try:
+                parse(from_date)
+            except ValueError:
+                from_date = None
+
+        if to_date:
+            try:
+                parse(to_date)
+            except ValueError:
+                to_date = None
+
+        if orderding not in ("alpha", "newer", "popular"):
+            orderding = "newer"
+
+        if not keywords and not author_nick and not favorites_only:
+            keywords = "akıl fikir"
+
+        count_filter = dict(count=Count("entries", distinct=True))
 
         if favorites_only and self.user.is_authenticated:
             qs = qs.filter(entries__favorited_by=self.user)

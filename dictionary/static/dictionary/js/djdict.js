@@ -330,13 +330,6 @@ $(function () {
     }
   });
 
-  $("input#author_nick").autocomplete({
-    serviceUrl: "/autocomplete/general/",
-    triggerSelectOnValidInput: false,
-    paramName: "author",
-    appendTo: "#raw_inputs"
-  });
-
   $(".send-message-trigger").on("click", function () {
     let recipient = $(this).attr("data-recipient");
     $("input.author-search").val(recipient);
@@ -540,7 +533,7 @@ $(".favorite-entry-btn").on("click", function () {
   });
 });
 
-$(document).on("click", "div.entry_info div.rate .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown)", e => {
+$(document).on("click", "div.entry_info div.rate .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown), .autocomplete-suggestions", e => {
   e.stopPropagation();
 });
 
