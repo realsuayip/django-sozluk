@@ -100,7 +100,8 @@ class TopicListManager:
                            entries__date_created__month=now.month)
 
         self.data = Topic.objects.filter(**self.base_filter, **date_filter).order_by('-latest').annotate(
-            **self.base_annotation, count=Count("entries", filter=Q(**date_filter))).values(*self.values)
+            **self.base_annotation, count=Count("entries", filter=Q(**date_filter))).order_by("-count").values(
+            *self.values)
 
     def gundem(self):
         raise ZeroDivisionError("Unimplemented yet", self.slug)

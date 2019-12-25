@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db.models import Q, F, Max, Case, When, IntegerField
+from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, TemplateView
@@ -234,6 +235,9 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         form_invalid method is necessary. In this method, appropriate redirections are made to ensure that user finds
         themselves where they started. Error messages supplied via notifications in form_valid exception catch.
         """
+        if form.errors:
+            notifications.error(self.request, "bebeğim, alt tarafı bi entry gireceksin, ne kadar zor olabilir ki?")
+
         unicode_url_argument = None
         if self.kwargs.get("unicode_string"):
             unicode_url_argument = self.kwargs.get("unicode_string")
@@ -340,7 +344,12 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         context["mode"] = self.view_mode
         context["entry_permalink"] = bool(self.entry_permalink)
 
-        if self.topic.exists and len(entries) > 0:
+        if isinstance(entries, QuerySet):
+            queryset_size = entries.count()
+        else:
+            queryset_size = len(entries)
+
+        if self.topic.exists and queryset_size > 0:
             # Find subsequent and previous entries
             # Get current page's first and last entry, and find the number of entries before and after by date.
             # Using these count data, find what page next entry is located on.
@@ -367,7 +376,6 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
             if show_subsequent:
                 try:
-                    queryset_size = len(entries)
                     last_entry_date = entries[queryset_size - 1].date_created
                     subsequent_entries_count = self._qs_filter(
                         self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False)).count()
