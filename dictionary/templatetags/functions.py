@@ -35,18 +35,3 @@ def check_category_follow_status(user, category):
 @register.simple_tag
 def activity_latest_entry(sender, topic):
     return topic.latest_entry_date(sender)
-
-
-@register.simple_tag
-def is_downvoted(entry, user):
-    return entry.downvoted_by.filter(pk=user.pk).exists()
-
-
-@register.simple_tag
-def is_upvoted(entry, user):
-    return entry.upvoted_by.filter(pk=user.pk).exists()
-
-
-@register.simple_tag
-def is_favorited(entry, user):
-    return entry.favorited_by.filter(pk=user.pk).exists()

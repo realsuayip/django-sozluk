@@ -506,5 +506,5 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
         if self.request.user.is_authenticated:
             qs = qs.exclude(author__in=self.request.user.blocked.all())
-
-        return qs
+        # todo: use select_related and prefetch_related more often
+        return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")

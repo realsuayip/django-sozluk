@@ -94,7 +94,7 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
         else:
             qs = Entry.objects_published.filter(author=self.profile).order_by("-date_created")
 
-        return qs
+        return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

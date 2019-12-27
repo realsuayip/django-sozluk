@@ -29,26 +29,24 @@
             </div>
 
            <div class="rate" id="rate" data-entry-id="{{ entry.id }}">
-
            {% if request.user.is_authenticated and entry.author == request.user %}
            {% else %}
 
-               {% is_downvoted entry request.user as downvoted %}
-               {% is_upvoted entry request.user as upvoted %}
-               <a class="upvote {% if upvoted %}active{% endif %}"
+
+               <a class="upvote {% if request.user in entry.upvoted_by.all %}active{% endif %}"
                   id="upvote"> <i
                        class="material-icons">keyboard_arrow_up</i></a>
-               <a class="downvote {% if downvoted %}active{% endif %}"
+               <a class="downvote {% if request.user in entry.downvoted_by.all %}active{% endif %}"
                   id="downvote"><i
                        class="material-icons">keyboard_arrow_down</i></a>
            {% endif %}
 
                {% if request.user.is_authenticated %}
-                   {% is_favorited entry request.user as favorited %}
+
 
                    <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
 
-                   <i {% if favorited %}class="material-icons favorite-entry-btn mr-1"
+                   <i {% if request.user in entry.favorited_by.all %}class="material-icons favorite-entry-btn mr-1"
                       title="favorilerden çıkar"
                       {% else %}class="material-icons favorite-entry-btn fav-inverted mr-1"
                       title="favorilere ekle" {% endif %}></i>
