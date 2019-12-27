@@ -803,6 +803,7 @@ a.more-entries-button:hover {
 
 .autocomplete-no-suggestion {
     padding: 2px 5px;
+    text-align: center;
 }
 
 .autocomplete-selected {

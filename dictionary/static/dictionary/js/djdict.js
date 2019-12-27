@@ -313,8 +313,9 @@ $(function () {
 
   $("#header_search").autocomplete({
     serviceUrl: "/autocomplete/general/",
-    preserveInput: true,
     triggerSelectOnValidInput: false,
+    showNoSuggestionNotice: true,
+    noSuggestionNotice: "-- buna yakın bir sonuç yok --",
 
     onSelect (suggestion) {
       window.location.replace("/topic/?q=" + suggestion.value);
