@@ -1,12 +1,14 @@
-from decimal import Decimal
+import datetime
 
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 from django.urls import reverse
+from django.utils import timezone
 
 from ..forms.edit import SendMessageForm, MementoForm
 from ..models import Entry, Author, Message, Conversation, Memento
@@ -60,12 +62,21 @@ class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
 class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
     model = Entry
     paginate_by = ENTRIES_PER_PAGE_PROFILE
-    context_object_name = "entries"
     form_class = MementoForm
     template_name = "dictionary/user/profile.html"
 
     profile = None
     tab = None
+
+    tabs = {
+        "latest": {"label": "entry'ler", "type": "entry"},
+        "favorites": {"label": "favorileri", "type": "entry"},
+        "popular": {"label": "en çok favorilenenleri", "type": "entry"},
+        "liked": {"label": "en beğenilenleri", "type": "entry"},
+        "weeklygoods": {"label": "bu hafta dikkat çekenleri", "type": "entry"},
+        "beloved": {"label": "el emeği göz nuru", "type": "entry"},
+        "authors": {"label": "favori yazarları", "type": "author"},
+    }
 
     def form_valid(self, form):
         existing_memento = self.get_memento()
@@ -97,25 +108,56 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
         return kwargs
 
     def get_queryset(self):
-        if self.tab == "favorites":
-            qs = self.profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
-        elif self.tab == "popular":
-            qs = Entry.objects_published.filter(author=self.profile, vote_rate__gt=Decimal("1"))
-        else:
-            qs = Entry.objects_published.filter(author=self.profile).order_by("-date_created")
+        qs = getattr(self, self.tab)()
+        tab_obj_type = self.tabs.get(self.tab)['type']
 
-        return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")
+        if tab_obj_type == "entry":
+            return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")
+
+        if tab_obj_type == "author":
+            return qs
+
+        raise Http404
+
+    def latest(self):
+        # default tab
+        return Entry.objects_published.filter(author=self.profile).order_by("-date_created")
+
+    def favorites(self):
+        return self.profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
+
+    def popular(self):
+        return Entry.objects_published.filter(author=self.profile).annotate(count=Count("favorited_by")).order_by(
+            "-count")
+
+    def liked(self):
+        return Entry.objects_published.filter(author=self.profile).order_by("-vote_rate")
+
+    def weeklygoods(self):
+        return self.liked().filter(date_created__gte=timezone.now() - datetime.timedelta(days=7))
+
+    def beloved(self):
+        return Entry.objects_published.filter(author=self.profile, favorited_by__in=[self.profile]).order_by(
+            "-date_created")
+
+    def authors(self):
+        favorites = self.profile.favorite_entries.all()
+        return Author.objects.filter(entry__in=favorites).annotate(frequency=Count("entry")).filter(
+            frequency__gt=1).order_by("-frequency")[:10]
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["tab"] = self.tab
+        context["tab"] = {"name": self.tab, **self.tabs.get(self.tab)}
         context["profile"] = self.profile
         context['novice_queue'] = self.get_novice_queue()
         return context
 
     def dispatch(self, request, *args, **kwargs):
         self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
-        self.tab = request.GET.get("t")
+        self.tab = request.GET.get("t") if request.GET.get("t") else "latest"
+
+        if self.tab not in self.tabs.keys():
+            self.tab = "latest"
 
         if self.request.user.is_authenticated:
             if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():

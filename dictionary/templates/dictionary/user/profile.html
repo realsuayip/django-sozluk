@@ -14,7 +14,7 @@
             {% include "dictionary/includes/block_user_modal.html" %}
 
             <ul class="user-links" data-username="{{ profile.username }}">
-                <li id="follow_user"><a href="#">{% if profile in request.user.following.all %}takip etme{% else %}takip
+                <li class="follow-user-trigger"><a href="#">{% if profile in request.user.following.all %}takip etme{% else %}takip
                     et{% endif %}</a></li>
                 <li class="block-user-trigger" data-username="{{ profile.username }}"><a href="#">engelle</a></li>
                 <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a href="#">mesaj gönder</a>
@@ -62,21 +62,23 @@
     <section class="user-info-detail">
         <div class="detail-nav" id="detail_nav">
             <ul>
-                <li {% if not tab %}class="active"{% endif %}><a
+                <li {% if tab.name == "latest" %}class="active"{% endif %}><a
                         href="{{ profile.get_absolute_url }}">entry'ler</a></li>
 
-                <li {% if tab == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
+                <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
 
-                <li class="profile-stat-expand{% if tab and tab != 'favorites' %} active{% endif %}">
+                <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
                     <a class="expand" href="#" role="button" id="dropdownMenuLink"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         istatistikler
-
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
-                        {#  to be added..#}
+                        <a class="dropdown-item" href="?t=liked">en beğenilenleri</a>
+                        <a class="dropdown-item" href="?t=weeklygoods">bu hafta dikkat çekenleri</a>
+                        <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
+                        <a class="dropdown-item" href="?t=authors">favori yazarları</a>
                     </div>
                 </li>
 
@@ -84,14 +86,29 @@
         </div>
     </section>
 
-    {% if entries %}
-        <section class="user_entries">
-            <ul class="profile">
-                {% for entry in entries %}
-                    {% include "dictionary/includes/entry.html" with show_title="yes" %}
+    <h5 class="mt-3"><strong><a href="{{ author.get_absolute_url }}">{{ tab.label }}</a></strong></h5>
+    {% if object_list.exists %}
+        {% if tab.type == "entry" %}
+            <section class="user_entries">
+                <ul class="profile">
+                    {% for entry in object_list %}
+                        {% include "dictionary/includes/entry.html" with show_title="yes" %}
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        {% if tab.type == "author" %}
+            <ul class="list-group">
+                {% for author in object_list %}
+
+                    <li class="list-group-item" data-username="{{ author.username }}">
+                        <a href="{{ author.get_absolute_url }}"><strong>{{ author.username }}</strong></a>
+                    </li>
+
                 {% endfor %}
             </ul>
-        </section>
+        {% endif %}
     {% else %}
         <small>yok ki</small>
     {% endif %}
@@ -103,17 +120,20 @@
 
 {% block rightframe %}
     {% if request.user.is_authenticated %}
-        <h6><strong>notlar</strong></h6>
+
+        <label for="memento"><h5><strong>notlar</strong></h5></label>
+
         <form method="post" class="memento">
             {% load widget_tweaks %}
             {% load filters %}
 
             {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
-                {% render_field form.body placeholder=text_placeholder name="memento" class="entry_editor" rows="10" %}
+                {% render_field form.body placeholder=text_placeholder name="memento" class="form-control" rows="10" id="memento" %}
             {% endwith %}
 
             {% csrf_token %}
-            <button class="btn btn-django">kaydet</button>
+
+            <button class="btn btn-django mt-3 stretch-mobile">kaydet</button>
         </form>
     {% endif %}
 {% endblock %}

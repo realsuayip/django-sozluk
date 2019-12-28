@@ -616,7 +616,9 @@ const userAction = (type, recipientUsername) => {
       }
     },
     error: data => {
-      notify(data.message);
+      if (data.message) {
+        notify(data.message);
+      }
     }
 
   });
@@ -646,7 +648,7 @@ $(".unblock-user-trigger").on("click", function () {
   }
 });
 
-$("#follow_user").on("click", function () {
+$(".follow-user-trigger").on("click", function () {
   const targetUser = $(this).parent().attr("data-username");
   userAction("follow", targetUser);
   $(this).children("a").toggleText("takip et", "takip etme");

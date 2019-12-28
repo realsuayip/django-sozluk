@@ -711,15 +711,18 @@ body a:hover {
 section.user-comments {
     background: #ddd;
     padding: 1em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
 
 
 section.user-comments .editor-buttons button.add-code {
     background: #fff;
     color: #444;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
     border: 1px solid #ffffff;
     outline: none;
 }
@@ -730,7 +733,7 @@ section.user-comments .editor-buttons button.add-code:hover {
 }
 
 section.user-comments textarea.entry_editor {
-    margin: 1em 0;
+    margin: .5em 0;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -1236,8 +1239,7 @@ select.mobile-topic-list {
 form.memento textarea {
     height: auto;
     padding: .2em;
-    outline: none;
-    width: 250px;
+    width: 100%;
 }
 
 
@@ -1477,6 +1479,10 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
 
     ul.user-navigation li.desktop-only {
         display: none;
+    }
+
+    .stretch-mobile {
+        width: 100%;
     }
 
 }

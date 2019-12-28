@@ -22,7 +22,7 @@
             {% csrf_token %}
 
             {% with entry.topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
-                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor" rows="10" spellcheck="true" %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" %}
             {% endwith %}
 
             <div class="row">
