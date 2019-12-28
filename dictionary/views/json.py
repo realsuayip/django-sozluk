@@ -68,9 +68,10 @@ class AutoComplete(JsonView):
             else:
                 response = ["@" + obj.username for obj in Author.objects.filter(username__istartswith=query[1:])[:7]]
         else:
-            response = [obj.title for obj in Topic.objects_published.filter(title__istartswith=query)[:7]]
+            response = [obj.title for obj in
+                        Topic.objects_published.filter(title__istartswith=query, is_censored=False)[:7]]
 
-            for extra in Topic.objects_published.filter(title__icontains=query)[:7]:
+            for extra in Topic.objects_published.filter(title__icontains=query, is_censored=False)[:7]:
                 if len(response) >= 7:
                     break
                 if extra.title not in response:

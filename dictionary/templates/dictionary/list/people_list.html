@@ -7,32 +7,36 @@
     <h4><strong>takip ettiğin ve engellenmiş insanlar</strong></h4>
     <hr>
     <h6>takip ettiklerin: </h6>
-    {% if following.all %}
-        {{ following.count }} kişi
-        <ul class="people-list">
-            {% for author in following.all %}
+    {% with following=request.user.following.all %}
+        {% if following %}
+            {{ following.count }} kişi
+            <ul class="people-list">
+                {% for author in following %}
 
-                <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
+                    <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
 
-            {% endfor %}
-        </ul>
-    {% else %}
-        <small>yok ki</small>
-    {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <small>yok ki</small>
+        {% endif %}
+    {% endwith %}
 
     <h6>engellediklerin:</h6>
-    {% if blocked.all %}
-        {{ blocked.count }} kişi, engeli kaldırmak için üstüne tıkla
-        <ul class="people-list">
-            {% for author in blocked.all %}
+    {% with blocked=request.user.blocked.all %}
+        {% if blocked %}
+            {{ blocked.count }} kişi, engeli kaldırmak için üstüne tıkla
+            <ul class="people-list">
+                {% for author in blocked %}
 
-                <li><a href="#" class="unblock-user-trigger"
-                       data-username="{{ author.username }}">{{ author.username }}</a></li>
+                    <li><a href="#" class="unblock-user-trigger"
+                           data-username="{{ author.username }}">{{ author.username }}</a></li>
 
-            {% endfor %}
-        </ul>
-    {% else %}
-        <small>yok ki</small>
-    {% endif %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <small>yok ki</small>
+        {% endif %}
+    {% endwith %}
 
 {% endblock %}

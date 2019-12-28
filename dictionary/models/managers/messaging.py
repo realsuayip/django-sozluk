@@ -26,6 +26,10 @@ class ConversationManager(models.Manager):
             "-message_sent_last")
 
     def with_user(self, sender, recipient):
+        # returns None if no conversation exists between users
+        if sender == recipient:
+            return None  # Self-messaging is not allowed
+
         users = [sender, recipient]
         conversation = self.annotate(count=Count('participants')).filter(count=2)
         for user in users:

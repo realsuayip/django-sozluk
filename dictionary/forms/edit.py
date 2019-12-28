@@ -9,7 +9,7 @@ class PreferencesForm(UserChangeForm):
     password = None
 
     gender = forms.ChoiceField(choices=Author.GENDERS, label="cinsiyet")
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(1910, 2000)), label="doğum günü")
+    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label="doğum günü")
     entries_per_page = forms.ChoiceField(choices=Author.ENTRY_COUNTS, label="sayfa başına gösterilecek entry sayısı")
     topics_per_page = forms.ChoiceField(choices=Author.TOPIC_COUNTS, label="sayfa başına gösterilecek başlık sayısı")
     message_preference = forms.ChoiceField(choices=Author.MESSAGE_PREFERENCE, label="mesaj")

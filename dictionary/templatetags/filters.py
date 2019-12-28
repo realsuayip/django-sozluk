@@ -6,7 +6,6 @@ from django.core.validators import ValidationError
 
 from uuslug import slugify
 
-from ..utils.settings import BANNED_TOPICS
 from ..models import Topic
 
 register = template.Library()
@@ -36,11 +35,6 @@ def formatted(raw_entry):
         r'([a-zA-Z0-9 ğüşöçİĞÜŞÖÇ]*)\]', r'<a target="_blank" href="\1">\2</a>', entry_hede)
 
     return mark_safe(entry_link)
-
-
-@register.filter
-def banned_topic(topic_title):
-    return topic_title in BANNED_TOPICS
 
 
 @register.filter

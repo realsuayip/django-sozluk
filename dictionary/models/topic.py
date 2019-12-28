@@ -32,6 +32,8 @@ class Topic(models.Model):
                                    verbose_name="ilk entry giren")
     category = models.ManyToManyField(Category, blank=True, verbose_name="kanal")
     slug = models.SlugField(max_length=96, unique=True, blank=True)
+    is_banned = models.BooleanField(default=False, verbose_name="entry girişine kapalı")
+    is_censored = models.BooleanField(default=False, verbose_name="başlık listesinde ve aramalarda sansürlü")
 
     objects = TopicManager()
     objects_published = TopicManagerPublished()

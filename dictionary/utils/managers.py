@@ -35,7 +35,7 @@ class TopicListManager:
 
     # queryset filters
     day_filter = dict(entries__date_created__gte=TIME_THRESHOLD_24H)
-    base_filter = dict(entries__is_draft=False, entries__author__is_novice=False)
+    base_filter = dict(entries__is_draft=False, entries__author__is_novice=False, is_censored=False)
 
     # queryset annotations
     base_annotation = dict(latest=Max('entries__date_created'))  # for order_by("-latest")
@@ -108,8 +108,8 @@ class TopicListManager:
 
     def debe(self):
         year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
-        debe_list = Entry.objects.filter(date_created__day=day, date_created__month=month,
-                                         date_created__year=year).order_by("-vote_rate").annotate(
+        debe_list = Entry.objects.filter(date_created__day=day, date_created__month=month, date_created__year=year,
+                                         topic__is_censored=False).order_by("-vote_rate").annotate(
             title=F("topic__title"), slug=F("pk")).values(*self.values_entry)
 
         self.data = debe_list[:TOPICS_PER_PAGE_DEFAULT]
@@ -127,7 +127,7 @@ class TopicListManager:
                 *self.values_entry)
 
     def caylaklar(self):
-        caylak_filter = dict(entries__author__is_novice=True, entries__is_draft=False)
+        caylak_filter = dict(entries__author__is_novice=True, entries__is_draft=False, is_censored=False)
         self.data = Topic.objects.filter(**self.day_filter, **caylak_filter).order_by('-latest').annotate(
             **self.base_annotation, **self.base_count).values(*self.values)
 

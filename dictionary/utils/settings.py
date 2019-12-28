@@ -13,9 +13,6 @@ ENTRIES_PER_PAGE_PROFILE = 15
 GENERIC_SUPERUSER_ID = 1
 
 
-# include banned topics here, more useful if you want to create a static page with some text like 'terms & conditions'
-BANNED_TOPICS = ["seks", "1984"]
-
 # category related settings, don't change the keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded. but:
 # if you really have to change that, related files are: views.list.TopicList, views.json.AsyncTopicList,
 # utils.managers.TopicListManager and bunch of html files with djdict.js
@@ -33,7 +30,7 @@ LOGIN_REQUIRED_CATEGORIES = ["bugun", "kenar", "takip"]
 # don't cache these categories
 UNCACHED_CATEGORIES = ["kenar", "hayvan-ara"]
 
-YEAR_RANGE = list(reversed(range(2017, 2020)))  # for TopicList view only
+YEAR_RANGE = range(2020, 2017, -1)  # for TopicList view only
 
 # Used in views.json.Vote
 VOTE_RATES = {"favorite": Decimal(".2"), "increase": Decimal(".2"), "reduce": Decimal("-.2"),

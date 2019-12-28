@@ -23,7 +23,7 @@ from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowin
 from ..utils.managers import TopicListManager
 from ..utils.mixins import FormPostHandlerMixin
 from ..utils.settings import (TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES,
-                              TIME_THRESHOLD_24H, BANNED_TOPICS, NON_DB_SLUGS_SAFENAMES, LOGIN_REQUIRED_CATEGORIES)
+                              TIME_THRESHOLD_24H, NON_DB_SLUGS_SAFENAMES, LOGIN_REQUIRED_CATEGORIES)
 
 
 def index(request):
@@ -38,12 +38,6 @@ def index(request):
 
 class PeopleList(LoginRequiredMixin, TemplateView):
     template_name = "dictionary/list/people_list.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['blocked'] = self.request.user.blocked
-        context['following'] = self.request.user.following
-        return context
 
 
 class ConversationList(LoginRequiredMixin, ListView):
@@ -190,7 +184,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
     redirect = False
 
     def form_valid(self, form):
-        if self.topic.title in BANNED_TOPICS:
+        if self.topic.exists and self.topic.is_banned:
             # not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, "olmaz ki canım... hürrüpü")
             return self.form_invalid(form)

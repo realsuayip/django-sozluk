@@ -70,9 +70,8 @@
 
         <div class="info">
             <a href="{{ entry.get_absolute_url }}">{{ entry.date_created|date:"d.m.Y H:i" }}
-                {% if entry.date_edited != entry.date_created %}
-                    {% now "d.m.Y" as today %}
-                    {% if today == entry.date_edited|date:"d.m.Y" %}
+                {% if entry.date_edited %}
+                    {% if entry.date_created|date:"dmY" == entry.date_edited|date:"dmY" %}
                         {{ entry.date_edited|date:" ~ H:i" }}
                     {% else %}
                         {{ entry.date_edited|date:" ~ d.m.Y H:i" }}

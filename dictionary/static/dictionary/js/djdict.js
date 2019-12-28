@@ -204,7 +204,7 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
 
   if (slug === "tarihte-bugun") {
     yearSelect.css("display", "block");
-    const years = ["2019", "2018", "2017"];
+    const years = ["2020", "2019", "2018"];
     for (const year of years) {
       yearSelect.append(`<option id="${year}">${year}</option>`);
     }

@@ -39,7 +39,10 @@ class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
             if unread_messages:
                 for msg in unread_messages:
                     msg.mark_read()
-        return chat
+
+            return chat
+
+        raise Http404  # users haven't messsaged each other yet
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
