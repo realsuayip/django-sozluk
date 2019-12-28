@@ -26,9 +26,22 @@ class EntryForm(forms.ModelForm):
 
 
 class SendMessageForm(forms.ModelForm):
+    # Used in conversation (previously created)
     class Meta:
         model = Message
         fields = ('body',)
+        labels = {"body": "mesajınız"}
+
+    def clean(self):
+        if len(self.cleaned_data.get("body")) < 3:
+            raise forms.ValidationError("bu mesaj çok kısa be koçum")
+
+        super().clean()
+
+
+class StandaloneMessageForm(SendMessageForm):
+    # Used to create new conversations (in messages list view)
+    recipient = forms.CharField(label="kime")
 
 
 class MementoForm(forms.ModelForm):

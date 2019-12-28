@@ -18,7 +18,7 @@ from django.utils.decorators import method_decorator
 
 from uuslug import slugify
 
-from ..forms.edit import EntryForm
+from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
 from ..utils.managers import TopicListManager
 from ..utils.mixins import FormPostHandlerMixin
@@ -40,15 +40,40 @@ class PeopleList(LoginRequiredMixin, TemplateView):
     template_name = "dictionary/list/people_list.html"
 
 
-class ConversationList(LoginRequiredMixin, ListView):
+class ConversationList(LoginRequiredMixin, ListView, FormPostHandlerMixin, FormMixin):
     model = Conversation
     allow_empty = True
     paginate_by = 3
     template_name = "dictionary/conversation/inbox.html"
     context_object_name = "conversations"
+    form_class = StandaloneMessageForm
+
+    def form_valid(self, form):
+        try:
+            username = form.cleaned_data.get("recipient")
+            recipient = Author.objects.get(username=username)
+        except Author.DoesNotExist:
+            notifications.error(self.request, "öyle biri yok")
+            return self.form_invalid(form)
+
+        body = form.cleaned_data.get("body")
+        msg = Message.objects.compose(self.request.user, recipient, body)
+
+        if msg:
+            return redirect(reverse("conversation", kwargs={"username": username}))
+
+        return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        if form.non_field_errors():
+            for error in form.non_field_errors():
+                notifications.error(self.request, error)
+
+        notifications.error(self.request, "mesajınızı göndermedik")
+        return redirect(reverse("messages"))
 
     def get_queryset(self):
-        return Conversation.objects.list_for_user(self.request.user)
+        return Conversation.objects.list_for_user(self.request.user, self.request.GET.get("search_term"))
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()

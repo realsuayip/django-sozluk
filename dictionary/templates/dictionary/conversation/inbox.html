@@ -3,7 +3,8 @@
 {% block title %}mesajlar{% endblock %}
 {% block content %}
     {% load humanize %}
-    <h4><strong>mesajlar</strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}</h4>
+    <h4><strong><a href="{% url 'messages' %}">mesajlar</a></strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}
+        {% if request.GET.search_term %}[arama terimi: <strong>{{ request.GET.search_term }}</strong>]{% endif %}</h4>
     <hr>
 
     {% if conversations %}
@@ -33,5 +34,41 @@
     {% else %}
         <small>yok ki</small>
     {% endif %}
+
+{% endblock %}
+
+{% block rightframe %}
+
+    <form action="{% url 'messages' %}" method="get">
+        <label for="messages_search_term"><h5><strong>mesajlarda ara</strong></h5></label>
+        <div class="input-group">
+            <input name="search_term" id="messages_search_term" type="text" class="form-control"
+                   placeholder="arama terimi" value="{{ request.GET.search_term }}" required>
+            <div class="input-group-append">
+                <button class="btn btn-django-link" type="submit">ara</button>
+            </div>
+        </div>
+    </form>
+
+    <hr>
+
+    {% load widget_tweaks %}
+
+    <form method="post">
+        <label for="recipient_name"><h5><strong>yeni mesaj</strong></h5></label>
+
+        <div class="form-group">
+            <label for="recipient_name" class="col-form-label">{{ form.recipient.label }}:</label>
+            {% render_field form.recipient class="form-control author-search" id="recipient_name" %}
+        </div>
+
+        <div class="form-group">
+            <label for="message_body">{{ form.body.label }}:</label>
+            {% render_field form.body rows="5" class="form-control" id="message_body" %}
+        </div>
+
+        {% csrf_token %}
+        <button type="submit" class="btn btn-django">yolla</button>
+    </form>
 
 {% endblock %}

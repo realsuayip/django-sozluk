@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Q
 from ...models import Author
 
 
@@ -21,9 +21,16 @@ class MessageManager(models.Manager):
 
 
 class ConversationManager(models.Manager):
-    def list_for_user(self, user):
-        return self.filter(participants__in=[user]).annotate(message_sent_last=Max('messages__sent_at')).order_by(
-            "-message_sent_last")
+    def list_for_user(self, user, search_term=None):
+        # List conversation list for user, provide search_term to search in messages
+        if search_term:
+            base = self.filter(
+                Q(messages__body__icontains=search_term) | Q(messages__recipient__username__icontains=search_term),
+                participants__in=[user])
+        else:
+            base = self.filter(participants__in=[user])
+
+        return base.annotate(message_sent_last=Max('messages__sent_at')).order_by("-message_sent_last")
 
     def with_user(self, sender, recipient):
         # returns None if no conversation exists between users

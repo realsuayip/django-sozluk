@@ -1308,6 +1308,10 @@ a.search-closer:active {
     color: #fff;
 }
 
+.btn-django-link.stretch {
+    width: 100%;
+}
+
 .btn-django-link.faded {
     background: #16784f;
 }
@@ -1399,6 +1403,7 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
     .content {
         padding: 1.5em;
         margin-top: 90px;
+        flex-direction: column;
     }
 
     nav.sub-nav ul.desktop-only {
@@ -1435,9 +1440,13 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
     }
 
     body.default .content-frame,
-    body.default .right-frame,
     body.topic-entry-view .left-frame {
         display: none;
+    }
+
+    body.default .right-frame {
+        margin-top: 1em;
+        width: 100%;
     }
 
     .left-frame {

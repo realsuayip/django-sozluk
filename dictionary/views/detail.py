@@ -31,6 +31,13 @@ class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
             notifications.error(self.request, "mesajınızı gönderemedik ne yazık ki")
         return redirect(reverse("conversation", kwargs={"username": self.kwargs.get("username")}))
 
+    def form_invalid(self, form):
+        if form.non_field_errors():
+            for msg in form.non_field_errors():
+                notifications.error(self.request, msg)
+
+        return redirect(reverse("conversation", kwargs={"username": self.kwargs.get("username")}))
+
     def get_object(self, queryset=None):
         recipient = self.get_recipient()
         chat = self.model.objects.with_user(self.request.user, recipient)
