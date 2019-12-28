@@ -1,4 +1,3 @@
-from ..models import Message, Conversation, TopicFollowing, Memento, UserVerification
 from django.contrib import admin
 
 from .author import AuthorAdmin
@@ -6,6 +5,8 @@ from .category import CategoryAdmin
 from .general_report import GeneralReportAdmin
 from .entry import EntryAdmin
 from .topic import TopicAdmin
+
+from ..models import Message, Conversation, TopicFollowing, Memento, UserVerification
 
 admin.site.index_template = "dictionary/admin/index.html"
 admin.site.register(Message)

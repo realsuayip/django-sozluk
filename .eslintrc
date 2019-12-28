@@ -40,6 +40,19 @@
     "arrow-parens": [
       2,
       "as-needed"
+    ],
+    "prefer-const": [
+      2
+    ],
+    "dot-notation": [
+      2
+    ],
+    "quote-props": [
+      2,
+      "as-needed"
+    ],
+    "no-prototype-builtins": [
+      2
     ]
   }
 }

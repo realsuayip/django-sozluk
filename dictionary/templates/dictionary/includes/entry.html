@@ -43,21 +43,23 @@
 
                {% if request.user.is_authenticated %}
 
+                   {% with favorites=entry.favorited_by.all %}
+                       <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
 
-                   <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
-
-                   <i {% if request.user in entry.favorited_by.all %}class="material-icons favorite-entry-btn mr-1"
+                   <i {% if request.user in favorites %}class="material-icons favorite-entry-btn mr-1"
                       title="favorilerden çıkar"
                       {% else %}class="material-icons favorite-entry-btn fav-inverted mr-1"
                       title="favorilere ekle" {% endif %}></i>
                    <a href="#"
-                      class="dropdown-fav-count {% if not entry.favorited_by.exists %}dj-hidden{% endif %}"
+                      class="dropdown-fav-count {% if not favorites %}dj-hidden{% endif %}"
                       data-toggle="dropdown"
                       role="button" aria-haspopup="true"
                       aria-expanded="false">
-                       {% if entry.favorited_by.exists %}{{ entry.favorited_by.count }}{% endif %}</a>
+                       {% if favorites %}{{ favorites|length }}{% endif %}</a>
                    <span class="dropdown-menu favorites-list" aria-labelledby="dropdownFavorites"></span>
                </div>
+                   {% endwith %}
+
                {% endif %}
 
 

@@ -1,7 +1,7 @@
+from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 
-from . import admin
 from ..models import Author
 from ..admin.views.novices import NoviceList, NoviceLookup
 

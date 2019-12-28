@@ -17,7 +17,7 @@ class SignUpForm(UserCreationForm):
                              help_text='Gerekli. Kayıt işlemini tamamlamak için geçerli bir mail adresi girin.',
                              label="e-mail adresi")
     gender = forms.ChoiceField(choices=Author.GENDERS, label="cinsiyet")
-    birth_date = forms.DateField(help_text='Gerekli.', widget=SelectDateWidget(years=range(1910, 2000)),
+    birth_date = forms.DateField(help_text='Gerekli.', widget=SelectDateWidget(years=range(2000, 1900, -1)),
                                  label="doğum günü")
     terms_conditions = forms.BooleanField(required=True)
 
