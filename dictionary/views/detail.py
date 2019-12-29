@@ -124,7 +124,7 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
         return Entry.objects_published.filter(author=self.profile).order_by("-date_created")
 
     def favorites(self):
-        return self.profile.favorite_entries.filter(author__is_novice=False).order_by("-date_created")
+        return self.profile.favorite_entries.filter(author__is_novice=False).order_by("-entryfavorites__date_created")
 
     def popular(self):
         return Entry.objects_published.filter(author=self.profile).annotate(count=Count("favorited_by")).order_by(

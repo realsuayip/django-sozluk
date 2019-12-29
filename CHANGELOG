@@ -1,0 +1,19 @@
+[0.52.0-dev-pre]
+
+--Additions--
+1) Added this very CHANGELOG file
+
+-- Changes --
+1) New EntryFavorites model to create through
+relationship with Author m2m field favorite_entries
+Now, favorite_entries has the field 'date_created'
+
+This is an *incompatible* change from previous versions.
+Check solutions in the link below to migrate your models
+https://stackoverflow.com/questions/26927705/
+
+2) views.detail.UserProfile now sorts user's favorite
+entries properly (using newly added date_created field)
+
+-- Deletions --
+1) Removed favorite_entries m2m field from AuthorAdmin

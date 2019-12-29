@@ -9,13 +9,13 @@ from ..admin.views.novices import NoviceList, NoviceLookup
 @admin.register(Author)
 class AuthorAdmin(UserAdmin):
     model = Author
-    raw_id_fields = ['favorite_entries', 'upvoted_entries', 'downvoted_entries', 'following', 'blocked', 'pinned_entry']
+    raw_id_fields = ['upvoted_entries', 'downvoted_entries', 'following', 'blocked', 'pinned_entry']
     search_fields = ["username"]
     list_display = ("username", "email", "is_active", "is_novice", "date_joined")
 
     fieldsets = UserAdmin.fieldsets + ((None, {'fields': (
         'is_novice', 'application_status', 'application_date', 'last_activity', 'banned_until', 'birth_date', 'gender',
-        'following', "blocked", 'favorite_entries', 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
+        'following', "blocked", 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
         "following_categories")}),)
 
     add_fieldsets = ((None, {'fields': ('email',)}),) + UserAdmin.add_fieldsets

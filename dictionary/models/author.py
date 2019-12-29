@@ -67,7 +67,8 @@ class Author(AbstractUser):
     entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
     topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
-    favorite_entries = models.ManyToManyField('Entry', related_name="favorited_by", blank=True)
+    favorite_entries = models.ManyToManyField('Entry', through="EntryFavorites", related_name="favorited_by",
+                                              blank=True)
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
     downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
     pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
@@ -139,6 +140,19 @@ class Author(AbstractUser):
                 expiration_date__gte=timezone.now() - datetime.timedelta(hours=24)).exists():
             return False
         return True
+
+
+class EntryFavorites(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+
+    def __str__(self):
+        return self._meta.verbose_name + " #" + str(self.pk)
+
+    class Meta:
+        verbose_name = "Entry favorisi"
+        verbose_name_plural = "Entry favorilenmeleri"
 
 
 class Memento(models.Model):

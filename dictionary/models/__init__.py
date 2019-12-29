@@ -1,4 +1,4 @@
-from .author import Author, Memento, UserVerification
+from .author import Author, Memento, UserVerification, EntryFavorites
 from .category import Category
 from .entry import Entry
 from .messaging import Conversation, Message
