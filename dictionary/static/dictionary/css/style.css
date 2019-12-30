@@ -11,7 +11,7 @@ body {
 header.page_header {
     border-top: 4px solid #092e20;
     border-bottom: 1px solid #b0bec5;
-    padding-top: 15px;
+    padding-top: 10px;
     position: fixed;
     top: 0;
     left: 0;
@@ -36,7 +36,7 @@ header.page_header {
 .top-bar {
     padding-right: 4em;
     padding-left: 4em;
-    margin-bottom: 15px;
+    margin-bottom: .5em;
     display: flex;
     justify-content: space-between;
 }
@@ -150,7 +150,7 @@ nav.sub-nav ul li:hover {
 }
 
 nav.sub-nav ul li a {
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     color: #353535;
     -webkit-transition: all .2s ease-in-out;
     -o-transition: all .2s ease-in-out;
@@ -163,7 +163,7 @@ nav.sub-nav ul li a {
 }
 
 .content {
-    margin-top: 117px;
+    margin-top: 88px;
     padding-top: 1.5em;
     padding-left: 4em;
     display: flex;
@@ -1327,25 +1327,24 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
     background: inherit;
 }
 
-/** MEDIA QUERIES **/
-
-@media (max-width: 1366px) {
-    .content {
-        margin-top: 88px;
-    }
-
-    .top-bar {
-        margin-bottom: .5em;
-    }
-
-    header.page_header {
-        padding-top: 10px;
-    }
-
-    nav.sub-nav ul li a {
-        padding-bottom: 5px;
-    }
+footer.body-footer ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
+
+footer.body-footer ul li.column {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+footer.body-footer ul li a {
+    display: inline-block;
+}
+
+
+/** MEDIA QUERIES **/
 
 @media (max-width: 900px) {
     .top-bar {

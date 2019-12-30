@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # extra
-    'dictionary',
+    'dictionary.apps.DictionaryConfig',
     'widget_tweaks',
     'django.contrib.humanize',
 ]

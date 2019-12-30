@@ -93,7 +93,7 @@ class Author(AbstractUser):
 
     class Meta:
         # Superusers need to have this permission to accept a novice as an author.
-        permissions = (("can_activate_user", "Make author"),)
+        permissions = (("can_activate_user", "çaylak lisesine erişim"),)
         verbose_name = "yazar"
         verbose_name_plural = "yazarlar"
 

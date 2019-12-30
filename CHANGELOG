@@ -1,4 +1,20 @@
-[0.52.0-dev-pre]
+[ 0.53.0-dev-pre](2019.12.30)(compatible)
+
+--Additions--
+1) New footer in base.html
+
+-- Changes --
+Changed the verbose name of can_activate_user permission
+to 'çaylak lisesine erişim'
+
+Changed some css properties related to header so as to
+improve responsibility
+
+--Deletions--
+Removed some css properties related to header so as to
+improve responsibility
+
+[0.52.0-dev-pre](2019.12.29)(incompatible)
 
 --Additions--
 1) Added this very CHANGELOG file
