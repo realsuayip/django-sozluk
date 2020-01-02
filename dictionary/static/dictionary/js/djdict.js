@@ -507,7 +507,7 @@ $("button#insert_spoiler").on("click", function () {
 $("button#insert_link").on("click", function () {
   if (!replaceText("user_content_edit", "link")) {
     const linkText = prompt("hangi adrese gidecek?", "http://");
-    if (linkText !== "http://") {
+    if (linkText && linkText !== "http://") {
       const linkName = prompt(" verilecek linkin adı ne olacak?");
       if (linkName) {
         $("textarea#user_content_edit").insertAtCaret(`[${linkText} ${linkName}]`);

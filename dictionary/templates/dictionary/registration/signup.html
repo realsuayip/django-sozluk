@@ -45,7 +45,7 @@
         {% with WIDGET_ERROR_CLASS='is-invalid' %}
             <div class="form-group">
                 <label for="signup_username">{{ form.username.label }}</label>
-                {% render_field form.username class="form-control" id="signup_username" aria-describedby="signup_usernameHelp" %}
+                {% render_field form.username|attr:"autofocus" class="form-control" id="signup_username" aria-describedby="signup_usernameHelp" %}
                 <small id="signup_usernameHelp" class="form-text text-muted">{{ form.username.help_text }}</small>
             </div>
 
@@ -58,34 +58,40 @@
             </div>
 
             <div class="form-group">
-                <label for="signup_email">{{ form.password1.label }}</label>
+                <label for="signup_password1">{{ form.password1.label }}</label>
                 {% render_field form.password1 class="form-control" id="signup_password1" aria-describedby="signup_password1Help" %}
-                <small id="signup_password1Help" class="form-text text-muted">{{ form.password1.help_text }}</small>
+                <small id="signup_password1Help" class="form-text text-muted password-help">{{ form.password1.help_text }}</small>
             </div>
 
             <div class="form-group">
-                <label for="signup_email">{{ form.password2.label }}</label>
+                <label for="signup_password2">{{ form.password2.label }}</label>
                 {% render_field form.password2 class="form-control" id="signup_password2" aria-describedby="signup_password2Help" %}
                 <small id="signup_password2Help" class="form-text text-muted">{{ form.password2.help_text }}</small>
             </div>
-
-            <div class="form-group">
-                <label for="signup_gender">{{ form.gender.label }}</label>
-                {% render_field form.gender class="form-control" id="signup_gender" %}
+            <div class="row">
+                <div class="col-xl-7 col-lg-6">
+                    <div class="form-group">
+                        <label for="signup_gender">{{ form.gender.label }}</label>
+                        {% render_field form.gender class="form-control" id="signup_gender" %}
+                    </div>
+                </div>
+                <div class="col-xl-5 col-lg-6">
+                    <div class="form-group">
+                        <label style="display: block;" for="id_birth_date_day">{{ form.birth_date.label }}</label>
+                        {% render_field form.birth_date class="datepicker form-control" aria-describedby="signup_birth_dateHelp" %}
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label style="display: block;" for="signup_birth_date">{{ form.birth_date.label }}</label>
-                {% render_field form.birth_date class="datepicker form-control" id="signup_birth_date datepicker" aria-describedby="signup_birth_dateHelp" %}
-                <small id="signup_birth_dateHelp" class="form-text text-muted">{{ form.birth_date.help_text }}</small>
-            </div>
-
             <div class="custom-control custom-checkbox">
                 {% render_field form.terms_conditions class="custom-control-input" id="terms_conditions" %}
-                <label class="custom-control-label" for="terms_conditions"><a href="#">kullanıcı sözleşmesini</a> okudum ve
+                <label class="custom-control-label" for="terms_conditions"><a href="#">kullanıcı sözleşmesini</a> okudum
+                    ve
                     kabul ediyorum</label>
             </div>
             <hr>
         {% endwith %}
-        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django mb-5" style="width: 100%;">kayıt ol</button>
+        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django mb-5" style="width: 100%;">
+            kayıt ol
+        </button>
     </form>
 {% endblock %}

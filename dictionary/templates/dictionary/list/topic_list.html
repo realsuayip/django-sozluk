@@ -26,7 +26,7 @@
         {% endif %}
 
         {% if slug_name == "tarihte-bugun" %}
-            <select class="mobile-topic-list" id="mobile_year_changer">
+            <select class="mobile-topic-list form-control" id="mobile_year_changer">
                 {% for year in year_range %}
                     {# |add used here for type conversion https://stackoverflow.com/a/7405779/6063532#}
                     {% if year == current_year|add:"0" %}

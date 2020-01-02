@@ -1216,12 +1216,6 @@ select.mobile-topic-list {
 }
 
 
-.form-group .helptext-list ul {
-    list-style-type: none;
-    margin: 1em;
-    padding: 0;
-}
-
 
 .refresh-button {
     border: 1px solid #ccc;
@@ -1342,6 +1336,14 @@ footer.body-footer ul li.column {
 footer.body-footer ul li a {
     display: inline-block;
 }
+
+
+.password-help ul{
+    list-style-type: decimal;
+    margin: 1em;
+    padding: 0;
+}
+
 
 
 /** MEDIA QUERIES **/

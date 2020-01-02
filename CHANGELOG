@@ -1,3 +1,15 @@
+[0.54.0-dev-pre](2020.01.02)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+Adjusted frontend related fields/html classes so as to
+improve responsibility. (only minor changes and fixes)
+
+--Deletions--
+None
+
 [ 0.53.0-dev-pre](2019.12.30)(compatible)
 
 --Additions--

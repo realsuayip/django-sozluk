@@ -23,7 +23,7 @@ class Author(AbstractUser):
     WOMAN = 'WM'
     OTHER = 'OT'
     UNKNOWN = 'NO'
-    GENDERS = ((MAN, 'erkek'), (WOMAN, 'kadın'), (OTHER, 'diğer'), (UNKNOWN, 'boşver'))
+    GENDERS = ((UNKNOWN, 'boşver'), (MAN, 'erkek'), (WOMAN, 'kadın'), (OTHER, 'diğer'))
 
     # entry/topic per page preference
     TEN = 10
@@ -51,7 +51,7 @@ class Author(AbstractUser):
 
     nick_validator = AuthorNickValidator()
     username = models.CharField(_('username'), max_length=35, unique=True, help_text=_(
-        'şart. en fazla 50 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez'),
+        'şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez'),
                                 validators=[nick_validator], error_messages={'unique': _("bu nick kapılmış"), }, )
 
     birth_date = models.DateField(blank=True, null=True)
