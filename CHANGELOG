@@ -1,3 +1,19 @@
+[0.55.0-dev-pre](2020.01.02)(compatible)
+
+--Additions--
+1) New RegexValidator for Entry
+
+-- Changes --
+1) Changed footer layout to look more promising and responsive.
+2) Some form fields raised 500 when the query was empty. Fixed
+those errors by adding strip() & whatsoever.
+3) EntryForm form now handles errors more responsively
+3) EntryForm now automatically (turkish) lowers all characters.
+4) Remove erroneous chars from topic title validator
+
+--Deletions--
+None
+
 [0.54.0-dev-pre](2020.01.02)(compatible)
 
 --Additions--

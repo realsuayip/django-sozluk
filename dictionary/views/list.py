@@ -28,7 +28,6 @@ from ..utils.settings import (TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_P
 
 def index(request):
     """
-    # todo flatpages for about us etc.
     # todo scrollbar tracking
     # todo karma skor
     # todo: başlık yönlendirme (türkçe düzeltme gibi)
@@ -73,7 +72,9 @@ class ConversationList(LoginRequiredMixin, ListView, FormPostHandlerMixin, FormM
         return redirect(reverse("messages"))
 
     def get_queryset(self):
-        return Conversation.objects.list_for_user(self.request.user, self.request.GET.get("search_term"))
+        query_term = self.request.GET.get("search_term")
+        term = query_term.strip() if query_term else None
+        return Conversation.objects.list_for_user(self.request.user, term)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
@@ -255,7 +256,8 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         themselves where they started. Error messages supplied via notifications in form_valid exception catch.
         """
         if form.errors:
-            notifications.error(self.request, "bebeğim, alt tarafı bi entry gireceksin, ne kadar zor olabilir ki?")
+            for err in form.errors['content']:
+                notifications.error(self.request, err)
 
         unicode_url_argument = None
         if self.kwargs.get("unicode_string"):
@@ -487,6 +489,10 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         #  Search handling
         elif self.request.GET.get("q"):
             query = self.request.GET.get("q").strip()
+
+            if not query:
+                return False
+
             if query.startswith("@") and len(query) > 1:
                 return redirect("user-profile", username=query[1:])
 

@@ -749,6 +749,9 @@ section.user-comments button.entry_submit {
 section.topic-categories-list {
     background: #ddd;
     padding: 1em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
 
 section.topic-categories-list ul {
@@ -1216,7 +1219,6 @@ select.mobile-topic-list {
 }
 
 
-
 .refresh-button {
     border: 1px solid #ccc;
     padding: .3em;
@@ -1321,29 +1323,29 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
     background: inherit;
 }
 
-footer.body-footer ul {
+footer.body-footer {
+    background: #ddd;
+    padding: 1em;
+    margin-top: 1em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+footer.body-footer > ul {
     list-style-type: none;
     padding: 0;
-    display: flex;
-    flex-direction: column;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: .5em;
 }
 
-footer.body-footer ul li.column {
-    display: flex;
-    justify-content: space-evenly;
-}
-
-footer.body-footer ul li a {
-    display: inline-block;
-}
-
-
-.password-help ul{
+.password-help ul {
     list-style-type: decimal;
     margin: 1em;
     padding: 0;
 }
-
 
 
 /** MEDIA QUERIES **/
@@ -1485,6 +1487,11 @@ footer.body-footer ul li a {
     .stretch-mobile {
         width: 100%;
     }
+
+    footer.body-footer > ul {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
 
 }
 

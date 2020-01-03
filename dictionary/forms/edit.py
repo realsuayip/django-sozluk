@@ -20,6 +20,11 @@ class PreferencesForm(UserChangeForm):
 
 
 class EntryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['content'].error_messages[
+            'required'] = "bebeğim, alt tarafı bi entry gireceksin, ne kadar zor olabilir ki?"
+
     class Meta:
         model = Entry
         fields = ('content', 'is_draft')
@@ -33,7 +38,12 @@ class SendMessageForm(forms.ModelForm):
         labels = {"body": "mesajınız"}
 
     def clean(self):
-        if len(self.cleaned_data.get("body")) < 3:
+        msg = self.cleaned_data.get("body")
+
+        if not msg:
+            raise forms.ValidationError("ne diyorsun anlaşılmıyor")
+
+        if len(msg) < 3:
             raise forms.ValidationError("bu mesaj çok kısa be koçum")
 
         super().clean()

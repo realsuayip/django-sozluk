@@ -53,7 +53,6 @@ class ChangeEmailForm(forms.Form):
             raise forms.ValidationError("e-postalar uyuşmadı")
 
         if Author.objects.filter(email=form_data["email1"]).exists():
-            # todo: if multiple unactivated accounts exist, delete rest when one of them is activated
             raise forms.ValidationError("bu e-posta kullanımda")
 
         super().clean()

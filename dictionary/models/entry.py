@@ -1,17 +1,23 @@
+import re
 from decimal import Decimal
 
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import F
 from django.shortcuts import reverse
 from django.utils import timezone
 
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
+from ..utils import turkish_lower
+
+ENTRY_RE = re.compile(r"""^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#₺&@()_+=':%/",.!?*~`\[\]{}<>^;\\|-]+$""", re.MULTILINE)
+ENTRY_VALIDATOR = RegexValidator(ENTRY_RE, message="bu entry geçerisz karakterler içeriyor")
 
 
 class Entry(models.Model):
     topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries")
     author = models.ForeignKey("Author", on_delete=models.PROTECT)
-    content = models.TextField()
+    content = models.TextField(validators=[ENTRY_VALIDATOR])
     date_created = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(blank=True, null=True, default=None)
     vote_rate = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0))
@@ -30,6 +36,7 @@ class Entry(models.Model):
         verbose_name_plural = "entry"
 
     def save(self, *args, **kwargs):
+        self.content = turkish_lower(self.content)
         super().save(*args, **kwargs)
         if self.author.is_novice and self.author.application_status == "OH":
             # Check if the user has written 10 entries, If so make them available for novice lookup
