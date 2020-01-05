@@ -1,4 +1,22 @@
-[0.55.0-dev-pre](2020.01.02)(compatible)
+[0.56.0-dev-pre](2020.01.05)(compatible)
+
+--Additions--
+1) For mobile topic list view, include query string parameters
+for topic urls.
+2) Add missing query string parameters for desktop topic list
+
+-- Changes --
+1) Include missing slash before query string parameter in desktop
+topic list
+2) Minor front-end adjustment
+3) Changed entry list html title so as to be more accurate
+4) Change syntax of getting tarihte-bugun year in mobile topic
+list view
+
+--Deletions--
+None
+
+[0.55.0-dev-pre](2020.01.03)(compatible)
 
 --Additions--
 1) New RegexValidator for Entry

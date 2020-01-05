@@ -771,10 +771,13 @@ section.topic-categories-list h2 {
 a.more-entries-button {
     display: block;
     width: 100%;
-    border: 1px solid #888888;
+    border: 1px solid #999;
     padding: .25em;
     text-align: center;
     font-size: 1em;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 a.more-entries-button:hover {

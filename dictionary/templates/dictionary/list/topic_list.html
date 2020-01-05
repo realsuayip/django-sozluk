@@ -56,9 +56,11 @@
         <ul id="topic-list-standalone" class="list-group topic-list">
             {% if topics %}
                 {% for topic in topics %}
-                    <li class="list-group-item"><a href="{{ slug_identifier }}{{ topic.slug }}">{{ topic.title }}
-                        <small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small>
-                    </a></li>
+                    <li class="list-group-item">
+                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ params }}">{{ topic.title }}
+                            <small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small>
+                        </a>
+                    </li>
                 {% endfor %}
             {% else %}
                 {% if slug_name == "tarihte-bugun" %}

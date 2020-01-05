@@ -141,7 +141,7 @@ const topicListCall = function (slug, parameters, page = null) {
 
         data = data.topic_data;
         for (let i = 0; i < data.length; i++) {
-          const topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
+          const topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}/${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
           topicList.append(topicItem);
         }
       }
@@ -167,9 +167,8 @@ const dictToParameters = function (dict) {
 };
 
 const leftFramePopulate = function (slug = null, page = null, resetCache = false, searchParameters = null) {
-  // category -> cateogry slug to call topics
-  // extended -> retrieve full data (required for paginated data)
-  // page -> which page to call, use with extended true
+  // category -> cateogry slug (or non_db_categories slug)
+  // page -> which page to call
   // reset_cache -> whether to use cached data while calling
 
   // leftframe behaviour on link clicks on desktop.
@@ -183,26 +182,20 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
   }
 
   let parameters = "";
+  const entryCategories = ["takip", "kenar", "debe"]; // these slugs will have no query strings
 
-  // add parameters for specific slugs
-
-  if (slug === "bugun") {
+  // add query string parameters for specific slugs
+  if ((slug === "bugun") || (slug === "basiboslar")) {
     parameters = "?day=today";
-  }
-
-  if (slug === "caylaklar") {
+  } else if (slug === "caylaklar") {
     parameters = "?a=caylaklar";
-  }
-
-  if (slug === "hayvan-ara") {
+  } else if (slug === "hayvan-ara") {
     if (localStorage.getItem("search_parameters")) {
       parameters = localStorage.getItem("search_parameters");
     } else {
       parameters = searchParameters;
     }
-  }
-
-  if (slug === "tarihte-bugun") {
+  } else if (slug === "tarihte-bugun") {
     yearSelect.css("display", "block");
     const years = ["2020", "2019", "2018"];
     for (const year of years) {
@@ -220,7 +213,13 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
 
     yearSelect.val(selectedYear);
     parameters = `?year=${selectedYear}`;
+  } else {
+    // generic category
+    if (!(entryCategories.includes(slug))) {
+      parameters = "?day=today";
+    }
   }
+
   if (parameters && resetCache) {
     parameters += "&nocache=yes";
   }

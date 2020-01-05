@@ -132,19 +132,31 @@ class TopicList(ListView):
     def get_context_data(self, **kwargs):
         slug = self.kwargs.get("slug")
 
+        # provide parameters for non-database categories
+        link_parameters = {
+            "bugun": "?day=today",
+            "basiboslar": "?day=today",
+            "generic": "?day=today",
+            "tarihte-bugun": f"?year={self.year}",
+            "caylaklar": "?a=caylaklar",
+        }
+
         if slug in NON_DB_CATEGORIES:
             title = NON_DB_SLUGS_SAFENAMES[slug]
+            params = link_parameters.get(slug, "")
         else:
             title = Category.objects.get(slug=slug).name
+            params = link_parameters.get("generic")
 
         context = super().get_context_data(**kwargs)
-        context['page_safename'] = title
-        if self.request.session.get("year"):
-            context["current_year"] = self.request.session.get("year")
-        context['slug_name'] = slug
+
         if slug == "tarihte-bugun":
             context["year_range"] = YEAR_RANGE
+            context["current_year"] = self.year
 
+        context['page_safename'] = title
+        context['slug_name'] = slug
+        context['params'] = params
         context['refresh_count'] = self.refresh_count
         context['slug_identifier'] = self.slug_identifier
         return context
