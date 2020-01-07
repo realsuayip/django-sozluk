@@ -1,3 +1,17 @@
+[0.58.0-dev-pre](2020.01.08)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) In TopicEntryList view, 'following' function used naive datetime
+object, it is now fixed to use tz aware datetime (as it should be)
+2) Change default bodyattr in base.html
+3) Remove redundant bodyattr block in templates (where not needed)
+
+--Deletions--
+None
+
 [0.57.0-dev-pre](2020.01.07)(compatible)
 
 --Additions--

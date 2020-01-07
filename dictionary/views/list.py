@@ -328,7 +328,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
                 date = self.request.GET.get("d")
 
                 try:
-                    last_read = datetime.datetime.fromtimestamp(int(date))
+                    last_read = timezone.make_aware(datetime.datetime.fromtimestamp(int(date)))
                 except (ValueError, TypeError, OSError):
                     last_read = None
 

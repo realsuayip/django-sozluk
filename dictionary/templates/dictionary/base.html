@@ -40,10 +40,20 @@
     <title>{% block title %}{% endblock %} - django sözlük </title>
 </head>
 
-{#body classes explained#}
-{#1) default => when the width is strechted show LEFT FRAME#}
-{#2) topic-entry-view => when streched show CONTENT FRAME#}
-<body {% block bodyattr %}class="default"{% endblock %}>
+{# Body classes explained #}
+{# Some sphaggeti stuff, but 99% of the time, you have nothing to do with body classes below, maybe just has-entries. #}
+
+{# 1) default (standalone use deprecated) => when the width shrinks show LEFT FRAME #}
+{# |=> In order to use default and default only, you should enable left frame loading in mobile views in djdict.js #}
+
+{# 2) topic-entry-view => when shrinked show CONTENT FRAME and RIGHT FRAME (use WITH default) #}
+{# 3) topic-list-view => when shrinked show only CONTENT FRAME WITH left-frame-in embedded (do not use with default) #}
+
+{# 4) has-entries => If the page is supposed to include 'includes/entry.html' be sure to append this class to body #}
+{# |=> It basically adds read more button if entries are too long #}
+
+
+<body {% block bodyattr %}class="default topic-entry-view"{% endblock %}>
 
 
 <header class="page_header">
