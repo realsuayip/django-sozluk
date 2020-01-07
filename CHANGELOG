@@ -1,3 +1,20 @@
+[0.57.0-dev-pre](2020.01.07)(compatible)
+
+--Additions--
+1) New parse_date_or_none utility function that parses date
+strings into django timezone aware datetime objects, also
+allowing timedelta kwargs to calculate deltas.
+
+-- Changes --
+1) Input validaiton for havyan_ara date strings now use newly
+added parse_date_or_none function
+2) In TopicListManager, delete_cache method now appropriately sets
+cache_exists and cache_key attributes to null values in method itself,
+instead of doing it immediately after calling method.
+
+--Deletions--
+None
+
 [0.56.0-dev-pre](2020.01.05)(compatible)
 
 --Additions--

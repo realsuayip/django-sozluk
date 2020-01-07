@@ -1,5 +1,4 @@
 from decimal import Decimal
-from datetime import datetime
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -8,12 +7,10 @@ from django.db.models import Max, Count, Sum, Q, F, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.utils.timezone import make_aware
-
-from dateutil.parser import parse
 
 from ..models import Entry, Topic, Category
 from ..models.managers.topic import TopicManager
+from ..utils import parse_date_or_none
 from ..utils.settings import (TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES,
                               UNCACHED_CATEGORIES)
 
@@ -75,11 +72,9 @@ class TopicListManager:
         if self.slug not in UNCACHED_CATEGORIES:
             self.check_cache()
 
+            # user requests new data, so delete the old cached data
             if not fetch_cached and self.cache_exists:
-                # user requests new data, so delete the old cached data
                 self.delete_cache()
-                self.cache_exists = False
-                self.cache_key = None
 
         if not self.cache_exists:
             if slug in NON_DB_CATEGORIES:
@@ -141,28 +136,20 @@ class TopicListManager:
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
 
+        count_filter = dict(count=Count("entries", distinct=True))
+
         # Input validation
-
-        if from_date:
-            try:
-                parse(from_date)
-            except ValueError:
-                from_date = None
-
-        if to_date:
-            try:
-                parse(to_date)
-            except ValueError:
-                to_date = None
+        from_date = parse_date_or_none(from_date, delta="negative", days=1)
+        to_date = parse_date_or_none(to_date)
 
         if orderding not in ("alpha", "newer", "popular"):
             orderding = "newer"
 
+        # Provide a default search term if none present
         if not keywords and not author_nick and not favorites_only:
             keywords = "akıl fikir"
 
-        count_filter = dict(count=Count("entries", distinct=True))
-
+        # Filtering
         if favorites_only and self.user.is_authenticated:
             qs = qs.filter(entries__favorited_by=self.user)
 
@@ -176,13 +163,12 @@ class TopicListManager:
             qs = qs.filter(title__icontains=keywords)
 
         if from_date:
-            date_from = make_aware(datetime.strptime(from_date, "%d.%m.%Y"))
-            qs = qs.filter(date_created__gte=date_from)
+            qs = qs.filter(date_created__gte=from_date)
 
         if to_date:
-            date_to = make_aware(datetime.strptime(to_date, "%d.%m.%Y"))
-            qs = qs.filter(date_created__lte=date_to)
+            qs = qs.filter(date_created__lte=to_date)
 
+        # Check if qs exists and order qs
         if qs and not isinstance(qs, TopicManager):
             qs = qs.filter(**self.base_filter).annotate(**count_filter)
             if orderding == "alpha":
@@ -237,6 +223,8 @@ class TopicListManager:
     def delete_cache(self):
         if self.cache_exists:
             cache.delete(self.cache_key)
+            self.cache_exists = False
+            self.cache_key = None
             return True
         return False
 
