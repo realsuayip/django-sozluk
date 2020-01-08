@@ -22,7 +22,7 @@ class Message(models.Model):
         self.save()
 
     def __str__(self):
-        return f"{self.pk}"
+        return str(self.pk)
 
 
 class Conversation(models.Model):
