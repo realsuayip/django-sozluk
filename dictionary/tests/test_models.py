@@ -1,13 +1,13 @@
 import datetime
 import time
+
 from decimal import Decimal
+from unittest import mock
 
 from django.db import IntegrityError
 from django.shortcuts import reverse
 from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
-
-import mock
 
 from ..models import (Author, Entry, Topic, Message, Category, Memento, UserVerification, EntryFavorites, Conversation,
                       GeneralReport, TopicFollowing)

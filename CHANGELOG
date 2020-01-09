@@ -1,3 +1,14 @@
+[0.61.0-dev-pre](2020.01.09)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+Use built-in unittest.mock instead of standalone mock package
+
+--Deletions--
+None
+
 [0.60.0-dev-pre](2020.01.09)(incompatible)
 
 --Additions--
@@ -11,7 +22,8 @@ be account deletion feature, which will make use of this backend.
 
 This change is **incompatible** as you need to migrate data from
 django_sessions to dictionary_pairedsessions (if you really care about
-currently stored session data, otherwise nothing needs to be done).
+currently stored session data, otherwise nothing needs to be done except
+new session model migration).
 
 --Deletions--
 None
