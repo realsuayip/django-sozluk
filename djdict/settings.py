@@ -128,6 +128,7 @@ LANGUAGE_CODE = 'tr-tr'
 TIME_ZONE = 'Europe/Istanbul'
 
 SESSION_COOKIE_AGE = 1209600
+SESSION_ENGINE = 'dictionary.backends.session_backend'
 
 # in development environment use Python's local mail server
 EMAIL_HOST = 'localhost'

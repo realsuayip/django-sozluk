@@ -1,3 +1,21 @@
+[0.60.0-dev-pre](2020.01.09)(incompatible)
+
+--Additions--
+New session backend
+New session model
+
+-- Changes --
+1) Instead of django's default session backend use newly written
+session model to pair users with sessinos. In future there will
+be account deletion feature, which will make use of this backend.
+
+This change is **incompatible** as you need to migrate data from
+django_sessions to dictionary_pairedsessions (if you really care about
+currently stored session data, otherwise nothing needs to be done).
+
+--Deletions--
+None
+
 [0.59.0-dev-pre](2020.01.08)(compatible)
 
 --Additions--

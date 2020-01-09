@@ -266,7 +266,7 @@ good-names=i,
            register,
            default_app_config,
            application,
-           attribute-defined-outside-init
+           User
 
 
 
