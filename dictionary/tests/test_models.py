@@ -133,6 +133,10 @@ class AuthorModelTests(TestCase):
         can_send_msg_to_blocked_user = Message.objects.compose(self.author, some_author, "test")
         self.assertEqual(can_send_msg_to_blocked_user, False)
 
+        # No self-messaging allowed
+        can_send_message_to_self = Message.objects.compose(self.author, self.author, "test")
+        self.assertEqual(can_send_message_to_self, False)
+
     def test_follow_all_categories_on_creation(self):
         category_1 = Category.objects.create(name="test")
         Category.objects.create(name="test2")

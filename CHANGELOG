@@ -1,3 +1,15 @@
+[0.62.0-dev-pre](2020.01.11)(compatible)
+
+--Additions--
+1) Model manager tests. (test_model_managers)
+2) Add self-messaging case for test_message_preferences (test_models)
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.61.0-dev-pre](2020.01.09)(compatible)
 
 --Additions--
