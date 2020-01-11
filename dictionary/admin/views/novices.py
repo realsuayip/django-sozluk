@@ -1,17 +1,13 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import admin, messages as notifications
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import permission_required
 from django.core.mail import send_mail
 from django.db.models import Q, Case, When, IntegerField
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.decorators import method_decorator
 from django.views.generic import ListView
-
 
 from ...models import Author, Entry, Message
 from ...utils import log_admin
-from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE, \
-    GENERIC_SUPERUSER_ID
+from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE, GENERIC_SUPERUSER_ID
 
 
 def novice_list(limit=None):
@@ -26,14 +22,11 @@ def novice_list(limit=None):
     return novice_queryset
 
 
-class NoviceList(LoginRequiredMixin, ListView):
+class NoviceList(PermissionRequiredMixin, ListView):
     # View to list top 10 novices.
     model = Author
     template_name = "dictionary/admin/novices.html"
-
-    @method_decorator(permission_required("dictionary.can_activate_user"))
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    permission_required = "dictionary.can_activate_user"
 
     def get_queryset(self):
         return novice_list(10)
@@ -46,7 +39,7 @@ class NoviceList(LoginRequiredMixin, ListView):
         return context
 
 
-class NoviceLookup(LoginRequiredMixin, ListView):
+class NoviceLookup(PermissionRequiredMixin, ListView):
     """
     View to accept or reject a novice application. Lists first 10 entries of the novice user. Users will get mail
     and a message indicating the result of their application. A LogEntry object is created for this action.
@@ -54,11 +47,11 @@ class NoviceLookup(LoginRequiredMixin, ListView):
 
     model = Entry
     template_name = "dictionary/admin/novice_lookup.html"
+    permission_required = "dictionary.can_activate_user"
     context_object_name = "entries"
 
     novice = None
 
-    @method_decorator(permission_required("dictionary.can_activate_user"))
     def dispatch(self, request, *args, **kwargs):
         self.novice = get_object_or_404(Author, username=self.kwargs.get("username"))
         novices = novice_list()
@@ -124,7 +117,7 @@ class NoviceLookup(LoginRequiredMixin, ListView):
 
     def accept_application(self):
         user = self.novice
-        user.application_status = "AP"
+        user.application_status = Author.APPROVED
         user.is_novice = False
         user.save()
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul edildi"
@@ -139,7 +132,7 @@ class NoviceLookup(LoginRequiredMixin, ListView):
     def decline_application(self):
         user = self.novice
         Entry.objects_published.filter(author=user).delete()  # does not trigger model's delete()
-        user.application_status = "OH"
+        user.application_status = Author.ON_HOLD
         user.application_date = None
         user.save()
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul reddedildi"

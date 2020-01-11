@@ -29,7 +29,7 @@
             {% for message in messages %}
                 {% if message.sender == request.user %}
                     <li class="bubble sent">
-                        <p>{{ message.body|formatted|safe }}</p>
+                        <p>{{ message.body|formatted|linebreaksbr }}</p>
                         <time>{{ message.sent_at|naturaltime }}
                             {% if message.read_at %}
                                 <i title="görüldü, {{ message.read_at|naturalday }}" class="material-icons">done_all</i>
@@ -40,7 +40,7 @@
                     </li>
                 {% else %}
                     <li class="bubble recieved">
-                        <p>{{ message.body }}</p>
+                        <p>{{ message.body|formatted|linebreaksbr }}</p>
                         <time>{{ message.sent_at|naturaltime }}</time>
                     </li>
                 {% endif %}

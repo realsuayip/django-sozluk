@@ -336,7 +336,7 @@ class Vote(JsonView):
 
     def cast(self):
         entry, cast_up, cast_down = self.entry, self.cast_up, self.cast_down
-        reduce, increase = VOTE_RATES["reduce"], VOTE_RATES["increase"]
+        decrease, increase = VOTE_RATES["reduce"], VOTE_RATES["increase"]
 
         if self.anonymous:
             k = VOTE_RATES["anonymous_multiplier"]
@@ -361,7 +361,7 @@ class Vote(JsonView):
             if self.already_voted_type == self.vote:
                 # Removes the vote cast.
                 if cast_up:
-                    entry.update_vote(reduce * k)
+                    entry.update_vote(decrease * k)
                 elif cast_down:
                     entry.update_vote(increase * k)
             else:
@@ -369,13 +369,13 @@ class Vote(JsonView):
                 if cast_up:
                     entry.update_vote(increase * k, change=True)
                 if cast_down:
-                    entry.update_vote(reduce * k, change=True)
+                    entry.update_vote(decrease * k, change=True)
         else:
             # First time voting.
             if cast_up:
                 entry.update_vote(increase * k)
             elif cast_down:
-                entry.update_vote(reduce * k)
+                entry.update_vote(decrease * k)
 
         if self.record_vote():
             return True

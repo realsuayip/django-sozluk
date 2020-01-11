@@ -1,0 +1,49 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Giriş</a>
+        &rsaquo;
+        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        &rsaquo;
+        <a href="{% url 'admin:dictionary_topic_changelist' %}">Başlıklar</a>
+        {% block crumbs %}
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p style="background: #79aec8; padding: 1em; color: #fff;">Şu başlıkları taşımayı seçtiniz:</p>
+    {% for source in sources %}
+        <p>
+            <strong>
+                <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.title }}</a>
+            </strong> başlığındaki tüm entry'ler
+            <small>({{ source.entries.count }} entry)</small>
+        </p>
+    {% endfor %}
+
+
+    <hr style="margin: 1rem 0;">
+
+    <form method="post">
+        <div class="form-row field-title">
+            <label for="target_topic">Nereye taşınacak?</label>
+            <input style="width: 100%;" placeholder="hedef başlığın bire bir ismini girin" type="text"
+                   name="target_topic" id="target_topic" required>
+        </div>
+
+
+        <div class="checkbox-row" style="margin: 1rem 0;">
+            <input type="checkbox" name="add_bkz" id="add_bkz" value="yes" checked>
+            <label class="vCheckboxLabel" for="add_bkz">taşıdıktan sonra eski başlıklara bkz ver</label>
+        </div>
+
+
+        <div style="float: left;">
+            {% csrf_token %}
+            <input type="submit" value="başlığı taşı" class="default">
+        </div>
+    </form>
+
+{% endblock %}

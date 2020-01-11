@@ -42,6 +42,7 @@ class Topic(models.Model):
         return f"{self.title}"
 
     class Meta:
+        permissions = (("move_topic", "başlık taşıyabilir"),)
         verbose_name = "başlık"
         verbose_name_plural = "başlıklar"
 

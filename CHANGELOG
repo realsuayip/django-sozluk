@@ -1,3 +1,24 @@
+[0.63.0-dev-pre](2020.01.11)(compatible)
+
+--Additions--
+1) New topic action: TopicMove. It moves all entries in a topic to
+desired topic.
+2) New permission for Topic: move_topic (used in TopicMove)
+
+
+-- Changes --
+1) Use PermissionRequiredMixin in admin.novices views (as it should be)
+2) In NoviceLookup use imported model attribute for novice status instead
+of hard-coding them
+3) Conversation.html now formats message contents
+4) In views.json Vote used 'reduce' as a variable name, which shadowed the
+built-in method. Renamed it to 'decrease'.
+
+
+--Deletions--
+None
+
+
 [0.62.0-dev-pre](2020.01.11)(compatible)
 
 --Additions--
