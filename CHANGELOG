@@ -1,3 +1,19 @@
+[0.64.0-dev-pre](2020.01.12)(compatible)
+
+--Additions--
+1) Date delimiter for TopicMove action
+2) TopicMove action now logs actions
+3) Success message after posting an entry
+
+-- Changes --
+1) Change log_admin's object_repr argument
+2) TopicEntryList's _redirect_to_self now uses topic's
+get_absolute_url method
+
+--Deletions--
+None
+
+
 [0.63.0-dev-pre](2020.01.11)(compatible)
 
 --Additions--

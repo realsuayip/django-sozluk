@@ -13,16 +13,18 @@
 {% endblock %}
 
 {% block content %}
-    <p style="background: #79aec8; padding: 1em; color: #fff;">Şu başlıkları taşımayı seçtiniz:</p>
-    {% for source in sources %}
-        <p>
-            <strong>
-                <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.title }}</a>
-            </strong> başlığındaki tüm entry'ler
-            <small>({{ source.entries.count }} entry)</small>
-        </p>
-    {% endfor %}
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu başlıkları taşımayı seçtiniz:</p>
 
+    <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
+        {% for source in sources %}
+            <p>
+                <strong>
+                    <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.title }}</a>
+                </strong>
+                <small>({{ source.entries.count }} entry)</small>
+            </p>
+        {% endfor %}
+    </div>
 
     <hr style="margin: 1rem 0;">
 
@@ -33,9 +35,23 @@
                    name="target_topic" id="target_topic" required>
         </div>
 
+        <div style="padding: 1rem 0;">
+            <p>Entry'ler için tarih aralığı belirt (opsiyonel):</p>
+            <div class="form-row field-title">
+                <label for="from_date">Şu tarihten: </label>
+                <input placeholder="gg.aa.yyyy ss:dd" type="text"
+                       name="from_date" id="from_date">
+            </div>
+            <br>
+            <div class="form-row field-title">
+                <label for="to_date">Bu tarihe kadar: </label>
+                <input placeholder="gg.aa.yyyy ss:dd" type="text"
+                       name="to_date" id="to_date">
+            </div>
+        </div>
 
         <div class="checkbox-row" style="margin: 1rem 0;">
-            <input type="checkbox" name="add_bkz" id="add_bkz" value="yes" checked>
+            <input type="checkbox" name="add_bkz" id="add_bkz" value="yes">
             <label class="vCheckboxLabel" for="add_bkz">taşıdıktan sonra eski başlıklara bkz ver</label>
         </div>
 

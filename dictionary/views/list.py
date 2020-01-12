@@ -30,7 +30,6 @@ def index(request):
     """
     # todo scrollbar tracking
     # todo karma skor
-    # todo: başlık yönlendirme (türkçe düzeltme gibi)
     """
     return render(request, "dictionary/index.html")
 
@@ -132,14 +131,14 @@ class TopicList(ListView):
     def get_context_data(self, **kwargs):
         slug = self.kwargs.get("slug")
 
-        # provide parameters for non-database categories
+        # provide parameters for non-database categories @formatter:off
         link_parameters = {
             "bugun": "?day=today",
             "basiboslar": "?day=today",
             "generic": "?day=today",
             "tarihte-bugun": f"?year={self.year}",
             "caylaklar": "?a=caylaklar",
-        }
+        }  # @formatter:on
 
         if slug in NON_DB_CATEGORIES:
             title = NON_DB_SLUGS_SAFENAMES[slug]
@@ -256,9 +255,9 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             notifications.info(self.request, "kenara attık onu")
             if self.topic.exists:
                 return self._redirect_to_self()
-
             return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
 
+        notifications.info(self.request, "entry başarıyla statosfere yollandı")
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
     def form_invalid(self, form):
@@ -522,7 +521,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
     def _redirect_to_self(self):
         #  Redirect to topic itself.
-        return redirect(reverse("topic", kwargs={"slug": self.topic.slug}))
+        return redirect(self.topic.get_absolute_url())
 
     def _find_subsequent_page(self, pages_before):
         is_on = pages_before + 1
