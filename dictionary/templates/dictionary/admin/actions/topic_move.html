@@ -28,7 +28,7 @@
 
     <hr style="margin: 1rem 0;">
 
-    <form method="post">
+    <form method="post" onsubmit="document.querySelector('#submit-btn').disabled=true;">
         <div class="form-row field-title">
             <label for="target_topic">Nereye taşınacak?</label>
             <input style="width: 100%;" placeholder="hedef başlığın bire bir ismini girin" type="text"
@@ -58,7 +58,7 @@
 
         <div style="float: left;">
             {% csrf_token %}
-            <input type="submit" value="başlığı taşı" class="default">
+            <input type="submit" id="submit-btn" value="başlığı taşı" class="default">
         </div>
     </form>
 

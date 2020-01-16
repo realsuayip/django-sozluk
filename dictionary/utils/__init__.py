@@ -1,10 +1,13 @@
 import datetime
 
 from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.utils.timezone import make_aware
 
+from django.utils.timezone import make_aware
 from dateutil.parser import parse
+
+from .settings import GENERIC_SUPERUSER_ID
 
 
 # General utilities
@@ -52,3 +55,11 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **kwargs):
         return make_aware(parsed_date)
     except (ValueError, OverflowError):
         return None
+
+
+def get_generic_superuser():
+    return get_user_model().objects.get(pk=GENERIC_SUPERUSER_ID)
+
+
+class InputNotInDesiredRangeError(Exception):
+    pass

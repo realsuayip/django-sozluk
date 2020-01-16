@@ -2,8 +2,8 @@
 {% block title %}{{ topic.title }}{% if entry_permalink %} - #{{ entries.0.pk }}{% endif %}{% if mode == "today" %} -
     bugünün entry'leri{% endif %}{% if mode == "caylaklar" %} - çaylaklar{% endif %}
     {% if mode == "today_in_history" and entries %} - {{ request.GET.year }} yılında bugün{% endif %}
-{% if page_obj.number > 1 %} - sayfa
-    {{ page_obj.number }}{% endif %}{% endblock %}
+    {% if page_obj.number > 1 %} - sayfa
+        {{ page_obj.number }}{% endif %}{% endblock %}
 
 {% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
 {% block content %}
@@ -223,13 +223,14 @@
 
                     <div class="row">
                         <div class="col-6">
-
-                            <div class="custom-control custom-checkbox">
-                                {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
-
-                            </div>
-
+                            {% if not request.user.is_suspended %}
+                                <div class="custom-control custom-checkbox">
+                                    {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
+                                    <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
+                                </div>
+                                {% else %}
+                                <p class="text-danger">entry'niz kenara atılacak.</p>
+                            {% endif %}
                         </div>
                         <div class="col-6">
                             <button type="submit" class="btn btn-django entry_submit">yolla</button>

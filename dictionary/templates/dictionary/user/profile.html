@@ -14,14 +14,21 @@
             {% include "dictionary/includes/block_user_modal.html" %}
 
             <ul class="user-links" data-username="{{ profile.username }}">
-                <li class="follow-user-trigger"><a href="#">{% if profile in request.user.following.all %}takip etme{% else %}takip
+                <li class="follow-user-trigger"><a href="#">{% if profile in request.user.following.all %}takip
+                    etme{% else %}takip
                     et{% endif %}</a></li>
                 <li class="block-user-trigger" data-username="{{ profile.username }}"><a href="#">engelle</a></li>
                 <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a href="#">mesaj gönder</a>
                 </li>
             </ul>
         {% endif %}
-
+        {% if profile.is_suspended %}
+            <div class="alert alert-secondary" role="alert">
+                Hesabınız {{ profile.suspended_until }} tarihine kadar askıya alınmıştır. Ayrıntılı bilgi için size
+                gönderilen özel mesajı kontrol edin. Eğer bir yanlışlık olduğunu düşünüyorsanız <a
+                    href="{% url 'general-report' %}">iletişim formunu</a> kullanarak bizimle iletişime geçin.
+            </div>
+        {% endif %}
 
         <ul class="user-stats">
             <li title="toplam entry sayısı">{{ profile.entry_count }}</li>
@@ -36,6 +43,10 @@
             <li class="profile-badges nobullet ml-2">
                 {% if profile.is_novice %}
                     <a href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
+                {% endif %}
+                {% if profile.is_suspended %}
+                    <a href="{% url 'topic-unicode-url' unicode_string="lanetli" %}"
+                       title="{{ profile.suspended_until|naturaltime }} boyunca">lanetli</a>
                 {% endif %}
             </li>
             {% if novice_queue %}

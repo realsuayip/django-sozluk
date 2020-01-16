@@ -1,3 +1,40 @@
+[0.65.0-dev-pre](2020.01.16)(incompatible)
+
+--Additions--
+1) New IntermediateActionMixin to handle admin actions easily
+and to make new intermediate action creation easier
+2) New IntermediateActionView, inheriths from IntermediateActionMixin
+combined with PermissionRequiredMixin and View (to be used standalone)
+3) New SuspendUser action to suspend users.
+4) New UnsuspendUser action to lift suspension of users.
+5) New get_generic_user function in utils to fetch generic superuser
+6) New suspend_user.html, unsuspend_user.html templates (related to new views)
+7) New InputNotInDesiredRange exception (related to IntermediateActionMixin)
+8) New admin utilities module
+9) New IntermediateActionHandler utility that handles admin action functions
+10) New suspend_user permission
+
+-- Changes --
+1) Rename Author banned_until field to suspended_until **incompatible**
+2) Rename Author is_banned property to is_suspended **incompatible**
+3) TopicMove is now IntermediateActionView
+4) Alter TopicMove post function so that it is more
+legible and somehow more faster.
+5) Alter TopicEntryList so that suspended user cannot
+publish their entries (but they can create drafts)
+6) Alter EntryUpdate so that suspended user cannot
+publish their entries (but they can edit existing drafts)
+7) Alter profile.html to include suspension information
+8) Alter topic_move.html, entry_list.html, entry_update.html
+so that on form submission, the submit button gets disabled
+9) In novices.py use get_generic_superuser instead of fetching
+it manually
+
+--Deletions--
+1) Remove Author model import from utils.settings to prevent
+circular import
+
+
 [0.64.0-dev-pre](2020.01.12)(compatible)
 
 --Additions--

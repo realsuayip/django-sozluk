@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
-from ...utils import log_admin
-from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE, GENERIC_SUPERUSER_ID
+from ...utils import log_admin, get_generic_superuser
+from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE
 
 
 def novice_list(limit=None):
@@ -122,10 +122,9 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user.save()
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul edildi"
         log_admin(admin_info_msg, self.request.user, Author, user)
-        Message.objects.compose(Author.objects.get(id=GENERIC_SUPERUSER_ID), user,
-                                NOVICE_ACCEPTED_MESSAGE.format(user.username))
+        Message.objects.compose(get_generic_superuser(), user, NOVICE_ACCEPTED_MESSAGE.format(user.username))
         send_mail('yazarlık başvurunuz kabul edildi', NOVICE_ACCEPTED_MESSAGE.format(user.username),
-                  'Django Sözlük <correct@email.com>', [user.email], fail_silently=False, )
+                  'Django Sözlük <correct@email.com>', [user.email], fail_silently=False)
         notifications.success(self.request, admin_info_msg)
         return True
 
@@ -137,9 +136,8 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user.save()
         admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul reddedildi"
         log_admin(admin_info_msg, self.request.user, Author, user)
-        Message.objects.compose(Author.objects.get(id=GENERIC_SUPERUSER_ID), user,
-                                NOVICE_REJECTED_MESSAGE.format(user.username))
+        Message.objects.compose(get_generic_superuser(), user, NOVICE_REJECTED_MESSAGE.format(user.username))
         send_mail('yazarlık başvurunuz reddedildi', NOVICE_REJECTED_MESSAGE.format(user.username),
-                  'Django Sözlük <correct@email.com>', [user.email], fail_silently=False, )
+                  'Django Sözlük <correct@email.com>', [user.email], fail_silently=False)
         notifications.success(self.request, admin_info_msg)
         return True

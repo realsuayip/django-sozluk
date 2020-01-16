@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.contrib import messages as notifications
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 
 from .decorators import require_ajax
+from .mixins import IntermediateActionMixin
+
+
+class IntermediateActionView(PermissionRequiredMixin, IntermediateActionMixin, View):
+    pass
 
 
 class JsonView(View):

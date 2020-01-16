@@ -221,14 +221,19 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
     redirect = False
 
     def form_valid(self, form):
-        if self.topic.exists and self.topic.is_banned:
+        if self.topic.exists and self.topic.is_banned:  # Cannot check is_banned before chechking its existance
             # not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, "olmaz ki canım... hürrüpü")
             return self.form_invalid(form)
+
         # Entry creation handling
         entry = form.save(commit=False)
         entry.author = self.request.user
-        is_draft = form.cleaned_data.get("is_draft")
+        is_draft = form.cleaned_data.get("is_draft") # for redirect purposes
+
+        if self.request.user.is_suspended:
+            is_draft = True  # for redirect purposes
+            entry.is_draft = True
 
         if self.topic.exists:
             entry.topic = self.topic
@@ -253,8 +258,6 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
         if is_draft:
             notifications.info(self.request, "kenara attık onu")
-            if self.topic.exists:
-                return self._redirect_to_self()
             return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
 
         notifications.info(self.request, "entry başarıyla statosfere yollandı")

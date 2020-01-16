@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Giriş</a>
+        &rsaquo;
+        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        &rsaquo;
+        <a href="{% url 'admin:dictionary_author_changelist' %}">Yazarlar</a>
+        {% block crumbs %}
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu yazarları askıya almayı seçtiniz:</p>
+    {% load humanize %}
+    <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
+        {% for source in sources %}
+            <p>
+                <strong>
+                    <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.username }}</a>
+                </strong>
+                <small>(son entry: {{ source.last_entry_date|naturaltime }})</small>
+            </p>
+        {% endfor %}
+    </div>
+
+    <hr style="margin: 1rem 0;">
+
+    <form method="post">
+        <div>
+
+            <label for="suspension_time">Askıya alınacak zaman zarfı:</label>
+            <select name="suspension_time" id="suspension_time" style="width: 100%;">
+                <option value="D1" selected>bir gün</option>
+                <option value="W1">bir hafta</option>
+                <option value="W2">iki hafta</option>
+                <option value="M1">bir ay</option>
+                <option value="M3">üç ay</option>
+                <option value="PM">sonsuza kadar</option>
+            </select>
+        </div>
+
+        <label for="information">Kullanıcılara gönderilecek bilgi mesajı:</label>
+        <textarea name="information" cols="40" rows="10" id="information" style="width: 100%;"
+                  placeholder="entry biçimlendirme stilleri kullanılabilir. `hede` gibi." required></textarea>
+
+        {% csrf_token %}
+
+        <input type="submit" value="askıya al" class="default">
+    </form>
+
+
+{% endblock %}

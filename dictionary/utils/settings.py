@@ -2,16 +2,13 @@ import datetime
 from decimal import Decimal
 from django.utils import timezone
 
-from ..models import Author
-
 # just don't change this unless you are living in a planet where a day takes more or less than 24 hours.
 TIME_THRESHOLD_24H = timezone.now() - datetime.timedelta(hours=24)
 
-TOPICS_PER_PAGE_DEFAULT = Author.FIFTY
-ENTRIES_PER_PAGE_DEFAULT = Author.TEN
+TOPICS_PER_PAGE_DEFAULT = 50
+ENTRIES_PER_PAGE_DEFAULT = 10
 ENTRIES_PER_PAGE_PROFILE = 15
 GENERIC_SUPERUSER_ID = 1
-
 
 # category related settings, don't change the keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded. but:
 # if you really have to change that, related files are: views.list.TopicList, views.json.AsyncTopicList,

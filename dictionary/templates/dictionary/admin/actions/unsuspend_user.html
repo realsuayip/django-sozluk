@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Giriş</a>
+        &rsaquo;
+        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        &rsaquo;
+        <a href="{% url 'admin:dictionary_author_changelist' %}">Yazarlar</a>
+        {% block crumbs %}
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu yazarların askıya alınmasını durdurmayı
+        seçtiniz:</p>
+    <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
+        {% for source in sources %}
+            <p>
+                <strong>
+                    <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.username }}</a>
+                </strong>
+                <small>(askıya alınma bitiş tarihi: {{ source.suspended_until }})</small>
+            </p>
+        {% endfor %}
+    </div>
+    <hr style="margin: 1rem 0;">
+    <h4>Emin misiniz? Devam etmek için onaylayın</h4>
+    <div class="delete-confirmation">
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="post" value="yes">
+            <input type="submit" value="Evet, eminim">
+            <a href="{% url 'admin:dictionary_author_changelist' %}" class="button cancel-link">Hayır, beni geri
+                götür</a>
+        </form>
+    </div>
+{% endblock %}

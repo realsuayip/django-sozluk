@@ -48,14 +48,17 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         entry = form.save(commit=False)
 
         if entry_is_draft_initial:
-            # updating draft
-            entry.date_edited = None
-            if not entry.is_draft:  # entry is published by user
+            # Updating never-published entry (draft)
+            if not entry.is_draft:  # Entry is being published by user
+                # Suspended users can't publish their drafts
+                if self.request.user.is_suspended:
+                    entry.is_draft = True
                 entry.date_created = timezone.now()
         else:
+            # Updating published entry
             entry.is_draft = False
-            # updating published entry
             entry.date_edited = timezone.now()
+
         entry.save()
         return HttpResponseRedirect(self.get_success_url())
 

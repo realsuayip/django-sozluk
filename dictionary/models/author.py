@@ -53,15 +53,14 @@ class Author(AbstractUser):
     username = models.CharField(_('username'), max_length=35, unique=True, help_text=_(
         'şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez'),
                                 validators=[nick_validator], error_messages={'unique': _("bu nick kapılmış"), }, )
-
     birth_date = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
     is_novice = models.BooleanField(default=True, verbose_name="çaylak")
     is_active = models.BooleanField(default=False, verbose_name="aktif")
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
-    last_activity = models.DateTimeField(null=True, blank=True, default=None)  # NOT NULL
-    banned_until = models.DateTimeField(null=True, blank=True, default=None)
+    last_activity = models.DateTimeField(null=True, blank=True, default=None)
+    suspended_until = models.DateTimeField(null=True, blank=True, default=None)
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
     blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
     entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
@@ -93,7 +92,7 @@ class Author(AbstractUser):
 
     class Meta:
         # Superusers need to have this permission to accept a novice as an author.
-        permissions = (("can_activate_user", "çaylak lisesine erişim"),)
+        permissions = (("can_activate_user", "çaylak lisesine erişim"), ("suspend_user", "kullanıcıyı askıya alma"))
         verbose_name = "yazar"
         verbose_name_plural = "yazarlar"
 
@@ -140,6 +139,12 @@ class Author(AbstractUser):
                 expiration_date__gte=timezone.now() - datetime.timedelta(hours=24)).exists():
             return False
         return True
+
+    @property
+    def is_suspended(self):
+        if self.suspended_until and self.suspended_until > timezone.now():
+            return True
+        return False
 
 
 class EntryFavorites(models.Model):

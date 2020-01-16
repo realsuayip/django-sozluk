@@ -3,8 +3,10 @@
 {% block content %}
     {% load filters %}
     {% load widget_tweaks %}
-    <h4 style="font-weight: 600;"><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></h4>
-    <br>
+    <h4 style="font-weight: 700;"><a
+            href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a>
+        <small><strong>#{{ entry.pk }}</strong></small></h4>
+    <hr>
 
     <section class="user-comments">
         <div class="editor-buttons">
@@ -25,11 +27,10 @@
 
             <div class="row">
                 <div class="col-6">
-                    {% if entry.is_draft %}
+                    {% if entry.is_draft and not request.user.is_suspended %}
                         <div class="custom-control custom-checkbox">
                             {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
                             <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
-
                         </div>
 
 
@@ -37,14 +38,13 @@
                     {% else %}
                         <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
                     {% endif %}
+
                 </div>
                 <div class="col-6">
                     <button type="submit" class="btn btn-django entry_submit">yolla</button>
                 </div>
             </div>
-            {#                    <input type="hidden" name="next" value="{{ request.path }}">#}
         </form>
-
 
     </section>
 {% endblock %}
