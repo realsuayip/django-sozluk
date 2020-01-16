@@ -1,3 +1,15 @@
+[0.66.0-dev-pre](2020.01.17)(compatible)
+
+--Additions--
+1) Add permission for topic move action
+
+-- Changes --
+1) Use IntermediateActionHandler for topic move (as it should be)
+
+--Deletions--
+None
+
+
 [0.65.0-dev-pre](2020.01.16)(incompatible)
 
 --Additions--

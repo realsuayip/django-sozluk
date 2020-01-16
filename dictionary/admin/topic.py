@@ -1,9 +1,9 @@
 from django.contrib import admin
-from django.shortcuts import reverse, redirect
 from django.urls import path
 
 from ..admin.views.topic import TopicMove
 from ..models import Topic
+from ..utils.admin import IntermediateActionHandler
 
 
 @admin.register(Topic)
@@ -20,8 +20,18 @@ class TopicAdmin(admin.ModelAdmin):
         custom_urls = [path("actions/move/", self.admin_site.admin_view(TopicMove.as_view()), name="topic-move")]
         return custom_urls + urls
 
-    def move_topic(self, request, queryset):
-        source_list = '-'.join([str(value["id"]) for value in queryset.values("id")])
-        return redirect(reverse("admin:topic-move") + f"?source_list={source_list}")
+    # Custom permissions for action
+    def has_move_topic_permission(self, request):
+        """Does the user have the move_topic permission?"""
+        return request.user.has_perm("dictionary.move_topic")
 
+    # Actions
+    def move_topic(self, request, queryset):
+        action = IntermediateActionHandler(queryset, "admin:topic-move")
+        return action.redirect_url
+
+    # Short descriptions
     move_topic.short_description = "Seçili başlıklardaki entry'leri taşı"
+
+    # Permissions
+    move_topic.allowed_permissions = ["move_topic"]
