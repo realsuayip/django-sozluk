@@ -1,10 +1,11 @@
-[0.66.0-dev-pre](2020.01.17)(compatible)
+[0.66.0-dev-pre, 0.66.1-dev-pre](2020.01.17)(compatible)
 
 --Additions--
 1) Add permission for topic move action
 
 -- Changes --
 1) Use IntermediateActionHandler for topic move (as it should be)
+2) Fix a bug where users could saw each others suspension info
 
 --Deletions--
 None
