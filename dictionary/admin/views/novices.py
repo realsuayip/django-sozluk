@@ -6,7 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
-from ...utils import log_admin, get_generic_superuser
+from ...utils import get_generic_superuser
+from ...utils.admin import log_admin
 from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE
 
 

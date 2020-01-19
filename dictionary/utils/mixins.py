@@ -1,8 +1,8 @@
-from django.contrib import admin, messages as notifications
+from django.contrib import admin
+from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
-from django.utils.functional import cached_property
 
 from . import InputNotInDesiredRangeError
 
@@ -39,13 +39,12 @@ class IntermediateActionMixin:
 
         return render(request, self.template_name, context)
 
-    @cached_property
-    def object_list(self):
+    def get_object_list(self):
         """
-        If you alter the objects in the objects_list in a way that the current get_queryset method won't fetch them
-        anymore, cast objest_list in a python list get the former object_list to work on.
+        Not static. If you alter the objects in a way that the current get_queryset method won't fetch them anymore,
+        cast this method into a list to access the objects that are updated, after updating them.
         """
-        if not self.get_queryset().count():
+        if not self.get_queryset().exists():
             raise self.model.DoesNotExist
         return self.get_queryset()
 
@@ -73,7 +72,7 @@ class IntermediateActionMixin:
     def get_context_data(self):
         admin_context = admin.site.each_context(self.request)
         meta = {"title": self.page_title}
-        source = {"sources": self.object_list}
+        source = {"sources": self.get_object_list()}
         context = {**admin_context, **meta, **source}
         return context
 

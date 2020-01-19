@@ -1,3 +1,21 @@
+[0.67.0-dev-pre](2020.01.19)(compatible)
+
+--Additions--
+1) New logentry_instance, logentry_bulk_create functions to
+bulk admin logs
+
+-- Changes --
+1) Use more performant counterparts for updating and creating
+bulk objects in action related views
+2) Alter IntermediateAcionMixin's object_list into get_object_list()
+3) Move log_admin into utils.admin
+
+--Deletions--
+1) Remove message sending in TopicMove action as it takes
+too much time. It should be implemented as a background action, but
+setting up celery is too much work so, I laid aside this feature.
+
+
 [0.66.0-dev-pre, 0.66.1-dev-pre](2020.01.17)(compatible)
 
 --Additions--
@@ -5,7 +23,7 @@
 
 -- Changes --
 1) Use IntermediateActionHandler for topic move (as it should be)
-2) Fix a bug where users could saw each others suspension info
+2) Fix a bug where users could see each others suspension info
 
 --Deletions--
 None

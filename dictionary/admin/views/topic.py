@@ -2,16 +2,16 @@ from django.contrib import messages as notifications
 from django.db.models import Count
 from django.shortcuts import redirect
 
-from ...models import Author, Entry, Topic, Message
-from ...utils import parse_date_or_none, log_admin, get_generic_superuser
+from ...models import Author, Entry, Topic
+from ...utils import get_generic_superuser, parse_date_or_none
+from ...utils.admin import log_admin
 from ...utils.views import IntermediateActionView
 
 
 class TopicMove(IntermediateActionView):
     """
-    Move entries in selected range of (a) topic(s) to another topic. Send a informative message to users for each entry
-    they have in that topic. If wanted, include a reference for new topic in the old topic(s). An admin log is created
-    for this action.
+    Move entries in (selected range of) (a) topic(s) to another topic. If wanted, include a reference for new topic in
+    (the) old topic(s). An admin log -for target topic- is created for this action.
     """
     max_input = 15
     permission_required = ('dictionary.move_topic', 'dictionary.change_topic')
@@ -34,7 +34,7 @@ class TopicMove(IntermediateActionView):
             target_object = Topic.objects.get(title=target_topic)
             generic_superuser = get_generic_superuser()
 
-            topic_list_raw = list(self.object_list)
+            topic_list_raw = list(self.get_object_list())
             entries_list = Entry.objects_published.filter(topic__in=topic_list_raw)
 
             if from_date:
@@ -43,18 +43,8 @@ class TopicMove(IntermediateActionView):
             if to_date:
                 entries_list = entries_list.filter(date_created__lte=to_date)
 
-            entries_list_raw = list(entries_list)
-            entries_count = len(entries_list_raw)
-
-            for entry in entries_list_raw:
-                # Inform user that their entries have been moved to another topic
-                msg = f"`{entry.topic.title}` başlığındaki " \
-                      f"`#{entry.pk}` numaralı entry'niz `{target_object.title}` başlığına taşındı"
-                Message.objects.compose(generic_superuser, entry.author, msg)
-
-                # Migrate entry
-                entry.topic = target_object
-                entry.save()
+            entries_count = entries_list.count()
+            entries_list.update(topic=target_object)  # Bulk update, does not call save()
 
             # Include an informative entry on old topic to indicate the new topic
             if add_bkz:

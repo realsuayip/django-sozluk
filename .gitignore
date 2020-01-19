@@ -131,4 +131,8 @@ package-lock.json
 # datadump
 datadump.json
 
+#virtual environment
+
+venv/
+
 # End of https://www.gitignore.io/api/django
