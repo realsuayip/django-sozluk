@@ -5,10 +5,11 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from ..models import UserVerification
+
 
 DOMAIN = "127.0.0.1:8000"
 PROTOCOL = "http"

@@ -4,14 +4,14 @@ from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import Http404
-from django.shortcuts import redirect, get_object_or_404
-from django.views.generic import DetailView, ListView
-from django.views.generic.edit import FormMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import FormMixin
 
-from ..forms.edit import SendMessageForm, MementoForm
-from ..models import Entry, Author, Message, Conversation, Memento
+from ..forms.edit import MementoForm, SendMessageForm
+from ..models import Author, Conversation, Entry, Memento, Message
 from ..utils.mixins import FormPostHandlerMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 

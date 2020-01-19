@@ -8,8 +8,8 @@ from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from .entry import Entry
 from .category import Category
+from .entry import Entry
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):

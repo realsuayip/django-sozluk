@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms.widgets import SelectDateWidget
 
-from ..models import Author, Entry, Message, Memento
+from ..models import Author, Entry, Memento, Message
 
 
 class PreferencesForm(UserChangeForm):

@@ -1,14 +1,15 @@
+from django.contrib import admin
+from django.contrib import messages as notifications
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib import admin, messages as notifications
 from django.core.mail import send_mail
-from django.db.models import Q, Case, When, IntegerField
+from django.db.models import Case, IntegerField, Q, When
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
 from ...utils import get_generic_superuser
 from ...utils.admin import log_admin
-from ...utils.settings import TIME_THRESHOLD_24H, NOVICE_REJECTED_MESSAGE, NOVICE_ACCEPTED_MESSAGE
+from ...utils.settings import NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE, TIME_THRESHOLD_24H
 
 
 def novice_list(limit=None):

@@ -7,8 +7,9 @@ from django.db.models import F
 from django.shortcuts import reverse
 from django.utils import timezone
 
-from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 from ..utils import turkish_lower
+from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
+
 
 ENTRY_RE = re.compile(r"""^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#₺&@()_+=':%/",.!?*~`\[\]{}<>^;\\|-]+$""", re.MULTILINE)
 ENTRY_VALIDATOR = RegexValidator(ENTRY_RE, message="bu entry geçerisz karakterler içeriyor")

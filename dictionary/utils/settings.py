@@ -1,6 +1,8 @@
 import datetime
 from decimal import Decimal
+
 from django.utils import timezone
+
 
 # just don't change this unless you are living in a planet where a day takes more or less than 24 hours.
 TIME_THRESHOLD_24H = timezone.now() - datetime.timedelta(hours=24)

@@ -4,8 +4,8 @@ from django.urls import path
 
 from ..models import Author
 from ..utils.admin import IntermediateActionHandler
-from .views.novices import NoviceList, NoviceLookup
 from .views.author import SuspendUser, UnsuspendUser
+from .views.novices import NoviceList, NoviceLookup
 
 
 @admin.register(Author)

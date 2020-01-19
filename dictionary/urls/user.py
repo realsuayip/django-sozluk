@@ -2,7 +2,8 @@ from django.urls import path
 
 from ..views.detail import Chat, UserProfile
 from ..views.edit import UserPreferences
-from ..views.list import PeopleList, ConversationList, ActivityList
+from ..views.list import ActivityList, ConversationList, PeopleList
+
 
 urlpatterns_user = [
     # user related urls

@@ -1,6 +1,8 @@
 from django import template
 from django.urls import reverse
+
 from ..models import TopicFollowing
+
 
 register = template.Library()
 

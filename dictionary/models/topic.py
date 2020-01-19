@@ -1,15 +1,15 @@
-from django.core.validators import RegexValidator, MaxLengthValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.shortcuts import reverse
-
 from uuslug import uuslug
 
+from ..utils import turkish_lower
 from .author import Author
 from .category import Category
 from .entry import Entry
 from .managers.topic import TopicManager, TopicManagerPublished
-from ..utils import turkish_lower
+
 
 TOPIC_TITLE_VALIDATORS = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/",.!?~\[\]{}<>^;\\|-]+$""",
                                          message="bu başlık geçerisz karakterler içeriyor"),

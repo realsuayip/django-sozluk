@@ -1,8 +1,8 @@
-from django.contrib.auth.views import (PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView,
-                                       PasswordResetConfirmView)
+from django.contrib.auth.views import (PasswordResetCompleteView, PasswordResetConfirmView, PasswordResetDoneView,
+                                       PasswordResetView)
 from django.urls import path
 
-from ..views.auth import Login, Logout, SignUp, ConfirmEmail, ResendEmailConfirmation, ChangePassword, ChangeEmail
+from ..views.auth import ChangeEmail, ChangePassword, ConfirmEmail, Login, Logout, ResendEmailConfirmation, SignUp
 
 # @formatter:off
 urlpatterns_password_reset = [

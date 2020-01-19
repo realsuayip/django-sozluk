@@ -1,12 +1,12 @@
 from django.contrib import admin
 
+from ..models import Conversation, Memento, Message, TopicFollowing, UserVerification
 from .author import AuthorAdmin
 from .category import CategoryAdmin
-from .general_report import GeneralReportAdmin
 from .entry import EntryAdmin
+from .general_report import GeneralReportAdmin
 from .topic import TopicAdmin
 
-from ..models import Message, Conversation, TopicFollowing, Memento, UserVerification
 
 admin.site.index_template = "dictionary/admin/index.html"
 admin.site.register(Message)

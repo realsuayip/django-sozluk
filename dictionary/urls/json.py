@@ -1,7 +1,8 @@
 from django.urls import path
 
-from ..views.json import AsyncTopicList, AutoComplete, UserAction, EntryAction, TopicAction, ComposeMessage, Vote, \
-    CategoryAction
+from ..views.json import (AsyncTopicList, AutoComplete, CategoryAction, ComposeMessage, EntryAction, TopicAction,
+                          UserAction, Vote)
+
 
 urlpatterns_json = [
     path('entry/vote/', Vote.as_view(), name="vote"),

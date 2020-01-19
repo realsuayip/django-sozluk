@@ -1,6 +1,6 @@
-from django.http import Http404
 from django.db import models
-from django.db.models import Q, Count
+from django.db.models import Count, Q
+from django.http import Http404
 
 from ...models import Entry
 from ...utils import turkish_lower

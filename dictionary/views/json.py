@@ -3,9 +3,9 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
-from ..models import Author, Entry, Category, Topic, TopicFollowing, Message
+from ..models import Author, Category, Entry, Message, Topic, TopicFollowing
 from ..utils.managers import TopicListManager
-from ..utils.settings import YEAR_RANGE, VOTE_RATES, TOPICS_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES
+from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, TOPICS_PER_PAGE_DEFAULT, VOTE_RATES, YEAR_RANGE
 from ..utils.views import JsonView
 
 

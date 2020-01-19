@@ -6,24 +6,23 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Q, F, Max, Case, When, IntegerField
+from django.db.models import Case, F, IntegerField, Max, Q, When
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
-from django.views.generic import ListView, TemplateView
-from django.views.generic.edit import FormMixin
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-
+from django.views.generic import ListView, TemplateView
+from django.views.generic.edit import FormMixin
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
-from ..models import Author, Entry, Topic, Category, Conversation, TopicFollowing, Message
+from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
 from ..utils.managers import TopicListManager
 from ..utils.mixins import FormPostHandlerMixin
-from ..utils.settings import (TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, ENTRIES_PER_PAGE_DEFAULT, NON_DB_CATEGORIES,
-                              TIME_THRESHOLD_24H, NON_DB_SLUGS_SAFENAMES, LOGIN_REQUIRED_CATEGORIES)
+from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
+                              NON_DB_SLUGS_SAFENAMES, TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
 
 
 def index(request):
@@ -229,7 +228,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         # Entry creation handling
         entry = form.save(commit=False)
         entry.author = self.request.user
-        is_draft = form.cleaned_data.get("is_draft") # for redirect purposes
+        is_draft = form.cleaned_data.get("is_draft")  # for redirect purposes
 
         if self.request.user.is_suspended:
             is_draft = True  # for redirect purposes

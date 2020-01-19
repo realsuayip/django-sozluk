@@ -1,12 +1,13 @@
-import re
 import calendar
-from django import template
-from django.utils.html import escape, mark_safe
-from django.core.validators import ValidationError
+import re
 
+from django import template
+from django.core.validators import ValidationError
+from django.utils.html import escape, mark_safe
 from uuslug import slugify
 
 from ..models import Topic
+
 
 register = template.Library()
 

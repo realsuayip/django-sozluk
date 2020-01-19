@@ -1,17 +1,17 @@
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
-from django.db.models import Max, Count, Sum, Q, F, Value
+from django.core.exceptions import PermissionDenied
+from django.db.models import Count, F, Max, Q, Sum, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from ..models import Entry, Topic, Category
+from ..models import Category, Entry, Topic
 from ..models.managers.topic import TopicManager
 from ..utils import parse_date_or_none
-from ..utils.settings import (TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, NON_DB_CATEGORIES, LOGIN_REQUIRED_CATEGORIES,
+from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT,
                               UNCACHED_CATEGORIES)
 
 

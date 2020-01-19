@@ -3,6 +3,7 @@ from django.contrib.sessions.backends.db import SessionStore as DBStore
 from django.contrib.sessions.base_session import AbstractBaseSession
 from django.db import models
 
+
 User = get_user_model()
 
 

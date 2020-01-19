@@ -1,12 +1,12 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponseRedirect
-from django.views.generic import UpdateView
 from django.urls import reverse
 from django.utils import timezone
+from django.views.generic import UpdateView
 
 from ..forms.edit import EntryForm, PreferencesForm
-from ..models import Entry, Author
+from ..models import Author, Entry
 
 
 class UserPreferences(LoginRequiredMixin, UpdateView):

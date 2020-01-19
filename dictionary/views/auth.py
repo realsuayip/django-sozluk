@@ -2,14 +2,14 @@ from django.contrib import messages as notifications
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.shortcuts import render, redirect
-from django.views.generic import View
-from django.views.generic.edit import FormView
+from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import urlsafe_base64_decode
+from django.views.generic import View
+from django.views.generic.edit import FormView
 
-from ..forms.auth import SignUpForm, LoginForm, ChangeEmailForm, ResendEmailForm
-from ..models import UserVerification, Author
+from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm
+from ..models import Author, UserVerification
 from ..utils.email import send_email_confirmation
 from ..utils.settings import TIME_THRESHOLD_24H
 
