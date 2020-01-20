@@ -58,6 +58,7 @@
 
 <header class="page_header">
 
+<div class="container">
     <div class="small-device-alert">cihaz çok küçük!</div>
 
     <div class="top-bar">
@@ -171,6 +172,7 @@
             {% include "dictionary/includes/header_links/bugun.html" %}
             {% include "dictionary/includes/header_links/gundem.html" %}
             {% include "dictionary/includes/header_links/debe.html" %}
+            {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
 
             {% if request.user.is_authenticated %}
                 {% include "dictionary/includes/header_links/takip.html" %}
@@ -181,7 +183,6 @@
 
                 <div class="usermenu-dropdown dropdown-menu dropdown-menu-right"
                      aria-labelledby="usermenu_mobile">
-                    <a href="{% url "topic_list" slug="tarihte-bugun" %}" class="dropdown-item">tarihte bugün</a>
                     <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
                     <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
                     <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
@@ -220,12 +221,7 @@
                 </li>
             {% endif %}
 
-            <li data-category="tarihte-bugun" data-safename="tarihte bugün"
-                class="nav-item">
-                <a title="geçen yıllarda bu zamanlar ne denmiş?" href="{% url "topic_list" slug="tarihte-bugun" %}">tarihte
-                    bugün</a>
-            </li>
-
+           {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
 
             {% for category in nav_categories|slice:":4" %}
                 <li class="nav-item" data-category="{{ category.slug }}"
@@ -257,13 +253,15 @@
         </ul>
 
     </nav>
+</div>
+
 </header>
 
 
 <!-- content -->
 
 
-<div class="container-fluid content">
+<div class="container content">
 
 
     <!-- entry list -->

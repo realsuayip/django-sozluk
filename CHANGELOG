@@ -1,3 +1,20 @@
+[0.68.0-dev-pre](2020.01.20)(compatible)
+
+--Additions--
+1) Add tarihte-bugun link for mobile views.
+
+-- Changes --
+1) Adjusted frontend. Set site width to 1240px, 740px
+is for content and 250px for each sidebar at maximum
+viewport. Class 'content' scales according to viewport at
+smaller screen sides. Right frame now returns to bottom at
+1092px. With this change, the site does not behave like
+sphagetti in larger screens.
+
+--Deletions--
+None
+
+
 [0.67.0-dev-pre](2020.01.19)(compatible)
 
 --Additions--

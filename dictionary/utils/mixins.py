@@ -20,7 +20,7 @@ class FormPostHandlerMixin:
 class IntermediateActionMixin:
     model = None
     max_input = 500
-    page_title = f"Intermediate Action"
+    page_title = "Intermediate Action"
     template_name = "provide_template_name.html"
 
     def get(self, request):
