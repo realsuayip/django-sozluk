@@ -28,7 +28,7 @@
             <ul class="people-list">
                 {% for author in blocked %}
 
-                    <li><a href="#" class="unblock-user-trigger"
+                    <li><a role="button" tabindex="0" class="unblock-user-trigger"
                            data-username="{{ author.username }}">{{ author.username }}</a></li>
 
                 {% endfor %}

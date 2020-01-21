@@ -14,11 +14,11 @@
             {% include "dictionary/includes/block_user_modal.html" %}
 
             <ul class="user-links" data-username="{{ profile.username }}">
-                <li class="follow-user-trigger"><a href="#">{% if profile in request.user.following.all %}takip
+                <li class="follow-user-trigger"><a role="button" tabindex="0">{% if profile in request.user.following.all %}takip
                     etme{% else %}takip
                     et{% endif %}</a></li>
-                <li class="block-user-trigger" data-username="{{ profile.username }}"><a href="#">engelle</a></li>
-                <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a href="#">mesaj gönder</a>
+                <li class="block-user-trigger" data-username="{{ profile.username }}"><a role="button" tabindex="0">engelle</a></li>
+                <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a role="button" tabindex="0">mesaj gönder</a>
                 </li>
             </ul>
         {% endif %}
@@ -80,7 +80,7 @@
                 <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
 
                 <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
-                    <a class="expand" href="#" role="button" id="dropdownMenuLink"
+                    <a class="expand" role="button" tabindex="0" id="dropdownMenuLink"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         istatistikler
                     </a>

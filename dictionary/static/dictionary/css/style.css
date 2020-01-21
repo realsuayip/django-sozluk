@@ -202,6 +202,7 @@ nav.sub-nav ul .more_tags_dropdown,
 .left-frame {
     height: calc(100% - 9rem);
     overflow-y: scroll;
+    overflow-x: hidden;
     position: fixed;
     width: 250px;
     padding: 0 .5em;
@@ -685,6 +686,9 @@ ul.topics-stdalone a {
     display: block;
 }
 
+a[role=button] {
+    cursor: pointer;
+}
 
 body a {
     color: #16784f;
@@ -716,7 +720,6 @@ section.user-comments .editor-buttons button.add-code {
     -moz-border-radius: 4px;
     border-radius: 4px;
     border: 1px solid #ffffff;
-    outline: none;
 }
 
 section.user-comments .editor-buttons button.add-code:hover {
@@ -1392,6 +1395,11 @@ footer.body-footer > ul {
         margin-left: calc(250px + 1em);
         width: calc(100% - 250px - 2em);
     }
+
+    footer.body-footer > ul {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
 }
 
 
@@ -1519,12 +1527,6 @@ footer.body-footer > ul {
     .stretch-mobile {
         width: 100%;
     }
-
-    footer.body-footer > ul {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-
 }
 
 /** MOBILE VERSION SWITCH END **/

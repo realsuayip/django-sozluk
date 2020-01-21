@@ -1,3 +1,18 @@
+[0.69.0-dev-pre](2020.01.21)(compatible)
+
+--Additions--
+1) Add tarihte-bugun link for mobile views.
+
+-- Changes --
+1) Adjusted frontend. Adjust any links with href "#" and
+treat them as a button to improve accessibility and ux.
+Right frame now behaves more responsively. Left frame
+has no horizontal scrollbar.
+
+
+--Deletions--
+None
+
 [0.68.0-dev-pre](2020.01.20)(compatible)
 
 --Additions--

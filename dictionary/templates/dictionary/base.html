@@ -58,202 +58,202 @@
 
 <header class="page_header">
 
-<div class="container">
-    <div class="small-device-alert">cihaz çok küçük!</div>
+    <div class="container">
+        <div class="small-device-alert">cihaz çok küçük!</div>
 
-    <div class="top-bar">
+        <div class="top-bar">
 
-        <!--- logo -->
-        <div class="logo">
-            <a href="{% url 'home' %}"></a>
-        </div>
+            <!--- logo -->
+            <div class="logo">
+                <a href="{% url 'home' %}"></a>
+            </div>
 
 
-        <form method="GET" class="header-search-form{% if request.user.is_authenticated %} logged-in{% endif %}"
-              action="{% url 'topic-search' %}" id="header_search_form">
-            <div class="input-group searchbox">
-                <input name="q" type="text" placeholder="başlık, #entry ya da @yazar"
-                       class="searchbox-text form-control"
-                       id="header_search" form="header_search_form">
-                <div class="input-group-append">
-                    <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only">hayvan ara</span>
-                    </button>
+            <form method="GET" class="header-search-form{% if request.user.is_authenticated %} logged-in{% endif %}"
+                  action="{% url 'topic-search' %}" id="header_search_form">
+                <div class="input-group searchbox">
+                    <input name="q" type="text" placeholder="başlık, #entry ya da @yazar"
+                           class="searchbox-text form-control"
+                           id="header_search" form="header_search_form">
+                    <div class="input-group-append">
+                        <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">hayvan ara</span>
+                        </button>
 
-                    <button class="btn searchbtn" type="submit" id="button-addon2" title="ara beni ara yar"><i
-                            class="material-icons">
-                        search
-                    </i></button>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search px-3 py-2"
-                         id="dropdown_detailed_search">
+                        <button class="btn searchbtn" type="submit" id="button-addon2" title="ara beni ara yar"><i
+                                class="material-icons">
+                            search
+                        </i></button>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search px-3 py-2"
+                             id="dropdown_detailed_search">
 
-                        {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
-                        <div class="form-group">
-                            <button type="button" class="btn btn-django stretch"
-                                    id="perform_advanced_search">çok güzel ara
-                            </button>
+                            {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
+                            <div class="form-group">
+                                <button type="button" class="btn btn-django stretch"
+                                        id="perform_advanced_search">çok güzel ara
+                                </button>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item search-closer" id="close_search_dropdown">boşver</a>
                         </div>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item search-closer" id="close_search_dropdown">boşver</a>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
 
-        <!--- user navigation -->
+            <!--- user navigation -->
 
 
-        {% if request.user.is_authenticated %}
-            <ul class="user-navigation">
+            {% if request.user.is_authenticated %}
+                <ul class="user-navigation">
 
-                <li><a class="nav-quicklink" href="{{ request.user.get_absolute_url }}">
-                    <i class="material-icons">
-                        person
-                    </i><span>ben</span></a>
-                </li>
-
-
-                <li {% if user_has_unread_messages %}class="new"{% endif %}>
-                    <a class="nav-quicklink" href="{% url 'messages' %}">
+                    <li><a class="nav-quicklink" href="{{ request.user.get_absolute_url }}">
                         <i class="material-icons">
-                            chat_bubble_outline
-                        </i><span>mesaj</span></a>
-                </li>
-
-                <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
-                                                                                 href="{% url 'activity' %}">
-                    <i class="material-icons">
-                        timeline
-                    </i><span>olay</span></a>
-                </li>
+                            person
+                        </i><span>ben</span></a>
+                    </li>
 
 
-                <li class="desktop-only">
-                    <a data-toggle="dropdown" href="#">
-                        <i class="material-icons">more_horiz</i></a>
+                    <li {% if user_has_unread_messages %}class="new"{% endif %}>
+                        <a class="nav-quicklink" href="{% url 'messages' %}">
+                            <i class="material-icons">
+                                chat_bubble_outline
+                            </i><span>mesaj</span></a>
+                    </li>
+
+                    <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
+                                                                                     href="{% url 'activity' %}">
+                        <i class="material-icons">
+                            timeline
+                        </i><span>olay</span></a>
+                    </li>
 
 
-                    <div class="user-dropdown dropdown-menu dropdown-menu-right"
-                         aria-labelledby="user-dropdown">
-                        <a class="dropdown-item" href="{% url 'category_list' %}">kanallar</a>
-                        <a class="dropdown-item" href="{% url 'user_preferences' %}">ayarlar</a>
-                        <a class="dropdown-item" href="{% url 'people' %}">takip/engellenmiş</a>
+                    <li class="desktop-only">
+                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true">
+                            <i class="material-icons">more_horiz</i></a>
+
+
+                        <div class="user-dropdown dropdown-menu dropdown-menu-right"
+                             aria-labelledby="user-dropdown">
+                            <a class="dropdown-item" href="{% url 'category_list' %}">kanallar</a>
+                            <a class="dropdown-item" href="{% url 'user_preferences' %}">ayarlar</a>
+                            <a class="dropdown-item" href="{% url 'people' %}">takip/engellenmiş</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'logout' %}">terk</a>
+                        </div>
+
+                    </li>
+
+                </ul>
+
+
+            {% else %}
+                <nav class="usermenu">
+                    <ul>
+                        <li>
+                            <a href="{% url 'login' %}">giriş yap</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'register' %}">kayıt ol</a>
+                        </li>
+                    </ul>
+                </nav>
+
+            {% endif %}
+
+        </div>
+
+        <!--- categories and mobile navigation -->
+        <nav class="sub-nav">
+
+            <ul class="mobile-only">
+                {% include "dictionary/includes/header_links/bugun.html" %}
+                {% include "dictionary/includes/header_links/gundem.html" %}
+                {% include "dictionary/includes/header_links/debe.html" %}
+                {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
+
+                {% if request.user.is_authenticated %}
+                    {% include "dictionary/includes/header_links/takip.html" %}
+
+                    <li id="usermenu_mobile" data-toggle="dropdown">
+                        <i class="material-icons">more_horiz</i>
+                    </li>
+
+                    <div class="usermenu-dropdown dropdown-menu dropdown-menu-right"
+                         aria-labelledby="usermenu_mobile">
+                        <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
+                        <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
+                        <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
+                        <a href="{% url "topic_list" slug="hayvan-ara" %}" class="dropdown-item">hayvan ara</a>
+                        <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
+                        <a href="{% url "people" %}" class="dropdown-item">takip/engellenmiş</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'logout' %}">terk</a>
+                        <a href="{% url "logout" %}" class="dropdown-item">terk</a>
                     </div>
 
-                </li>
-
-            </ul>
-
-
-        {% else %}
-            <nav class="usermenu">
-                <ul>
+                {% else %}
                     <li>
                         <a href="{% url 'login' %}">giriş yap</a>
                     </li>
                     <li>
                         <a href="{% url 'register' %}">kayıt ol</a>
                     </li>
-                </ul>
-            </nav>
+                {% endif %}
+            </ul>
 
-        {% endif %}
 
-    </div>
+            <ul class="desktop-only" id="category_view">
+                {% include "dictionary/includes/header_links/bugun.html" %}
+                {% include "dictionary/includes/header_links/gundem.html" %}
+                {% include "dictionary/includes/header_links/debe.html" %}
 
-    <!--- categories and mobile navigation -->
-    <nav class="sub-nav">
+                {% if request.user.is_authenticated %}
+                    {% include "dictionary/includes/header_links/takip.html" %}
 
-        <ul class="mobile-only">
-            {% include "dictionary/includes/header_links/bugun.html" %}
-            {% include "dictionary/includes/header_links/gundem.html" %}
-            {% include "dictionary/includes/header_links/debe.html" %}
-            {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
+                    <li class="nav-item" data-category="kenar" data-safename="kenar">
+                        <a title="kenara attığım entry'ler" href="{% url 'topic_list' slug="kenar" %}">kenar</a>
+                    </li>
 
-            {% if request.user.is_authenticated %}
-                {% include "dictionary/includes/header_links/takip.html" %}
+                    <li class="nav-item" data-category="caylaklar" data-safename="çaylaklar">
+                        <a title="çömezlerin girdikleri" href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
+                    </li>
+                {% endif %}
 
-                <li id="usermenu_mobile" data-toggle="dropdown">
+                {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
+
+                {% for category in nav_categories|slice:":4" %}
+                    <li class="nav-item" data-category="{{ category.slug }}"
+                        data-safename="{{ category.name }}">
+                        <a href="{{ category.get_absolute_url }}"
+                           title="{{ category.description }}">#{{ category.name }}</a>
+                    </li>
+                {% endfor %}
+
+                <li id="more_tags_button" data-toggle="dropdown" tabindex="0" aria-haspopup="true">
                     <i class="material-icons">more_horiz</i>
                 </li>
 
-                <div class="usermenu-dropdown dropdown-menu dropdown-menu-right"
-                     aria-labelledby="usermenu_mobile">
-                    <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
-                    <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
-                    <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
-                    <a href="{% url "topic_list" slug="hayvan-ara" %}" class="dropdown-item">hayvan ara</a>
-                    <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
-                    <a href="{% url "people" %}" class="dropdown-item">takip/engellenmiş</a>
+                <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right"
+                     aria-labelledby="more_tags_button">
+
+                    {% for category in nav_categories|slice:"4:12" %}
+                        <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
+                           class="dropdown-item nav-item"
+                           href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+
+                    {% endfor %}
+
                     <div class="dropdown-divider"></div>
-                    <a href="{% url "logout" %}" class="dropdown-item">terk</a>
+                    <a class="dropdown-item nav-item" data-safename="başıboşlar" data-category="basiboslar"
+                       href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
+                    <a href="{% url 'category_list' %}" class="dropdown-item nav-item regular">tüm kanallar</a>
                 </div>
+            </ul>
 
-            {% else %}
-                <li>
-                    <a href="{% url 'login' %}">giriş yap</a>
-                </li>
-                <li>
-                    <a href="{% url 'register' %}">kayıt ol</a>
-                </li>
-            {% endif %}
-        </ul>
-
-
-        <ul class="desktop-only" id="category_view">
-            {% include "dictionary/includes/header_links/bugun.html" %}
-            {% include "dictionary/includes/header_links/gundem.html" %}
-            {% include "dictionary/includes/header_links/debe.html" %}
-
-            {% if request.user.is_authenticated %}
-                {% include "dictionary/includes/header_links/takip.html" %}
-
-                <li class="nav-item" data-category="kenar" data-safename="kenar">
-                    <a title="kenara attığım entry'ler" href="{% url 'topic_list' slug="kenar" %}">kenar</a>
-                </li>
-
-                <li class="nav-item" data-category="caylaklar" data-safename="çaylaklar">
-                    <a title="çömezlerin girdikleri" href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
-                </li>
-            {% endif %}
-
-           {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
-
-            {% for category in nav_categories|slice:":4" %}
-                <li class="nav-item" data-category="{{ category.slug }}"
-                    data-safename="{{ category.name }}">
-                    <a href="{{ category.get_absolute_url }}"
-                       title="{{ category.description }}">#{{ category.name }}</a>
-                </li>
-            {% endfor %}
-
-            <li id="more_tags_button" data-toggle="dropdown">
-                <i class="material-icons">more_horiz</i>
-            </li>
-
-            <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right"
-                 aria-labelledby="more_tags_button">
-
-                {% for category in nav_categories|slice:"4:12" %}
-                    <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
-                       class="dropdown-item nav-item"
-                       href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
-
-                {% endfor %}
-
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item nav-item" data-safename="başıboşlar" data-category="basiboslar"
-                   href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
-                <a href="{% url 'category_list' %}" class="dropdown-item nav-item regular">tüm kanallar</a>
-            </div>
-        </ul>
-
-    </nav>
-</div>
+        </nav>
+    </div>
 
 </header>
 
@@ -268,21 +268,22 @@
     <div id="left-frame-nav" class="left-frame">
 
         <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
-            <h2 class="col-lg-auto p-0" id="scroll_top">
+            <h2 class="col-lg-auto p-0" id="top">
                 <span id="current_category_name" style="vertical-align: sub;">yükleniyor</span><i
                     class="material-icons spinning"
                     id="load_indicator">refresh</i>
             </h2>
 
 
-            <select style="display: none;" class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select"></select>
+            <select style="display: none;" class="year-select col-lg-auto py-1 px-1 mb-1 form-control"
+                    id="year_select"></select>
 
         </div>
         <div class="refresh-button dj-hidden" id="refresh_bugun" title="akıt gelsin">yenile <span
                 id="new_content_count"></span></div>
 
         <div id="lf_pagination_wrapper" class="lf_pagination dj-hidden">
-            <a id="lf_navigate_before" href="#">«</a>
+            <a id="lf_navigate_before" role="button" tabindex="0">«</a>
 
             <select id="left_frame_paginator">
                 <option>1</option>
@@ -290,14 +291,13 @@
                 <option>3</option>
                 <option>4</option>
             </select>
+
             <span style="color:#444">&nbsp;/&nbsp;</span>
-            <a id="lf_total_pages" href="#"></a>
-            <a id="lf_navigate_after" href="#" style="margin-left:4px;">»</a>
+            <a id="lf_total_pages" role="button" tabindex="0"></a>
+            <a id="lf_navigate_after" role="button" tabindex="0" style="margin-left:4px;">»</a>
         </div>
         <ul id="topic-list" class="list-group topic-list"></ul>
-        <a href="#scroll_top" id="show_more" class="dj-hidden">tümünü görüntüle</a>
-
-
+        <a href="#top" id="show_more" class="dj-hidden">tümünü görüntüle</a>
     </div>
 
 

@@ -202,7 +202,7 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
       yearSelect.append(`<option id="${year}">${year}</option>`);
     }
 
-    let selectedYear = null;
+    let selectedYear;
 
     if (localStorage.getItem("selected_year")) {
       selectedYear = localStorage.getItem("selected_year");
@@ -558,7 +558,7 @@ $(".dropdown-fav-count").on("click", function () {
       }
 
       if (data.users[1].length > 0) {
-        favoritesList.append(`<a id="show_novice_button" href="#">...${data.users[1].length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+        favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">...${data.users[1].length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
         $("a#show_novice_button").on("click", () => {
           $("#favorites_list_novices").toggleClass("dj-hidden");
         });
@@ -806,4 +806,10 @@ $("form.search_mobile").submit(function () {
   });
   emptyFields.prop("disabled", true);
   return true;
+});
+
+$("a[role=button]").keypress(function (event) {
+  if (event.which === 13 || event.which === 32) { // space or enter
+    $(this).trigger("click");
+  }
 });

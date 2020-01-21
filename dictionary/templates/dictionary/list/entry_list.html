@@ -32,7 +32,7 @@
                                 href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
                                 {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
 
-                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" href="#">başlıkta ara</a>
+                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">başlıkta ara</a>
 
                         <div class="dropdown-menu topic-dropdown">
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?day=today">bugün</a>
@@ -43,7 +43,7 @@
                                    href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ request.user.username }}">benimkiler</a>
                             {% endif %}
 
-                            <a class="dropdown-item pb-2" href="#">
+                            <a class="dropdown-item pb-2">
                                 <form method="GET" action="{{ topic.get_absolute_url }}">
                                     <div class="input-group input-group-sm">
                                         <input type="hidden" name="a" value="search">
@@ -62,7 +62,7 @@
                         </div>
                         {% if request.user.is_authenticated %}
                             {% check_follow_status request.user topic as status %}
-                            <a href="#" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip
+                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip
                                 etme{% else %}takip et{% endif %}</a>
                         {% endif %}
                     </div>

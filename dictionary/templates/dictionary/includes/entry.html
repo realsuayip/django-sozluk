@@ -31,14 +31,13 @@
            <div class="rate" id="rate" data-entry-id="{{ entry.id }}">
            {% if request.user.is_authenticated and entry.author == request.user %}
            {% else %}
-
-
-               <a class="upvote {% if request.user in entry.upvoted_by.all %}active{% endif %}"
-                  id="upvote"> <i
-                       class="material-icons">keyboard_arrow_up</i></a>
-               <a class="downvote {% if request.user in entry.downvoted_by.all %}active{% endif %}"
-                  id="downvote"><i
-                       class="material-icons">keyboard_arrow_down</i></a>
+               <a role="button" tabindex="0"
+                  class="upvote {% if request.user in entry.upvoted_by.all %}active{% endif %}"
+                  id="upvote" title="şükela"><i class="material-icons">keyboard_arrow_up</i>
+               </a>
+               <a role="button" tabindex="0"
+                  class="downvote {% if request.user in entry.downvoted_by.all %}active{% endif %}"
+                  id="downvote" title="çok kötü"><i class="material-icons">keyboard_arrow_down</i></a>
            {% endif %}
 
                {% if request.user.is_authenticated %}
@@ -46,12 +45,13 @@
                    {% with favorites=entry.favorited_by.all %}
                        <div class="favorites ml-2" data-entry-id="{{ entry.id }}">
 
-                   <i {% if request.user in favorites %}class="material-icons favorite-entry-btn mr-1"
+                   <i role="button" tabindex="0"
+                      {% if request.user in favorites %}class="material-icons favorite-entry-btn mr-1"
                       title="favorilerden çıkar"
                       {% else %}class="material-icons favorite-entry-btn fav-inverted mr-1"
                       title="favorilere ekle" {% endif %}></i>
-                   <a href="#"
-                      class="dropdown-fav-count {% if not favorites %}dj-hidden{% endif %}"
+
+                   <a class="dropdown-fav-count {% if not favorites %}dj-hidden{% endif %}"
                       data-toggle="dropdown"
                       role="button" aria-haspopup="true"
                       aria-expanded="false">
@@ -78,45 +78,37 @@
                     {% endif %}</a>
                 {% endif %}
 
-            <a class="nick" href="{{ entry.author.get_absolute_url }}"
-               class="user_nick">{{ entry.author.username }}</a>
-            <a data-toggle="dropdown" class="pop-menu" href="#">
+            <a class="nick" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
+
+            <a role="button" tabindex="0" data-toggle="dropdown" class="pop-menu" aria-haspopup="true">
                 <i class="material-icons">more_horiz</i>
                 <div class="dropdown-menu dropdown-menu-right"
                      aria-labelledby="entry_dropdown">
-
-
                     {% if request.user.is_authenticated %}
-                        {% if request.user != entry.author %}
-                            <a href="#" class="dropdown-item send-message-trigger"
-                               data-recipient="{{ entry.author.username }}">mesaj gönder</a>
-                            <a href="#" class="dropdown-item block-user-trigger"
-                               data-username="{{ entry.author.username }}">engelle</a>
 
+                        {% if request.user != entry.author %}
+                            <a role="button" tabindex="0" class="dropdown-item send-message-trigger"
+                               data-recipient="{{ entry.author.username }}">mesaj gönder</a>
+                            <a role="button" tabindex="0" class="dropdown-item block-user-trigger"
+                               data-username="{{ entry.author.username }}">engelle</a>
                         {% else %}
 
-
-
-                            <a href="#" data-target-entry="{{ entry.id }}" class="dropdown-item pin-entry">profilime
+                            <a role="button" tabindex="0" data-target-entry="{{ entry.id }}"
+                               class="dropdown-item pin-entry">profilime
                                 sabitle{% if request.user.pinned_entry == entry %}me{% endif %}
                             </a>
 
-
-
-                            <a href="#" data-target-entry="{{ entry.id }}"
+                            <a role="button" tabindex="0" data-target-entry="{{ entry.id }}"
                                class="dropdown-item delete-entry{% if permalink == "yes" %}-redirect{% endif %}">sil</a>
                             <a href="{% url "entry_update" pk=entry.id %}" class="dropdown-item">düzelt</a>
                         {% endif %}
-
 
                     {% endif %}
 
                     <a class="dropdown-item"
                        href="{% url 'general-report' %}?referrer_entry={{ entry.id }}&referrer_topic={{ entry.topic.title }}">şikayet</a>
-
                 </div>
             </a>
-
 
         </div>
     </div>

@@ -32,12 +32,10 @@
                             {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
                             <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
                         </div>
-
-
-                        <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
-                    {% else %}
-                        <a href="#" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
                     {% endif %}
+
+                    <a role="button" tabindex="0" data-target-entry="{{ entry.id }}"
+                       class="delete-entry-redirect">sil</a>
 
                 </div>
                 <div class="col-6">

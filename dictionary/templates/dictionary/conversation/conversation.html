@@ -11,7 +11,8 @@
     <span class="chat-quick-links">
         <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda"><i class="material-icons">reply</i>mesajlara dön</a>
         {% if not recipient in request.user.blocked.all %}
-            <a href="#" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
+            <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger"
+               data-username="{{ recipient.username }}">bu herifi engelle</a>
         {% endif %}
 
     </span>
@@ -20,9 +21,8 @@
 
     {% with messages=conversation.messages.all %}
         {% if messages|length > 4 %}
-            <a id="message_history_show" href="#" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek
-                için
-                tıklayın</a>
+            <a id="message_history_show" role="button" tabindex="0" title="aksın">
+                sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
         {% endif %}
 
         <ul id="message_list" class="chat">
