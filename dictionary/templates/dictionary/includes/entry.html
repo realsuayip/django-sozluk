@@ -6,7 +6,7 @@
         <h5><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></h5>
     {% endif %}
 
-    <article class="entry{% if entry.author.is_novice %} by_novice{% endif %}">
+    <article class="entry{% if entry.author.is_novice %} by_novice{% endif %}{% if permalink == "yes" %} permalink{% endif %}">
         <p>{{ entry.content|formatted|linebreaksbr }}</p>
     </article>
 

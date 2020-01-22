@@ -5,7 +5,8 @@
     {% if page_obj.number > 1 %} - sayfa
         {{ page_obj.number }}{% endif %}{% endblock %}
 
-{% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
+{# Remove has-entries for permalinks to show full content right away #}
+{% block bodyattr %}class="default topic-entry-view {% if not entry_permalink %}has-entries{% endif %}"{% endblock %}
 {% block content %}
 
     {% load functions %}

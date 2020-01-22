@@ -309,18 +309,22 @@
 
     <div class="right-frame">
         {% block rightframe %}{% endblock %}
-        <footer class="body-footer">
-            <h2 style="font-size: 1.3em;">django sözlük</h2>
-            <ul>
-                <li><a href="{% url 'general-report' %}">iletişim formu</a></li>
-                <li><a href="#">kullanım koşulları</a></li>
-                <li><a href="#">gizlilik politikası</a></li>
-                <li><a href="#">sıkça sorulanlar</a></li>
-                <li><a href="#">instagram</a></li>
-                <li><a href="#">facebook</a></li>
-                <li><a href="#">twitter</a></li>
-            </ul>
-        </footer>
+        {% load cache %}
+        {% cache None footer %}
+            <footer class="body-footer">
+                {% load functions %}
+                <h2 style="font-size: 1.3em;">django sözlük</h2>
+                <ul>
+                    <li><a href="{% url 'general-report' %}">iletişim formu</a></li>
+                    <li><a href="{% url_flat "terms-of-use" %}">kullanım koşulları</a></li>
+                    <li><a href="{% url_flat "privacy-policy" %}">gizlilik politikası</a></li>
+                    <li><a href="{% url_flat "faq" %}">sıkça sorulanlar</a></li>
+                    <li><a href="{% url_social "instagram" %}" target="_blank">instagram</a></li>
+                    <li><a href="{% url_social "facebook" %}" target="_blank">facebook</a></li>
+                    <li><a href="{% url_social "twitter" %}" target="_blank">twitter</a></li>
+                </ul>
+            </footer>
+        {% endcache %}
     </div>
 
 </div>

@@ -393,6 +393,10 @@ section.user_entries article.entry p {
     line-height: 1.5em;
     max-height: 15em;
     word-wrap: break-word;
+
+}
+section.user_entries article.entry.permalink p{
+    max-height: none;
 }
 
 
@@ -694,7 +698,7 @@ body a {
     color: #16784f;
 }
 
-body a[target="_blank"]:after {
+article.entry a[target="_blank"]:after {
     font-family: 'Material Icons', serif;
     content: 'launch';
     margin-left: 1px;

@@ -741,13 +741,15 @@ const truncateEntryText = () => {
   }
 };
 
-if ($("body").hasClass("has-entries")) {
-  truncateEntryText();
-  $("div.read_more").on("click", function () {
-    $(this).siblings("p").css("max-height", "none");
-    $(this).hide();
-  });
-}
+window.onload = function () {
+  if ($("body").hasClass("has-entries")) {
+    truncateEntryText();
+    $("div.read_more").on("click", function () {
+      $(this).siblings("p").css("max-height", "none");
+      $(this).hide();
+    });
+  }
+};
 
 $("button#perform_advanced_search").on("click", function () {
   const keywords = $("input#keywords_dropdown").val();

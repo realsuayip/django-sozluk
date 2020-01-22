@@ -1,8 +1,8 @@
 from django import template
 from django.urls import reverse
 
-from ..models import TopicFollowing
-
+from ..models import Entry, TopicFollowing
+from ..utils.settings import FLATPAGE_URLS, SOCIAL_URLS
 
 register = template.Library()
 
@@ -37,3 +37,13 @@ def check_category_follow_status(user, category):
 @register.simple_tag
 def activity_latest_entry(sender, topic):
     return topic.latest_entry_date(sender)
+
+
+@register.simple_tag
+def url_flat(name):
+    return Entry.objects.get(pk=FLATPAGE_URLS[name]).get_absolute_url()
+
+
+@register.simple_tag
+def url_social(name):
+    return SOCIAL_URLS[name]

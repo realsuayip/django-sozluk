@@ -1,7 +1,28 @@
+[0.70.0-dev-pre](2020.01.22)(compatible)
+
+--Additions--
+1) Add url handling templatetags to handle social
+and flatpage urls.
+2) Add social and flatpage url settings. Set yours
+properly to avoid KeyError(s).
+3) Update screenshots
+
+-- Changes --
+1) Entry permalinks now show full entry, instead of
+showing trimmed entry with show more button.
+2) Show more button now loads properly. (Attached to
+window onload function)
+3) Links with blank attributes show external link indicator
+only in entry content.
+4) Footer is now cached permanently.
+
+--Deletions--
+None
+
 [0.69.0-dev-pre](2020.01.21)(compatible)
 
 --Additions--
-1) Add tarihte-bugun link for mobile views.
+None
 
 -- Changes --
 1) Adjusted frontend. Adjust any links with href "#" and
