@@ -1,3 +1,26 @@
+[0.71.0-dev-pre](2020.02.01)(compatible)
+
+--Additions--
+1) New populateSearchResults function to handle search
+requests 'drily'.
+2) New tags for entry content, (ara: something), #entry,
+(bkz: #entry) and (bkz: @someone) (descriptions in filters.py)
+
+-- Changes --
+1) Change asterisks symbol on entry editor.
+2) In djdict.js, use .text instead of .html for changing
+slug safenames to prevent html injection
+3) Change tag prompt descriptions.
+4) Dropdown search now uses populateSearchResults
+5) Revamp 'formatted' filter to look neater. Added tag
+descriptions. And changed existing tag regexs to be more
+accurate.
+6) TopicEntryList now do not raise HTTP 500 when query
+string are given for non-existing (pseudo) topics.
+
+--Deletions--
+None
+
 [0.70.0-dev-pre](2020.01.22)(compatible)
 
 --Additions--

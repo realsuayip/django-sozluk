@@ -80,7 +80,7 @@ const topicListCall = function (slug, parameters, page = null) {
     type: "GET",
     url: apiUrl + parameters + pageParameter,
     success (data) {
-      $("#current_category_name").html(localStorage.getItem("active_category_safe")); // change title
+      $("#current_category_name").text(localStorage.getItem("active_category_safe")); // change title
       loadIndicator.css("display", "none"); // hide spinner
 
       if (data.refresh_count) {
@@ -469,7 +469,7 @@ const replaceText = (elementId, replacementType) => {
 
 $("button#insert_bkz").on("click", function () {
   if (!replaceText("user_content_edit", "bkz")) {
-    const bkzText = prompt("bkz verilecek başlık");
+    const bkzText = prompt("bkz verilecek başlık, #entry veya @yazar");
     if (bkzText) {
       $("textarea#user_content_edit").insertAtCaret(`(bkz: ${bkzText})`);
     }
@@ -478,7 +478,7 @@ $("button#insert_bkz").on("click", function () {
 
 $("button#insert_hede").on("click", function () {
   if (!replaceText("user_content_edit", "hede")) {
-    const hedeText = prompt("hangi başlık için link oluşturulacak?");
+    const hedeText = prompt("hangi başlık veya #entry için link oluşturulacak?");
     if (hedeText) {
       $("textarea#user_content_edit").insertAtCaret(`\`${hedeText}\``);
     }
@@ -751,6 +751,24 @@ window.onload = function () {
   }
 };
 
+const populateSearchResults = searchParameters => {
+  if (!searchParameters) {
+    return;
+  }
+
+  const slug = "hayvan-ara";
+
+  if (userIsMobile) {
+    window.location.replace("/basliklar/" + slug + "/" + searchParameters);
+  }
+
+  localStorage.setItem("active_category_safe", "arama sonuçları");
+  localStorage.setItem("active_category", slug);
+  localStorage.setItem("search_parameters", searchParameters);
+  leftFrameReset();
+  leftFramePopulate(slug, null, false, searchParameters);
+};
+
 $("button#perform_advanced_search").on("click", function () {
   const keywords = $("input#keywords_dropdown").val();
   const authorNick = $("input#author_nick_dropdown").val();
@@ -770,16 +788,7 @@ $("button#perform_advanced_search").on("click", function () {
     ordering
   };
   const searchParameters = "?" + dictToParameters(keys);
-
-  if (userIsMobile) {
-    window.location.replace("/basliklar/hayvan-ara/" + searchParameters);
-  }
-
-  localStorage.setItem("active_category_safe", "arama sonuçları");
-  localStorage.setItem("active_category", "hayvan-ara");
-  localStorage.setItem("search_parameters", searchParameters);
-  leftFrameReset();
-  leftFramePopulate("hayvan-ara", null, false, searchParameters);
+  populateSearchResults(searchParameters);
 });
 
 const categoryAction = (type, categoryId) => {
@@ -814,4 +823,9 @@ $("a[role=button]").keypress(function (event) {
   if (event.which === 13 || event.which === 32) { // space or enter
     $(this).trigger("click");
   }
+});
+
+$("a[role=button].quicksearch").on("click", function () {
+  const searchParameters = "?keywords=" + $(this).attr("data-keywords") + "&ordering=newer";
+  populateSearchResults(searchParameters);
 });

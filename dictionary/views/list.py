@@ -373,17 +373,21 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        entries = context.get("object_list")
         context["topic"] = self.topic
         context["mode"] = self.view_mode
         context["entry_permalink"] = bool(self.entry_permalink)
+
+        if not self.topic.exists:
+            return context
+
+        entries = context.get("object_list")
 
         if isinstance(entries, QuerySet):
             queryset_size = entries.count()
         else:
             queryset_size = len(entries)
 
-        if self.topic.exists and queryset_size > 0:
+        if queryset_size > 0:
             # Find subsequent and previous entries
             # Get current page's first and last entry, and find the number of entries before and after by date.
             # Using these count data, find what page next entry is located on.
@@ -393,9 +397,9 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             show_subsequent, show_previous = False, False
 
             # view_mode specific settings
-            if self.view_mode in ["today", "following", "caylaklar"]:
+            if self.view_mode in ("today", "following", "caylaklar"):
                 show_previous = True
-            elif self.view_mode in ["today_in_history", "entry_permalink", "search", "nicetoday"]:
+            elif self.view_mode in ("today_in_history", "entry_permalink", "search", "nicetoday"):
                 show_previous = True
                 show_subsequent = True
 
