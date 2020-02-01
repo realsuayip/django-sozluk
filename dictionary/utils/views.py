@@ -47,7 +47,7 @@ class JsonView(View):
         if message_pop:
             notifications.success(self.request, self.success_message)
 
-        self.data = dict(success=True, message=self.success_message)
+        self.data = {"success": True, "message": self.success_message}
 
         if redirect_url:
             self.data.update({"redirect_to": redirect_url})
@@ -58,9 +58,9 @@ class JsonView(View):
         if message_pop:
             notifications.error(self.request, self.error_message)
 
-        self.data = dict(success=False, message=self.error_message)
+        self.data = {"success": False, "message": self.error_message}
         return self.render_to_json_response(status=status)
 
     def bad_request(self):
-        self.data = dict(success=False, message=self.bad_request_message)
+        self.data = {"success": False, "message": self.bad_request_message}
         return self.render_to_json_response(status=400)

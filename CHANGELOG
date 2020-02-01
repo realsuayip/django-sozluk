@@ -1,3 +1,20 @@
+[0.72.0-dev-pre](2020.02.01)(compatible)
+
+--Additions--
+1) New time_threshold function in utils that returns
+time difference from now.
+
+-- Changes --
+1) Some minor frontend adjustments
+2) Modal templates are now permanently cached.
+3) Convert all dict() instances into {} (as it should be)
+4) Remove ugettext_lazy in author model.
+5) test_profile_entry_counts now works properly. (added missing cases)
+6) Categorize author model fields so that the model is more legible
+
+--Deletions--
+None
+
 [0.71.0-dev-pre](2020.02.01)(compatible)
 
 --Additions--

@@ -1,27 +1,34 @@
-<div class="modal fade" id="blockUserModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">kişiyi engelle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+{% load cache %}
+{% cache None block-user-modal %}
+    <div class="modal fade" id="blockUserModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">kişiyi engelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-                <p><span id="username-holder"></span> kullanıcısını gerçekten engellemek istiyor musunuz? şunlardan mahrum olacaksınız:</p>
-                <ul>
-                    <li>kişiye mesaj gönderemeyeceksiniz (vice versa)</li>
-                    <li>kişinin profiline bakamayacaksınız (vice versa)</li>
-                    <li>kişinin bugün'e giren başlıklarını göremeyeceksiniz</li>
-                    <li>kişinin entry'lerini göremeyeceksiniz</li>
-                </ul>
+                    <p><span id="username-holder"></span> kullanıcısını gerçekten engellemek istiyor musunuz? şunlardan
+                        mahrum olacaksınız:</p>
+                    <ul>
+                        <li>kişiye mesaj gönderemeyeceksiniz (vice versa)</li>
+                        <li>kişinin profiline bakamayacaksınız (vice versa)</li>
+                        <li>kişinin bugün'e giren başlıklarını göremeyeceksiniz</li>
+                        <li>kişinin entry'lerini göremeyeceksiniz</li>
+                    </ul>
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-django" data-dismiss="modal" style="background: #808080;">ay pardon</button>
-                <button type="button" class="btn btn-django" id="block_user" data-username="">engelle gitsin</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-django" data-dismiss="modal" style="background: #808080;">ay
+                        pardon
+                    </button>
+                    <button type="button" class="btn btn-django" id="block_user" data-username="">engelle gitsin
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% endcache %}

@@ -1,4 +1,3 @@
-import datetime
 from decimal import Decimal
 
 from django.contrib.auth.models import AbstractUser
@@ -6,26 +5,26 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.shortcuts import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 
+from ..utils import time_threshold
 from .category import Category
 from .entry import Entry
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
     regex = r'^[a-z\ ]+$'
-    message = _("boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir")
+    message = "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir"
 
 
 class Author(AbstractUser):
-    # genders
+    # Gender options
     MAN = 'MN'
     WOMAN = 'WM'
     OTHER = 'OT'
     UNKNOWN = 'NO'
     GENDERS = ((UNKNOWN, 'boşver'), (MAN, 'erkek'), (WOMAN, 'kadın'), (OTHER, 'diğer'))
 
-    # entry/topic per page preference
+    # Entry/topic per page preference options
     TEN = 10
     THIRTY = 30
     FIFTY = 50
@@ -34,14 +33,14 @@ class Author(AbstractUser):
     ENTRY_COUNTS = ((TEN, "10"), (THIRTY, "30"), (FIFTY, "50"), (ONEHUNDRED, "100"))
     TOPIC_COUNTS = ((THIRTY, "30"), (FIFTY, "50"), (SEVENTYFIVE, "75"), (ONEHUNDRED, "100"))
 
-    # status of author queue
+    # Status of author queue
     PENDING = "PN"
     ON_HOLD = "OH"
     APPROVED = "AP"
     APPLICATION_STATUS = (
         (PENDING, "çaylak listesinde"), (ON_HOLD, "entry girmesi bekleniyor"), (APPROVED, "yazar oldu"))
 
-    #  recieving messages preference
+    # Recieving messages options
     DISABLED = "DS"
     ALL_USERS = "AU"
     AUTHOR_ONLY = "AO"
@@ -49,32 +48,49 @@ class Author(AbstractUser):
     MESSAGE_PREFERENCE = ((DISABLED, "hiçkimse"), (ALL_USERS, "yazar ve çaylaklar"), (AUTHOR_ONLY, "yazarlar"),
                           (FOLLOWING_ONLY, "takip ettiklerim"))
 
-    nick_validator = AuthorNickValidator()
-    username = models.CharField(_('username'), max_length=35, unique=True, help_text=_(
-        'şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez'),
-                                validators=[nick_validator], error_messages={'unique': _("bu nick kapılmış"), }, )
-    birth_date = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
-    is_novice = models.BooleanField(default=True, verbose_name="çaylak")
+    # Base auth related fields
+    username = models.CharField('nick', max_length=35, unique=True,
+                                help_text='şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe '
+                                          'karakter içeremez', validators=[AuthorNickValidator()],
+                                error_messages={'unique': "bu nick kapılmış"})
+    email = models.EmailField('e-posta adresi', unique=True)
     is_active = models.BooleanField(default=False, verbose_name="aktif")
+
+    # Base auth field settings
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
+
+    # Novice application related fields
+    is_novice = models.BooleanField(default=True, verbose_name="çaylak")
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)
+
+    # Suspension details
     suspended_until = models.DateTimeField(null=True, blank=True, default=None)
+
+    # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
     blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
-    entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
-    topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
-    message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
+
+    # User-entry relations
     favorite_entries = models.ManyToManyField('Entry', through="EntryFavorites", related_name="favorited_by",
                                               blank=True)
     upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
     downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
-    pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
+
+    # User-category relations
     following_categories = models.ManyToManyField('Category', blank=True)
-    email = models.EmailField(_('e-posta adresi'), unique=True)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
+
+    # Personal info
+    birth_date = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
+
+    # Preferences
+    entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
+    topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
+    message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
+    pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
 
     def __str__(self):
         return f"{self.username}:{self.id}"
@@ -91,7 +107,7 @@ class Author(AbstractUser):
         return reverse("user-profile", kwargs={"username": self.username})
 
     class Meta:
-        # Superusers need to have this permission to accept a novice as an author.
+        # Superusers need to have can_activate_user permission to accept a novice as an author.
         permissions = (("can_activate_user", "çaylak lisesine erişim"), ("suspend_user", "kullanıcıyı askıya alma"))
         verbose_name = "yazar"
         verbose_name_plural = "yazarlar"
@@ -102,18 +118,15 @@ class Author(AbstractUser):
 
     @property
     def entry_count_month(self):
-        return Entry.objects_published.filter(author=self,
-                                              date_created__gte=timezone.now() - datetime.timedelta(days=30)).count()
+        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=30)).count()
 
     @property
     def entry_count_week(self):
-        return Entry.objects_published.filter(author=self,
-                                              date_created__gte=timezone.now() - datetime.timedelta(days=7)).count()
+        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=7)).count()
 
     @property
     def entry_count_day(self):
-        return Entry.objects_published.filter(author=self,
-                                              date_created__gte=timezone.now() - datetime.timedelta(days=1)).count()
+        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=1)).count()
 
     @property
     def last_entry_date(self):
@@ -135,8 +148,7 @@ class Author(AbstractUser):
 
     @property
     def email_confirmed(self):
-        if self.userverification_set.filter(
-                expiration_date__gte=timezone.now() - datetime.timedelta(hours=24)).exists():
+        if self.userverification_set.filter(expiration_date__gte=time_threshold(hours=24)).exists():
             return False
         return True
 

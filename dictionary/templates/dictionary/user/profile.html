@@ -14,11 +14,18 @@
             {% include "dictionary/includes/block_user_modal.html" %}
 
             <ul class="user-links" data-username="{{ profile.username }}">
-                <li class="follow-user-trigger"><a role="button" tabindex="0">{% if profile in request.user.following.all %}takip
-                    etme{% else %}takip
-                    et{% endif %}</a></li>
-                <li class="block-user-trigger" data-username="{{ profile.username }}"><a role="button" tabindex="0">engelle</a></li>
-                <li class="send-message-trigger" data-recipient="{{ profile.username }}"><a role="button" tabindex="0">mesaj gönder</a>
+                {#  @formatter:off #}
+                <li class="follow-user-trigger">
+                    <a role="button" tabindex="0">{% if profile in request.user.following.all %}takip etme{% else %}takip et{% endif %}</a>
+                </li>
+                {#  @formatter:on #}
+
+                <li class="block-user-trigger" data-username="{{ profile.username }}">
+                    <a role="button" tabindex="0">engelle</a>
+                </li>
+
+                <li class="send-message-trigger" data-recipient="{{ profile.username }}">
+                    <a role="button" tabindex="0">mesaj gönder</a>
                 </li>
             </ul>
         {% endif %}

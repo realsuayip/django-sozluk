@@ -18,33 +18,30 @@ class AuthorModelTests(TestCase):
     def setUpTestData(cls):
         cls.author = Author.objects.create(username="user", email="0")
         cls.topic = Topic.objects.create_topic("test_topic")
-        cls.entry_base = dict(topic=cls.topic, author=cls.author)
+        cls.entry_base = {"topic": cls.topic, "author": cls.author}
 
     def test_profile_entry_counts(self):
         Entry.objects.create(**self.entry_base)  # created now (today)
         # dates to be mocked for auto now add field 'date_created'
-        mock_60 = timezone.now() - datetime.timedelta(days=35)  # created more than 1 months ago
-        mock_30 = timezone.now() - datetime.timedelta(days=25)  # created in 1 month period
-        mock_14 = timezone.now() - datetime.timedelta(days=12)  # created in 2 weeks period
-        mock_7 = timezone.now() - datetime.timedelta(days=5)  # created in 1 week period
-        mock_1 = timezone.now() - datetime.timedelta(hours=20)  # created today
+        mock_31 = timezone.now() - datetime.timedelta(minutes=43201)  # month upper limit
+        mock_30 = timezone.now() - datetime.timedelta(minutes=43199)  # created in 1 month period
+        mock_14 = timezone.now() - datetime.timedelta(minutes=20159)  # created in 2 weeks period
+        mock_8 = timezone.now() - datetime.timedelta(minutes=10081)  # week upper limit
+        mock_7 = timezone.now() - datetime.timedelta(minutes=10079)  # created in 1 week period
+        mock_2 = timezone.now() - datetime.timedelta(minutes=1441)  # today upper limit
+        mock_1 = timezone.now() - datetime.timedelta(minutes=1439)  # created today
+
+        mock_these = (mock_1, mock_2, mock_7, mock_8, mock_14, mock_30, mock_31)
 
         with mock.patch('django.utils.timezone.now') as mock_now:
-            mock_now.return_value = mock_60
-            Entry.objects.create(**self.entry_base)
-            mock_now.return_value = mock_30
-            Entry.objects.create(**self.entry_base)
-            mock_now.return_value = mock_14
-            Entry.objects.create(**self.entry_base)
-            mock_now.return_value = mock_7
-            Entry.objects.create(**self.entry_base)
-            mock_now.return_value = mock_1
-            Entry.objects.create(**self.entry_base)
+            for retval in mock_these:
+                mock_now.return_value = retval
+                Entry.objects.create(**self.entry_base)
 
-        self.assertEqual(self.author.entry_count, 6)
+        self.assertEqual(self.author.entry_count, 8)
         self.assertEqual(self.author.entry_count_day, 2)
-        self.assertEqual(self.author.entry_count_month, 5)
-        self.assertEqual(self.author.entry_count_week, 3)
+        self.assertEqual(self.author.entry_count_month, 7)
+        self.assertEqual(self.author.entry_count_week, 4)
 
     def test_last_entry_date(self):
         Entry.objects.create(**self.entry_base, is_draft=True)
@@ -191,7 +188,7 @@ class EntryModelTests(TestCase):
     def setUpTestData(cls):
         cls.author = Author.objects.create(username="user", email="0")
         cls.topic = Topic.objects.create_topic("test_topic")
-        cls.entry_base = dict(topic=cls.topic, author=cls.author)
+        cls.entry_base = {"topic": cls.topic, "author": cls.author}
         cls.entry = Entry.objects.create(**cls.entry_base, content="CONtent İŞçI")
 
     def test_absolute_url(self):

@@ -11,8 +11,8 @@ class EntryModelManagersTests(TestCase):
         cls.author = Author.objects.create(username="author", email="0", is_novice=False)
         cls.novice = Author.objects.create(username="novice", email="1")
 
-        cls.author_eb = dict(topic=cls.topic, author=cls.author)
-        cls.novice_eb = dict(topic=cls.topic, author=cls.novice)
+        cls.author_eb = {"topic": cls.topic, "author": cls.author}
+        cls.novice_eb = {"topic": cls.topic, "author": cls.novice}
 
         cls.entry_by_author = Entry.objects.create(**cls.author_eb)
         cls.entry_by_novice = Entry.objects.create(**cls.novice_eb)

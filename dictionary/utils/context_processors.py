@@ -7,7 +7,7 @@ def header_categories(request):
     """
     Required for header category navigation.
     """
-    return dict(nav_categories=Category.objects.all())
+    return {"nav_categories": Category.objects.all()}
 
 
 def message_status(request):
@@ -25,7 +25,7 @@ def message_status(request):
         except Conversation.DoesNotExist:
             pass
 
-    return dict(user_has_unread_messages=unread_message_status)
+    return {"user_has_unread_messages": unread_message_status}
 
 
 def following_status(request):
@@ -44,4 +44,4 @@ def following_status(request):
                     break
         except ObjectDoesNotExist:
             pass
-    return dict(user_has_unread_followings=status)
+    return {"user_has_unread_followings": status}

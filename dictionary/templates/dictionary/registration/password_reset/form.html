@@ -1,14 +1,14 @@
 {% extends "dictionary/base.html" %}
 {% load widget_tweaks %}
-{% block title %}şifre neydi{% endblock %}
+{% block title %}parola neydi{% endblock %}
 {% block content %}
-    <h4 class="mb-3"><strong>şifre neydi</strong></h4>
+    <h4 class="mb-3"><strong>parola neydi</strong></h4>
     <form method="post">
         {% csrf_token %}
 
         <div class="form-group">
             <div class="alert alert-secondary" role="alert">
-                e-posta adresini verirsen şifreni sıfırlamana yardımcı olacak bir şeyler gönderebiliriz.
+                e-posta adresini verirsen parolanı sıfırlamana yardımcı olacak bir şeyler gönderebiliriz.
             </div>
 
             {% if form.errors %}

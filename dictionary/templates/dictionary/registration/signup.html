@@ -59,7 +59,8 @@
             <div class="form-group">
                 <label for="signup_password1">{{ form.password1.label }}</label>
                 {% render_field form.password1 class="form-control" id="signup_password1" aria-describedby="signup_password1Help" %}
-                <small id="signup_password1Help" class="form-text text-muted password-help">{{ form.password1.help_text }}</small>
+                <small id="signup_password1Help"
+                       class="form-text text-muted password-help">{{ form.password1.help_text }}</small>
             </div>
 
             <div class="form-group">
@@ -81,11 +82,12 @@
                     </div>
                 </div>
             </div>
+            {% load functions %}
             <div class="custom-control custom-checkbox">
                 {% render_field form.terms_conditions class="custom-control-input" id="terms_conditions" %}
-                <label class="custom-control-label" for="terms_conditions"><a href="#">kullanıcı sözleşmesini</a> okudum
-                    ve
-                    kabul ediyorum</label>
+                <label class="custom-control-label" for="terms_conditions">
+                    <a href="{% url_flat "terms-of-use" %}">kullanıcı sözleşmesini</a> okudum ve kabul ediyorum
+                </label>
             </div>
             <hr>
         {% endwith %}

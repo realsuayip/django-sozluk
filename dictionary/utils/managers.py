@@ -31,12 +31,12 @@ class TopicListManager:
     cache_key = None
 
     # queryset filters
-    day_filter = dict(entries__date_created__gte=TIME_THRESHOLD_24H)
-    base_filter = dict(entries__is_draft=False, entries__author__is_novice=False, is_censored=False)
+    day_filter = {"entries__date_created__gte": TIME_THRESHOLD_24H}
+    base_filter = {"entries__is_draft": False, "entries__author__is_novice": False, "is_censored": False}
 
     # queryset annotations
-    base_annotation = dict(latest=Max('entries__date_created'))  # for order_by("-latest")
-    base_count = dict(count=Count("entries", filter=Q(**day_filter)))
+    base_annotation = {"latest": Max('entries__date_created')}  # to order_by("-latest")
+    base_count = {"count": Count("entries", filter=Q(**day_filter))}
 
     # queryset values
     values = ["title", "slug", "count"]
@@ -58,7 +58,7 @@ class TopicListManager:
 
         if self.user.is_authenticated:
             blocked = self.user.blocked.all()
-            self.auth_exclude_filter = dict(created_by__in=blocked)  # use ONLY with LOGIN_REQUIRED_CATEGORIES
+            self.auth_exclude_filter = {"created_by__in": blocked}  # use ONLY with LOGIN_REQUIRED_CATEGORIES
 
         if slug in ["takip", "debe"]:
             self.slug_identifier = "/entry/"
@@ -91,8 +91,8 @@ class TopicListManager:
 
     def tarihte_bugun(self):
         now = timezone.now()
-        date_filter = dict(entries__date_created__year=self.year, entries__date_created__day=now.day,
-                           entries__date_created__month=now.month)
+        date_filter = {"entries__date_created__year": self.year, "entries__date_created__day": now.day,
+                       "entries__date_created__month": now.month}
 
         self.data = Topic.objects.filter(**self.base_filter, **date_filter).order_by('-latest').annotate(
             **self.base_annotation, count=Count("entries", filter=Q(**date_filter))).order_by("-count").values(
@@ -122,7 +122,7 @@ class TopicListManager:
                 *self.values_entry)
 
     def caylaklar(self):
-        caylak_filter = dict(entries__author__is_novice=True, entries__is_draft=False, is_censored=False)
+        caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
         self.data = Topic.objects.filter(**self.day_filter, **caylak_filter).order_by('-latest').annotate(
             **self.base_annotation, **self.base_count).values(*self.values)
 
@@ -136,7 +136,7 @@ class TopicListManager:
         to_date = self.search_keys.get("to_date")
         orderding = self.search_keys.get("ordering")
 
-        count_filter = dict(count=Count("entries", distinct=True))
+        count_filter = {"count": Count("entries", distinct=True)}
 
         # Input validation
         from_date = parse_date_or_none(from_date, delta="negative", days=1)

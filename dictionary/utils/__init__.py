@@ -2,7 +2,7 @@ import datetime
 
 from dateutil.parser import parse
 from django.contrib.auth import get_user_model
-from django.utils.timezone import make_aware
+from django.utils import timezone
 
 from .settings import GENERIC_SUPERUSER_ID
 
@@ -43,9 +43,14 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **kwargs):
             parsed_date = parsed_date + datetime.timedelta(**kwargs)
 
         # Convert it to timezone aware date object
-        return make_aware(parsed_date)
+        return timezone.make_aware(parsed_date)
     except (ValueError, OverflowError):
         return None
+
+
+def time_threshold(**kwargs):
+    # Return (timedelta **kwargs, e.g. days=1) ago, from now.
+    return timezone.now() - datetime.timedelta(**kwargs)
 
 
 def get_generic_superuser():
