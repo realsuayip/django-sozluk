@@ -1,3 +1,4 @@
+import base64
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
@@ -66,8 +67,8 @@ class TopicListManager:
             self.slug_identifier = "/entry/update/"
 
         self.slug = slug
-        self.year = year
-        self.search_keys = search_keys
+        self.year = year if self.slug == "tarihte-bugun" else None
+        self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
 
         if self.slug not in UNCACHED_CATEGORIES:
             self.check_cache()
@@ -99,7 +100,7 @@ class TopicListManager:
             *self.values)
 
     def gundem(self):
-        raise ZeroDivisionError("Unimplemented yet", self.slug)
+        self.data = [{'title': 'unimplemented yet', 'slug': 'unimplemented', 'count': 1}]
 
     def debe(self):
         year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
@@ -208,14 +209,25 @@ class TopicListManager:
         return data
 
     def check_cache(self):
+        # Cache key creation
         cache_type = f"pri_uid_{self.user.id}" if self.slug == "bugun" else "global"
         cache_year = str(self.year) if self.year else ""
-        key = f"{cache_type}_{self.slug}{cache_year}"
-        self.cache_key = key
-        if cache.get(key):
+        cache_search_suffix = ""
+
+        if self.slug == "hayvan-ara":
+            # Create special base64 suffix for search parameters
+            available_search_params = (
+                "keywords", "author_nick", "is_in_favorites", "is_nice_ones", "from_date", "to_date", "ordering")
+            params = {param: self.search_keys.get(param, "_") for param in available_search_params}
+            cache_search_suffix = base64.b64encode("".join(params.values()).encode("utf-8")).decode("utf-8")
+
+        self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_search_suffix}"
+
+        # Cache checking
+        if cache.get(self.cache_key):
             if self.slug in ["debe", "tarihte-bugun"]:
                 # check if the day has changed or not for debe or tarihte-bugun
-                if cache.get(key).get("set_at_day") == timezone.now().day:
+                if cache.get(self.cache_key).get("set_at_day") == timezone.now().day:
                     self.cache_exists = True
             else:
                 self.cache_exists = True

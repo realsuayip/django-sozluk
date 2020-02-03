@@ -6,9 +6,11 @@
 {% block content %}
     <h4><strong>iletişim</strong></h4>
     <hr>
-
+    {% load functions %}
     <ol>
-        <li>iletişime geçmeden önce lütfen <a href="#">sıkça sorulan sorular</a> kısmını ziyaret edin.</li>
+        <li>iletişime geçmeden önce lütfen <a href="{% url_flat "faq" %}">sıkça sorulan sorular</a> kısmını ziyaret
+            edin.
+        </li>
         <li>lütfen istek ve şikayetinizi anlaşılır bir şekilde dile getirin</li>
         <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem
             anonim olarak yapılmaktadır.

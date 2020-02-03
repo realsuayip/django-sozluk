@@ -13,12 +13,14 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
+from ..utils import get_category_parameters
 from ..utils.managers import TopicListManager
 from ..utils.mixins import FormPostHandlerMixin
 from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
@@ -27,7 +29,6 @@ from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIE
 
 def index(request):
     """
-    # todo scrollbar tracking
     # todo karma skor
     """
     return render(request, "dictionary/index.html")
@@ -130,21 +131,12 @@ class TopicList(ListView):
     def get_context_data(self, **kwargs):
         slug = self.kwargs.get("slug")
 
-        # provide parameters for non-database categories @formatter:off
-        link_parameters = {
-            "bugun": "?day=today",
-            "basiboslar": "?day=today",
-            "generic": "?day=today",
-            "tarihte-bugun": f"?year={self.year}",
-            "caylaklar": "?a=caylaklar",
-        }  # @formatter:on
-
         if slug in NON_DB_CATEGORIES:
             title = NON_DB_SLUGS_SAFENAMES[slug]
-            params = link_parameters.get(slug, "")
+            params = get_category_parameters(slug)
         else:
             title = Category.objects.get(slug=slug).name
-            params = link_parameters.get("generic")
+            params = get_category_parameters("generic")
 
         context = super().get_context_data(**kwargs)
 
@@ -173,7 +165,7 @@ class TopicList(ListView):
             return redirect(self.request.path)
         return HttpResponseBadRequest()
 
-    @property
+    @cached_property
     def year(self):
         if self.kwargs.get("slug") != "tarihte-bugun":
             return None

@@ -34,6 +34,9 @@
     <script defer
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
 
+    {# This library's stable release will be out soon anyway #}
+    <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+
     <script defer src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
 
@@ -167,7 +170,6 @@
 
         <!--- categories and mobile navigation -->
         <nav class="sub-nav">
-
             <ul class="mobile-only">
                 {% include "dictionary/includes/header_links/bugun.html" %}
                 {% include "dictionary/includes/header_links/gundem.html" %}
@@ -203,7 +205,6 @@
                 {% endif %}
             </ul>
 
-
             <ul class="desktop-only" id="category_view">
                 {% include "dictionary/includes/header_links/bugun.html" %}
                 {% include "dictionary/includes/header_links/gundem.html" %}
@@ -212,11 +213,13 @@
                 {% if request.user.is_authenticated %}
                     {% include "dictionary/includes/header_links/takip.html" %}
 
-                    <li class="nav-item" data-category="kenar" data-safename="kenar">
+                    <li class="nav-item{% if active_category == "kenar" %} active{% endif %}" data-category="kenar"
+                        data-safename="kenar">
                         <a title="kenara attığım entry'ler" href="{% url 'topic_list' slug="kenar" %}">kenar</a>
                     </li>
 
-                    <li class="nav-item" data-category="caylaklar" data-safename="çaylaklar">
+                    <li class="nav-item{% if active_category == "caylaklar" %} active{% endif %}"
+                        data-category="caylaklar" data-safename="çaylaklar">
                         <a title="çömezlerin girdikleri" href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
                     </li>
                 {% endif %}
@@ -224,7 +227,8 @@
                 {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
 
                 {% for category in nav_categories|slice:":4" %}
-                    <li class="nav-item" data-category="{{ category.slug }}"
+                    <li class="nav-item{% if active_category == category.slug %} active{% endif %}"
+                        data-category="{{ category.slug }}"
                         data-safename="{{ category.name }}">
                         <a href="{{ category.get_absolute_url }}"
                            title="{{ category.description }}">#{{ category.name }}</a>
@@ -240,18 +244,18 @@
 
                     {% for category in nav_categories|slice:"4:12" %}
                         <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
-                           class="dropdown-item nav-item"
+                           class="dropdown-item nav-item{% if active_category == category.slug %} active{% endif %}"
                            href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
 
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item nav-item" data-safename="başıboşlar" data-category="basiboslar"
+                    <a class="dropdown-item nav-item{% if active_category == "basiboslar" %} active{% endif %}"
+                       data-safename="başıboşlar" data-category="basiboslar"
                        href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
                     <a href="{% url 'category_list' %}" class="dropdown-item nav-item regular">tüm kanallar</a>
                 </div>
             </ul>
-
         </nav>
     </div>
 
@@ -263,41 +267,13 @@
 
 <div class="container content">
 
-
-    <!-- entry list -->
     <div id="left-frame-nav" class="left-frame">
-
-        <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
-            <h2 class="col-lg-auto p-0" id="top">
-                <span id="current_category_name" style="vertical-align: sub;">yükleniyor</span><i
-                    class="material-icons spinning"
-                    id="load_indicator">refresh</i>
-            </h2>
-
-
-            <select style="display: none;" class="year-select col-lg-auto py-1 px-1 mb-1 form-control"
-                    id="year_select"></select>
-
-        </div>
-        <div class="refresh-button dj-hidden" id="refresh_bugun" title="akıt gelsin">yenile <span
-                id="new_content_count"></span></div>
-
-        <div id="lf_pagination_wrapper" class="lf_pagination dj-hidden">
-            <a id="lf_navigate_before" role="button" tabindex="0">«</a>
-
-            <select id="left_frame_paginator">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-            </select>
-
-            <span style="color:#444">&nbsp;/&nbsp;</span>
-            <a id="lf_total_pages" role="button" tabindex="0"></a>
-            <a id="lf_navigate_after" role="button" tabindex="0" style="margin-left:4px;">»</a>
-        </div>
-        <ul id="topic-list" class="list-group topic-list"></ul>
-        <a href="#top" id="show_more" class="dj-hidden">tümünü görüntüle</a>
+        {% if request.is_mobile %}
+            <h2>hay aksi!</h2>
+            <p>bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin</p>
+        {% else %}
+            {% include "dictionary/includes/left_frame.html" %}
+        {% endif %}
     </div>
 
 

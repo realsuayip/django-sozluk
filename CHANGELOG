@@ -1,3 +1,49 @@
+[0.73.0-dev-pre](2020.02.04)(compatible)
+
+--Additions--
+1) This project now uses 2 more external libraries,
+"js-cookies" in javascript and "user_agents" in Python.
+2) New middleware: MobileDetectionMiddleware, detects if
+the user is mobile or not and adds the bool value to the request.
+(This is/will used to not render some parts of the website to mobile
+users, left frame is the first example)
+3) New context processor: LeftFrameProcessor
+4) New b64decode_utf8_or_none utility that decodes a base 64
+string into a python str object. (Used to decode cookie values)
+5) New get_category_parameters utility that gets parameters for
+given category slug. (Used in LeftFrameProcessor and TopicList view)
+6) New DEFAULT_CATEGORY setting that identifies the category to be
+loaded when the user first requests the website
+7) New base64 related decoder/encoder functions in djdict.js (used
+to encode/decode cookies)
+8) Left frame scrollbar is now tracked.
+
+-- Changes --
+1) Left frame data now loads before the view is processed, this
+way left frame data loads faster and in a more elegant way.
+LeftFrameProcessor is used to fetch the data via TopicListManager.
+This context processor goes hand in hand with javascript, communicating
+via cookies. So left frame data is no longer maintained in localStorage.
+2) "Hayvan-ara" is now cached.
+3) "Gündem" does not raise ZeroDivisionError, but it has a dummy text instead.
+(Hopefully I'll implement it Soon™)
+4) Move left-frame to the new template file as it gets too clustered in base.html
+5) Fix a bug in TopicListManager that caused extra cache key generetion
+when the year parameter used with the non-tarihte bugün slugs.
+6) views.list.TopicList's year property is now cached_property as
+it is acessed multiple times.
+7) views.list.TopicList now uses get_category_parameters instead
+of generating them in view itself
+8) Changed some template fragments to be capable of handling new context
+processor (particularly for determining active category)
+9) Reporting template had a missing link, added that.
+
+--Deletions--
+1) Remove the function needed to get csrftoken from cookies, use
+js-cookies library to fetch csrftoken instead.
+2) Remove the javascript code that loaded left frame date on page
+load, (used LeftFrameProcessor instead).
+
 [0.72.0-dev-pre](2020.02.01)(compatible)
 
 --Additions--

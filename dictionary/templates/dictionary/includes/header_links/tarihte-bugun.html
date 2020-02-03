@@ -1,4 +1,4 @@
-<li data-category="tarihte-bugun" data-safename="tarihte bugün" class="nav-item">
+<li data-category="tarihte-bugun" data-safename="tarihte bugün" class="nav-item{% if active_category == "tarihte-bugun" %} active{% endif %}">
     <a title="geçen yıllarda bu zamanlar ne denmiş?" href="{% url "topic_list" slug="tarihte-bugun" %}">
         tarihte bugün
     </a>

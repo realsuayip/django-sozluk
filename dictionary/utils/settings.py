@@ -27,7 +27,7 @@ NON_DB_SLUGS_SAFENAMES = {
     "kenar": "kenar",
     "caylaklar": "çaylaklar",
     "debe": "dünün en beğenilen entry'leri",
-    "hayvan-ara": "hayvan ara"
+    "hayvan-ara": "arama sonuçları"
 }
 
 
@@ -36,8 +36,12 @@ NON_DB_CATEGORIES = list(NON_DB_SLUGS_SAFENAMES.keys())
 # these categories are not open to visitors
 LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip")
 
+# default category to be shown when the user requests for the first time
+# should not be in LOGIN_REQUIRED_CATEGORIES
+DEFAULT_CATEGORY = "debe"
+
 # don't cache these categories
-UNCACHED_CATEGORIES = ("kenar", "hayvan-ara")
+UNCACHED_CATEGORIES = ("kenar", )
 
 YEAR_RANGE = range(2020, 2017, -1)  # for TopicList view only
 

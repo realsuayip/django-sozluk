@@ -1,0 +1,60 @@
+{% with left_frame as lf %}
+
+    {# CATEGORY NAME AND YEAR SELECTOR  @formatter:off #}
+    <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
+
+        <h2 class="col-lg-auto p-0" id="top">
+            <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span><i
+                class="material-icons spinning" id="load_indicator" style="display: none">refresh</i>
+        </h2>
+
+        <select {% if lf.slug != "tarihte-bugun" %}style="display: none;"{% endif %}
+                class="year-select col-lg-auto py-1 px-1 mb-1 form-control"
+                id="year_select">
+            {% for year in lf.year_range %}
+                <option value="{{ year }}" {% if year == lf.selected_year|add:"0" %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    {# CATEGORY NAME AND YEAR SELECTOR END #}
+
+    {#  REFRESH BUTTON  #}
+    <div class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun"
+         title="akıt gelsin">yenile <span id="new_content_count">({{ lf.refresh_count }})</span></div>
+    {#  REFRESH BUTTON  #}
+
+    {# PAGINATION START #}
+    <div id="lf_pagination_wrapper" class="lf_pagination {% if lf.current_page == 1 or lf.page_range|length == 1 %}dj-hidden{% endif %}">
+        <a id="lf_navigate_before" role="button" tabindex="0">«</a>
+
+        <select id="left_frame_paginator">
+            {% for page in lf.page_range %}
+                <option value="{{ page }}" {% if page == lf.current_page %}selected{% endif %}>{{ page }}</option>
+            {% endfor %}
+        </select>
+
+        <span style="color:#444">&nbsp;/&nbsp;</span>
+        <a id="lf_total_pages" role="button" tabindex="0">{{ lf.page_range|last }}</a>
+        <a id="lf_navigate_after" role="button" tabindex="0" style="margin-left:4px;">»</a>
+    </div>
+    {# PAGINATION END #}
+
+    {# TOPIC LIST START #}
+            <ul id="topic-list" class="list-group topic-list">
+            {% if lf.topic_data %}
+                {% for topic in lf.topic_data %}
+                    <li class="list-group-item">
+                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.slug_parameters|default:"" }}">{{ topic.title }}<small class="total_entries">{{ topic.count }}</small></a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <small>yok ki</small>
+            {% endif %}
+            </ul>
+    {# TOPIC LIST END @formatter:on #}
+
+    {# SHOW MORE LINK  #}
+    <a href="#top" id="show_more"
+       {% if lf.current_page != 1 or lf.page_range|last == 1 %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
+{% endwith %}

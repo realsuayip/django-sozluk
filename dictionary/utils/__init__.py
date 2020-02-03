@@ -1,4 +1,5 @@
 import datetime
+import base64
 
 from dateutil.parser import parse
 from django.contrib.auth import get_user_model
@@ -55,6 +56,31 @@ def time_threshold(**kwargs):
 
 def get_generic_superuser():
     return get_user_model().objects.get(pk=GENERIC_SUPERUSER_ID)
+
+
+def b64decode_utf8_or_none(b64_str):
+    # Return decoded b64 string (utf-8), if the b64 cannot be decoded, return None
+    if not b64_str:
+        return None
+
+    try:
+        return base64.b64decode(b64_str).decode("utf-8")
+    except (base64.binascii.Error, AttributeError, UnicodeDecodeError):
+        return None
+
+
+def get_category_parameters(slug, year=2020):
+    default = ""
+    pairs = {  # @formatter:off
+        "bugun": "?day=today",
+        "gundem": "?day=today",
+        "tarihte-bugun": f"?year={year}",
+        "caylaklar": "?a=caylaklar",
+        "generic": "?day=today",
+        "basiboslar": "?day=today"
+    }  # @formatter:on
+
+    return pairs.get(slug, default)
 
 
 class InputNotInDesiredRangeError(Exception):

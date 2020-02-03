@@ -1,24 +1,40 @@
+/* global Cookies */
+
+// b64 functions source: https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+const b64EncodeUnicode = function (str) {
+  // first we use encodeURIComponent to get percent-encoded UTF-8,
+  // then we convert the percent encodings into raw bytes which
+  // can be fed into btoa.
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+    function toSolidBytes (match, p1) {
+      return String.fromCharCode("0x" + p1);
+    }));
+};
+
+const b64DecodeUnicode = function (str) {
+  // Going backwards: from bytestream, to percent-encoding, to original string.
+  return decodeURIComponent(atob(str).split("").map(function (c) {
+    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(""));
+};
+
+const cookies = Cookies.withConverter(
+  // Use ONLY with custom cookies
+  {
+    write (value) {
+      return b64EncodeUnicode(value);
+    },
+    read (value) {
+      return b64DecodeUnicode(value);
+    }
+  }
+).withAttributes({sameSite: "Lax"});
+
 $.ajaxSetup({
   beforeSend (xhr, settings) {
-    const getCookie = function (name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = jQuery.trim(cookies[i]);
-          // Does this cookie string begin with the name we want?
-          if (cookie.substring(0, name.length + 1) === (name + "=")) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    };
-
     if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
       // Only send the token to relative URLs i.e. locally.
-      xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+      xhr.setRequestHeader("X-CSRFToken", Cookies.get("csrftoken"));
     }
   }
 });
@@ -46,9 +62,10 @@ const notify = async (message, type = "default") => {
 };
 
 const leftFrameReset = function () {
+  $("#left-frame-nav").scrollTop(0);
   $("a#show_more").addClass("dj-hidden");
   $("#lf_pagination_wrapper").addClass("dj-hidden");
-  localStorage.removeItem("navigation_page");
+  cookies.remove("navigation_page");
 };
 
 const topicListCall = function (slug, parameters, page = null) {
@@ -80,7 +97,7 @@ const topicListCall = function (slug, parameters, page = null) {
     type: "GET",
     url: apiUrl + parameters + pageParameter,
     success (data) {
-      $("#current_category_name").text(localStorage.getItem("active_category_safe")); // change title
+      $("#current_category_name").text(cookies.get("active_category_safe")); // change title
       loadIndicator.css("display", "none"); // hide spinner
 
       if (data.refresh_count) {
@@ -103,7 +120,7 @@ const topicListCall = function (slug, parameters, page = null) {
         }
 
         topicList.empty();
-        localStorage.setItem("navigation_page", page);
+        cookies.set("navigation_page", page);
 
         if (page > 1 && totalPages >= page) {
           const pageRange = [];
@@ -190,8 +207,8 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
   } else if (slug === "caylaklar") {
     parameters = "?a=caylaklar";
   } else if (slug === "hayvan-ara") {
-    if (localStorage.getItem("search_parameters")) {
-      parameters = localStorage.getItem("search_parameters");
+    if (cookies.get("search_parameters")) {
+      parameters = cookies.get("search_parameters");
     } else {
       parameters = searchParameters;
     }
@@ -204,11 +221,11 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
 
     let selectedYear;
 
-    if (localStorage.getItem("selected_year")) {
-      selectedYear = localStorage.getItem("selected_year");
+    if (cookies.get("selected_year")) {
+      selectedYear = cookies.get("selected_year");
     } else {
       selectedYear = years[Math.floor(Math.random() * years.length)];
-      localStorage.setItem("selected_year", selectedYear);
+      cookies.set("selected_year", selectedYear);
     }
 
     yearSelect.val(selectedYear);
@@ -228,11 +245,11 @@ const leftFramePopulate = function (slug = null, page = null, resetCache = false
 };
 
 $("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), a#category_view_ls").on("click", function () {
-  localStorage.setItem("active_category_safe", $(this).attr("data-safename"));
+  cookies.set("active_category_safe", $(this).attr("data-safename"));
   $("ul#category_view li").removeClass("active");
   $("div#category_view_in a").removeClass("active");
   $(this).addClass("active");
-  localStorage.setItem("active_category", $(this).attr("data-category"));
+  cookies.set("active_category", $(this).attr("data-category"));
   leftFrameReset();
   leftFramePopulate($(this).attr("data-category"));
 });
@@ -287,29 +304,8 @@ $(function () {
     }
   }
 
-  if (!userIsMobile) {
-    // triggers only in desktop views
-    if (localStorage.getItem("active_category")) {
-      const category = localStorage.getItem("active_category");
-      const navigationPage = localStorage.getItem("navigation_page");
-      const selector = $("li[data-category=" + category + "], a[data-category=" + category + "]");
-      selector.addClass("active");
-      if (!selector.attr("data-category") && category !== "hayvan-ara") {
-        // DEFAULT
-        // YÜKLENİYOR.
-      } else {
-        $("#current_category_name").text(selector.attr("data-safename"));
-        if (navigationPage) {
-          leftFramePopulate(category, parseInt(navigationPage));
-        } else {
-          leftFramePopulate(category);
-        }
-      }
-    }
-  } else {
-    $("#load_indicator").hide();
-    $("#current_category_name").text("hay aksi!");
-    $("#topic-list").text("bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin");
+  if (!userIsMobile && parseInt(localStorage.getItem("where")) > 0) {
+    $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
   }
 
   $("#header_search").autocomplete({
@@ -359,13 +355,13 @@ $(function () {
 
 $("#year_select").on("change", function () {
   const selectedYear = this.value;
-  localStorage.setItem("selected_year", selectedYear);
+  cookies.set("selected_year", selectedYear);
   leftFrameReset();
   leftFramePopulate("tarihte-bugun");
 });
 
 $("select#left_frame_paginator").on("change", function () {
-  leftFramePopulate(localStorage.getItem("active_category"), this.value);
+  leftFramePopulate(cookies.get("active_category"), this.value);
 });
 
 $("#lf_total_pages").on("click", function () {
@@ -390,7 +386,7 @@ $("#lf_navigate_after").on("click", function () {
 });
 
 $("a#show_more").on("click", function () {
-  leftFramePopulate(localStorage.getItem("active_category"), 2);
+  leftFramePopulate(cookies.get("active_category"), 2);
   $(this).addClass("dj-hidden");
 });
 
@@ -720,8 +716,8 @@ $("select#mobile_year_changer").on("change", function () {
 
 $("#refresh_bugun").on("click", function () {
   let page = null;
-  if (localStorage.getItem("navigation_page")) {
-    page = localStorage.getItem("navigation_page");
+  if (cookies.get("navigation_page")) {
+    page = cookies.get("navigation_page");
   }
   leftFrameReset();
   leftFramePopulate("bugun", page, true);
@@ -762,9 +758,9 @@ const populateSearchResults = searchParameters => {
     window.location.replace("/basliklar/" + slug + "/" + searchParameters);
   }
 
-  localStorage.setItem("active_category_safe", "arama sonuçları");
-  localStorage.setItem("active_category", slug);
-  localStorage.setItem("search_parameters", searchParameters);
+  cookies.set("active_category_safe", "arama sonuçları");
+  cookies.set("active_category", slug);
+  cookies.set("search_parameters", searchParameters);
   leftFrameReset();
   leftFramePopulate(slug, null, false, searchParameters);
 };
@@ -829,3 +825,8 @@ $("a[role=button].quicksearch").on("click", function () {
   const searchParameters = "?keywords=" + $(this).attr("data-keywords") + "&ordering=newer";
   populateSearchResults(searchParameters);
 });
+
+$("#left-frame-nav").scroll(function () {
+  localStorage.setItem("where", $(this).scrollTop());
+});
+

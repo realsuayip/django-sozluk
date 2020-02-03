@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'dictionary.middleware.users.NoviceActivityMiddleware',
+    'dictionary.middleware.frontend.MobileDetectionMiddleware'
 ]
 
 ROOT_URLCONF = 'djdict.urls'
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'dictionary.utils.context_processors.header_categories',
                 'dictionary.utils.context_processors.message_status',
                 'dictionary.utils.context_processors.following_status',
+                'dictionary.utils.context_processors.left_frame',
             ],
         },
     },
