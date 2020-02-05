@@ -53,6 +53,7 @@
     ],
     "no-prototype-builtins": [
       2
-    ]
+    ],
+    "indent": ["warn", 4],
   }
 }

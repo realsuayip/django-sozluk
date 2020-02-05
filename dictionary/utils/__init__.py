@@ -1,9 +1,10 @@
-import datetime
 import base64
+import datetime
 
-from dateutil.parser import parse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+from dateutil.parser import parse
 
 from .settings import GENERIC_SUPERUSER_ID
 

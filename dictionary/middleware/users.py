@@ -1,5 +1,6 @@
-from dateutil.parser import parse
 from django.utils import timezone
+
+from dateutil.parser import parse
 
 from ..models import Author
 from ..utils.settings import TIME_THRESHOLD_24H

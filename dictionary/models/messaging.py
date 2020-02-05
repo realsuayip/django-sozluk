@@ -36,4 +36,4 @@ class Conversation(models.Model):
 
     @property
     def last_message(self):
-        return self.messages.latest(field_name="sent_at")
+        return self.messages.latest("sent_at")
