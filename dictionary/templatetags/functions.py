@@ -41,7 +41,10 @@ def activity_latest_entry(sender, topic):
 
 @register.simple_tag
 def url_flat(name):
-    return Entry.objects.get(pk=FLATPAGE_URLS[name]).get_absolute_url()
+    try:
+        return Entry.objects.get(pk=FLATPAGE_URLS[name]).get_absolute_url()
+    except Entry.DoesNotExist:
+        return "/entry/1/"
 
 
 @register.simple_tag

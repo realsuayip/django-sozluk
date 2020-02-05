@@ -1,13 +1,14 @@
 from urllib.parse import parse_qsl
 
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.utils.functional import cached_property
 
 from ..models import Category, Conversation, TopicFollowing
 from . import b64decode_utf8_or_none, get_category_parameters
 from .managers import TopicListManager
-from .settings import NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, DEFAULT_CATEGORY
+from .settings import (NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, DEFAULT_CATEGORY,
+                       LOGIN_REQUIRED_CATEGORIES)
 
 
 class LeftFrameProcessor:
@@ -47,14 +48,10 @@ class LeftFrameProcessor:
     def serialized(self):
         current_page = self.get_page()
 
-        try:
-            # Try to initiliaze manager to check out everything is ok.
-            # (it does not access to database until 'serialized' property of it is called)
-            manager = TopicListManager(self.request.user, self.slug, self.year, search_keys=self.search_keys)
-        except PermissionDenied:
+        if not self.request.user.is_authenticated and self.slug in LOGIN_REQUIRED_CATEGORIES:
             self.handle_default()
-            manager = TopicListManager(self.request.user, self.slug, self.year, search_keys=self.search_keys)
 
+        manager = TopicListManager(self.request.user, self.slug, self.year, search_keys=self.search_keys)
         paginated = Paginator(manager.serialized, self.get_paginate_by())
         topic_data = paginated.get_page(current_page).object_list
 
