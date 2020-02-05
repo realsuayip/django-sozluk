@@ -6,7 +6,7 @@ const b64EncodeUnicode = function (str) {
     // then we convert the percent encodings into raw bytes which
     // can be fed into btoa.
     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-        function toSolidBytes(match, p1) {
+        function toSolidBytes (match, p1) {
             return String.fromCharCode("0x" + p1);
         }));
 };
@@ -21,17 +21,17 @@ const b64DecodeUnicode = function (str) {
 const cookies = Cookies.withConverter(
     // Use ONLY with custom cookies
     {
-        write(value) {
+        write (value) {
             return b64EncodeUnicode(value);
         },
-        read(value) {
+        read (value) {
             return b64DecodeUnicode(value);
         }
     }
 ).withAttributes({sameSite: "Lax"});
 
 $.ajaxSetup({
-    beforeSend(xhr, settings) {
+    beforeSend (xhr, settings) {
         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
             // Only send the token to relative URLs i.e. locally.
             xhr.setRequestHeader("X-CSRFToken", Cookies.get("csrftoken"));
@@ -96,7 +96,7 @@ const topicListCall = function (slug, parameters, page = null) {
     $.ajax({
         type: "GET",
         url: apiUrl + parameters + pageParameter,
-        success(data) {
+        success (data) {
             $("#current_category_name").text(cookies.get("active_category_safe")); // change title
             loadIndicator.css("display", "none"); // hide spinner
 
@@ -132,9 +132,9 @@ const topicListCall = function (slug, parameters, page = null) {
                     leftFrameSelect.empty();
                     for (const element of pageRange) {
                         leftFrameSelect.append($("<option>", {
-                                value: element,
-                                text: element
-                            }
+                            value: element,
+                            text: element
+                        }
                         ));
                     }
 
@@ -163,7 +163,7 @@ const topicListCall = function (slug, parameters, page = null) {
                 }
             }
         },
-        error() {
+        error () {
             notify("bir şeyler yanlış gitti", "error");
             topicList.html("<small>yok yapamıyorum olmuyor :(</small>");
             loadIndicator.css("display", "none");
@@ -314,7 +314,7 @@ $(function () {
         showNoSuggestionNotice: true,
         noSuggestionNotice: "-- buna yakın bir sonuç yok --",
 
-        onSelect(suggestion) {
+        onSelect (suggestion) {
             window.location.replace("/topic/?q=" + suggestion.value);
         }
     });
@@ -323,7 +323,7 @@ $(function () {
         serviceUrl: "/autocomplete/general/",
         triggerSelectOnValidInput: false,
         paramName: "author",
-        onSelect(suggestion) {
+        onSelect (suggestion) {
             $("input.author-search").val(suggestion.value);
         }
     });
@@ -406,7 +406,7 @@ $("select#entry_list_page").on("change", function () {
 });
 
 jQuery.fn.extend({
-    insertAtCaret(myValue) {
+    insertAtCaret (myValue) {
         return this.each(function () {
             if (document.selection) {
                 // Internet Explorer
@@ -430,7 +430,7 @@ jQuery.fn.extend({
             }
         });
     },
-    toggleText(a, b) {
+    toggleText (a, b) {
         return this.text(this.text() === b ? a : b);
     }
 
@@ -521,7 +521,7 @@ $(".favorite-entry-btn").on("click", function () {
             type: "favorite",
             entry_id: entryId
         },
-        success(data) {
+        success (data) {
             $(self).next().html(data.count);
             if (data.count === 0 || (data.count === 1 && data.status === 1)) {
                 $(self).next().toggleClass("dj-hidden");
