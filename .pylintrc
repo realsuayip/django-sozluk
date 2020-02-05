@@ -143,9 +143,13 @@ disable=parameter-unpacking,
         C0114,
         W0221,
         C0330,
+        E0401,
         unused-argument,
         no-member,
         too-few-public-methods,
+
+# Notice: I disabled E0401 (seems like it is problematic to set things up to make it work properly),
+# make sure your IDE checks for imports. (mine does)
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -588,7 +592,7 @@ int-import-graph=
 known-standard-library=
 
 # Force import order to recognize a module as part of a third party library.
-known-third-party=enchant,uuslug,user_agents,dateutil
+known-third-party=enchant
 
 # Couples of modules and preferred modules, separated by a comma.
 preferred-modules=
