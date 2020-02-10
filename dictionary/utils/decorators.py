@@ -23,12 +23,13 @@ def cache_retval(initial_func=None, *, timeout=None, prefix="default"):
         def wrapper(*args, **kwargs):
             key = f"crtvl_{prefix}_{func.__name__}"
             cached_value = cache.get(key)
+
             if cached_value is not None:
                 return cached_value
-            else:
-                calculated_value = func(*args, **kwargs)
-                cache.set(key, calculated_value, timeout)
-                return calculated_value
+
+            calculated_value = func(*args, **kwargs)
+            cache.set(key, calculated_value, timeout)
+            return calculated_value
 
         return wrapper
 
