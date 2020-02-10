@@ -11,29 +11,31 @@
 
     {% load functions %}
     {% load filters %}
+
+    {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}
     <section class="user_entries">
         <header class="entry_header">
 
 
             {% if topic.exists %}
-
                 <h1 class="topic-title"><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                     {% if mode == "search" %}
                         <small style="font-size: 1rem;">[arama terimi:
                             <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
 
-                {% if topic.has_entries %}
+                {% if populated %}
                     <div class="lower">
                     <div class="title_sub">
 
 
-                        <span class="mr-3 nice-filter">şükela:&nbsp;<a
-                                href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}"
-                                {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a
-                                href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
-                                {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
+                    <span class="mr-3 nice-filter">şükela:&nbsp;<a
+                            href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}"
+                            {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a
+                            href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
+                            {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
 
-                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">başlıkta ara</a>
+                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button"
+                           tabindex="0">başlıkta ara</a>
 
                         <div class="dropdown-menu topic-dropdown">
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?day=today">bugün</a>
@@ -63,7 +65,8 @@
                         </div>
                         {% if request.user.is_authenticated %}
                             {% check_follow_status request.user topic as status %}
-                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip
+                            <a role="button" tabindex="0" class="follow-topic-trigger"
+                               data-topic-id="{{ topic.id }}">{% if status %}takip
                                 etme{% else %}takip et{% endif %}</a>
                         {% endif %}
                     </div>
@@ -99,7 +102,7 @@
             {% endif %}
                 </header>
 
-                {% if topic.has_entries %}
+                {% if populated %}
 
                     {# previous entries button #}
                     {% if previous_entries_count > 0 %}
@@ -190,7 +193,7 @@
                 {% endif %}
 
 
-                {% if topic.is_banned or not topic.title|is_valid_topic_title %}
+                {% if banned or not valid %}
                     <p>lanet olsun böyle başlığa zaten</p>
                 {% endif %}
 
@@ -203,7 +206,7 @@
 
         {% include "dictionary/includes/send_message_modal.html" %}
         {% include "dictionary/includes/block_user_modal.html" %}
-        {% if not topic.is_banned and topic.title|is_valid_topic_title %}
+        {% if not banned and valid %}
             <hr>
             <section class="user-comments">
                 <div class="editor-buttons">
@@ -227,9 +230,10 @@
                             {% if not request.user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
                                     {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                    <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
+                                    <label class="custom-control-label" for="is_draft">kenarda dursun
+                                        şimdilik</label>
                                 </div>
-                                {% else %}
+                            {% else %}
                                 <p class="text-danger">entry'niz kenara atılacak.</p>
                             {% endif %}
                         </div>
@@ -244,24 +248,28 @@
         {% endif %}
     {% endif %}
     {# end of add entry form & user related modal import #}
+
+    {% endwith %}
     <br>
 {% endblock %}
 
 
 {% block rightframe %}
-    {% if topic.category.all %}
-        <section class="topic-categories-list">
-            <h2>başlığın kanalları</h2>
-            <ul>
+    {% with categories=topic.category.all %}
+        {% if categories %}
+            <section class="topic-categories-list">
+                <h2>başlığın kanalları</h2>
+                <ul>
 
-                {% for category in topic.category.all %}
-                    <li>
-                        <a id="category_view_ls" data-safename="{{ category }}" data-category="{{ category.slug }}"
-                           href="{{ category.get_absolute_url }}">#{{ category }}</a>
-                    </li>
-                {% endfor %}
+                    {% for category in categories %}
+                        <li>
+                            <a id="category_view_ls" data-safename="{{ category }}" data-category="{{ category.slug }}"
+                               href="{{ category.get_absolute_url }}">#{{ category }}</a>
+                        </li>
+                    {% endfor %}
 
-            </ul>
-        </section>
-    {% endif %}
+                </ul>
+            </section>
+        {% endif %}
+    {% endwith %}
 {% endblock %}

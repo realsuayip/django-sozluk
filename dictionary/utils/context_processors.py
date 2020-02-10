@@ -6,9 +6,10 @@ from django.utils.functional import cached_property
 
 from ..models import Category, Conversation, TopicFollowing
 from . import b64decode_utf8_or_none, get_category_parameters
+from .decorators import cache_retval
 from .managers import TopicListManager
-from .settings import (NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE, DEFAULT_CATEGORY,
-                       LOGIN_REQUIRED_CATEGORIES)
+from .settings import (DEFAULT_CATEGORY, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
+                       NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
 
 
 class LeftFrameProcessor:
@@ -120,13 +121,16 @@ def left_frame(request):
     return {"left_frame": serialized_data, "active_category": active_category}
 
 
+@cache_retval
 def header_categories(request):
     """
     Required for header category navigation.
     """
-    return {"nav_categories": Category.objects.all()}
+    categories = Category.objects.all()
+    return {"nav_categories": list(categories)}
 
 
+@cache_retval(timeout=90)
 def message_status(request):
     """
     Checks if any unread messages exists, enables the indicator in the header if there are.
@@ -145,6 +149,7 @@ def message_status(request):
     return {"user_has_unread_messages": unread_message_status}
 
 
+@cache_retval(timeout=90)
 def following_status(request):
     """
     Enables the indicator in the header, if there is new content from following topics.

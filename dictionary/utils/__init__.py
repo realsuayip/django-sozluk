@@ -9,7 +9,7 @@ from dateutil.parser import parse
 from .settings import GENERIC_SUPERUSER_ID
 
 
-# General utilities
+# General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
 
 def turkish_lower(turkish_string):
     lower_map = {ord(u'I'): u'ı', ord(u'İ'): u'i', }

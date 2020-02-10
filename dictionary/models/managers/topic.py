@@ -1,6 +1,9 @@
+from django.core.validators import ValidationError
 from django.db import models
 from django.db.models import Count, Q
 from django.http import Http404
+
+from uuslug import slugify
 
 from ...models import Entry
 from ...utils import turkish_lower
@@ -8,26 +11,45 @@ from ...utils import turkish_lower
 
 class TopicManager(models.Manager):
     class PseudoTopic:
-        def __init__(self, title):
+        def __init__(self, title, valid=False):
+            """
+            :param title: Title of the requested topic.
+            :param valid: Determines if the topic could be created
+            using the requested title.
+            """
             self.title = turkish_lower(title).strip()
             self.exists = False
+            self.valid = valid
 
         def __str__(self):
             return f"<{self.__class__.__name__} {self.title}>"
 
+    def _get_pseudo(self, title):
+        pseudo = self.PseudoTopic(title)
+
+        if not slugify(title):
+            return pseudo
+
+        try:
+            self.model(title=title).full_clean()
+        except ValidationError:
+            return pseudo
+
+        pseudo.valid = True
+        return pseudo
+
     def get_or_pseudo(self, slug=None, unicode_string=None, entry_id=None):
-
-        if slug:
-            try:
-                return self.get(slug=slug)
-            except self.model.DoesNotExist:
-                return self.PseudoTopic(slug)
-
-        elif unicode_string:
+        if unicode_string:
             try:
                 return self.get(title=unicode_string)
             except self.model.DoesNotExist:
-                return self.PseudoTopic(unicode_string)
+                return self._get_pseudo(unicode_string)
+
+        elif slug:
+            try:
+                return self.get(slug=slug)
+            except self.model.DoesNotExist:
+                return self._get_pseudo(slug)
 
         elif entry_id:
             try:

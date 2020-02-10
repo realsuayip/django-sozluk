@@ -1,3 +1,26 @@
+[0.75.0-dev-pre](2020.02.10)(compatible)
+
+--Additions--
+1) New cache_retval decorator that caches functions
+using django's low-level caching api. (used for context
+processors)
+2) New property of Topic, valid. Returns true for existing
+objects and False for pseudo topics that are not valid with
+given title.
+3) List of contributors
+
+-- Changes --
+1) Context processors (except LeftFrame which is cached
+internally), are now cached.
+2) Changed some template rendering tags to optimize
+database queries. (entry_list.html, inbox.html)
+3) Altered topic manager's get_or_pseudo to comply
+with new template structure of entry_list.html
+4) Alter one line to reduce one query, in TopicEntryList
+
+--Deletions--
+None
+
 [0.74.0-dev-pre](2020.02.05)(compatible)
 
 --Additions--

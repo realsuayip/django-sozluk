@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
 from django.views.generic.edit import FormMixin
+
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
@@ -358,7 +359,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
                 # view mode is regular
                 queryset = self.topic.entries.all()
 
-        if queryset:
+        if queryset is not None:
             return self._qs_filter(queryset)
 
         return self.model.objects.none()

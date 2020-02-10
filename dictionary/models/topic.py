@@ -69,5 +69,9 @@ class Topic(models.Model):
         return True
 
     @property
+    def valid(self):
+        return True
+
+    @property
     def has_entries(self):
         return self.entries.exclude(is_draft=True).exists()
