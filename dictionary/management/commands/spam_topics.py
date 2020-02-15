@@ -1,19 +1,16 @@
 import random
 import string
 
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-
 from ...models import Author, Topic
+from . import BaseDebugCommand
 
 
-class Command(BaseCommand):
+# spam random topics with random ascii letters, length of 15
+
+class Command(BaseDebugCommand):
     def handle(self, **options):
-        if not settings.DEBUG:
-            raise CommandError("This command is not allowed in production. Set DEBUG to False to use this command.")
-
         size = int(input("size: "))
         while size > 0:
-            chars = ''.join(random.sample(string.ascii_letters, 15))
+            chars = ''.join(random.sample(string.ascii_letters, 15))  # nosec
             Topic.objects.create_topic(chars, Author.objects.get(pk=1))
             size -= 1

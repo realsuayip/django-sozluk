@@ -55,5 +55,6 @@
       2
     ],
     "indent": ["warn", 4],
+    "object-curly-spacing": ["warn", "always"],
   }
 }

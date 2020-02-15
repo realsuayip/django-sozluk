@@ -10,6 +10,6 @@ No extra actions needed other than migrations and creation of admin account (mak
 
     python -m smtpd -n -c DebuggingServer localhost:1025
 
-Python 3.7+ and Django 2.2.9 required. Other dependencies are stated in requirements file.
+Python 3.7.6+ and Django 2.2.10 required. Other dependencies are stated in requirements file.
 
  If you want to contribute to the project or have found a bug or need help about deployment etc., please contact me.

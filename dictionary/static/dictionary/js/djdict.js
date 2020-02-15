@@ -26,7 +26,7 @@ const cookies = Cookies.withConverter({
     read (value) {
         return b64DecodeUnicode(value);
     }
-}).withAttributes({sameSite: "Lax"});
+}).withAttributes({ sameSite: "Lax" });
 
 $.ajaxSetup({
     beforeSend (xhr, settings) {

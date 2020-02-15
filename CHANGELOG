@@ -1,3 +1,16 @@
+[0.77.0-dev-pre](2020.02.16)(compatible)
+
+--Additions--
+1) New BaseDebugCommand subclass in managements/commands,
+created so that in the future it will be (a little) more flexible
+to write debug-only commands.
+
+-- Changes --
+1) Use BaseDebugCommand to handle debug-only commands.
+
+--Deletions--
+None
+
 [0.76.0-dev-pre](2020.02.15)(compatible)
 
 --Additions--
