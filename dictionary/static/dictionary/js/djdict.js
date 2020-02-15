@@ -18,17 +18,15 @@ const b64DecodeUnicode = function (str) {
     }).join(""));
 };
 
-const cookies = Cookies.withConverter(
-    // Use ONLY with custom cookies
-    {
-        write (value) {
-            return b64EncodeUnicode(value);
-        },
-        read (value) {
-            return b64DecodeUnicode(value);
-        }
+// Use ONLY with custom cookies
+const cookies = Cookies.withConverter({
+    write (value) {
+        return b64EncodeUnicode(value);
+    },
+    read (value) {
+        return b64DecodeUnicode(value);
     }
-).withAttributes({sameSite: "Lax"});
+}).withAttributes({sameSite: "Lax"});
 
 $.ajaxSetup({
     beforeSend (xhr, settings) {

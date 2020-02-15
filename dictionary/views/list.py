@@ -40,6 +40,11 @@ class PeopleList(LoginRequiredMixin, TemplateView):
 
 
 class ConversationList(LoginRequiredMixin, ListView, FormPostHandlerMixin, FormMixin):
+    """
+    List conversations with a message sending form and a search box. Search results
+    handled via GET request in get_queryset.
+    """
+
     model = Conversation
     allow_empty = True
     paginate_by = 3
@@ -105,7 +110,7 @@ class CategoryList(ListView):
 class TopicList(ListView):
     """
     Topic list (başlıklar) for mobile views such as "bugün", "gündem",
-    Desktop equivalent => views.json.AsyncTopicList
+    Desktop equivalent => views.json.AsyncTopicList + LeftFrameProcessor
     """
 
     model = Topic
@@ -174,7 +179,7 @@ class TopicList(ListView):
         year = None
         request_year = self.request.GET.get("year")
         session_year = self.request.session.get("year")
-        random_year = random.choice(YEAR_RANGE)
+        random_year = random.choice(YEAR_RANGE)  # nosec
 
         # Get requested year, if valid return that year and add it to the session.
         # If requested year is not valid, check session year, if it is valid, use it instead.
@@ -202,17 +207,40 @@ class TopicList(ListView):
 
 
 class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
+    """
+    View to list entries of a topic with an entry creation form.
+    View to handle search results of header search box. (başlık, #entry ya da @yazar)
+    View to handle entry permalinks.
+    """
+
     model = Entry
     form_class = EntryForm
     context_object_name = "entries"
     template_name = "dictionary/list/entry_list.html"
 
     topic = None
+    """The topic object whose entries to be shown. If url doesn't match an existing topic,
+       a PseudoTopic object created via TopicManager will be used to handle creation & template rendering."""
+
     view_mode = None
+    """There are several view modes which filter out entries by specific metadata. This determines which queryset will
+       be used to fetch entries. It is caught using GET parameters."""
+
     entry_permalink = False
+    """This will be set to (entry_id) if user requests a single entry. It's similar to view_mode, but it needs some
+       other metadata and seperated from view_mode as they use different urls."""
+
     redirect = False
+    """When handling following topics, if there are no new entries found, redirect user to full topic view."""
 
     def form_valid(self, form):
+        """
+        User sent new entry, whose topic may or may not be existant. If topic exists, adds the entry and redirects to
+        the entry permalink. If topic doesn't exist, topic is created if the title is valid. Entry.save() automatically
+        sets created_by field of the topic.
+        """
+
+        # Hinders sending entries to banned topics.
         if self.topic.exists and self.topic.is_banned:  # Cannot check is_banned before chechking its existance
             # not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, "olmaz ki canım... hürrüpü")
@@ -223,6 +251,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         entry.author = self.request.user
         is_draft = form.cleaned_data.get("is_draft")  # for redirect purposes
 
+        # Hinders entry publishing for suspended users.
         if self.request.user.is_suspended:
             is_draft = True  # for redirect purposes
             entry.is_draft = True
@@ -261,6 +290,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         form_invalid method is necessary. In this method, appropriate redirections are made to ensure that user finds
         themselves where they started. Error messages supplied via notifications in form_valid exception catch.
         """
+
         if form.errors:
             for err in form.errors['content']:
                 notifications.error(self.request, err)
@@ -300,6 +330,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         return self.today().order_by("-vote_rate")
 
     def search(self):
+        """IN topic (entry content) search."""
         keywords = self.request.GET.get("keywords")
         if keywords:
             if keywords.startswith("@"):
@@ -314,6 +345,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         return self.model.objects.none()
 
     def following(self):
+        """User is redirected here from (olay) link in header (view -> activity_list)"""
         queryset = None
         if self.request.user.is_authenticated:
             following = self.topic.followers.filter(author=self.request.user).first()
@@ -345,9 +377,9 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         return self.topic.entries.filter(author__is_novice=True, date_created__gte=TIME_THRESHOLD_24H)
 
     def get_queryset(self):
-        # filter queryset by self.view_mode
+        """Filter queryset by self.view_mode"""
         queryset = None
-        filtering_modes = ["today", "today_in_history", "nice", "nicetoday", "search", "following", "caylaklar"]
+        filtering_modes = ("today", "today_in_history", "nice", "nicetoday", "search", "following", "caylaklar")
 
         if self.entry_permalink:
             queryset = self.topic.entries.filter(pk=self.entry_permalink)
@@ -434,14 +466,16 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
     def dispatch(self, request, *args, **kwargs):
         search_redirect = self.get_topic()
+
+        # Did get_topic() returned a search result?
         if search_redirect:
             return search_redirect
 
-        #  Empty request (direct request to /topic/)
+        # Empty request (direct request to /topic/)
         if self.topic is None:
             return redirect(reverse("home"))
 
-        # view_mode is used to determine queryset
+        # Regular view. view_mode is used to determine queryset
         if not self.view_mode:
             if request.GET.get("day") == "today":
                 self.view_mode = "today"
@@ -517,11 +551,11 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
                 if self.topic.exists:
                     return self._redirect_to_self()
 
-        # No redirect
+        # No redirect (normal view)
         return False
 
     def _redirect_to_self(self):
-        #  Redirect to topic itself.
+        # Redirect to topic itself.
         return redirect(self.topic.get_absolute_url())
 
     def _find_subsequent_page(self, pages_before):

@@ -11,7 +11,7 @@ from ...models import Author, Entry, Topic
 class Command(BaseCommand):
     def handle(self, **options):
         if not settings.DEBUG:
-            raise CommandError("This command is not allowed in production. Set DEBUG to False use this command.")
+            raise CommandError("This command is not allowed in production. Set DEBUG to False to use this command.")
 
         size = int(input("size: "))
         while size > 0:

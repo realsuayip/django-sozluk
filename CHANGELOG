@@ -5,7 +5,7 @@
 objects
 
 -- Changes --
-1) In Author model add is_active to REQUIRED_FIELDS to that
+1) In Author model add is_active to REQUIRED_FIELDS so that
 the field pops up in createsuperuser command, allowing properly
 activated super user creation.
 2) In project settings, add default value for SECRET_KEY to speed
