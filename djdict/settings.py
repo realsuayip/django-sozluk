@@ -21,11 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Set your secret key in environment variables, in development you can use a string right away for convenience
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "Not a secret! Delete this arg in production!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# SECURITY WARNING: don't allow any other hosts except your real host in production!
 ALLOWED_HOSTS = ['192.168.2.253', '127.0.0.1']
 
 # Application definition

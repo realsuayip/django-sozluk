@@ -37,8 +37,8 @@ class AsyncTopicList(JsonView):
         manager = TopicListManager(self.request.user, slug, year, fetch_cached, search_keys)
         paginated = Paginator(manager.serialized, paginate_by)
         topic_data = paginated.get_page(page).object_list
-        self.data = dict(topic_data=topic_data, refresh_count=manager.refresh_count,
-                         slug_identifier=manager.slug_identifier, total_pages=paginated.num_pages)
+        self.data = {"topic_data": topic_data, "refresh_count": manager.refresh_count,
+                     "slug_identifier": manager.slug_identifier, "total_pages": paginated.num_pages}
 
         return super().handle()
 
@@ -57,7 +57,7 @@ class AutoComplete(JsonView):
     def author(self):
         objects = Author.objects.filter(username__istartswith=self.request_data.get("author"))
         response = [obj.username for obj in objects]
-        return dict(suggestions=response)
+        return {"suggestions": response}
 
     def query(self):
         query = self.request_data.get("query")
@@ -80,7 +80,7 @@ class AutoComplete(JsonView):
             extra_authors = Author.objects.filter(username__istartswith=query)[:3]
             for author in extra_authors:
                 response.append("@" + author.username)
-        return dict(suggestions=response)
+        return {"suggestions": response}
 
 
 class UserAction(LoginRequiredMixin, JsonView):
@@ -153,24 +153,20 @@ class EntryAction(LoginRequiredMixin, JsonView):
         self.redirect_url = reverse_lazy("topic", kwargs={"slug": self.entry.topic.slug}) if self.request_data.get(
             "redirect") == "true" else None
 
-        if action == "delete":
-            self.success_message = "silindi"
-            return self.delete()
+        if action in ("delete", "pin"):
+            # This block returns either success or failure
+            return getattr(self, action)()
 
-        if action == "pin":
-            return self.pin()
-
-        if action == "favorite":
-            self.data = self.favorite()
-
-        if action == "favorite_list":
-            self.data = self.favorite_list()
+        if action in ("favorite", "favorite_list"):
+            # This block returns data
+            self.data = getattr(self, action)()
 
         return super().handle()
 
     def delete(self):
         if self.owner_action:
             self.entry.delete()
+            self.success_message = "silindi"
             if self.redirect_url:
                 return self.success(message_pop=True, redirect_url=self.redirect_url)
             return self.success()
@@ -197,7 +193,7 @@ class EntryAction(LoginRequiredMixin, JsonView):
             self.entry.update_vote(VOTE_RATES["increase"])
             status = 1
 
-        return dict(count=self.entry.favorited_by.count(), status=status)
+        return {"count": self.entry.favorited_by.count(), "status": status}
 
     def favorite_list(self):
         users_favorited = self.entry.favorited_by.all()
@@ -207,7 +203,7 @@ class EntryAction(LoginRequiredMixin, JsonView):
                 novices.append(user.username)
             else:
                 authors.append(user.username)
-        return dict(users=[authors, novices])
+        return {"users": [authors, novices]}
 
 
 class TopicAction(LoginRequiredMixin, JsonView):

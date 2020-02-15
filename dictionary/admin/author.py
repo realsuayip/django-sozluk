@@ -34,7 +34,7 @@ class AuthorAdmin(UserAdmin):
 
         return custom_urls + urls
 
-    # Custom permissions for action
+    # Custom permissions for action | pylint: disable=R0201
     def has_suspension_permission(self, request):
         """Does the user have the user (un)suspension permission?"""
         return request.user.has_perm("dictionary.suspend_user")

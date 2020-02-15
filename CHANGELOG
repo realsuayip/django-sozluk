@@ -1,3 +1,28 @@
+[0.76.0-dev-pre](2020.02.15)(compatible)
+
+--Additions--
+1) New cleanup_expired command that deletes expired database
+objects
+
+-- Changes --
+1) In Author model add is_active to REQUIRED_FIELDS to that
+the field pops up in createsuperuser command, allowing properly
+activated super user creation.
+2) In project settings, add default value for SECRET_KEY to speed
+up setting up development environment.
+3) Alter spam_entries and spam_topics commands so that they
+are not usable in production enviroment.
+4) utils.parse_date_or_none now escapes arbitrary exception catching
+5) UserProfile dispatch method now properly checks for tab
+6) EntryUpdate dispatch method removed and moved into get_object
+7) UserAction now handles actions in a more neat/proper way
+8) In json views, convert dict()'s into {}'s (as it should be)
+9) In TopicEntryList, alter _qs_filter, so that it can escape
+prefetch_related and select_related when not required (and adjust related queries)
+
+--Deletions--
+None
+
 [0.75.0-dev-pre](2020.02.10)(compatible)
 
 --Additions--

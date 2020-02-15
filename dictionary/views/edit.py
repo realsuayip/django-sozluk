@@ -32,11 +32,6 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
     template_name = "dictionary/edit/entry_update.html"
     context_object_name = "entry"
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
-            raise Http404
-        return super().dispatch(request, *args, **kwargs)
-
     def get_success_url(self):
         if self.get_object().is_draft:
             notifications.info(self.request, "yazdım bir kenara")
@@ -64,8 +59,12 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
+
         try:
             obj = Entry.objects_all.get(pk=pk)
         except Entry.DoesNotExist:
+            raise Http404
+
+        if obj.author != self.request.user:
             raise Http404
         return obj

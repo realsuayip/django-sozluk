@@ -68,6 +68,7 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
     profile = None
     tab = None
 
+    # @formatter:off
     tabs = {
         "latest": {"label": "entry'ler", "type": "entry"},
         "favorites": {"label": "favorileri", "type": "entry"},
@@ -76,7 +77,7 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
         "weeklygoods": {"label": "bu hafta dikkat çekenleri", "type": "entry"},
         "beloved": {"label": "el emeği göz nuru", "type": "entry"},
         "authors": {"label": "favori yazarları", "type": "author"},
-    }
+    }  # @formatter:on
 
     def form_valid(self, form):
         existing_memento = self.get_memento()
@@ -154,14 +155,15 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
-        self.tab = request.GET.get("t") if request.GET.get("t") else "latest"
 
-        if self.tab not in self.tabs.keys():
-            self.tab = "latest"
-
+        # Check if the page is accessible
         if self.request.user.is_authenticated:
             if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
                 raise Http404
+
+        # Set-up tab
+        tab_requested = request.GET.get("t", "latest")
+        self.tab = tab_requested if tab_requested in self.tabs.keys() else "latest"
 
         return super().dispatch(request)
 

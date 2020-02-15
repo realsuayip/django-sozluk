@@ -48,7 +48,7 @@ class Author(AbstractUser):
     MESSAGE_PREFERENCE = ((DISABLED, "hiçkimse"), (ALL_USERS, "yazar ve çaylaklar"), (AUTHOR_ONLY, "yazarlar"),
                           (FOLLOWING_ONLY, "takip ettiklerim"))
 
-    # Base auth related fields
+    # Base auth related fields, notice: username field will be used for nicknames
     username = models.CharField('nick', max_length=35, unique=True,
                                 help_text='şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe '
                                           'karakter içeremez', validators=[AuthorNickValidator()],
@@ -58,7 +58,9 @@ class Author(AbstractUser):
 
     # Base auth field settings
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  # notice: username field will be used for nicknames
+
+    # A list of the field names that will be prompted for when creating a user via the createsuperuser command.
+    REQUIRED_FIELDS = ['username', 'is_active']
 
     # Novice application related fields
     is_novice = models.BooleanField(default=True, verbose_name="çaylak")

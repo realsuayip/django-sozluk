@@ -399,7 +399,8 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             if show_subsequent or show_previous:
                 first_entry_date = entries[0].date_created
                 previous_entries_count = self._qs_filter(
-                    self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False)).count()
+                    self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
+                    prefecth=False).count()
 
             if show_previous:
                 paginate_by = self.get_paginate_by()
@@ -409,7 +410,8 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
                 try:
                     last_entry_date = entries[queryset_size - 1].date_created
                     subsequent_entries_count = self._qs_filter(
-                        self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False)).count()
+                        self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False),
+                        prefecth=False).count()
                     if not subsequent_entries_count:
                         subsequent_entries_page = 0
                     else:
@@ -426,7 +428,7 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
         elif not entries:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
             if self.view_mode in ["today", "today_in_history", "nice", "nicetoday", "search", "caylaklar"]:
-                context["all_entries_count"] = self._qs_filter(self.topic.entries.all()).count()
+                context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
 
         return context
 
@@ -532,8 +534,16 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             page_count += 1
         return page_count
 
-    def _qs_filter(self, queryset):
-        #  Filter queryset to exclude drafts, blocked users etc.
+    def _qs_filter(self, queryset, prefecth=True):
+        """
+        Filter queryset to exclude drafts, blocked users etc. and select and prefetch related objects, if required.
+
+        :param queryset: Queryset object of entries.
+        :param prefecth: Do you need to prefecth data? If you are going to use them, definitely use default value, else
+        set to False to escape unnecessary database overhead (e.g. You only need qs to access count).
+        :return: qs
+        """
+
         qs = queryset.exclude(is_draft=True)
 
         if self.view_mode not in ["caylaklar", "entry_permalink"]:
@@ -541,5 +551,9 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
 
         if self.request.user.is_authenticated:
             qs = qs.exclude(author__in=self.request.user.blocked.all())
+
+        if not prefecth:
+            return qs
+
         # todo: use select_related and prefetch_related more often
         return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")
