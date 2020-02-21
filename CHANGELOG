@@ -1,3 +1,16 @@
+[0.78.0-dev-pre](2020.02.22)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Split TopicListManager into TopicQueryHandler and TopicListHandler.
+Their names suggest what they do. Check out docstrings! This change may
+be **incompatible** for you if you overrode TopicListManager.
+
+--Deletions--
+None
+
 [0.77.0-dev-pre](2020.02.16)(compatible)
 
 --Additions--
