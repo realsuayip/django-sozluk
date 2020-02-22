@@ -32,13 +32,13 @@ class TopicQueryHandler:
     base_count = {"count": Count("entries", filter=Q(**day_filter))}
 
     # Queryset values
-    values = ["title", "slug", "count"]
+    values = ("title", "slug", "count")
     values_entry = values[:2]  # values with count excluded (used for entry listing)
 
     def bugun(self, user):
         blocked = user.blocked.all()  # To exclude blocked users' topics.
         return Topic.objects.filter(Q(category__in=user.following_categories.all()) | Q(category=None),
-                                    **self.base_filter, **self.day_filter, ).order_by('-latest').annotate(
+                                    **self.base_filter, **self.day_filter).order_by('-latest').annotate(
             **self.base_annotation, **self.base_count).exclude(created_by__in=blocked).values(*self.values)
 
     def tarihte_bugun(self, year):
@@ -178,7 +178,7 @@ class TopicListHandler:
             self.slug_identifier = "/entry/update/"
 
         if self.slug not in UNCACHED_CATEGORIES:
-            self.check_cache()
+            self._check_cache()
 
             # user requests new data, so delete the old cached data
             if not fetch_cached and self.cache_exists:
@@ -196,26 +196,19 @@ class TopicListHandler:
             # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
             slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
 
-            # Get method from TopicQueryHandler.
+            # Get the method from TopicQueryHandler.
             self.data = getattr(self, slug_method)(*arg_map.get(slug_method, []))
 
-    def cache_data(self, data):
+    def _cache_data(self, data):
         if self.slug in UNCACHED_CATEGORIES:
-            # bypass caching
-            return data
+            return data  # Bypass caching
 
-        if self.slug == "debe" or self.slug == "tarihte-bugun":
-            # these are the same during the day, so caching them longer is more reasonable
-            set_at_day = timezone.now().day
-            cache.set(self.cache_key, {"data": data, "set_at_day": set_at_day}, 86400)  # 24 hours
-        elif self.slug == "bugun":
-            cache.set(self.cache_key, {"data": data, "set_at": timezone.now()}, 300)  # 5 minutes
-        else:
-            cache.set(self.cache_key, data, self.cache_timeout)
+        # Set exclusive timeouts by slug. (default: self.cache_timeout)
+        timeouts = {**dict.fromkeys(("debe", "tarihte-bugun"), 86400), "bugun": 300}
+        cache.set(self.cache_key, {"data": data, "set_at": timezone.now()}, timeouts.get(self.slug, self.cache_timeout))
         return data
 
-    def check_cache(self):
-        # Cache key creation
+    def _create_cache_key(self):
         cache_type = f"pri_uid_{self.user.id}" if self.slug == "bugun" else "global"
         cache_year = str(self.year) if self.year else ""
         cache_search_suffix = ""
@@ -229,11 +222,14 @@ class TopicListHandler:
 
         self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_search_suffix}"
 
-        # Cache checking
-        if cache.get(self.cache_key):
-            if self.slug in ["debe", "tarihte-bugun"]:
+    def _check_cache(self):
+        self._create_cache_key()
+        cached_data = cache.get(self.cache_key)
+
+        if cached_data is not None:
+            if self.slug in ("debe", "tarihte-bugun"):
                 # check if the day has changed or not for debe or tarihte-bugun
-                if cache.get(self.cache_key).get("set_at_day") == timezone.now().day:
+                if cached_data.get("set_at").day == timezone.now().day:
                     self.cache_exists = True
             else:
                 self.cache_exists = True
@@ -247,18 +243,16 @@ class TopicListHandler:
         return False
 
     @property
-    def serialized(self):
-        # serialize topic queryset data, cache it and return it.
-        if self.cache_exists:
-            return self.get_cached_data
-
-        return self.cache_data(list(self.data))
+    def _cached_data(self):
+        return cache.get(self.cache_key).get("data")
 
     @property
-    def get_cached_data(self):
-        if self.slug in ["debe", "tarihte-bugun", "bugun"]:  # exclusively cached
-            return cache.get(self.cache_key).get("data")
-        return cache.get(self.cache_key)
+    def serialized(self):
+        # Serialize topic queryset data, cache it and return it.
+        if self.cache_exists:
+            return self._cached_data
+
+        return self._cache_data(list(self.data))
 
     @property
     def refresh_count(self):  # (yenile count)

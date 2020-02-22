@@ -1,3 +1,4 @@
+from contextlib import suppress
 from urllib.parse import parse_qsl
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -138,13 +139,11 @@ def message_status(request):
     unread_message_status = False
 
     if request.user.is_authenticated:
-        try:
+        with suppress(Conversation.DoesNotExist):
             for chat in Conversation.objects.list_for_user(request.user):
                 if chat.last_message.recipient == request.user and not chat.last_message.read_at:
                     unread_message_status = True
                     break
-        except Conversation.DoesNotExist:
-            pass
 
     return {"user_has_unread_messages": unread_message_status}
 
@@ -159,11 +158,10 @@ def following_status(request):
     if request.user.is_authenticated:
         user_following = TopicFollowing.objects.filter(author=request.user)
 
-        try:
+        with suppress(ObjectDoesNotExist):
             for following in user_following:
                 if following.read_at < following.topic.latest_entry_date(request.user):
                     status = True
                     break
-        except ObjectDoesNotExist:
-            pass
+
     return {"user_has_unread_followings": status}

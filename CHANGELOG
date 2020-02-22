@@ -1,3 +1,22 @@
+[0.79.0-dev-pre](2020.02.22)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) TopicQueryHandler API changes. Create set_at for every cached
+item. Implement cache key creation as a seperate method. Create
+timeout mapper for cache timeouts. Change some method names to be
+'private', as to show that they are not intended to be called
+externally. This change may be **incompatible** for you if you used
+this API before.
+2) In context_processors use contextlib.suppress instead of
+try, except: pass.
+3) In utils, change **kwargs to acutal proper names.
+
+--Deletions--
+None
+
 [0.78.0-dev-pre](2020.02.22)(compatible)
 
 --Additions--

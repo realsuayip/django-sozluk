@@ -16,7 +16,7 @@ def turkish_lower(turkish_string):
     return turkish_string.translate(lower_map).lower()
 
 
-def parse_date_or_none(date_string, delta=None, dayfirst=True, **kwargs):
+def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwargs):
     """
     Return a django timezone aware date object if string is parsable else None or False.
     :param date_string: A string containing a date
@@ -25,7 +25,7 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **kwargs):
     range starting from night of (00:00) that particular day. You can also include time directly in date_string such as
     '12.02.2010 06:00' etc.
     :param dayfirst: set false if date_string doesn't start with day
-    :param kwargs: kwargs for datetime.timedelta
+    :param timedelta_kwargs: kwargs for datetime.timedelta
     """
 
     if not isinstance(date_string, str) or not date_string:
@@ -42,17 +42,17 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **kwargs):
 
     # Calculate timedalte if delta & kargsa are specified
     if delta == "negative":
-        parsed_date = parsed_date - datetime.timedelta(**kwargs)
+        parsed_date = parsed_date - datetime.timedelta(**timedelta_kwargs)
     elif delta == "positive":
-        parsed_date = parsed_date + datetime.timedelta(**kwargs)
+        parsed_date = parsed_date + datetime.timedelta(**timedelta_kwargs)
 
     # Convert it to timezone aware date object
     return timezone.make_aware(parsed_date)
 
 
-def time_threshold(**kwargs):
+def time_threshold(**timedelta_kwargs):
     # Return (timedelta **kwargs, e.g. days=1) ago, from now.
-    return timezone.now() - datetime.timedelta(**kwargs)
+    return timezone.now() - datetime.timedelta(**timedelta_kwargs)
 
 
 def get_generic_superuser():
