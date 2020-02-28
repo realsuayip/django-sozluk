@@ -7,7 +7,7 @@ from django.utils.functional import cached_property
 
 from ..models import Category, Conversation, TopicFollowing
 from . import b64decode_utf8_or_none, get_category_parameters
-from .decorators import cache_retval
+from .decorators import cached_context
 from .managers import TopicListManager
 from .settings import (DEFAULT_CATEGORY, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
                        NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
@@ -122,7 +122,7 @@ def left_frame(request):
     return {"left_frame": serialized_data, "active_category": active_category}
 
 
-@cache_retval
+@cached_context
 def header_categories(request):
     """
     Required for header category navigation.
@@ -131,8 +131,7 @@ def header_categories(request):
     return {"nav_categories": list(categories)}
 
 
-# todo: cache these two
-
+@cached_context(timeout=15, vary_on_user=True)
 def message_status(request):
     """
     Checks if any unread messages exists, enables the indicator in the header if there are.
@@ -149,6 +148,7 @@ def message_status(request):
     return {"user_has_unread_messages": unread_message_status}
 
 
+@cached_context(timeout=15, vary_on_user=True)
 def following_status(request):
     """
     Enables the indicator in the header, if there is new content from following topics.

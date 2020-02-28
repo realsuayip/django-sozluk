@@ -1,3 +1,17 @@
+[0.81.0-dev-pre](2020.02.29)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Rename cache_retval to cached_context and change api. Now, request
+as the first argument required. Add vary_on_user to cache per user.
+Context processors are now cached properly using this decorator.
+2) Minor code style changes
+
+--Deletions--
+None
+
 [0.80.0-dev-pre](2020.02.29)(incompatible)
 
 --Additions--

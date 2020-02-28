@@ -73,16 +73,16 @@ VOTE_RATES = {
 }
 
 # messages
-NOVICE_ACCEPTED_MESSAGE = "sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın " \
-                          "olanaklarından faydalanabilirsin."
+NOVICE_ACCEPTED_MESSAGE = ("sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın"
+                           " olanaklarından faydalanabilirsin.")
 
-NOVICE_REJECTED_MESSAGE = 'sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry ' \
-                          'doldurursanız tekrar çaylak onay listesine alınacaksınız.'
+NOVICE_REJECTED_MESSAGE = ("sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry"
+                           " doldurursanız tekrar çaylak onay listesine alınacaksınız.")
 
-PASSWORD_CHANGED_MESSAGE = "sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok. Bu işlemi " \
-                           "siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz."
+PASSWORD_CHANGED_MESSAGE = ("sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
+                            " Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz.")
 
-TERMINATION_ONHOLD_MESSAGE = "sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün" \
-                             "sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş " \
-                             "yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece " \
-                             "dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz."
+TERMINATION_ONHOLD_MESSAGE = ("sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün"
+                              " sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş"
+                              " yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece"
+                              " dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz.")

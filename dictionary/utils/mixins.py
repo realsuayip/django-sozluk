@@ -14,8 +14,8 @@ class PasswordConfirmMixin:
     mixin in those cases as well.
     """
 
-    password_field_name = "password_confirm"
-    password_error_message = "parolanızı yanlış girdiniz"
+    password_field_name = "password_confirm"  # nosec
+    password_error_message = "parolanızı yanlış girdiniz"  # nosec
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
