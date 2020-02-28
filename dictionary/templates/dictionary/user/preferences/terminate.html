@@ -1,0 +1,58 @@
+{% extends "dictionary/user/preferences/index.html" %}
+{% block title %}Hesabı kapat{% endblock %}
+
+{% block content_preferences %}
+    <div class="card mb-3 w-100">
+        <div class="card-header">Hesap kapatmak için seçenekleriniz şunlar:</div>
+        <div class="card-body">
+            <h5 class="card-title"><strong>hesabı komple sil</strong></h5>
+            <p class="card-text">iz bırakmadan temiz bir şekilde gitmek isteyenler için ideal. bütün entry'leriniz
+                silinecek.</p>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title"><strong>hesabı miras bırakarak sil</strong></h5>
+            <p class="card-text">hesabınızla duygusal bir bağ kurduysanız ideal.
+                hesabınız devre dışı bırakılacak. kullanıcılar size ulaşamayacak ve entry'leriniz
+                gelecek nesiller tarafından okunması için tutulacak.</p>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title"><strong>hesabı anonim miras bırakarak sil</strong></h5>
+            <p class="card-text">aynen üstteki gibi, tek farkı nickiniz anonim olacak.</p>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title"><strong>hesabı dondur</strong></h5>
+            <p class="card-text">hesabınız donukken profilinize kimse ulaşamaz ve size mesaj gönderilemez. entry'leriniz
+                görülebilir halde durur. hesabınıza giriş yaparsanız hesabınız tekrar aktive olur.</p>
+        </div>
+    </div>
+
+    <div class="card text-white bg-danger mb-3 w-100">
+        <div class="card-body">
+
+            <form method="post">
+                {% load widget_tweaks %}
+
+                <label for="termination_choice"><h5 class="card-title"><strong>son sözünüz?</strong></h5></label>
+                {% render_field form.state class="form-control" id="termination_choice" %}
+                <hr>
+                <p class="card-text">hesabınızı dondurduğunuz senaryonun dışında, seçtiğiniz senaryonun
+                    gerçekleşebilmesi için, işlemi yaptığınız andan itibaren 120 saat (5 gün) geçmesi gerekmektedir.
+                    bu sürenin sonunda seçim geri dönüşü olmayacak bir şekilde gerçekleştirilecektir. bu süre boyunca
+                    hesabınız donuk statüsünde olacaktır. işlemi iptal etmek için giriş yapabilirsiniz.
+                </p>
+
+                <div class="form-group">
+                    <label for="password_confirm">{{ form.password_confirm.label }}</label>
+                    {% render_field form.password_confirm class="form-control" id="password_confirm" %}
+                </div>
+
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-light w-100">elveda et</button>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,17 +1,22 @@
+from contextlib import suppress
+from smtplib import SMTPException
+
 from django.contrib import messages as notifications
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
-from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm
-from ..models import Author, UserVerification
-from ..utils.email import send_email_confirmation
-from ..utils.settings import TIME_THRESHOLD_24H
+from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
+from ..models import AccountTerminationQueue, Author, PairedSession, UserVerification
+from ..utils.email import FROM_EMAIL, send_email_confirmation
+from ..utils.mixins import PasswordConfirmMixin
+from ..utils.settings import PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE, TIME_THRESHOLD_24H
 
 
 class Login(LoginView):
@@ -20,13 +25,18 @@ class Login(LoginView):
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get("remember_me", False)
+
         if remember_me:
             self.request.session.set_expiry(1209600)  # 2 weeks
         else:
             self.request.session.set_expiry(7200)
 
-        success_message = "başarıyla giriş yaptınız efendim"
-        notifications.info(self.request, success_message)
+        # Check if the user cancels account termination.
+        with suppress(AccountTerminationQueue.DoesNotExist):
+            AccountTerminationQueue.objects.get(author=form.get_user()).delete()
+            notifications.info(self.request, "tekrar hoşgeldiniz. hesabınız aktif oldu.")
+
+        notifications.info(self.request, "başarıyla giriş yaptınız efendim")
         return super().form_valid(form)
 
 
@@ -102,20 +112,48 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
     template_name = "dictionary/user/preferences/password.html"
 
     def form_valid(self, form):
+        message = PASSWORD_CHANGED_MESSAGE.format(self.request.user.username)
+
+        # Send a 'your password has been changed' message to ensure security.
+        try:
+            send_mail("şifreniz değişti", message, FROM_EMAIL, [self.request.user.email])
+        except SMTPException:
+            notifications.error(self.request, "şifrenizi değiştiremedik. daha sonra tekrar deneyin.")
+            return super().form_invalid(form)
+
         notifications.info(self.request, "işlem tamam")
         return super().form_valid(form)
 
 
-class ChangeEmail(LoginRequiredMixin, FormView):
+class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
     template_name = "dictionary/user/preferences/email.html"
     form_class = ChangeEmailForm
     success_url = reverse_lazy("user_preferences")
 
     def form_valid(self, form):
-        if not self.request.user.check_password(form.cleaned_data.get("password_confirm")):
-            notifications.error(self.request, "parolanızı yanlış girdiniz")
-            return redirect(reverse("user_preferences_email"))
-
         send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
         notifications.info(self.request, "e-posta onayından sonra adresiniz değişecektir.")
         return redirect(self.success_url)
+
+
+class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
+    template_name = "dictionary/user/preferences/terminate.html"
+    form_class = TerminateAccountForm
+    success_url = reverse_lazy("login")
+
+    def form_valid(self, form):
+        message = TERMINATION_ONHOLD_MESSAGE.format(self.request.user.username)
+
+        # Send a message to ensure security.
+        try:
+            send_mail("hesabınız donduruldu", message, FROM_EMAIL, [self.request.user.email])
+        except SMTPException:
+            notifications.error(self.request, "işlem gerçekleştirilemedi. daha sonra tekrar deneyin.")
+            return super().form_invalid(form)
+
+        termination_choice = form.cleaned_data.get('state')
+        AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
+        # Unlike logout(), this invalidates ALL sessions across devices.
+        PairedSession.objects.filter(user=self.request.user).delete()
+        notifications.info(self.request, "isteğinizi aldık. görüşmek üzere")
+        return super().form_valid(form)

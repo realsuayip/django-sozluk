@@ -15,10 +15,10 @@ class AuthorAdmin(UserAdmin):
     search_fields = ["username"]
     list_display = ("username", "email", "is_active", "is_novice", "date_joined")
 
-    fieldsets = UserAdmin.fieldsets + ((None, {'fields': (
+    fieldsets = UserAdmin.fieldsets + (("DEBUG FIELDS", {'fields': (
         'is_novice', 'application_status', 'application_date', 'last_activity', 'suspended_until', 'birth_date',
         'gender', 'following', "blocked", 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
-        "following_categories")}),)
+        "following_categories", "is_frozen", "is_terminated")}),)
 
     add_fieldsets = ((None, {'fields': ('email',)}),) + UserAdmin.add_fieldsets
     actions = ("suspend_user", "unsuspend_user")

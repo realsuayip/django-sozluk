@@ -131,7 +131,8 @@ def header_categories(request):
     return {"nav_categories": list(categories)}
 
 
-@cache_retval(timeout=90)
+# todo: cache these two
+
 def message_status(request):
     """
     Checks if any unread messages exists, enables the indicator in the header if there are.
@@ -148,7 +149,6 @@ def message_status(request):
     return {"user_has_unread_messages": unread_message_status}
 
 
-@cache_retval(timeout=90)
 def following_status(request):
     """
     Enables the indicator in the header, if there is new content from following topics.

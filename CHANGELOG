@@ -1,3 +1,27 @@
+[0.80.0-dev-pre](2020.02.29)(incompatible)
+
+--Additions--
+1) Many additions related to Account deletion process. Payloads
+are not implemented yet, so the accounts actually don't get
+deleted. (Frozen option is working as intended). AccountDeletionQueue
+model holds the acoounts to be deleted (and frozen).
+These additinos include 2 fields in Author and a brand new
+model, so it is **incompatible**, run: 'makemigrations dictionary',
+'migrate dictionary' consecutively so that new fields and model are created.
+2) is_private property for Author. It is also related to account deletion,
+but it can be used for other purposes. (via PRIVATE_USERS setting)
+3) New PasswordConfirmMixin. Check docstrings.
+4) ChangePassword now sends email notification to user.
+
+-- Changes --
+1) Adjusted messaging/added test so that it conforms account deletion status.
+2) Fixed a bug in EmailChangeForm, it raised Http 500 when invalid e-mail
+adresses such as a@a were given, now it renders properly and shows error messages.
+
+--Deletions--
+1) Remove cachers from user-varying context processors. They do
+not work as intended. cache_retval will be adjusted in the next commit.
+
 [0.79.0-dev-pre](2020.02.22)(compatible)
 
 --Additions--

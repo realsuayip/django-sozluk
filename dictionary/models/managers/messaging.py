@@ -6,9 +6,12 @@ from ...models import Author
 
 class MessageManager(models.Manager):
     def compose(self, sender, recipient, body):
-        if recipient.message_preference == Author.DISABLED:
+        # Can message be sent? | (For readibility purposes) -> pylint: disable=too-many-return-statements
+        if recipient.is_frozen or recipient.is_terminated:
             return False
         if sender == recipient:
+            return False
+        if recipient.message_preference == Author.DISABLED:
             return False
         if sender in recipient.blocked.all() or recipient in sender.blocked.all():
             return False

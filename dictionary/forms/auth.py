@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.forms.widgets import SelectDateWidget
 
-from ..models import Author
+from ..models import Author, AccountTerminationQueue
 
 
 class LoginForm(AuthenticationForm):
@@ -49,10 +49,19 @@ class ChangeEmailForm(forms.Form):
 
     def clean(self):
         form_data = self.cleaned_data
-        if form_data["email1"] != form_data["email2"]:
+
+        if form_data.get("email1") != form_data.get("email2"):
             raise forms.ValidationError("e-postalar uyuşmadı")
 
-        if Author.objects.filter(email=form_data["email1"]).exists():
+        if Author.objects.filter(email=form_data.get("email1")).exists():
             raise forms.ValidationError("bu e-posta kullanımda")
 
         super().clean()
+
+
+class TerminateAccountForm(forms.ModelForm):
+    password_confirm = forms.CharField(label="parolanızı teyit edin", strip=False, widget=forms.PasswordInput)
+
+    class Meta:
+        model = AccountTerminationQueue
+        fields = ("state",)

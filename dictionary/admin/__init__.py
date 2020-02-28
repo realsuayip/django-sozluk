@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ..models import Conversation, Memento, Message, TopicFollowing, UserVerification
+from ..models import AccountTerminationQueue, Conversation, Memento, Message, TopicFollowing, UserVerification
 from .author import AuthorAdmin
 from .category import CategoryAdmin
 from .entry import EntryAdmin
@@ -14,3 +14,4 @@ admin.site.register(Conversation)
 admin.site.register(TopicFollowing)
 admin.site.register(Memento)
 admin.site.register(UserVerification)
+admin.site.register(AccountTerminationQueue)

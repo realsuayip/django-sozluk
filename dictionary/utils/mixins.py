@@ -7,6 +7,27 @@ from django.utils.decorators import method_decorator
 from . import InputNotInDesiredRangeError
 
 
+class PasswordConfirmMixin:
+    """
+    Include a password_field with a FormMixin to confirm user's password before processing form data. This could also be
+    written as a forms.Form mixin, but there may be cases where you don't want to use django's forms, you can use this
+    mixin in those cases as well.
+    """
+
+    password_field_name = "password_confirm"
+    password_error_message = "parolanızı yanlış girdiniz"
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            if not request.user.check_password(form.cleaned_data.get(self.password_field_name)):
+                notifications.error(request, self.password_error_message)
+                return self.form_invalid(form)
+            return self.form_valid(form)
+
+        return self.form_invalid(form)
+
+
 class FormPostHandlerMixin:
     # handle post method for views with FormMixin and ListView/DetailView
     @method_decorator(login_required)

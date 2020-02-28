@@ -156,7 +156,11 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
     def dispatch(self, request, *args, **kwargs):
         self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
 
-        # Check if the page is accessible
+        # Check accessibility
+        if self.profile.is_frozen or self.profile.is_terminated:
+            raise Http404
+
+        # Check accessibility (block status)
         if self.request.user.is_authenticated:
             if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
                 raise Http404

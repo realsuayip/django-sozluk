@@ -3,21 +3,26 @@ from decimal import Decimal
 
 from django.utils import timezone
 
-
 # @formatter:off
 # just don't change this unless you are living in a planet where a day takes more or less than 24 hours.
 TIME_THRESHOLD_24H = timezone.now() - datetime.timedelta(hours=24)
 
-TOPICS_PER_PAGE_DEFAULT = 50
-ENTRIES_PER_PAGE_DEFAULT = 10
-ENTRIES_PER_PAGE_PROFILE = 15
+# Default options for content object counts
+TOPICS_PER_PAGE_DEFAULT = 50   # For guests only
+ENTRIES_PER_PAGE_DEFAULT = 10  # For guests only
+ENTRIES_PER_PAGE_PROFILE = 15  # Global setting
+
+# Give id of the user who does administrative actions in the site.
 GENERIC_SUPERUSER_ID = 1
 
-# category related settings, don't change the keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded. but:
-# if you really have to change that, related files are: views.list.TopicList, views.json.AsyncTopicList,
-# utils.managers.TopicListManager and bunch of html files with djdict.js
-# safenames are required for views.list.TopicList (mobile), safenames for desktop views are located in html (base.html)
-# with data-safename attributes
+# Give a list of user ids. These users' profile will be hidden and their nick will be hidden in their entries. The
+# first item of the list should be the default anonymous user. This anonymous user is used to hold the entries of
+# deleted accounts.
+PRIVATE_USERS = [35]
+
+# Category related settings, don't change the current keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded.
+# Safenames are required for views.list.TopicList (mobile), safenames for desktop views are located in (base.html)
+# with data-safename attributes.
 NON_DB_SLUGS_SAFENAMES = {
     "bugun": "bugün",
     "gundem": "gündem",
@@ -70,5 +75,14 @@ VOTE_RATES = {
 # messages
 NOVICE_ACCEPTED_MESSAGE = "sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın " \
                           "olanaklarından faydalanabilirsin."
+
 NOVICE_REJECTED_MESSAGE = 'sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry ' \
                           'doldurursanız tekrar çaylak onay listesine alınacaksınız.'
+
+PASSWORD_CHANGED_MESSAGE = "sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok. Bu işlemi " \
+                           "siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz."
+
+TERMINATION_ONHOLD_MESSAGE = "sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün" \
+                             "sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş " \
+                             "yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece " \
+                             "dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz."

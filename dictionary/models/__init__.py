@@ -1,4 +1,4 @@
-from .author import Author, EntryFavorites, Memento, UserVerification
+from .author import AccountTerminationQueue, Author, EntryFavorites, Memento, UserVerification
 from .category import Category
 from .entry import Entry
 from .messaging import Conversation, Message

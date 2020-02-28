@@ -7,6 +7,7 @@ from django.shortcuts import reverse
 from django.utils import timezone
 
 from ..utils import time_threshold
+from ..utils.settings import PRIVATE_USERS
 from .category import Category
 from .entry import Entry
 
@@ -68,8 +69,10 @@ class Author(AbstractUser):
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)
 
-    # Suspension details
+    # Suspension/termination details
     suspended_until = models.DateTimeField(null=True, blank=True, default=None)
+    is_terminated = models.BooleanField(default=False, verbose_name="Hesap kapatıldı mı?")
+    is_frozen = models.BooleanField(default=False, verbose_name="Hesap donuk mu?")
 
     # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
@@ -160,6 +163,10 @@ class Author(AbstractUser):
             return True
         return False
 
+    @property
+    def is_private(self):
+        return self.pk in PRIVATE_USERS
+
 
 class EntryFavorites(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -195,3 +202,37 @@ class UserVerification(models.Model):
     def save(self, *args, **kwargs):
         UserVerification.objects.filter(author=self.author).delete()
         super().save(*args, **kwargs)
+
+
+class AccountTerminationQueue(models.Model):
+    NO_TRACE = 'NT'
+    LEGACY = 'LE'
+    LEGACY_ANONYMOUS = 'LA'
+    FROZEN = 'FZ'
+    STATES = ((NO_TRACE, 'hesabı komple sil'), (LEGACY, 'hesabı miras bırakarak sil'),
+              (LEGACY_ANONYMOUS, 'hesabı anonim miras bırakarak sil'), (FROZEN, 'hesabı dondur'))
+
+    author = models.OneToOneField(Author, on_delete=models.CASCADE)
+    state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=" son sözünüz?")
+    termination_date = models.DateTimeField(null=True, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.author}, status={self.state} to be terminated after: {self.termination_date or 'N/A'}"
+
+    def save(self, *args, **kwargs):
+        created = self.pk is None
+
+        if created:
+            self.author.is_frozen = True
+            self.author.save()
+
+            if self.state != self.FROZEN:
+                self.termination_date = timezone.now() + timezone.timedelta(hours=120)
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.author.is_frozen = False
+        self.author.save()
+        super().delete(*args, **kwargs)

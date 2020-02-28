@@ -1,8 +1,10 @@
-from django.contrib.auth.views import (PasswordResetCompleteView, PasswordResetConfirmView, PasswordResetDoneView,
-                                       PasswordResetView)
+from django.contrib.auth.views import (PasswordResetCompleteView, PasswordResetConfirmView,
+                                       PasswordResetDoneView, PasswordResetView)
 from django.urls import path
 
-from ..views.auth import ChangeEmail, ChangePassword, ConfirmEmail, Login, Logout, ResendEmailConfirmation, SignUp
+from ..views.auth import (ChangeEmail, ChangePassword, ConfirmEmail, Login, Logout,
+                          ResendEmailConfirmation, SignUp, TerminateAccount)
+
 
 # @formatter:off
 urlpatterns_password_reset = [
@@ -32,4 +34,5 @@ urlpatterns_auth = urlpatterns_password_reset + [
     path("email/tekrar/", ResendEmailConfirmation.as_view(), name="resend_email"),
     path("ayarlar/sifre/", ChangePassword.as_view(), name="user_preferences_password"),
     path("ayarlar/email/", ChangeEmail.as_view(), name="user_preferences_email"),
+    path("ayarlar/hesabi-kapat/", TerminateAccount.as_view(), name="user_preferences_terminate"),
 ]
