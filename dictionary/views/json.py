@@ -55,7 +55,7 @@ class AutoComplete(JsonView):
         return super().handle()
 
     def author(self):
-        objects = Author.objects.filter(username__istartswith=self.request_data.get("author"))
+        objects = Author.objects.filter(username__istartswith=self.request_data.get("author"), is_private=False)
         response = [obj.username for obj in objects]
         return {"suggestions": response}
 
@@ -66,7 +66,8 @@ class AutoComplete(JsonView):
             if len(query) <= 1:
                 response = ["@"]
             else:
-                response = ["@" + obj.username for obj in Author.objects.filter(username__istartswith=query[1:])[:7]]
+                response = ["@" + obj.username for obj in
+                            Author.objects.filter(username__istartswith=query[1:], is_private=False)[:7]]
         else:
             response = [obj.title for obj in
                         Topic.objects_published.filter(title__istartswith=query, is_censored=False)[:7]]
@@ -77,7 +78,7 @@ class AutoComplete(JsonView):
                 if extra.title not in response:
                     response.append(extra.title)
 
-            extra_authors = Author.objects.filter(username__istartswith=query)[:3]
+            extra_authors = Author.objects.filter(username__istartswith=query, is_private=False)[:3]
             for author in extra_authors:
                 response.append("@" + author.username)
         return {"suggestions": response}
@@ -94,7 +95,7 @@ class UserAction(LoginRequiredMixin, JsonView):
         self.sender = self.request.user
         self.recipient = get_object_or_404(Author, username=self.request_data.get("recipient_username"))
 
-        if self.sender == self.recipient:
+        if self.sender == self.recipient or self.recipient.is_private:
             return self.bad_request()
 
         if action == "follow":

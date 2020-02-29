@@ -7,7 +7,7 @@ from ...models import Author
 class MessageManager(models.Manager):
     def compose(self, sender, recipient, body):
         # Can message be sent? | (For readibility purposes) -> pylint: disable=too-many-return-statements
-        if recipient.is_frozen or recipient.is_terminated:
+        if recipient.is_frozen or recipient.is_private:
             return False
         if sender == recipient:
             return False

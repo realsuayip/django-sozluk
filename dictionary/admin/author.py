@@ -18,7 +18,7 @@ class AuthorAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (("DEBUG FIELDS", {'fields': (
         'is_novice', 'application_status', 'application_date', 'last_activity', 'suspended_until', 'birth_date',
         'gender', 'following', "blocked", 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
-        "following_categories", "is_frozen", "is_terminated")}),)
+        "following_categories", "is_frozen", "is_private")}),)
 
     add_fieldsets = ((None, {'fields': ('email',)}),) + UserAdmin.add_fieldsets
     actions = ("suspend_user", "unsuspend_user")

@@ -157,7 +157,7 @@ class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
         self.profile = get_object_or_404(Author, username=self.kwargs.get("username"))
 
         # Check accessibility
-        if self.profile.is_frozen or self.profile.is_terminated:
+        if self.profile.is_frozen or self.profile.is_private:
             raise Http404
 
         # Check accessibility (block status)

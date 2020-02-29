@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -7,9 +8,9 @@ from django.shortcuts import reverse
 from django.utils import timezone
 
 from ..utils import time_threshold
-from ..utils.settings import PRIVATE_USERS
 from .category import Category
 from .entry import Entry
+from .managers.author import AccountTerminationQueueManager
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
@@ -69,10 +70,10 @@ class Author(AbstractUser):
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)
 
-    # Suspension/termination details
+    # Accessibility details
     suspended_until = models.DateTimeField(null=True, blank=True, default=None)
-    is_terminated = models.BooleanField(default=False, verbose_name="Hesap kapatıldı mı?")
     is_frozen = models.BooleanField(default=False, verbose_name="Hesap donuk mu?")
+    is_private = models.BooleanField(default=False, verbose_name="Hesap anonim mi?")
 
     # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
@@ -107,6 +108,11 @@ class Author(AbstractUser):
             # newly created user
             categories_list = list(Category.objects.all())
             self.following_categories.add(*categories_list)
+
+    def delete(self, *args, **kwargs):
+        # Delete related conversations before deleting messages (via self.delete())
+        apps.get_model("dictionary", "Conversation").objects.filter(participants__in=[self]).delete()
+        super().delete(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"username": self.username})
@@ -163,10 +169,6 @@ class Author(AbstractUser):
             return True
         return False
 
-    @property
-    def is_private(self):
-        return self.pk in PRIVATE_USERS
-
 
 class EntryFavorites(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -207,15 +209,15 @@ class UserVerification(models.Model):
 class AccountTerminationQueue(models.Model):
     NO_TRACE = 'NT'
     LEGACY = 'LE'
-    LEGACY_ANONYMOUS = 'LA'
     FROZEN = 'FZ'
-    STATES = ((NO_TRACE, 'hesabı komple sil'), (LEGACY, 'hesabı miras bırakarak sil'),
-              (LEGACY_ANONYMOUS, 'hesabı anonim miras bırakarak sil'), (FROZEN, 'hesabı dondur'))
+    STATES = ((NO_TRACE, 'hesabı komple sil'), (LEGACY, 'hesabı miras bırakarak sil'), (FROZEN, 'hesabı dondur'))
 
     author = models.OneToOneField(Author, on_delete=models.CASCADE)
     state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=" son sözünüz?")
     termination_date = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    objects = AccountTerminationQueueManager()
 
     def __str__(self):
         return f"{self.author}, status={self.state} to be terminated after: {self.termination_date or 'N/A'}"

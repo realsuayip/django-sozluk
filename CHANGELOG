@@ -1,3 +1,35 @@
+[0.82.0-dev-pre](2020.02.29)(incompatible)
+
+--Additions--
+1) New manage.py command: commit_user_terminations. Set a cronjob
+to this command to apply user deletions.
+2) New field is_private for Author (instead of property). Private
+users' profile will be hidden, they won't be shown in search results.
+Their entries will have no user info. User actions do not apply to them.
+It kind of creates a 'ghost' user. Primarily used as holder for anonymous
+deleted users (with legacy). Set GENERIC_PRIVATEUSER_ID properly so that account
+deletions works properly.
+3) New AccountTerminationQueueManager, handles account termination payloads.
+
+-- Changes --
+1) Redirect admin login/logout views to custom auth views. To
+ensure that login/logot utilities work as intended for administrators.
+2) Template/view/model changes related to is_private or account deletion.
+-> (views.json.AutoComplete, views.detail.UserProfile, includes/entry.html,
+terminate.html, MessageManager, Author, Entry, Message)
+Note: Models have changed to conform for account termination. These changes are
+**incompatible**, run makemigrations then migrate dictionary to alter fields.
+3) In TopicEntryList, a query with forward slash in search such as '@admin/'
+caused HTTP 500, fixed that.
+4) PRIVATE_USERS is now set in admin page.
+5) Message sending test adjusted to use is_private instead of is_terminated
+
+--Deletions--
+1) Remove redundant LEGACY_ANONYMOUS option from account termination.
+Freezing account and never logging in again will serve the same purpose.
+Author field is_terminated was going to be used with this option, that
+option is gone as well.
+
 [0.81.0-dev-pre](2020.02.29)(compatible)
 
 --Additions--

@@ -31,6 +31,7 @@ from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIE
 def index(request):
     """
     # todo karma skor
+    # todo conversation archiving
     """
     return render(request, "dictionary/index.html")
 
@@ -539,17 +540,16 @@ class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
             if not query:
                 return False
 
-            if query.startswith("@") and len(query) > 1:
-                return redirect("user-profile", username=query[1:])
+            if query.startswith("@") and slugify(query):
+                return redirect("user-profile", username=slugify(query[1:]))
 
-            if query.startswith("#"):
-                if query[1:].isdigit():
-                    return redirect("entry-permalink", entry_id=query[1:])
+            if query.startswith("#") and query[1:].isdigit():
+                return redirect("entry-permalink", entry_id=query[1:])
 
-            else:
-                self.topic = Topic.objects.get_or_pseudo(unicode_string=query)
-                if self.topic.exists:
-                    return self._redirect_to_self()
+            # Set & search for topic
+            self.topic = Topic.objects.get_or_pseudo(unicode_string=query)
+            if self.topic.exists:
+                return self._redirect_to_self()
 
         # No redirect (normal view)
         return False

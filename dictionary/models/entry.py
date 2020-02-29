@@ -17,7 +17,7 @@ ENTRY_VALIDATOR = RegexValidator(ENTRY_RE, message="bu entry geçerisz karakterl
 
 class Entry(models.Model):
     topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries")
-    author = models.ForeignKey("Author", on_delete=models.PROTECT)
+    author = models.ForeignKey("Author", on_delete=models.CASCADE)
     content = models.TextField(validators=[ENTRY_VALIDATOR])
     date_created = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(blank=True, null=True, default=None)

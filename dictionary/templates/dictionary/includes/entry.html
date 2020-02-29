@@ -69,22 +69,20 @@
 
 
         <div class="info">
-            <a href="{{ entry.get_absolute_url }}">{{ entry.date_created|date:"d.m.Y H:i" }}
-                {% if entry.date_edited %}
-                    {% if entry.date_created|date:"dmY" == entry.date_edited|date:"dmY" %}
-                        {{ entry.date_edited|date:" ~ H:i" }}
-                    {% else %}
-                        {{ entry.date_edited|date:" ~ d.m.Y H:i" }}
-                    {% endif %}</a>
-                {% endif %}
+            {# @formatter:off #}
+            <a href="{{ entry.get_absolute_url }}">{{ entry.date_created|date:"d.m.Y H:i" }}{% if entry.date_edited %}{% if entry.date_created|date:"dmY" == entry.date_edited|date:"dmY" %}{{ entry.date_edited|date:" ~ H:i" }}{% else %}{{ entry.date_edited|date:" ~ d.m.Y H:i" }}{% endif %}{% endif %}</a>
+            {# @formatter:on#}
 
-            <a class="nick" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
+            {% if not entry.author.is_private %}
+                <a class="nick" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
+            {% endif %}
 
             <a role="button" tabindex="0" data-toggle="dropdown" class="pop-menu" aria-haspopup="true">
                 <i class="material-icons">more_horiz</i>
                 <div class="dropdown-menu dropdown-menu-right"
                      aria-labelledby="entry_dropdown">
-                    {% if request.user.is_authenticated %}
+
+                    {% if request.user.is_authenticated and not entry.author.is_private %}
 
                         {% if request.user != entry.author %}
                             <a role="button" tabindex="0" class="dropdown-item send-message-trigger"

@@ -94,7 +94,7 @@ class AuthorModelTests(TestCase):
         some_author = Author.objects.create(username="author", email="3", is_novice=False)
         some_novice = Author.objects.create(username="novice", email="4")
         frozen_account = Author.objects.create(username="frozen", email="5", is_frozen=True)
-        terminated_account = Author.objects.create(username="terminated", email="6", is_terminated=True)
+        private_account = Author.objects.create(username="private", email="6", is_private=True)
 
         # ALL users (database default)
         msg_sent_by_novice = Message.objects.compose(some_novice, self.author, "test")
@@ -136,11 +136,11 @@ class AuthorModelTests(TestCase):
         can_send_message_to_self = Message.objects.compose(self.author, self.author, "test")
         self.assertEqual(can_send_message_to_self, False)
 
-        # Frozen and terminated accounts can't be messaged
+        # Frozen and private accounts can't be messaged
         can_send_message_to_frozen = Message.objects.compose(self.author, frozen_account, "test")
-        can_send_message_to_terminated = Message.objects.compose(self.author, terminated_account, "test")
+        can_send_message_to_private = Message.objects.compose(self.author, private_account, "test")
         self.assertEqual(can_send_message_to_frozen, False)
-        self.assertEqual(can_send_message_to_terminated, False)
+        self.assertEqual(can_send_message_to_private, False)
 
     def test_follow_all_categories_on_creation(self):
         category_1 = Category.objects.create(name="test")
