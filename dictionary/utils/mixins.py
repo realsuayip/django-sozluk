@@ -3,6 +3,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
+from django.views.generic.edit import FormMixin
 
 from . import InputNotInDesiredRangeError
 
@@ -28,8 +29,11 @@ class PasswordConfirmMixin:
         return self.form_invalid(form)
 
 
-class FormPostHandlerMixin:
-    # handle post method for views with FormMixin and ListView/DetailView
+class IntegratedFormMixin(FormMixin):
+    """
+    This mixin integrates forms with django's 'DetailView' and 'ListView'.
+    """
+
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
         form = self.get_form()

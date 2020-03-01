@@ -1,7 +1,9 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponseRedirect
-from django.urls import reverse
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import Http404
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import UpdateView
 
@@ -9,17 +11,15 @@ from ..forms.edit import EntryForm, PreferencesForm
 from ..models import Author, Entry
 
 
-class UserPreferences(LoginRequiredMixin, UpdateView):
+class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Author
     form_class = PreferencesForm
     template_name = "dictionary/user/preferences/index.html"
+    success_message = "kaydettik efendim"
+    success_url = reverse_lazy("user_preferences")
 
     def get_object(self, queryset=None):
         return self.request.user
-
-    def get_success_url(self):
-        notifications.info(self.request, "kaydettik efendim")
-        return reverse("user_preferences")
 
     def form_invalid(self, form):
         notifications.error(self.request, "bir şeyler ters gitti")
@@ -55,7 +55,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
             entry.date_edited = timezone.now()
 
         entry.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)

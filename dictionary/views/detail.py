@@ -8,15 +8,14 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import FormMixin
 
 from ..forms.edit import MementoForm, SendMessageForm
 from ..models import Author, Conversation, Entry, Memento, Message
-from ..utils.mixins import FormPostHandlerMixin
+from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
 
-class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
+class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
     model = Conversation
     template_name = "dictionary/conversation/conversation.html"
     form_class = SendMessageForm
@@ -59,7 +58,7 @@ class Chat(LoginRequiredMixin, DetailView, FormPostHandlerMixin, FormMixin):
         return context
 
 
-class UserProfile(ListView, FormPostHandlerMixin, FormMixin):
+class UserProfile(IntegratedFormMixin, ListView):
     model = Entry
     paginate_by = ENTRIES_PER_PAGE_PROFILE
     form_class = MementoForm

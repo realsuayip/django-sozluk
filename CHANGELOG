@@ -1,3 +1,16 @@
+[0.83.0-dev-pre](2020.03.01)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) FormPostHandlerMixin + FormMixin now reads IntegratedFormMixin.
+Changes were made to the views which use FormPostHandlerMixin.
+2) Use SuccessMessageMixin where applicable.
+
+--Deletions--
+1) Remove unused is_valid_topic_title filter.
+
 [0.82.0-dev-pre](2020.02.29)(incompatible)
 
 --Additions--

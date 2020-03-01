@@ -2,11 +2,7 @@ import calendar
 import re
 
 from django import template
-from django.core.validators import ValidationError
 from django.utils.html import escape, mark_safe
-from uuslug import slugify
-
-from ..models import Topic
 
 
 register = template.Library()
@@ -64,23 +60,6 @@ def formatted(raw_entry):
         entry = re.sub(*tag, entry)
 
     return mark_safe(entry)
-
-
-@register.filter
-def is_valid_topic_title(topic_title):
-    # If it is already created, it is most likely valid, huh?
-    if Topic.objects.filter(title=topic_title).exists():
-        return True
-
-    if not slugify(topic_title):
-        return False
-
-    try:
-        Topic(title=topic_title).full_clean()
-    except ValidationError:
-        return False
-
-    return True
 
 
 @register.filter

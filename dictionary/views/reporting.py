@@ -1,19 +1,18 @@
 from django.contrib import messages as notifications
-from django.shortcuts import reverse
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from ..models import GeneralReport
 
 
-class GeneralReportView(CreateView):
+class GeneralReportView(SuccessMessageMixin, CreateView):
     #  todo create session to hinder many requests
     model = GeneralReport
     fields = ("reporter_email", "category", "subject", "content")
     template_name = "dictionary/reporting/general.html"
-
-    def get_success_url(self):
-        notifications.info(self.request, "bir kenara yazdık bunu. inceleyeceğiz.")
-        return reverse("home")
+    success_url = reverse_lazy("home")
+    success_message = "bir kenara yazdık bunu. inceleyeceğiz."
 
     def form_invalid(self, form):
         notifications.error(self.request, "iletişim formu gönderilemedi.")

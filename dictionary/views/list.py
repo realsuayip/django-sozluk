@@ -15,7 +15,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
-from django.views.generic.edit import FormMixin
 
 from uuslug import slugify
 
@@ -23,7 +22,7 @@ from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
 from ..utils import get_category_parameters
 from ..utils.managers import TopicListManager
-from ..utils.mixins import FormPostHandlerMixin
+from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
                               NON_DB_SLUGS_SAFENAMES, TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
 
@@ -40,7 +39,7 @@ class PeopleList(LoginRequiredMixin, TemplateView):
     template_name = "dictionary/list/people_list.html"
 
 
-class ConversationList(LoginRequiredMixin, ListView, FormPostHandlerMixin, FormMixin):
+class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
     """
     List conversations with a message sending form and a search box. Search results
     handled via GET request in get_queryset.
@@ -207,7 +206,7 @@ class TopicList(ListView):
         return year
 
 
-class TopicEntryList(ListView, FormPostHandlerMixin, FormMixin):
+class TopicEntryList(IntegratedFormMixin, ListView):
     """
     View to list entries of a topic with an entry creation form.
     View to handle search results of header search box. (başlık, #entry ya da @yazar)
