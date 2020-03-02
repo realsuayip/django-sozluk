@@ -14,9 +14,10 @@ from django.views.generic.edit import FormView
 
 from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
 from ..models import AccountTerminationQueue, Author, PairedSession, UserVerification
+from ..utils import time_threshold
 from ..utils.email import FROM_EMAIL, send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
-from ..utils.settings import PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE, TIME_THRESHOLD_24H
+from ..utils.settings import PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
 
 
 class Login(LoginView):
@@ -72,7 +73,7 @@ class ConfirmEmail(View):
         try:
             user_id = urlsafe_base64_decode(uidb64).decode()
             verification_object = UserVerification.objects.get(author_id=user_id,
-                                                               expiration_date__gte=TIME_THRESHOLD_24H)
+                                                               expiration_date__gte=time_threshold(hours=24))
         except (ValueError, UnicodeDecodeError, UserVerification.DoesNotExist):
             return self.response()
 

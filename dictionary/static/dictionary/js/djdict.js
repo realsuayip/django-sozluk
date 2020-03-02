@@ -306,6 +306,33 @@ $(function () {
         $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
     }
 
+    if (userIsMobile) {
+        // Code to hide some part of the header on mobile scroll.
+        let lastScrollTop = 0;
+        const delta = 30;
+        $(window).scroll(function (event) {
+            const st = $(this).scrollTop();
+            const header = $("header.page_header");
+            if (Math.abs(lastScrollTop - st) <= delta) {
+                return;
+            }
+
+            if (st > lastScrollTop) {
+                // downscroll code
+                $(".sub-nav").css("margin-top", ".75em");
+                header.css("top", "-55px").hover(function () {
+                    $(".sub-nav").css("margin-top", "0");
+                    header.css("top", "0px");
+                });
+            } else {
+                // upscroll code
+                $(".sub-nav").css("margin-top", "0");
+                header.css("top", "0px");
+            }
+            lastScrollTop = st;
+        });
+    }
+
     $("#header_search").autocomplete({
         serviceUrl: "/autocomplete/general/",
         triggerSelectOnValidInput: false,

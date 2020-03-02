@@ -7,17 +7,17 @@ from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
-from ...utils import get_generic_superuser
+from ...utils import get_generic_superuser, time_threshold
 from ...utils.admin import log_admin
-from ...utils.settings import NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE, TIME_THRESHOLD_24H
+from ...utils.settings import NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE
 
 
 def novice_list(limit=None):
     novice_queryset = Author.objects.filter(last_activity__isnull=False, is_novice=True,
                                             application_status="PN").annotate(
-        activity=Case(When(Q(last_activity__gte=TIME_THRESHOLD_24H), then=2),
-                      When(Q(last_activity__lte=TIME_THRESHOLD_24H), then=1), output_field=IntegerField(), )).order_by(
-        "-activity", "application_date")
+        activity=Case(When(Q(last_activity__gte=time_threshold(hours=24)), then=2),
+                      When(Q(last_activity__lte=time_threshold(hours=24)), then=1),
+                      output_field=IntegerField(), )).order_by("-activity", "application_date")
 
     if limit is not None:
         return novice_queryset[:limit]
@@ -101,16 +101,16 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     def get_next_username(self):
         next_novice = None
         # Get next novice on the list and return it's username, required for 'save and continue'
-        if self.novice.last_activity >= TIME_THRESHOLD_24H:
+        if self.novice.last_activity >= time_threshold(hours=24):
             next_novice = Author.objects.filter(is_novice=True, application_status="PN",
-                                                last_activity__gt=TIME_THRESHOLD_24H,
+                                                last_activity__gt=time_threshold(hours=24),
                                                 application_date__gt=self.novice.application_date).order_by(
                 "application_date").first()
 
         if not next_novice:
             # There was no user with latest activity. Check for non-active ones.
             next_novice = Author.objects.filter(is_novice=True, application_status="PN",
-                                                last_activity__lt=TIME_THRESHOLD_24H,
+                                                last_activity__lt=time_threshold(hours=24),
                                                 application_date__gt=self.novice.application_date).order_by(
                 "application_date").first()
 

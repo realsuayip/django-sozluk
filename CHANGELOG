@@ -1,3 +1,18 @@
+[0.84.0-dev-pre](2020.03.02)(compatible)
+
+--Additions--
+1) In mobile front-end, redundant part of the header will not be
+visible as the user scrolls, allowing for better browsing experience.
+
+-- Changes --
+1) Static-import use of TIME_THRESHOLD_24H was faulty, it would
+always generate the same result (threshold from first import time).
+Instead used the callable utility function time_threshold.
+I deem prior versions are pretty much unusable.
+
+--Deletions--
+1) TIME_THRESHOLD_24H
+
 [0.83.0-dev-pre](2020.03.01)(compatible)
 
 --Additions--

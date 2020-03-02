@@ -11,9 +11,9 @@ from django.utils import timezone
 
 from ..models import Category, Entry, Topic
 from ..models.managers.topic import TopicManager
-from ..utils import parse_date_or_none
-from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TIME_THRESHOLD_24H,
-                              TOPICS_PER_PAGE_DEFAULT, UNCACHED_CATEGORIES)
+from ..utils import parse_date_or_none, time_threshold
+from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT,
+                              UNCACHED_CATEGORIES)
 
 
 class TopicQueryHandler:
@@ -24,7 +24,7 @@ class TopicQueryHandler:
     """
 
     # Queryset filters
-    day_filter = {"entries__date_created__gte": TIME_THRESHOLD_24H}
+    day_filter = {"entries__date_created__gte": time_threshold(hours=24)}
     base_filter = {"entries__is_draft": False, "entries__author__is_novice": False, "is_censored": False}
 
     # Queryset annotations
@@ -54,7 +54,8 @@ class TopicQueryHandler:
         return [{'title': f'{self.__doc__}', 'slug': 'unimplemented', 'count': 1}]
 
     def debe(self):
-        year, month, day = TIME_THRESHOLD_24H.year, TIME_THRESHOLD_24H.month, TIME_THRESHOLD_24H.day
+        boundary = time_threshold(hours=24)
+        year, month, day = boundary.year, boundary.month, boundary.day
         debe_list = Entry.objects.filter(date_created__day=day, date_created__month=month, date_created__year=year,
                                          topic__is_censored=False).order_by("-vote_rate").annotate(
             title=F("topic__title"), slug=F("pk")).values(*self.values_entry)
@@ -66,9 +67,10 @@ class TopicQueryHandler:
             title=F('topic__title'), slug=F("pk")).values(*self.values_entry)
 
     def takip(self, user):
-        return Entry.objects.filter(date_created__gte=TIME_THRESHOLD_24H, author__in=user.following.all()).order_by(
-            "-date_created").annotate(title=Concat(F('topic__title'), Value("/#"), F('author__username')),
-                                      slug=F("pk")).values(*self.values_entry)
+        return Entry.objects.filter(date_created__gte=time_threshold(hours=24),
+                                    author__in=user.following.all()).order_by("-date_created").annotate(
+            title=Concat(F('topic__title'), Value("/#"), F('author__username')), slug=F("pk")).values(
+            *self.values_entry)
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}

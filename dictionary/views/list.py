@@ -20,11 +20,11 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import get_category_parameters
+from ..utils import get_category_parameters, time_threshold
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
-                              NON_DB_SLUGS_SAFENAMES, TIME_THRESHOLD_24H, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
+                              NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
 
 
 def index(request):
@@ -310,7 +310,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return redirect(reverse("topic", kwargs={"slug": self.kwargs.get("slug")}))
 
     def today(self):
-        return self.topic.entries.filter(date_created__gte=TIME_THRESHOLD_24H)
+        return self.topic.entries.filter(date_created__gte=time_threshold(hours=24))
 
     def today_in_history(self):
         year = self.request.GET.get("year")
@@ -374,7 +374,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return self.model.objects.none()
 
     def caylaklar(self):
-        return self.topic.entries.filter(author__is_novice=True, date_created__gte=TIME_THRESHOLD_24H)
+        return self.topic.entries.filter(author__is_novice=True, date_created__gte=time_threshold(hours=24))
 
     def get_queryset(self):
         """Filter queryset by self.view_mode"""

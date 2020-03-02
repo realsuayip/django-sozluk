@@ -12,7 +12,7 @@ from .settings import GENERIC_SUPERUSER_ID
 # General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
 
 def turkish_lower(turkish_string):
-    lower_map = {ord(u'I'): u'ı', ord(u'İ'): u'i', }
+    lower_map = {ord(u'I'): u'ı', ord(u'İ'): u'i'}
     return turkish_string.translate(lower_map).lower()
 
 
@@ -51,7 +51,7 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwarg
 
 
 def time_threshold(**timedelta_kwargs):
-    # Return (timedelta **kwargs, e.g. days=1) ago, from now.
+    """Return (timedelta **kwargs, e.g. days=1) ago, from now."""
     return timezone.now() - datetime.timedelta(**timedelta_kwargs)
 
 
@@ -60,7 +60,7 @@ def get_generic_superuser():
 
 
 def b64decode_utf8_or_none(b64_str):
-    # Return decoded b64 string (utf-8), if the b64 cannot be decoded, return None
+    """Return decoded b64 string (utf-8), if the b64 cannot be decoded, return None"""
     if not b64_str:
         return None
 

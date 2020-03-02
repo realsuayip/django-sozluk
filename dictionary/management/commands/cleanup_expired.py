@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from ...models import UserVerification
-from ...utils.settings import TIME_THRESHOLD_24H
+from ...utils import time_threshold
 
 
 class Command(BaseCommand):
@@ -11,5 +11,5 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         # Delete expired userverification objects
-        expired = UserVerification.objects.filter(expiration_date__lte=TIME_THRESHOLD_24H)
+        expired = UserVerification.objects.filter(expiration_date__lte=time_threshold(hours=24))
         expired.delete()

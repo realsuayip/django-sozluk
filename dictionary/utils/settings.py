@@ -1,12 +1,7 @@
-import datetime
 from decimal import Decimal
 
-from django.utils import timezone
 
 # @formatter:off
-# just don't change this unless you are living in a planet where a day takes more or less than 24 hours.
-TIME_THRESHOLD_24H = timezone.now() - datetime.timedelta(hours=24)
-
 # Default options for content object counts
 TOPICS_PER_PAGE_DEFAULT = 50   # For guests only
 ENTRIES_PER_PAGE_DEFAULT = 10  # For guests only
@@ -42,12 +37,12 @@ LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip")
 
 # default category to be shown when the user requests for the first time
 # should not be in LOGIN_REQUIRED_CATEGORIES
-DEFAULT_CATEGORY = "debe"
+DEFAULT_CATEGORY = "gundem"
 
 # don't cache these categories
 UNCACHED_CATEGORIES = ("kenar", )
 
-YEAR_RANGE = range(2020, 2017, -1)  # for TopicList view only
+YEAR_RANGE = (2020, 2019, 2018)  # for TopicList view only
 
 # Give entry id's for flat pages.
 FLATPAGE_URLS = {

@@ -1,16 +1,14 @@
-import datetime
-
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
 from ..models import Author, Conversation, Entry, Memento, Message
+from ..utils import time_threshold
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
@@ -134,7 +132,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         return Entry.objects_published.filter(author=self.profile).order_by("-vote_rate")
 
     def weeklygoods(self):
-        return self.liked().filter(date_created__gte=timezone.now() - datetime.timedelta(days=7))
+        return self.liked().filter(date_created__gte=time_threshold(days=7))
 
     def beloved(self):
         return Entry.objects_published.filter(author=self.profile, favorited_by__in=[self.profile]).order_by(

@@ -18,6 +18,7 @@ header.page_header {
     right: 0;
     z-index: 1025;
     background: #fff;
+    transition: 0.5s ease;
 }
 
 .logo {
@@ -395,7 +396,8 @@ section.user_entries article.entry p {
     word-wrap: break-word;
 
 }
-section.user_entries article.entry.permalink p{
+
+section.user_entries article.entry.permalink p {
     max-height: none;
 }
 
