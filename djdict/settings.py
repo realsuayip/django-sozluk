@@ -69,8 +69,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'dictionary.utils.context_processors.header_categories',
-                'dictionary.utils.context_processors.message_status',
-                'dictionary.utils.context_processors.following_status',
                 'dictionary.utils.context_processors.left_frame',
             ],
         },

@@ -1,3 +1,19 @@
+[0.85.0-dev-pre](2020.03.07)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Instead of using context processors, use user object
+to show indicator of new message/new topic content.
+2) Downgrade cookie.min.js version. Newer version doesn't
+follow RFC 6265 strictly, which somehow affects the btoa functions.
+Will be fixed when the stable version (3.0.x) of the library comes out.
+3) Bump django to 2.2.11, user_agents to 2.1
+
+--Deletions--
+1) Context processors: message_status, following_status.
+
 [0.84.0-dev-pre](2020.03.02)(compatible)
 
 --Additions--

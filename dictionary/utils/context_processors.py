@@ -1,11 +1,9 @@
-from contextlib import suppress
 from urllib.parse import parse_qsl
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.utils.functional import cached_property
 
-from ..models import Category, Conversation, TopicFollowing
+from ..models import Category
 from . import b64decode_utf8_or_none, get_category_parameters
 from .decorators import cached_context
 from .managers import TopicListManager
@@ -129,39 +127,3 @@ def header_categories(request):
     """
     categories = Category.objects.all()
     return {"nav_categories": list(categories)}
-
-
-@cached_context(timeout=15, vary_on_user=True)
-def message_status(request):
-    """
-    Checks if any unread messages exists, enables the indicator in the header if there are.
-    """
-    unread_message_status = False
-
-    if request.user.is_authenticated:
-        with suppress(Conversation.DoesNotExist):
-            for chat in Conversation.objects.list_for_user(request.user):
-                if chat.last_message.recipient == request.user and not chat.last_message.read_at:
-                    unread_message_status = True
-                    break
-
-    return {"user_has_unread_messages": unread_message_status}
-
-
-@cached_context(timeout=15, vary_on_user=True)
-def following_status(request):
-    """
-    Enables the indicator in the header, if there is new content from following topics.
-    Notice: only for following topics, not users. there is a dedicated tab named "son" in header for that.
-    """
-    status = False
-    if request.user.is_authenticated:
-        user_following = TopicFollowing.objects.filter(author=request.user)
-
-        with suppress(ObjectDoesNotExist):
-            for following in user_following:
-                if following.read_at < following.topic.latest_entry_date(request.user):
-                    status = True
-                    break
-
-    return {"user_has_unread_followings": status}

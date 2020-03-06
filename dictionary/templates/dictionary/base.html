@@ -34,8 +34,8 @@
     <script defer
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.tr.min.js"></script>
 
-    {# This library's stable release will be out soon anyway #}
-    <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+    {# Newer versions cause decoding error. Using this temporarily until stable 3.0 release. #}
+    <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.0-beta.3/dist/js.cookie.min.js"></script>
 
     <script defer src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
@@ -118,15 +118,15 @@
                     </li>
 
 
-                    <li {% if user_has_unread_messages %}class="new"{% endif %}>
+                    <li {% if user.has_unread_messages %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}">
                             <i class="material-icons">
                                 chat_bubble_outline
                             </i><span>mesaj</span></a>
                     </li>
 
-                    <li {% if user_has_unread_followings %}class="new"{% endif %}><a class="nav-quicklink"
-                                                                                     href="{% url 'activity' %}">
+                    <li {% if user.has_unread_topics %}class="new"{% endif %}><a class="nav-quicklink"
+                                                                                 href="{% url 'activity' %}">
                         <i class="material-icons">
                             timeline
                         </i><span>olay</span></a>
@@ -301,6 +301,7 @@
                 </ul>
             </footer>
         {% endcache %}
+        {% include "dictionary/includes/devinfo.html" %}
     </div>
 
 </div>

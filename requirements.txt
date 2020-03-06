@@ -1,5 +1,5 @@
-django==2.2.10
+django==2.2.11
 django-widget-tweaks==1.4.5
 django-uuslug==1.2.0
 python-dateutil==2.8.1
-user_agents==2.0
+user_agents==2.1

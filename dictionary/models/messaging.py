@@ -1,14 +1,13 @@
 from django.db import models
 from django.utils import timezone
 
-from .author import Author
 from .managers.messaging import ConversationManager, MessageManager
 
 
 class Message(models.Model):
     body = models.TextField()
-    sender = models.ForeignKey(Author, related_name="+", on_delete=models.CASCADE)
-    recipient = models.ForeignKey(Author, related_name="+", on_delete=models.CASCADE)
+    sender = models.ForeignKey('Author', related_name="+", on_delete=models.CASCADE)
+    recipient = models.ForeignKey('Author', related_name="+", on_delete=models.CASCADE)
     sent_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, blank=True)
 
@@ -26,7 +25,7 @@ class Message(models.Model):
 
 
 class Conversation(models.Model):
-    participants = models.ManyToManyField(Author)
+    participants = models.ManyToManyField('Author')
     messages = models.ManyToManyField(Message)
 
     objects = ConversationManager()

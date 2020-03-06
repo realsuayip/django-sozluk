@@ -1,11 +1,14 @@
+from contextlib import suppress
 from decimal import Decimal
 
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.shortcuts import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from ..utils import time_threshold
 from .category import Category
@@ -167,6 +170,19 @@ class Author(AbstractUser):
     def is_suspended(self):
         if self.suspended_until and self.suspended_until > timezone.now():
             return True
+        return False
+
+    @cached_property
+    def has_unread_messages(self):
+        return apps.get_model("dictionary", "Message").objects.filter(recipient=self, read_at__isnull=True).exists()
+
+    @cached_property
+    def has_unread_topics(self):
+        following_topics = apps.get_model("dictionary", "TopicFollowing").objects.filter(author=self)
+        with suppress(ObjectDoesNotExist):
+            for following in following_topics:
+                if following.read_at < following.topic.latest_entry_date(self):
+                    return True
         return False
 
 
