@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     {% load static %}
-
+    {% load functions %}
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
@@ -171,14 +171,13 @@
         <!--- categories and mobile navigation -->
         <nav class="sub-nav">
             <ul class="mobile-only">
-                {% include "dictionary/includes/header_links/bugun.html" %}
-                {% include "dictionary/includes/header_links/gundem.html" %}
-                {% include "dictionary/includes/header_links/debe.html" %}
-                {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
+                {% render_header_link "bugun" %}
+                {% render_header_link "gundem" %}
+                {% render_header_link "debe" %}
+                {% render_header_link "tarihte-bugun" %}
+                {% render_header_link "takip" %}
 
                 {% if request.user.is_authenticated %}
-                    {% include "dictionary/includes/header_links/takip.html" %}
-
                     <li id="usermenu_mobile" data-toggle="dropdown">
                         <i class="material-icons">more_horiz</i>
                     </li>
@@ -206,25 +205,14 @@
             </ul>
 
             <ul class="desktop-only" id="category_view">
-                {% include "dictionary/includes/header_links/bugun.html" %}
-                {% include "dictionary/includes/header_links/gundem.html" %}
-                {% include "dictionary/includes/header_links/debe.html" %}
 
-                {% if request.user.is_authenticated %}
-                    {% include "dictionary/includes/header_links/takip.html" %}
-
-                    <li class="nav-item{% if active_category == "kenar" %} active{% endif %}" data-category="kenar"
-                        data-safename="kenar">
-                        <a title="kenara attığım entry'ler" href="{% url 'topic_list' slug="kenar" %}">kenar</a>
-                    </li>
-
-                    <li class="nav-item{% if active_category == "caylaklar" %} active{% endif %}"
-                        data-category="caylaklar" data-safename="çaylaklar">
-                        <a title="çömezlerin girdikleri" href="{% url 'topic_list' slug="caylaklar" %}">çaylaklar</a>
-                    </li>
-                {% endif %}
-
-                {% include "dictionary/includes/header_links/tarihte-bugun.html" %}
+                {% render_header_link 'bugun' %}
+                {% render_header_link 'gundem' %}
+                {% render_header_link 'debe' %}
+                {% render_header_link 'takip' %}
+                {% render_header_link 'kenar' %}
+                {% render_header_link 'caylaklar' %}
+                {% render_header_link 'tarihte-bugun' %}
 
                 {% for category in nav_categories|slice:":4" %}
                     <li class="nav-item{% if active_category == category.slug %} active{% endif %}"
@@ -288,7 +276,6 @@
         {% load cache %}
         {% cache None footer %}
             <footer class="body-footer">
-                {% load functions %}
                 <h2 style="font-size: 1.3em;">django sözlük</h2>
                 <ul>
                     <li><a href="{% url 'general-report' %}">iletişim formu</a></li>

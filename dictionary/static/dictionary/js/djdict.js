@@ -426,7 +426,7 @@ const updateQueryStringParameter = function (uri, key, value) {
     }
 };
 
-$("select#entry_list_page").on("change", function () {
+$("select.page-selector").on("change", function () {
     window.location = updateQueryStringParameter(location.href, "page", this.value);
 });
 

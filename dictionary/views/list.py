@@ -138,7 +138,7 @@ class TopicList(ListView):
         slug = self.kwargs.get("slug")
 
         if slug in NON_DB_CATEGORIES:
-            title = NON_DB_SLUGS_SAFENAMES[slug]
+            title = NON_DB_SLUGS_SAFENAMES[slug][0]
             params = get_category_parameters(slug)
         else:
             title = Category.objects.get(slug=slug).name

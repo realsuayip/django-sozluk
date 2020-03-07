@@ -1,7 +1,0 @@
-{% if request.user.is_authenticated %}
-    <li class="nav-item{% if active_category == "bugun" %} active{% endif %}" data-category="bugun" data-safename="bugün">
-        <a title="en son girilenler" id="bugun" href="{% url "topic_list" slug="bugun" %}">
-            bugün
-        </a>
-    </li>
-{% endif %}

@@ -1,3 +1,18 @@
+[0.86.0-dev-pre](2020.03.07)(compatible)
+
+--Additions--
+1) New inclusion tag render_header_link, renders non-db header links
+more neatly. (changes were made to related files)
+
+-- Changes --
+1) pagination.html now has proper selector for javascript.
+2) NON_DB_SLUGS_SAFENAMES now also holds the description of
+the category. Relevant changes were made to support this.
+3) Add çaylaklar to login required categories.
+
+--Deletions--
+1) header_links folder and its contents.
+
 [0.85.0-dev-pre](2020.03.07)(compatible)
 
 --Additions--

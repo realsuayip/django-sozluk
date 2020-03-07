@@ -79,7 +79,7 @@
                         <a title="önceki sayfa"
                            href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
                     {% endif %}
-                    <select id="entry_list_page">
+                    <select class="page-selector">
                         {% for page in page_obj.paginator.page_range %}
                             {% if page == page_obj.number %}
                                 <option selected>{{ page }}</option>

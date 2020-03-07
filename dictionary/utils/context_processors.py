@@ -31,7 +31,7 @@ class LeftFrameProcessor:
             self.handle_default()
 
     def handle_non_db(self):
-        self.safename = NON_DB_SLUGS_SAFENAMES[self.slug]
+        self.safename = NON_DB_SLUGS_SAFENAMES[self.slug][0]
 
     def handle_generic(self):
         try:
@@ -42,7 +42,7 @@ class LeftFrameProcessor:
 
     def handle_default(self):
         self.slug = DEFAULT_CATEGORY
-        self.safename = NON_DB_SLUGS_SAFENAMES[self.slug]
+        self.safename = NON_DB_SLUGS_SAFENAMES[self.slug][0]
 
     @property
     def serialized(self):

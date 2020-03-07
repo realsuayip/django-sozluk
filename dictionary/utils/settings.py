@@ -1,6 +1,5 @@
 from decimal import Decimal
 
-
 # @formatter:off
 # Default options for content object counts
 TOPICS_PER_PAGE_DEFAULT = 50   # For guests only
@@ -15,25 +14,24 @@ GENERIC_SUPERUSER_ID = 1
 GENERIC_PRIVATEUSER_ID = 35
 
 # Category related settings, don't change the current keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded.
-# Safenames are required for views.list.TopicList (mobile), safenames for desktop views are located in (base.html)
-# with data-safename attributes.
+# Structure: {key: (safename, description)}
 NON_DB_SLUGS_SAFENAMES = {
-    "bugun": "bugün",
-    "gundem": "gündem",
-    "basiboslar": "başıboşlar",
-    "takip": "takip",
-    "tarihte-bugun": "tarihte bugün",
-    "kenar": "kenar",
-    "caylaklar": "çaylaklar",
-    "debe": "dünün en beğenilen entry'leri",
-    "hayvan-ara": "arama sonuçları"
+    "bugun": ("bugün", "en son girilenler"),
+    "gundem": ("gündem", "neler olup bitiyor"),
+    "basiboslar": ("başıboşlar", "kanalsız başlıklar"),
+    "takip": ("takip", "takip ettiğim yazarlar ne yazmış?"),
+    "tarihte-bugun": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
+    "kenar": ("kenar", "kenara attığım entry'ler"),
+    "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
+    "debe": ("dünün en beğenilen entry'leri", "dünün en beğenilen entry'leri"),
+    "hayvan-ara": ("arama sonuçları", "hayvan ara")
 }
 
 
-NON_DB_CATEGORIES = list(NON_DB_SLUGS_SAFENAMES.keys())
+NON_DB_CATEGORIES = tuple(NON_DB_SLUGS_SAFENAMES.keys())
 
 # these categories are not open to visitors
-LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip")
+LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "caylaklar")
 
 # default category to be shown when the user requests for the first time
 # should not be in LOGIN_REQUIRED_CATEGORIES
@@ -42,7 +40,7 @@ DEFAULT_CATEGORY = "gundem"
 # don't cache these categories
 UNCACHED_CATEGORIES = ("kenar", )
 
-YEAR_RANGE = (2020, 2019, 2018)  # for TopicList view only
+YEAR_RANGE = (2020, 2019, 2018)
 
 # Give entry id's for flat pages.
 FLATPAGE_URLS = {

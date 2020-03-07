@@ -253,8 +253,8 @@ class TopicListHandler:
         # Serialize topic queryset data, cache it and return it.
         if self.cache_exists:
             return self._cached_data
-
-        return self._cache_data(list(self.data))
+        # Notice: caching the queryset will evaluate it
+        return self._cache_data(self.data)
 
     @property
     def refresh_count(self):  # (yenile count)
