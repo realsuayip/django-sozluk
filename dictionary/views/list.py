@@ -6,7 +6,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Case, F, IntegerField, Max, Q, When
+from django.db.models import BooleanField, Case, F, Max, Q, When
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
@@ -15,7 +15,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
-
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
@@ -89,16 +88,17 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
 
 class ActivityList(LoginRequiredMixin, ListView):
-    model = TopicFollowing
     template_name = "dictionary/list/activity_list.html"
-    context_object_name = "topics_following"
+    context_object_name = "topics"
     paginate_by = 30
 
     def get_queryset(self):
-        return TopicFollowing.objects.filter(author=self.request.user).annotate(
-            latest=Max("topic__entries__date_created"),
-            is_read=Case(When(Q(latest__gt=F("read_at")), then=1), When(Q(latest__lt=F("read_at")), then=2),
-                         output_field=IntegerField()), ).order_by("is_read", "-read_at")
+        queryset = self.request.user.following_topics.annotate(
+            latest=Max("entries__date_created", filter=~Q(entries__author=self.request.user)),
+            read_at=F("topicfollowing__read_at"),
+            is_read=Case(When(Q(latest__gt=F("read_at")), then=False), default=True,
+                         output_field=BooleanField())).order_by("is_read", "-topicfollowing__read_at")
+        return queryset
 
 
 class CategoryList(ListView):
@@ -347,8 +347,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""
         queryset = None
+
         if self.request.user.is_authenticated:
-            following = self.topic.followers.filter(author=self.request.user).first()
+            following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
 
             if following:
                 date = self.request.GET.get("d")
@@ -361,15 +362,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 if last_read:
                     queryset = self.topic.entries.filter(date_created__gt=last_read).exclude(author=self.request.user)
 
-            if not queryset:
-                notifications.info(self.request, "pek bişey bulamadım açıkçası, buyrun hepsi")
-                self.redirect = True
-            else:
+            if queryset is not None and queryset.exists():
                 following.read_at = timezone.now()
                 following.save()
                 notifications.info(self.request, f"{queryset.count()} tane entry")
                 return queryset
 
+        notifications.info(self.request, "pek bişey bulamadım açıkçası, buyrun hepsi")
         self.redirect = True
         return self.model.objects.none()
 
@@ -459,7 +458,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         elif not entries:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
-            if self.view_mode in ["today", "today_in_history", "nice", "nicetoday", "search", "caylaklar"]:
+            if self.view_mode in ("today", "today_in_history", "nice", "nicetoday", "search", "caylaklar", "following"):
                 context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
 
         return context
@@ -485,6 +484,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 self.view_mode = request.GET.get("a")
             else:
                 self.view_mode = "regular"
+
+        # Check login requirements
+
+        login_required_modes = ("caylaklar", "following")
+        if not request.user.is_authenticated and self.view_mode in login_required_modes:
+            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
+            return redirect(reverse("login"))
 
         return super().dispatch(request)
 

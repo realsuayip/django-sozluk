@@ -8,15 +8,13 @@
     <div class="left-frame-in">
         <h4><strong>takip</strong></h4>
 
-        {% if topics_following %}
-            <small>{{ topics_following|length }} başlık</small>
+        {% if topics.exists %}
+            <small>{{ topics|length }} başlık</small>
             <ul id="topic-list-standalone" class="list-group topic-list">
-                {% for following in topics_following %}
-                    {% activity_latest_entry request.user following.topic as latest_entry_date %}
-                    <li class="list-group-item {% if following.read_at < latest_entry_date %}active{% endif %}">
-                        <a href="{{ following.topic.get_absolute_url }}?a=following&d={{ following.read_at|timestamp }}">{{ following.topic.title }}
-                        </a></li>
-
+                {% for topic in topics %}
+                    <li class="list-group-item{% if not topic.is_read %} active{% endif %}">
+                        <a href="{{ topic.get_absolute_url }}?a=following&d={{ topic.read_at|timestamp }}">{{ topic.title }}</a>
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}

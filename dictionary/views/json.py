@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
-from ..models import Author, Category, Entry, Message, Topic, TopicFollowing
+from ..models import Author, Category, Entry, Message, Topic
 from ..utils.managers import TopicListManager
 from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, TOPICS_PER_PAGE_DEFAULT, VOTE_RATES, YEAR_RANGE
 from ..utils.views import JsonView
@@ -209,13 +209,13 @@ class EntryAction(LoginRequiredMixin, JsonView):
 
 class TopicAction(LoginRequiredMixin, JsonView):
     http_method_names = ['post']
-    topic_object = None
+    topic = None
 
     def handle(self):
         action = self.request_data.get("type")
 
         try:
-            self.topic_object = get_object_or_404(Topic, id=int(self.request_data.get("topic_id")))
+            self.topic = get_object_or_404(Topic, id=int(self.request_data.get("topic_id")))
         except (ValueError, TypeError, Topic.DoesNotExist):
             return self.bad_request()
 
@@ -225,12 +225,11 @@ class TopicAction(LoginRequiredMixin, JsonView):
         return super().handle()
 
     def follow(self):
-        try:
-            # unfollow if already following
-            existing = TopicFollowing.objects.get(topic=self.topic_object, author=self.request.user)
-            existing.delete()
-        except TopicFollowing.DoesNotExist:
-            TopicFollowing.objects.create(topic=self.topic_object, author=self.request.user)
+        following = self.request.user.following_topics
+        if self.topic in following.all():
+            following.remove(self.topic)
+        else:
+            following.add(self.topic)
         return self.success()
 
 

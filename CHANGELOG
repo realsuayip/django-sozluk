@@ -1,3 +1,25 @@
+[0.88.0-dev-pre](2020.03.08)(incompatible)
+
+--Additions--
+1) Added login_required_modes for TopicEntryList, these
+modes are not open to visitors.
+2) Added date_created field to TopicFollowing.
+
+-- Changes --
+1) TopicFollowing is now used as a m2m field (via through).
+2) Following changes were made to comply with new TopicFollowing:
+-Author has_unread_topics logic
+-ActivityList get_queryset method (and template)
+-TopicAction follow method
+-TopicEntryList following method
+Notice **incompatible**: In order to migrate new structure of
+TopicFollowing, makemigrations and migrate. Set timezone.now manually
+for the default value of date_created.
+
+--Deletions--
+1) Remove activity_latest_entry template tag, it is
+redundant with new TopicFollowing changes.
+
 [0.87.0-dev-pre](2020.03.07)(compatible)
 
 --Additions--

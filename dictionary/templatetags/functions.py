@@ -1,9 +1,8 @@
 from django import template
 from django.urls import reverse
 
-from ..models import Entry, TopicFollowing
+from ..models import Entry
 from ..utils.settings import FLATPAGE_URLS, LOGIN_REQUIRED_CATEGORIES, NON_DB_SLUGS_SAFENAMES, SOCIAL_URLS
-
 
 register = template.Library()
 
@@ -27,17 +26,12 @@ def entry_full_url(req, entry_id):
 
 @register.simple_tag
 def check_follow_status(user, topic):
-    return TopicFollowing.objects.filter(topic=topic, author=user).exists()
+    return topic.follow_check(user)
 
 
 @register.simple_tag
 def check_category_follow_status(user, category):
     return category in user.following_categories.all()
-
-
-@register.simple_tag
-def activity_latest_entry(sender, topic):
-    return topic.latest_entry_date(sender)
 
 
 @register.simple_tag

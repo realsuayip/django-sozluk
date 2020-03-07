@@ -1,11 +1,10 @@
-from contextlib import suppress
 from decimal import Decimal
 
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import BooleanField, Case, F, Max, Q, When
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -90,6 +89,9 @@ class Author(AbstractUser):
 
     # User-category relations
     following_categories = models.ManyToManyField('Category', blank=True)
+
+    # User-topic relations
+    following_topics = models.ManyToManyField('Topic', through="TopicFollowing", related_name="followers", blank=True)
 
     # Personal info
     birth_date = models.DateField(blank=True, null=True)
@@ -178,12 +180,16 @@ class Author(AbstractUser):
 
     @cached_property
     def has_unread_topics(self):
-        following_topics = apps.get_model("dictionary", "TopicFollowing").objects.filter(author=self)
-        with suppress(ObjectDoesNotExist):
-            for following in following_topics:
-                if following.read_at < following.topic.latest_entry_date(self):
-                    return True
-        return False
+        # @formatter:off
+        queryset = self.following_topics.annotate(
+            latest=Max("entries__date_created", filter=~Q(entries__author=self)),
+            is_read=Case(
+                When(Q(latest__gt=F("topicfollowing__read_at")), then=False),
+                default=True,
+                output_field=BooleanField())
+        ).filter(is_read=False)
+        # @formatter:on
+        return queryset.exists()
 
 
 class EntryFavorites(models.Model):

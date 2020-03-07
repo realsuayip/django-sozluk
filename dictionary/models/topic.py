@@ -17,9 +17,10 @@ TOPIC_TITLE_VALIDATORS = [RegexValidator(r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%
 
 
 class TopicFollowing(models.Model):
-    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="followers")
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    topic = models.ForeignKey("Topic", on_delete=models.CASCADE)
+    author = models.ForeignKey("Author", on_delete=models.CASCADE)
     read_at = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.topic.id} => {self.author.username}"
