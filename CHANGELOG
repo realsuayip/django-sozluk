@@ -1,3 +1,24 @@
+[0.87.0-dev-pre](2020.03.07)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Changed the logic of advanced search.
+
+a - Instead of chaining filters and annotations, use them all at once.
+    This drastically improves query speeds.
+b - Instead of showing ALL counts for topic entry counts, filter based on the
+    search fields.
+c - nice_only now do not look for sum of vote_rates, it looks
+    for a nice individual entry.
+
+2) Revert removed queryset evaluation while caching.
+(because AsyncTopicList needed a serializable object)
+
+--Deletions--
+None
+
 [0.86.0-dev-pre](2020.03.07)(compatible)
 
 --Additions--

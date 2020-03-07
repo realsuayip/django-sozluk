@@ -4,16 +4,14 @@ from decimal import Decimal
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, Max, Q, Sum, Value
+from django.db.models import Count, F, Max, Q, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from ..models import Category, Entry, Topic
-from ..models.managers.topic import TopicManager
 from ..utils import parse_date_or_none, time_threshold
-from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT,
-                              UNCACHED_CATEGORIES)
+from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT, UNCACHED_CATEGORIES
 
 
 class TopicQueryHandler:
@@ -78,7 +76,12 @@ class TopicQueryHandler:
             **self.base_annotation, **self.base_count).values(*self.values)
 
     def hayvan_ara(self, user, search_keys):
-        qs = Topic.objects
+        """
+        The logic of advanced search feature.
+        Notice: If you are including a new field, and it requires an annotation, you will need to use SubQuery.
+        Notice: Entry counts given in accordance with search filters, it may not be the count of ALL entries.
+        """
+
         keywords = search_keys.get("keywords")
         author_nick = search_keys.get("author_nick")
         favorites_only = search_keys.get("is_in_favorites") == "true"
@@ -87,10 +90,8 @@ class TopicQueryHandler:
         to_date = search_keys.get("to_date")
         orderding = search_keys.get("ordering")
 
-        count_filter = {"count": Count("entries", distinct=True)}
-
         # Input validation
-        from_date = parse_date_or_none(from_date, delta="negative", days=1)
+        from_date = parse_date_or_none(from_date)
         to_date = parse_date_or_none(to_date)
 
         if orderding not in ("alpha", "newer", "popular"):
@@ -100,39 +101,33 @@ class TopicQueryHandler:
         if not keywords and not author_nick and not favorites_only:
             keywords = "akıl fikir"
 
+        filters = {}
+
         # Filtering
         if favorites_only and user.is_authenticated:
-            qs = qs.filter(entries__favorited_by=user)
+            filters["entries__favorited_by"] = user
 
+        # Originally this would sum up all the entries' rates, but in new implementation it considers only one entry
+        # Summing up all entries requires SubQueries and it complicates things a lot. This filter is decent anyway.
         if nice_only:
-            qs = qs.annotate(nice_sum=Sum("entries__vote_rate")).filter(nice_sum__gte=Decimal("500"))
+            filters["entries__vote_rate__gte"] = Decimal("489")
 
         if author_nick:
-            qs = qs.filter(entries__author__username=author_nick)
+            filters["entries__author__username"] = author_nick
 
         if keywords:
-            qs = qs.filter(title__icontains=keywords)
+            filters["title__icontains"] = keywords
 
         if from_date:
-            qs = qs.filter(date_created__gte=from_date)
+            filters["entries__date_created__gte"] = from_date
 
         if to_date:
-            qs = qs.filter(date_created__lte=to_date)
+            filters["entries__date_created__lte"] = to_date
 
-        # Check if qs exists and order qs
-        if qs and not isinstance(qs, TopicManager):
-            qs = qs.filter(**self.base_filter).annotate(**count_filter)
-            if orderding == "alpha":
-                qs = qs.order_by("title")
-            elif orderding == "newer":
-                qs = qs.order_by("-date_created")
-            elif orderding == "popular":
-                qs = qs.order_by("-count", "-date_created")
-
-            result = qs.values(*self.values)
-            return result[:TOPICS_PER_PAGE_DEFAULT]
-
-        return qs.none()  # nothing found
+        qs = Topic.objects.filter(**self.base_filter, **filters).annotate(count=Count("entries", distinct=True))
+        ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
+        result = qs.order_by(*ordering_map.get(orderding)).values(*self.values)[:TOPICS_PER_PAGE_DEFAULT]
+        return result
 
     def generic_category(self, slug):
         category = get_object_or_404(Category, slug=slug)
@@ -253,8 +248,8 @@ class TopicListHandler:
         # Serialize topic queryset data, cache it and return it.
         if self.cache_exists:
             return self._cached_data
-        # Notice: caching the queryset will evaluate it
-        return self._cache_data(self.data)
+        # Notice: caching the queryset will evaluate it anyway
+        return self._cache_data(tuple(self.data))
 
     @property
     def refresh_count(self):  # (yenile count)
