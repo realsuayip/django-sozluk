@@ -67,6 +67,7 @@ const leftFrameReset = function () {
 };
 
 const topicListCall = function (slug, parameters, page = null) {
+    // **DEPRECATED** //
     const loadIndicator = $("#load_indicator");
     loadIndicator.css("display", "inline-block");
     const topicList = $("ul#topic-list");
@@ -182,6 +183,7 @@ const dictToParameters = function (dict) {
 };
 
 const leftFramePopulate = function (slug = null, page = null, resetCache = false, searchParameters = null) {
+    // **DEPRECATED** //
     // category -> cateogry slug (or non_db_categories slug)
     // page -> which page to call
     // reset_cache -> whether to use cached data while calling

@@ -1,3 +1,19 @@
+[0.89.0-dev-pre](2020.03.14)(compatible)
+
+--Additions--
+1) New 'LeftFrame' manager, an interface for TopicListManager.
+From now on, ALL topic-list related views will use this common
+interface.
+2) Add deprecation flags to the parts that haven't been
+refactored for LeftFrame usage.
+
+-- Changes --
+1) Refactored LeftFrameProcessor. Now it uses LeftFrame.
+
+--Deletions--
+1) CategoryAction follow() no longer refreshes the 'bugun'
+category.
+
 [0.88.0-dev-pre](2020.03.08)(incompatible)
 
 --Additions--

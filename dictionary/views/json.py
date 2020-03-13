@@ -10,6 +10,7 @@ from ..utils.views import JsonView
 
 
 class AsyncTopicList(JsonView):
+    """ **DEPRECATED** """
     http_method_names = ['get']
 
     def handle(self):
@@ -256,8 +257,6 @@ class CategoryAction(LoginRequiredMixin, JsonView):
         else:
             self.request.user.following_categories.add(self.category_object)
 
-        manager = TopicListManager(self.request.user, "bugun")
-        manager.delete_cache()
         return self.success()
 
 

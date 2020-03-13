@@ -109,6 +109,7 @@ class CategoryList(ListView):
 
 class TopicList(ListView):
     """
+    **DEPRECATED**
     Topic list (başlıklar) for mobile views such as "bugün", "gündem",
     Desktop equivalent => views.json.AsyncTopicList + LeftFrameProcessor
     """

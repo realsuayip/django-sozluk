@@ -1,17 +1,22 @@
 import base64
+from contextlib import suppress
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.db.models import Count, F, Max, Q, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from ..models import Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
-from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT, UNCACHED_CATEGORIES
+from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES,
+                              TOPICS_PER_PAGE_DEFAULT, UNCACHED_CATEGORIES, YEAR_RANGE)
+from . import get_category_parameters
 
 
 class TopicQueryHandler:
@@ -268,3 +273,65 @@ class TopicListManager(TopicListHandler, TopicQueryHandler):
     To customize this, do not override this class, instead override each parent class seperately, and create a new
     manager class. This way base classes will always be available.
     """
+
+
+class LeftFrame:
+    """
+    An interface for TopicListManager. (for presentation layer)
+    Note: Check out as_context before you append any attribute or method.
+    """
+
+    def __init__(self, manager, page):
+        """
+        :param manager: An instance of TopicListManager (or a child of TopicListHandler)
+        :param page: Integer, for Paginator.
+        """
+        self.slug = manager.slug
+        self.page = page
+        self._manager = manager
+
+    @property
+    def year_range(self):
+        return YEAR_RANGE
+
+    @property
+    def year(self):
+        return self._manager.year
+
+    @property
+    def safename(self):
+        if self.slug in NON_DB_CATEGORIES:
+            return NON_DB_SLUGS_SAFENAMES[self.slug][0]
+
+        with suppress(Category.DoesNotExist):
+            return Category.objects.get(slug=self.slug).name
+
+    @property
+    def slug_identifier(self):
+        return self._manager.slug_identifier
+
+    @property
+    def refresh_count(self):
+        return self._manager.refresh_count
+
+    @property
+    def parameters(self):
+        return get_category_parameters(self.slug, self.year)
+
+    @cached_property
+    def _paginated(self):
+        user = self._manager.user
+        paginate_by = user.topics_per_page if user.is_authenticated else TOPICS_PER_PAGE_DEFAULT
+        return Paginator(self._manager.serialized, paginate_by)
+
+    @property
+    def page_range(self):
+        return self._paginated.page_range
+
+    @property
+    def object_list(self):
+        return self._paginated.get_page(self.page).object_list
+
+    def as_context(self):
+        """Every 'public' attribute/method gets appended to this dictionary."""
+        return dict((name, getattr(self, name)) for name in dir(self) if not name.startswith(('_', 'as_context')))
