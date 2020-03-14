@@ -1,22 +1,18 @@
 import base64
-from contextlib import suppress
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
 from django.db.models import Count, F, Max, Q, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.utils.functional import cached_property
 
 from ..models import Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
-from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES,
-                              TOPICS_PER_PAGE_DEFAULT, UNCACHED_CATEGORIES, YEAR_RANGE)
-from . import get_category_parameters
+from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT,
+                              UNCACHED_CATEGORIES, YEAR_RANGE)
 
 
 class TopicQueryHandler:
@@ -152,7 +148,6 @@ class TopicListHandler:
 
     cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
     data = None
-    slug_identifier = "/topic/"
     cache_exists = False
     cache_key = None
 
@@ -160,8 +155,8 @@ class TopicListHandler:
         """
         :param user: only pass request.user, required for topics per page and checking categories with login requirement
         :param slug: slug of the category
-        :param year: only required for tarihte-bugun
-        :param fetch_cached: set to False if you don't want to fetch cached (refresh button behaviour).
+        :param year: only required for tarihte-bugun (only pass int or str with digits only)
+        **deprecated** :param fetch_cached: set to False if you don't want to fetch cached (refresh button behaviour).
         :param search_keys request.GET for "hayvan-ara" (advanced search).
         """
 
@@ -171,14 +166,10 @@ class TopicListHandler:
             raise PermissionDenied("User not logged in")
 
         self.slug = slug
-        self.year = year if self.slug == "tarihte-bugun" else None
+        self.year = self._validate_year(year)
         self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
 
-        if slug in ("takip", "debe"):
-            self.slug_identifier = "/entry/"
-        elif slug == "kenar":
-            self.slug_identifier = "/entry/update/"
-
+        # Check cache
         if self.slug not in UNCACHED_CATEGORIES:
             self._check_cache()
 
@@ -186,6 +177,7 @@ class TopicListHandler:
             if not fetch_cached and self.cache_exists:
                 self.delete_cache()
 
+        # No cache found, hit the database.
         if not self.cache_exists:
             # Arguments to be passed for TopicQueryHandler methods. @formatter:off
             arg_map = {
@@ -200,6 +192,23 @@ class TopicListHandler:
 
             # Get the method from TopicQueryHandler.
             self.data = getattr(self, slug_method)(*arg_map.get(slug_method, []))
+
+    def _validate_year(self, year):
+        """Validates and sets the year."""
+        if self.slug == "tarihte-bugun":
+            default = 2020
+            if year is not None:
+
+                if not isinstance(year, (str, int)):
+                    raise TypeError("The year either needs to be an integer or a string.")
+
+                if isinstance(year, str):
+                    year = int(year) if year.isdigit() else default
+
+                return year if year in YEAR_RANGE else default
+
+            return default
+        return None
 
     def _cache_data(self, data):
         if self.slug in UNCACHED_CATEGORIES:
@@ -257,6 +266,16 @@ class TopicListHandler:
         return self._cache_data(tuple(self.data))
 
     @property
+    def slug_identifier(self):
+        if self.slug in ("takip", "debe"):
+            return "/entry/"
+
+        if self.slug == "kenar":
+            return "/entry/update/"
+
+        return "/topic/"
+
+    @property
     def refresh_count(self):  # (yenile count)
         if self.cache_exists and self.slug == "bugun":
             set_at = cache.get(self.cache_key).get("set_at")
@@ -273,65 +292,3 @@ class TopicListManager(TopicListHandler, TopicQueryHandler):
     To customize this, do not override this class, instead override each parent class seperately, and create a new
     manager class. This way base classes will always be available.
     """
-
-
-class LeftFrame:
-    """
-    An interface for TopicListManager. (for presentation layer)
-    Note: Check out as_context before you append any attribute or method.
-    """
-
-    def __init__(self, manager, page):
-        """
-        :param manager: An instance of TopicListManager (or a child of TopicListHandler)
-        :param page: Integer, for Paginator.
-        """
-        self.slug = manager.slug
-        self.page = page
-        self._manager = manager
-
-    @property
-    def year_range(self):
-        return YEAR_RANGE
-
-    @property
-    def year(self):
-        return self._manager.year
-
-    @property
-    def safename(self):
-        if self.slug in NON_DB_CATEGORIES:
-            return NON_DB_SLUGS_SAFENAMES[self.slug][0]
-
-        with suppress(Category.DoesNotExist):
-            return Category.objects.get(slug=self.slug).name
-
-    @property
-    def slug_identifier(self):
-        return self._manager.slug_identifier
-
-    @property
-    def refresh_count(self):
-        return self._manager.refresh_count
-
-    @property
-    def parameters(self):
-        return get_category_parameters(self.slug, self.year)
-
-    @cached_property
-    def _paginated(self):
-        user = self._manager.user
-        paginate_by = user.topics_per_page if user.is_authenticated else TOPICS_PER_PAGE_DEFAULT
-        return Paginator(self._manager.serialized, paginate_by)
-
-    @property
-    def page_range(self):
-        return self._paginated.page_range
-
-    @property
-    def object_list(self):
-        return self._paginated.get_page(self.page).object_list
-
-    def as_context(self):
-        """Every 'public' attribute/method gets appended to this dictionary."""
-        return dict((name, getattr(self, name)) for name in dir(self) if not name.startswith(('_', 'as_context')))

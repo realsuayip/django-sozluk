@@ -1,22 +1,21 @@
 {% extends "dictionary/base.html" %}
-{% block title %}{{ page_safename }}{% endblock %}
+{% block title %}{{ safename }}{% endblock %}
 {% block bodyattr %}class="topic-list-view"{% endblock %}
-
 {% block content %}
     <div class="left-frame-in">
         <h2>
-            {% if request.GET.ordering and slug_name == "hayvan-ara" %}
+            {% if request.GET.ordering and slug == "hayvan-ara" %}
                 <a class="expand" type="button" data-toggle="collapse"
                    data-target="#search_form_extended_mobile"
                    aria-expanded="false">
-                    arama sonuçları
+                    {{ safename }}
                 </a>
             {% else %}
-                {{ page_safename }}
+                {{ safename }}
             {% endif %}
         </h2>
 
-        {% if slug_name == "bugun" %}
+        {% if slug == "bugun" %}
             {% if refresh_count %}
                 <form method="post">
                     {% csrf_token %}
@@ -25,22 +24,17 @@
             {% endif %}
         {% endif %}
 
-        {% if slug_name == "tarihte-bugun" %}
+        {% if slug == "tarihte-bugun" %}
             <select class="mobile-topic-list form-control" id="mobile_year_changer">
-                {% for year in year_range %}
-                    {# |add used here for type conversion https://stackoverflow.com/a/7405779/6063532#}
-                    {% if year == current_year|add:"0" %}
-                        <option value="{{ year }}" selected>{{ year }}</option>
-                    {% else %}
-                        <option value="{{ year }}">{{ year }}</option>
-                    {% endif %}
+                {% for y in year_range %}
+                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
             <hr>
         {% endif %}
 
 
-        {% if slug_name == "hayvan-ara" %}
+        {% if slug == "hayvan-ara" %}
             {# render search form, if request.GET.ordering has value, it means there is a search #}
 
             <hr>
@@ -54,31 +48,22 @@
 
 
         <ul id="topic-list-standalone" class="list-group topic-list">
-            {% if topics %}
-                {% for topic in topics %}
+            {% if page.object_list %}
+                {% for topic in page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ params }}">{{ topic.title }}
-                            <small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small>
-                        </a>
+                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ parameters }}">{{ topic.title }}<small
+                                class="total_entries">{{ topic.count }}</small></a>
                     </li>
                 {% endfor %}
             {% else %}
-                {% if slug_name == "tarihte-bugun" %}
-                    <hr>
-                    <small>{{ current_year }} yılına ait bişey yok valla. hatta böyle bir yıl bile olmayabilir.</small>
-                {% else %}
-                    {% if slug_name == "hayvan-ara" and not request.GET.ordering %}
-                        {# form appears above#}
-                    {% else %}
-                        <small>yok ki</small>
-                    {% endif %}
-                {% endif %}
+                <small>yok ki</small>
             {% endif %}
         </ul>
 
-        {% if is_paginated %}
-            {% include "dictionary/includes/paginaton.html" with stretch="yes" hr="yes" paginator=page_obj %}
+        {% if page.has_other_pages %}
+            {% include "dictionary/includes/paginaton.html" with stretch="yes" hr="yes" paginator=page %}
         {% endif %}
+        <br>
     </div>
 
 {% endblock %}

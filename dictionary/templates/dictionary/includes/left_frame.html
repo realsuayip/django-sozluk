@@ -11,7 +11,7 @@
                 class="year-select col-lg-auto py-1 px-1 mb-1 form-control"
                 id="year_select">
             {% for year in lf.year_range %}
-                <option value="{{ year }}" {% if year == lf.year|add:"0" %}selected{% endif %}>{{ year }}</option>
+                <option value="{{ year }}" {% if year == lf.year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
 
@@ -24,27 +24,27 @@
     {#  REFRESH BUTTON  #}
 
     {# PAGINATION START #}
-    <div id="lf_pagination_wrapper" class="lf_pagination {% if lf.page == 1 or lf.page_range|length == 1 %}dj-hidden{% endif %}">
+    <div id="lf_pagination_wrapper" class="lf_pagination {% if lf.page.number == 1 or not lf.page.has_other_pages %}dj-hidden{% endif %}">
         <a id="lf_navigate_before" role="button" tabindex="0">«</a>
 
         <select id="left_frame_paginator">
-            {% for page in lf.page_range %}
-                <option value="{{ page }}" {% if page == lf.page %}selected{% endif %}>{{ page }}</option>
+            {% for page in lf.page.paginator.page_range %}
+                <option value="{{ page }}" {% if page == lf.page.number %}selected{% endif %}>{{ page }}</option>
             {% endfor %}
         </select>
 
         <span style="color:#444">&nbsp;/&nbsp;</span>
-        <a id="lf_total_pages" role="button" tabindex="0">{{ lf.page_range|last }}</a>
-        <a id="lf_navigate_after" role="button" tabindex="0" style="margin-left:4px;">»</a>
+        <a id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
+        <a class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
     </div>
     {# PAGINATION END #}
 
     {# TOPIC LIST START #}
             <ul id="topic-list" class="list-group topic-list">
-            {% if lf.object_list %}
-                {% for topic in lf.object_list %}
+            {% if lf.page.object_list %}
+                {% for topic in lf.page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters|default:"" }}">{{ topic.title }}<small class="total_entries">{{ topic.count }}</small></a>
+                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters }}">{{ topic.title }}<small class="total_entries">{{ topic.count }}</small></a>
                     </li>
                 {% endfor %}
             {% else %}
@@ -55,5 +55,5 @@
 
     {# SHOW MORE LINK  #}
     <a href="#top" id="show_more"
-       {% if lf.page != 1 or lf.page_range|last == 1 %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
+       {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
 {% endwith %}

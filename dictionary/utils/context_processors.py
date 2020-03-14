@@ -5,7 +5,8 @@ from django.utils.functional import cached_property
 from ..models import Category
 from . import b64decode_utf8_or_none
 from .decorators import cached_context
-from .managers import LeftFrame, TopicListManager
+from .managers import TopicListManager
+from .serializers import LeftFrame
 from .settings import DEFAULT_CATEGORY, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES
 
 
@@ -40,9 +41,7 @@ class LeftFrameProcessor:
 
     @cached_property
     def _year(self):
-        if self.slug == "tarihte-bugun":
-            return b64decode_utf8_or_none(self.cookies.get("selected_year")) or 2020  # default
-        return None
+        return b64decode_utf8_or_none(self.cookies.get("selected_year"))
 
     @cached_property
     def _search_keys(self):

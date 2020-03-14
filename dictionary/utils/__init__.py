@@ -70,8 +70,7 @@ def b64decode_utf8_or_none(b64_str):
         return None
 
 
-def get_category_parameters(slug, year=2020):
-    default = ""
+def get_category_parameters(slug, year):
     pairs = {  # @formatter:off
         "bugun": "?day=today",
         "gundem": "?day=today",
@@ -81,7 +80,7 @@ def get_category_parameters(slug, year=2020):
         "basiboslar": "?day=today"
     }  # @formatter:on
 
-    return pairs.get(slug, default)
+    return pairs.get(slug)
 
 
 class InputNotInDesiredRangeError(Exception):

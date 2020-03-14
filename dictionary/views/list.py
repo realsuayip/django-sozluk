@@ -1,6 +1,5 @@
 import datetime
 import math
-import random
 
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
@@ -13,17 +12,17 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
+
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import get_category_parameters, time_threshold
+from ..utils import time_threshold
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
-from ..utils.settings import (ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES,
-                              NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
+from ..utils.serializers import LeftFrame
+from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, YEAR_RANGE
 
 
 def index(request):
@@ -107,104 +106,36 @@ class CategoryList(ListView):
     context_object_name = "categories"
 
 
-class TopicList(ListView):
-    """
-    **DEPRECATED**
-    Topic list (başlıklar) for mobile views such as "bugün", "gündem",
-    Desktop equivalent => views.json.AsyncTopicList + LeftFrameProcessor
-    """
-
-    model = Topic
-    context_object_name = "topics"
+class TopicList(TemplateView):
+    """Lists topics using LeftFrame interface."""
     template_name = "dictionary/list/topic_list.html"
-    refresh_count = 0
-    slug_identifier = None
-
-    def dispatch(self, request, *args, **kwargs):
-        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
-            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
-            return redirect(reverse("login"))
-        return super().dispatch(request)
-
-    def get_queryset(self):
-        slug = self.kwargs.get("slug")
-        search_keys = self.request.GET if slug == "hayvan-ara" else None
-
-        topic_list = TopicListManager(self.request.user, slug, year=self.year, search_keys=search_keys)
-        self.refresh_count = topic_list.refresh_count
-        self.slug_identifier = topic_list.slug_identifier
-        return topic_list.serialized
 
     def get_context_data(self, **kwargs):
         slug = self.kwargs.get("slug")
+        year = self.request.GET.get("year")
+        page = self.request.GET.get("page")
+        search_keys = self.request.GET
 
-        if slug in NON_DB_CATEGORIES:
-            title = NON_DB_SLUGS_SAFENAMES[slug][0]
-            params = get_category_parameters(slug)
-        else:
-            title = Category.objects.get(slug=slug).name
-            params = get_category_parameters("generic")
+        manager = TopicListManager(self.request.user, slug, year, search_keys=search_keys)
+        frame = LeftFrame(manager, page)
+        return frame.as_context()
 
-        context = super().get_context_data(**kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        """User tries to view unauthorized category."""
+        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not request.user.is_authenticated:
+            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
+            return redirect(reverse("login"))
 
-        if slug == "tarihte-bugun":
-            context["year_range"] = YEAR_RANGE
-            context["current_year"] = self.year
-
-        context['page_safename'] = title
-        context['slug_name'] = slug
-        context['params'] = params
-        context['refresh_count'] = self.refresh_count
-        context['slug_identifier'] = self.slug_identifier
-        return context
-
-    def get_paginate_by(self, queryset):
-        if self.request.user.is_authenticated:
-            return self.request.user.topics_per_page
-        return TOPICS_PER_PAGE_DEFAULT
+        return super().dispatch(request)
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
+        """Resets bugun's cache (refresh button mobile click event)"""
         if self.kwargs.get("slug") == "bugun":
-            # reset cache (refresh button mobile click event)
             manager = TopicListManager(self.request.user, "bugun")
             manager.delete_cache()
             return redirect(self.request.path)
         return HttpResponseBadRequest()
-
-    @cached_property
-    def year(self):
-        if self.kwargs.get("slug") != "tarihte-bugun":
-            return None
-
-        year = None
-        request_year = self.request.GET.get("year")
-        session_year = self.request.session.get("year")
-        random_year = random.choice(YEAR_RANGE)  # nosec
-
-        # Get requested year, if valid return that year and add it to the session.
-        # If requested year is not valid, check session year, if it is valid, use it instead.
-        # If session year is non-existent select a random year, return it and add it to the session.
-        if request_year:
-            try:
-                if int(request_year) not in YEAR_RANGE:
-                    if session_year:
-                        year = session_year
-                else:
-                    year = request_year
-            except (ValueError, OverflowError):
-                if session_year:
-                    year = session_year
-                else:
-                    year = random_year
-        elif session_year:
-            year = session_year
-        else:
-            year = random_year
-
-        self.request.session["year"] = year
-
-        return year
 
 
 class TopicEntryList(IntegratedFormMixin, ListView):

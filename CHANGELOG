@@ -1,3 +1,30 @@
+[0.90.0-dev-pre](2020.03.14)(compatible)
+
+--Additions--
+1) New TopicList view that uses LeftFrame
+interface.
+2) New file: serializers.py:
+New PlainSerializer and PageSerializer (read the docstrings)
+3) Move LeftFrame to serializers, it now inherits from
+PlainSerializer. Now completely includes page object, thus
+pagination data (serialized via PageSerializer).
+4) Add deprecation flag for TopicListHandler's fetch_cached.
+
+-- Changes --
+1) Alter left_frame.html and topic_list.html to comply
+with new LeftFrame api.
+2) get_category_parameters no longer use empty string as the default
+value as null values won't taken into consideration by LeftFrame.
+3) Alter TopicListManager:
+    a) year now handled via _validate_year method
+    which validates the year. (the fallback value is set to 2020, no longer random).
+
+    b) slug_identifiers is now a property method.
+4) Alter _year of LeftFrameProcessor to comply with new _validate_year.
+
+--Deletions--
+1) Deleted the deprecated TopicList.
+
 [0.89.0-dev-pre](2020.03.14)(compatible)
 
 --Additions--
