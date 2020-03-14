@@ -70,15 +70,15 @@ class LeftFrame(PlainSerializer):
         self._page = page
         self._manager = manager
 
-    @property
+    @cached_property
     def year_range(self):
         return YEAR_RANGE if self.slug == "tarihte-bugun" else None
 
-    @property
+    @cached_property
     def year(self):
         return self._manager.year
 
-    @property
+    @cached_property
     def safename(self):
         if self.slug in NON_DB_CATEGORIES:
             return NON_DB_SLUGS_SAFENAMES[self.slug][0]
@@ -86,15 +86,15 @@ class LeftFrame(PlainSerializer):
         with suppress(Category.DoesNotExist):
             return Category.objects.get(slug=self.slug).name
 
-    @property
+    @cached_property
     def slug_identifier(self):
         return self._manager.slug_identifier
 
-    @property
+    @cached_property
     def refresh_count(self):
         return self._manager.refresh_count
 
-    @property
+    @cached_property
     def parameters(self):
         key = self.slug if self.slug in NON_DB_CATEGORIES else "generic"
         return get_category_parameters(key, self.year)
