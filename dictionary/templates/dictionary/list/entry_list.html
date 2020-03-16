@@ -263,7 +263,7 @@
 
                     {% for category in categories %}
                         <li>
-                            <a id="category_view_ls" data-safename="{{ category }}" data-category="{{ category.slug }}"
+                            <a id="category_view_ls" data-lf-slug="{{ category.slug }}"
                                href="{{ category.get_absolute_url }}">#{{ category }}</a>
                         </li>
                     {% endfor %}

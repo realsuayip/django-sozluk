@@ -1,47 +1,30 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
 from ..models import Author, Category, Entry, Message, Topic
 from ..utils.managers import TopicListManager
-from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, TOPICS_PER_PAGE_DEFAULT, VOTE_RATES, YEAR_RANGE
-from ..utils.views import JsonView
+from ..utils.serializers import LeftFrame
+from ..utils.settings import VOTE_RATES
+from ..utils.views import JsonView, JSONView
 
 
-class AsyncTopicList(JsonView):
-    """ **DEPRECATED** """
+class AsyncTopicList(JSONView):
     http_method_names = ['get']
 
-    def handle(self):
-        slug = self.kwargs.get("slug")
+    def get(self, request, *args, **kwargs):
+        slug = kwargs.get("slug")
+        page = request.GET.get("page", 1)
+        year = request.GET.get("year") if slug == "tarihte-bugun" else None
+        search_keys = request.GET if slug == "hayvan-ara" else {}
+        refresh = request.GET.get("refresh")
+        manager = TopicListManager(request.user, slug, year, search_keys)
 
-        if slug in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
-            return self.error(status=403)
+        if refresh == "true":
+            manager.delete_cache()
 
-        year = self.request_data.get("year") if slug == "tarihte-bugun" else None
-        page = self.request_data.get("page")
-        search_keys = self.request_data if slug == "hayvan-ara" else None
-        fetch_cached = self.request_data.get("nocache") != "yes"
-        paginate_by = TOPICS_PER_PAGE_DEFAULT
-
-        if self.request.user.is_authenticated:
-            paginate_by = self.request.user.topics_per_page
-
-        if year:
-            try:
-                if int(year) not in YEAR_RANGE:
-                    return self.bad_request()
-            except(ValueError, OverflowError):
-                return self.bad_request()
-
-        manager = TopicListManager(self.request.user, slug, year, fetch_cached, search_keys)
-        paginated = Paginator(manager.serialized, paginate_by)
-        topic_data = paginated.get_page(page).object_list
-        self.data = {"topic_data": topic_data, "refresh_count": manager.refresh_count,
-                     "slug_identifier": manager.slug_identifier, "total_pages": paginated.num_pages}
-
-        return super().handle()
+        frame = LeftFrame(manager, page)
+        return frame.as_context()
 
 
 class AutoComplete(JsonView):

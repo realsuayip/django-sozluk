@@ -13,7 +13,43 @@ class IntermediateActionView(PermissionRequiredMixin, IntermediateActionMixin, V
     pass
 
 
+class JSONView(View):
+    http_method_names = ['get', 'post']
+
+    def render_to_json_response(self, data, status=200):
+        return JsonResponse(data, status=status)
+
+    def success(self, message="200 OK", status=200):
+        return {"success": message}, status
+
+    def error(self, message="500 Internal Server Error", status=500):
+        return {"error": message}, status
+
+    def bad_request(self):
+        return {"error": "400 Bad Request"}, 400
+
+    def http_method_not_allowed(self, request, *args, **kwargs):
+        super().http_method_not_allowed(request, *args, **kwargs)
+        return {"error": "405 Method Not Allowed"}, 405
+
+    @method_decorator(require_ajax)
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+
+        response = handler(request, *args, **kwargs)
+
+        if isinstance(response, tuple):
+            # Status code included
+            return self.render_to_json_response(*response)
+
+        return self.render_to_json_response(response)
+
+
 class JsonView(View):
+    """**DEPRECATED** will use JSONView"""
     request_data = None
     data = None
     success_message = "oldu"

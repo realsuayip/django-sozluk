@@ -1,6 +1,6 @@
 {# An exception for debe made to improve ux. @formatter:off #}
 {% if not unauthorized %}
-<li class="nav-item{{ is_active|yesno:" active," }}" data-category="{{ hlink_slug }}" data-safename="{{ hlink_safename }}">
+<li {% if is_active %}class="active"{% endif %} data-lf-slug="{{ hlink_slug }}">
     <a title="{{ hlink_description }}" id="{{ hlink_slug }}" href="{% url "topic_list" slug=hlink_slug %}">{% if hlink_slug == "debe" %}{{ hlink_slug }}{% else %}{{ hlink_safename }}{% endif %}</a>
 </li>
 {% endif %}

@@ -36,7 +36,7 @@ class PageSerializer(PlainSerializer):
     class _Paginator(PlainSerializer):
         def __init__(self, page_obj):
             self.num_pages = page_obj.paginator.num_pages
-            self.page_range = page_obj.paginator.page_range
+            self.page_range = tuple(page_obj.paginator.page_range)
 
     def __init__(self, page_obj):
         self.paginator = self._Paginator(page_obj).get_serialized()

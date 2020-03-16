@@ -9,6 +9,8 @@ from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from dateutil.relativedelta import relativedelta
+
 from ..models import Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT,
@@ -42,24 +44,19 @@ class TopicQueryHandler:
 
     def tarihte_bugun(self, year):
         now = timezone.now()
-        date_filter = {"entries__date_created__year": year, "entries__date_created__day": now.day,
-                       "entries__date_created__month": now.month}
-
-        return Topic.objects.filter(**self.base_filter, **date_filter).order_by('-latest').annotate(
-            **self.base_annotation, count=Count("entries", filter=Q(**date_filter))).order_by("-count").values(
-            *self.values)
+        diff = now.year - year
+        delta = now - relativedelta(years=diff)
+        return Topic.objects.filter(**self.base_filter, entries__date_created__date=delta.date()).annotate(
+            count=Count("entries")).order_by("-count").values(*self.values)
 
     def gundem(self):
         return [{'title': f'{self.__doc__}', 'slug': 'unimplemented', 'count': 1}]
 
     def debe(self):
         boundary = time_threshold(hours=24)
-        year, month, day = boundary.year, boundary.month, boundary.day
-        debe_list = Entry.objects.filter(date_created__day=day, date_created__month=month, date_created__year=year,
-                                         topic__is_censored=False).order_by("-vote_rate").annotate(
-            title=F("topic__title"), slug=F("pk")).values(*self.values_entry)
-
-        return debe_list[:TOPICS_PER_PAGE_DEFAULT]
+        debe = Entry.objects.filter(date_created__date=boundary.date(), topic__is_censored=False).order_by(
+            "-vote_rate").annotate(title=F("topic__title"), slug=F("pk")).values(*self.values_entry)
+        return debe[:TOPICS_PER_PAGE_DEFAULT]
 
     def kenar(self, user):
         return Entry.objects_all.filter(author=user, is_draft=True).order_by("-date_created").annotate(
@@ -143,7 +140,7 @@ class TopicQueryHandler:
 class TopicListHandler:
     """
     Handles given topic slug and finds corresponding method in TopicQueryHandler to serialize data. Caches topic lists.
-    Handles authentication, returns general metadata in serialized data such as slug identifier & refresh count.
+    Handles authentication 6 validation.
     """
 
     cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
@@ -151,12 +148,11 @@ class TopicListHandler:
     cache_exists = False
     cache_key = None
 
-    def __init__(self, user=None, slug=None, year=None, fetch_cached=True, search_keys=None):
+    def __init__(self, user=None, slug=None, year=None, search_keys=None):
         """
         :param user: only pass request.user, required for topics per page and checking categories with login requirement
         :param slug: slug of the category
         :param year: only required for tarihte-bugun (only pass int or str with digits only)
-        **deprecated** :param fetch_cached: set to False if you don't want to fetch cached (refresh button behaviour).
         :param search_keys request.GET for "hayvan-ara" (advanced search).
         """
 
@@ -173,25 +169,22 @@ class TopicListHandler:
         if self.slug not in UNCACHED_CATEGORIES:
             self._check_cache()
 
-            # user requests new data, so delete the old cached data
-            if not fetch_cached and self.cache_exists:
-                self.delete_cache()
+    def _get_data(self):
+        """No cache found, prepare the query. (serialized hits the db)"""
 
-        # No cache found, hit the database.
-        if not self.cache_exists:
-            # Arguments to be passed for TopicQueryHandler methods. @formatter:off
-            arg_map = {
-                **dict.fromkeys(("bugun", "kenar", "takip"), [self.user]),
-                "tarihte_bugun": [self.year],
-                "generic_category": [self.slug],
-                "hayvan_ara": [self.user, self.search_keys]
-            }  # @formatter:on
+        # Arguments to be passed for TopicQueryHandler methods. @formatter:off
+        arg_map = {
+            **dict.fromkeys(("bugun", "kenar", "takip"), [self.user]),
+            "tarihte_bugun": [self.year],
+            "generic_category": [self.slug],
+            "hayvan_ara": [self.user, self.search_keys]
+        }  # @formatter:on
 
-            # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
-            slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
+        # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
+        slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
 
-            # Get the method from TopicQueryHandler.
-            self.data = getattr(self, slug_method)(*arg_map.get(slug_method, []))
+        # Get the method from TopicQueryHandler.
+        return getattr(self, slug_method)(*arg_map.get(slug_method, []))
 
     def _validate_year(self, year):
         """Validates and sets the year."""
@@ -245,11 +238,19 @@ class TopicListHandler:
             else:
                 self.cache_exists = True
 
-    def delete_cache(self):
+    def delete_cache(self, flush=False):
+        """
+        Deletes cached data and initiates new data using _get_data.
+        Call this before serialized to get new results.
+        :param flush: Set this to true if you don't need new data.
+        """
         if self.cache_exists:
             cache.delete(self.cache_key)
             self.cache_exists = False
-            self.cache_key = None
+
+            if flush:
+                self.data = ()  # empty tuple
+
             return True
         return False
 
@@ -262,6 +263,10 @@ class TopicListHandler:
         # Serialize topic queryset data, cache it and return it.
         if self.cache_exists:
             return self._cached_data
+
+        if self.data is None:
+            self.data = self._get_data()
+
         # Notice: caching the queryset will evaluate it anyway
         return self._cache_data(tuple(self.data))
 

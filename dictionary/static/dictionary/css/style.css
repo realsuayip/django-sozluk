@@ -1182,6 +1182,23 @@ ul.category-list-all li h5 {
     margin: 5px auto 0;
 }
 
+
+.lf_pagination.index {
+    margin: 5px auto 5px;
+}
+
+.lf_pagination.index a {
+    width: 48px;
+    display: inline-block;
+    text-align: center;
+    height: 29px;
+    line-height: 25px;
+}
+
+.lf_pagination.index select {
+    height: 30px;
+}
+
 .lf_pagination.stretch {
     display: flex;
 }

@@ -1,3 +1,26 @@
+[0.91.0-dev-pre](2020.03.16)(compatible)
+
+--Additions--
+1) New LeftFrame in djdict.js, now handles left-frame
+using serializers.LeftFrame.
+2) New JSONView to replace JsonView.
+
+-- Changes --
+1) spam_entries command now allows topic specific spamming.
+2) left frame paginator is now prettier.
+3) Adjusted certain functions/semantics in templates for the new LeftFrame
+4) Deprecated JsonView.
+5) AsyncTopicList now uses JSONView, also refactored for new LeftFrame.
+6) TopicListHandler's __init__ method no longer sets up the query.
+(moved to _get_data). delete_cache now has the flush parameter (see docstring).
+Before this change, you needed to call the manager twice to get the actual data after
+deleting. Removed fetch_cached.
+7) tarihte-bugun is now precise.
+
+--Deletions--
+1) LefFrame related functions:
+leftFrameReset, topicListCall, leftFramePopulate.
+
 [0.90.0-dev-pre](2020.03.14)(compatible)
 
 --Additions--

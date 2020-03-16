@@ -215,9 +215,8 @@
                 {% render_header_link 'tarihte-bugun' %}
 
                 {% for category in nav_categories|slice:":4" %}
-                    <li class="nav-item{% if active_category == category.slug %} active{% endif %}"
-                        data-category="{{ category.slug }}"
-                        data-safename="{{ category.name }}">
+                    <li {% if active_category == category.slug %}class="active"{% endif %}
+                        data-lf-slug="{{ category.slug }}">
                         <a href="{{ category.get_absolute_url }}"
                            title="{{ category.description }}">#{{ category.name }}</a>
                     </li>
@@ -231,17 +230,17 @@
                      aria-labelledby="more_tags_button">
 
                     {% for category in nav_categories|slice:"4:12" %}
-                        <a data-category="{{ category.slug }}" data-safename="{{ category.name }}"
-                           class="dropdown-item nav-item{% if active_category == category.slug %} active{% endif %}"
+                        <a data-lf-slug="{{ category.slug }}"
+                           class="dropdown-item{% if active_category == category.slug %} active{% endif %}"
                            href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
 
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item nav-item{% if active_category == "basiboslar" %} active{% endif %}"
-                       data-safename="başıboşlar" data-category="basiboslar"
+                    <a class="dropdown-item{% if active_category == "basiboslar" %} active{% endif %}"
+                       data-lf-slug="basiboslar"
                        href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
-                    <a href="{% url 'category_list' %}" class="dropdown-item nav-item regular">tüm kanallar</a>
+                    <a href="{% url 'category_list' %}" class="dropdown-item regular">tüm kanallar</a>
                 </div>
             </ul>
         </nav>

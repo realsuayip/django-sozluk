@@ -52,7 +52,7 @@ class LeftFrameProcessor:
         return dict(parse_qsl(query[1:])) if query else {}  # [1:] to omit ? from query
 
     def get_context(self):
-        manager = TopicListManager(self.user, self.slug, self._year, search_keys=self._search_keys)
+        manager = TopicListManager(self.user, self.slug, self._year, self._search_keys)
         frame = LeftFrame(manager, page=self._page)
         return frame.as_context()
 

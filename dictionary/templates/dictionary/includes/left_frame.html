@@ -24,7 +24,7 @@
     {#  REFRESH BUTTON  #}
 
     {# PAGINATION START #}
-    <div id="lf_pagination_wrapper" class="lf_pagination {% if lf.page.number == 1 or not lf.page.has_other_pages %}dj-hidden{% endif %}">
+    <div id="lf_pagination_wrapper" class="lf_pagination index{% if lf.page.number == 1 or not lf.page.has_other_pages %} dj-hidden{% endif %}">
         <a id="lf_navigate_before" role="button" tabindex="0">«</a>
 
         <select id="left_frame_paginator">

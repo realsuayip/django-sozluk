@@ -59,117 +59,6 @@ const notify = async (message, type = "default") => {
     }
 };
 
-const leftFrameReset = function () {
-    $("#left-frame-nav").scrollTop(0);
-    $("a#show_more").addClass("dj-hidden");
-    $("#lf_pagination_wrapper").addClass("dj-hidden");
-    cookies.remove("navigation_page");
-};
-
-const topicListCall = function (slug, parameters, page = null) {
-    // **DEPRECATED** //
-    const loadIndicator = $("#load_indicator");
-    loadIndicator.css("display", "inline-block");
-    const topicList = $("ul#topic-list");
-    // by default, each item in the topic list gets paramaters from api parameters. for example ?day=today calls for
-    // topics of today and also includes ?day=today parameter for links of topics. if you do not want this behaviour
-    // set this to false for desired slugs.
-    const excludeParamteresInLink = ["hayvan-ara"]; // slug list
-    let excludeParameters = false;
-    if (excludeParamteresInLink.includes(slug)) {
-        excludeParameters = true;
-    }
-
-    const apiUrl = `/category/${slug}/`;
-
-    if (!page) {
-        page = 1;
-    }
-
-    let pageParameter = "?page=" + page;
-
-    if (parameters) {
-        pageParameter = "&page=" + page;
-    }
-
-    $.ajax({
-        type: "GET",
-        url: apiUrl + parameters + pageParameter,
-        success (data) {
-            $("#current_category_name").text(cookies.get("active_category_safe")); // change title
-            loadIndicator.css("display", "none"); // hide spinner
-
-            if (data.refresh_count) {
-                $("#refresh_bugun").removeClass("dj-hidden");
-                $("span#new_content_count").text(`(${data.refresh_count})`);
-            } else {
-                $("#refresh_bugun").addClass("dj-hidden");
-            }
-
-            if (data.topic_data.length === 0) {
-                topicList.html("<small>yok ki</small>");
-            } else {
-                // decides whether it is an entry permalink or topic and whatsoever
-                const slugIdentifier = data.slug_identifier;
-                const totalPages = data.total_pages;
-                if (page > totalPages) {
-                    notify("yok hiç bişi kalmamış");
-                    topicListCall(slug, parameters, 1);
-                    return;
-                }
-
-                topicList.empty();
-                cookies.set("navigation_page", page);
-
-                if (page > 1 && totalPages >= page) {
-                    const pageRange = [];
-                    for (let i = 1; i <= totalPages; i++) {
-                        pageRange.push(i);
-                    }
-
-                    const leftFrameSelect = $("select#left_frame_paginator");
-                    leftFrameSelect.empty();
-                    for (const element of pageRange) {
-                        leftFrameSelect.append($("<option>", {
-                            value: element,
-                            text: element
-                        }
-                        ));
-                    }
-
-                    leftFrameSelect.val(page);
-                    $("#lf_total_pages").html(totalPages);
-                    $("#lf_pagination_wrapper").removeClass("dj-hidden");
-                } else {
-                    leftFrameReset();
-                    if (page < totalPages) {
-                        $("a#show_more").removeClass("dj-hidden");
-                    }
-                }
-
-                if (excludeParameters) {
-                    parameters = "";
-                }
-
-                if (slug === "bugun") {
-                    parameters = "?day=today"; // remove extra parameters (excludeParameters removes all of them)
-                }
-
-                data = data.topic_data;
-                for (let i = 0; i < data.length; i++) {
-                    const topicItem = `<li class="list-group-item"><a href="${slugIdentifier}${data[i].slug}/${parameters}">${data[i].title}<small class="total_entries">${data[i].count ? data[i].count : ""}</small></a></li>`;
-                    topicList.append(topicItem);
-                }
-            }
-        },
-        error () {
-            notify("bir şeyler yanlış gitti", "error");
-            topicList.html("<small>yok yapamıyorum olmuyor :(</small>");
-            loadIndicator.css("display", "none");
-        }
-    });
-};
-
 const dictToParameters = function (dict) {
     const str = [];
     for (const key in dict) {
@@ -182,76 +71,218 @@ const dictToParameters = function (dict) {
     return str.join("&");
 };
 
-const leftFramePopulate = function (slug = null, page = null, resetCache = false, searchParameters = null) {
-    // **DEPRECATED** //
-    // category -> cateogry slug (or non_db_categories slug)
-    // page -> which page to call
-    // reset_cache -> whether to use cached data while calling
+class LeftFrame {
+    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false) {
+        // slug -> str, year -> int or str, searchKeys -> str (query parameters)
+        this.slug = slug;
+        this.page = page;
+        this.year = year;
+        this.searchKeys = searchKeys;
 
-    // leftframe behaviour on link clicks on desktop.
-    const yearSelect = $("#year_select");
-    yearSelect.css("display", "none");
-    yearSelect.html("");
+        this.setCookies();
 
-    if (!slug) {
-        notify("noluyo ayol.", "error");
-        return;
+        let params = slug === "tarihte-bugun" ? `?year=${this.year}` : (slug === "hayvan-ara" ? this.searchKeys : null);
+        params = page > 1 ? (params ? params + `&page=${page}` : `?page=${page}`) : params; // add page parameter
+        params = refresh ? (params ? params + "&refresh=true" : "?refresh=true") : params; // add refresh parameter
+
+        const baseApiUrl = `/category/${slug}/`;
+        this.apiUrl = params !== null ? baseApiUrl + params : baseApiUrl;
+        this.loadIndicator = $("#load_indicator");
     }
 
-    let parameters = "";
-    const entryCategories = ["takip", "kenar", "debe"]; // these slugs will have no query strings
+    setCookies () {
+        cookies.set("active_category", this.slug);
+        cookies.set("navigation_page", this.page);
 
-    // add query string parameters for specific slugs
-    if ((slug === "bugun") || (slug === "basiboslar")) {
-        parameters = "?day=today";
-    } else if (slug === "caylaklar") {
-        parameters = "?a=caylaklar";
-    } else if (slug === "hayvan-ara") {
-        if (cookies.get("search_parameters")) {
-            parameters = cookies.get("search_parameters");
+        const cookieYear = cookies.get("selected_year");
+        const cookieSearchKeys = cookies.get("search_parameters");
+
+        if (this.slug === "tarihte-bugun") {
+            if (!this.year && cookieYear) {
+                this.year = cookieYear;
+            } else {
+                cookies.set("selected_year", this.year);
+            }
+        } else if (this.slug === "hayvan-ara") {
+            if (!this.searchKeys && cookieSearchKeys) {
+                this.searchKeys = cookieSearchKeys;
+            } else {
+                cookies.set("search_parameters", this.searchKeys);
+            }
+        }
+    }
+
+    call () {
+        const self = this;
+        self.loadIndicator.css("display", "inline-block");
+
+        $.get(self.apiUrl, function (data) {
+            self.render(data);
+        }).progress(function () {
+            console.log(1);
+        }).fail(function () {
+            notify("bir şeyler yanlış gitti", "error");
+            self.loadIndicator.css("display", "none");
+        });
+    }
+
+    render (data) {
+        $("#left-frame-nav").scrollTop(0);
+        $("#current_category_name").text(data.safename);
+        this.renderRefreshButton(data.refresh_count);
+        this.renderYearSelector(data.year, data.year_range);
+        this.renderPagination(data.page.has_other_pages, data.page.paginator.page_range, data.page.paginator.num_pages, data.page.number);
+        this.renderTopicList(data.page.object_list, data.slug_identifier, data.parameters);
+        this.renderShowMoreButton(data.page.number, data.page.has_other_pages);
+        this.loadIndicator.css("display", "none");
+    }
+
+    renderRefreshButton (count) {
+        const refreshButton = $("#refresh_bugun");
+        if (count) {
+            refreshButton.removeClass("dj-hidden");
+            $("span#new_content_count").text(`(${count})`);
         } else {
-            parameters = searchParameters;
+            refreshButton.addClass("dj-hidden");
         }
-    } else if (slug === "tarihte-bugun") {
-        yearSelect.css("display", "block");
-        const years = ["2020", "2019", "2018"];
-        for (const year of years) {
-            yearSelect.append(`<option id="${year}">${year}</option>`);
-        }
+    }
 
-        let selectedYear;
+    renderShowMoreButton (currentPage, isPaginated) {
+        const showMoreButton = $("a#show_more");
 
-        if (cookies.get("selected_year")) {
-            selectedYear = cookies.get("selected_year");
+        if (currentPage !== 1 || !isPaginated) {
+            showMoreButton.addClass("dj-hidden");
         } else {
-            selectedYear = years[Math.floor(Math.random() * years.length)];
-            cookies.set("selected_year", selectedYear);
-        }
-
-        yearSelect.val(selectedYear);
-        parameters = `?year=${selectedYear}`;
-    } else {
-        // generic category
-        if (!(entryCategories.includes(slug))) {
-            parameters = "?day=today";
+            showMoreButton.removeClass("dj-hidden");
         }
     }
 
-    if (parameters && resetCache) {
-        parameters += "&nocache=yes";
+    renderYearSelector (currentYear, yearRange) {
+        const yearSelect = $("#year_select");
+        yearSelect.html("");
+
+        if (this.slug === "tarihte-bugun") {
+            yearSelect.css("display", "block");
+            for (const year of yearRange) {
+                yearSelect.append(`<option ${year === currentYear ? "selected" : ""} id="${year}">${year}</option>`);
+            }
+        } else {
+            yearSelect.css("display", "none");
+        }
     }
 
-    topicListCall(slug, parameters, page);
-};
+    renderTopicList (objectList, slugIdentifier, parameters) {
+        const topicList = $("ul#topic-list");
+        if (objectList.length === 0) {
+            topicList.html(`<small>yok ki</small>`);
+        } else {
+            topicList.empty();
+            const params = parameters || "";
 
-$("ul#category_view li.nav-item, div#category_view_in a.nav-item:not(.regular), a#category_view_ls").on("click", function () {
-    cookies.set("active_category_safe", $(this).attr("data-safename"));
-    $("ul#category_view li").removeClass("active");
-    $("div#category_view_in a").removeClass("active");
+            for (const topic of objectList) {
+                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count ? topic.count : ""}</small></a></li>`);
+            }
+        }
+    }
+
+    renderPagination (isPaginated, pageRange, totalPages, currentPage) {
+        // Pagination related selectors
+        const paginationWrapper = $("#lf_pagination_wrapper");
+        const pageSelector = $("select#left_frame_paginator");
+        const totalPagesButton = $("#lf_total_pages");
+
+        // Render pagination
+        if (isPaginated && currentPage !== 1) {
+            // Render Page selector
+            pageSelector.empty();
+            for (const page of pageRange) {
+                pageSelector.append($("<option>", {
+                    value: page,
+                    text: page,
+                    selected: page === currentPage
+                }));
+            }
+            totalPagesButton.text(totalPages); // Last page
+            paginationWrapper.removeClass("dj-hidden"); // Show it
+        } else {
+            paginationWrapper.addClass("dj-hidden");
+        }
+    }
+
+    static populate (slug, page = 1, year = null, searchKeys = null, refresh = false) {
+        const leftFrame = new LeftFrame(slug, page, year, searchKeys, refresh);
+        leftFrame.call();
+    }
+
+    static refresh () {
+        LeftFrame.populate("bugun", 1, null, null, true);
+    }
+}
+
+/* Start of LefFrame related triggers */
+
+$("[data-lf-slug]").on("click", function () {
+    // Regular, slug-only
+    const slug = $(this).attr("data-lf-slug");
+    LeftFrame.populate(slug);
+});
+
+$("#year_select").on("change", function () {
+    // Year is changed
+    const selectedYear = this.value;
+    LeftFrame.populate("tarihte-bugun", 1, selectedYear);
+});
+
+$("select#left_frame_paginator").on("change", function () {
+    // Page is changed
+    LeftFrame.populate(cookies.get("active_category"), this.value);
+});
+
+$("#lf_total_pages").on("click", function () {
+    // Navigated to last page
+    $("select#left_frame_paginator").val($(this).html()).trigger("change");
+});
+
+$("#lf_navigate_before").on("click", function () {
+    // Previous page
+    const lfSelect = $("select#left_frame_paginator");
+    const selected = parseInt(lfSelect.val());
+    if (selected - 1 > 0) {
+        lfSelect.val(selected - 1).trigger("change");
+    }
+});
+
+$("#lf_navigate_after").on("click", function () {
+    // Subsequent page
+    const lfSelect = $("select#left_frame_paginator");
+    const selected = parseInt(lfSelect.val());
+    const max = parseInt($("#lf_total_pages").text());
+    if (selected + 1 <= max) {
+        lfSelect.val(selected + 1).trigger("change");
+    }
+});
+
+$("a#show_more").on("click", function () {
+    // Show more button event
+    const slug = cookies.get("active_category");
+
+    if (slug) {
+        LeftFrame.populate(slug, 2);
+    }
+
+    $(this).addClass("dj-hidden");
+});
+
+$("#refresh_bugun").on("click", function () {
+    LeftFrame.refresh();
+});
+
+/* End of LefFrame related triggers */
+
+$("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.regular)").on("click", function () {
+    // Visual guidance for active category
+    $("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.regular)").removeClass("active");
     $(this).addClass("active");
-    cookies.set("active_category", $(this).attr("data-category"));
-    leftFrameReset();
-    leftFramePopulate($(this).attr("data-category"));
 });
 
 let userIsMobile = false;
@@ -312,7 +343,7 @@ $(function () {
         // Code to hide some part of the header on mobile scroll.
         let lastScrollTop = 0;
         const delta = 30;
-        $(window).scroll(function (event) {
+        $(window).scroll(function () {
             const st = $(this).scrollTop();
             const header = $("header.page_header");
             if (Math.abs(lastScrollTop - st) <= delta) {
@@ -378,43 +409,6 @@ $(function () {
 
         });
     });
-});
-
-$("#year_select").on("change", function () {
-    const selectedYear = this.value;
-    cookies.set("selected_year", selectedYear);
-    leftFrameReset();
-    leftFramePopulate("tarihte-bugun");
-});
-
-$("select#left_frame_paginator").on("change", function () {
-    leftFramePopulate(cookies.get("active_category"), this.value);
-});
-
-$("#lf_total_pages").on("click", function () {
-    $("select#left_frame_paginator").val($(this).html()).trigger("change");
-});
-
-$("#lf_navigate_before").on("click", function () {
-    const lfSelect = $("select#left_frame_paginator");
-    const selected = parseInt(lfSelect.val());
-    if (selected - 1 > 0) {
-        lfSelect.val(selected - 1).trigger("change");
-    }
-});
-
-$("#lf_navigate_after").on("click", function () {
-    const lfSelect = $("select#left_frame_paginator");
-    const selected = parseInt(lfSelect.val());
-    const max = parseInt($("#lf_total_pages").html());
-    if (selected + 1 <= max) {
-        lfSelect.val(selected + 1).trigger("change");
-    }
-});
-
-$("a#show_more").on("click", function () {
-    leftFramePopulate(cookies.get("active_category"), 2);
-    $(this).addClass("dj-hidden");
 });
 
 // https://stackoverflow.com/questions/5999118/how-can-i-add-or-update-a-query-string-parameter
@@ -741,16 +735,6 @@ $("select#mobile_year_changer").on("change", function () {
     window.location = updateQueryStringParameter(location.href, "year", this.value);
 });
 
-$("#refresh_bugun").on("click", function () {
-    let page = null;
-    if (cookies.get("navigation_page")) {
-        page = cookies.get("navigation_page");
-    }
-    leftFrameReset();
-    leftFramePopulate("bugun", page, true);
-    $(this).addClass("dj-hidden");
-});
-
 $.fn.overflown = function () {
     const e = this[0];
     return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
@@ -784,12 +768,7 @@ const populateSearchResults = searchParameters => {
     if (userIsMobile) {
         window.location.replace("/basliklar/" + slug + "/" + searchParameters);
     }
-
-    cookies.set("active_category_safe", "arama sonuçları");
-    cookies.set("active_category", slug);
-    cookies.set("search_parameters", searchParameters);
-    leftFrameReset();
-    leftFramePopulate(slug, null, false, searchParameters);
+    LeftFrame.populate(slug, null, null, searchParameters);
 };
 
 $("button#perform_advanced_search").on("click", function () {

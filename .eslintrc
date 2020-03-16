@@ -6,6 +6,9 @@
     "es6": true,
     "jquery": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+  },
   "rules": {
     "semi": [
       2,
@@ -54,7 +57,13 @@
     "no-prototype-builtins": [
       2
     ],
-    "indent": ["warn", 4],
-    "object-curly-spacing": ["warn", "always"],
+    "indent": [
+      "warn",
+      4
+    ],
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ]
   }
 }
