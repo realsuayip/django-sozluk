@@ -2,29 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 
-from ..models import Author, Category, Entry, Message, Topic
-from ..utils.managers import TopicListManager
-from ..utils.serializers import LeftFrame
+from ..models import Author, Category, Entry, Topic
 from ..utils.settings import VOTE_RATES
-from ..utils.views import JsonView, JSONView
-
-
-class AsyncTopicList(JSONView):
-    http_method_names = ['get']
-
-    def get(self, request, *args, **kwargs):
-        slug = kwargs.get("slug")
-        page = request.GET.get("page", 1)
-        year = request.GET.get("year") if slug == "tarihte-bugun" else None
-        search_keys = request.GET if slug == "hayvan-ara" else {}
-        refresh = request.GET.get("refresh")
-        manager = TopicListManager(request.user, slug, year, search_keys)
-
-        if refresh == "true":
-            manager.delete_cache()
-
-        frame = LeftFrame(manager, page)
-        return frame.as_context()
+from ..utils.views import JsonView
 
 
 class AutoComplete(JsonView):
@@ -240,34 +220,6 @@ class CategoryAction(LoginRequiredMixin, JsonView):
         else:
             self.request.user.following_categories.add(self.category_object)
 
-        return self.success()
-
-
-class ComposeMessage(LoginRequiredMixin, JsonView):
-    http_method_names = ['post']
-
-    def handle(self):
-        return self.compose()
-
-    def compose(self):
-        message_body = self.request_data.get("message_body")
-        if len(message_body) < 3:
-            self.error_message = "az bir şeyler yaz yeğenim"
-            return self.error(status=200)
-
-        try:
-            recipient = Author.objects.get(username=self.request_data.get("recipient"))
-        except Author.DoesNotExist:
-            self.error_message = "öyle birini bulamadım valla"
-            return self.error(status=200)
-
-        msg = Message.objects.compose(self.request.user, recipient, message_body)
-
-        if not msg:
-            self.error_message = "mesajınızı gönderemedik ne yazık ki"
-            return self.error(status=200)
-
-        self.success_message = "mesajınız sağ salim gönderildi"
         return self.success()
 
 

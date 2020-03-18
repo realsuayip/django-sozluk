@@ -1,3 +1,5 @@
+from urllib.parse import parse_qsl
+
 from django.conf import settings
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -14,6 +16,7 @@ class IntermediateActionView(PermissionRequiredMixin, IntermediateActionMixin, V
 
 
 class JSONView(View):
+    """**DEPRECATED**"""
     http_method_names = ['get', 'post']
 
     def render_to_json_response(self, data, status=200):
@@ -74,7 +77,7 @@ class JsonView(View):
         self.method = request.method.lower()
 
         if self.method in self.http_method_names:
-            self.request_data = getattr(request, request.method)
+            self.request_data = dict(parse_qsl(request.body.decode("utf-8"))) if self.method == "post" else request.GET
             return self.handle()
 
         return self.http_method_not_allowed(request, *args, **kwargs)

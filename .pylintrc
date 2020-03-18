@@ -272,6 +272,8 @@ good-names=i,
            register,
            default_app_config,
            application,
+           schema,
+           app_name,
            User
 
 

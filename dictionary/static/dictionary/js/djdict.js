@@ -30,6 +30,7 @@ const cookies = Cookies.withConverter({
 
 $.ajaxSetup({
     beforeSend (xhr, settings) {
+        xhr.setRequestHeader("Content-Type", "application/json");
         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
             // Only send the token to relative URLs i.e. locally.
             xhr.setRequestHeader("X-CSRFToken", Cookies.get("csrftoken"));
@@ -77,16 +78,10 @@ class LeftFrame {
         this.slug = slug;
         this.page = page;
         this.year = year;
+        this.refresh = refresh;
         this.searchKeys = searchKeys;
 
         this.setCookies();
-
-        let params = slug === "tarihte-bugun" ? `?year=${this.year}` : (slug === "hayvan-ara" ? this.searchKeys : null);
-        params = page > 1 ? (params ? params + `&page=${page}` : `?page=${page}`) : params; // add page parameter
-        params = refresh ? (params ? params + "&refresh=true" : "?refresh=true") : params; // add refresh parameter
-
-        const baseApiUrl = `/category/${slug}/`;
-        this.apiUrl = params !== null ? baseApiUrl + params : baseApiUrl;
         this.loadIndicator = $("#load_indicator");
     }
 
@@ -98,17 +93,9 @@ class LeftFrame {
         const cookieSearchKeys = cookies.get("search_parameters");
 
         if (this.slug === "tarihte-bugun") {
-            if (!this.year && cookieYear) {
-                this.year = cookieYear;
-            } else {
-                cookies.set("selected_year", this.year);
-            }
+            this.year = this.year ? this.year : cookieYear || null;
         } else if (this.slug === "hayvan-ara") {
-            if (!this.searchKeys && cookieSearchKeys) {
-                this.searchKeys = cookieSearchKeys;
-            } else {
-                cookies.set("search_parameters", this.searchKeys);
-            }
+            this.searchKeys = this.searchKeys ? this.searchKeys : cookieSearchKeys || null;
         }
     }
 
@@ -116,10 +103,24 @@ class LeftFrame {
         const self = this;
         self.loadIndicator.css("display", "inline-block");
 
-        $.get(self.apiUrl, function (data) {
-            self.render(data);
-        }).progress(function () {
-            console.log(1);
+        const slug = `slug: "${this.slug}"`;
+        const year = `${this.year ? `year: ${this.year}` : ""}`;
+        const page = `${this.page ? `page: ${this.page}` : ""}`;
+        const searchKeys = `${this.searchKeys ? `searchKeys: "${this.searchKeys}"` : ""}`;
+        const refresh = `${this.refresh ? `refresh: ${this.refresh}` : ""}`;
+        const queryParams = [slug, year, page, searchKeys, refresh].filter(val => val).join(", ");
+
+        const query = `{topics(${queryParams}){
+            safename refreshCount year yearRange slugIdentifier
+            page { 
+              objectList { slug title count }
+              paginator { pageRange numPages }
+              number hasOtherPages
+            }
+          }}`;
+
+        $.post("/graphql/", JSON.stringify({ query }), function (response) {
+            self.render(response.data.topics);
         }).fail(function () {
             notify("bir şeyler yanlış gitti", "error");
             self.loadIndicator.css("display", "none");
@@ -129,11 +130,11 @@ class LeftFrame {
     render (data) {
         $("#left-frame-nav").scrollTop(0);
         $("#current_category_name").text(data.safename);
-        this.renderRefreshButton(data.refresh_count);
-        this.renderYearSelector(data.year, data.year_range);
-        this.renderPagination(data.page.has_other_pages, data.page.paginator.page_range, data.page.paginator.num_pages, data.page.number);
-        this.renderTopicList(data.page.object_list, data.slug_identifier, data.parameters);
-        this.renderShowMoreButton(data.page.number, data.page.has_other_pages);
+        this.renderRefreshButton(data.refreshCount);
+        this.renderYearSelector(data.year, data.yearRange);
+        this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number);
+        this.renderTopicList(data.page.objectList, data.slugIdentifier, data.parameters);
+        this.renderShowMoreButton(data.page.number, data.page.hasOtherPages);
         this.loadIndicator.css("display", "none");
     }
 
@@ -214,7 +215,7 @@ class LeftFrame {
         leftFrame.call();
     }
 
-    static refresh () {
+    static refreshPopulate () {
         LeftFrame.populate("bugun", 1, null, null, true);
     }
 }
@@ -274,7 +275,7 @@ $("a#show_more").on("click", function () {
 });
 
 $("#refresh_bugun").on("click", function () {
-    LeftFrame.refresh();
+    LeftFrame.refreshPopulate();
 });
 
 /* End of LefFrame related triggers */
@@ -384,30 +385,6 @@ $(function () {
         onSelect (suggestion) {
             $("input.author-search").val(suggestion.value);
         }
-    });
-
-    $(".send-message-trigger").on("click", function () {
-        const recipient = $(this).attr("data-recipient");
-        $("input.author-search").val(recipient);
-        $("#sendMessageModal").modal("show");
-    });
-
-    $("#send_message_btn").on("click", () => {
-        $.ajax({
-            type: "POST",
-            url: "/mesaj/action/gonder/",
-            data: {
-                message_body: $("textarea#message_body").val(),
-                recipient: $("input.author-search").val()
-            },
-            success: data => {
-                notify(data.message);
-                if (data.success) {
-                    $("#sendMessageModal").modal("hide");
-                }
-            }
-
-        });
     });
 });
 
@@ -789,8 +766,7 @@ $("button#perform_advanced_search").on("click", function () {
         to_date: toDate,
         ordering
     };
-    const searchParameters = "?" + dictToParameters(keys);
-    populateSearchResults(searchParameters);
+    populateSearchResults(dictToParameters(keys));
 });
 
 const categoryAction = (type, categoryId) => {
@@ -806,6 +782,38 @@ const categoryAction = (type, categoryId) => {
         }
     });
 };
+
+const composeMessage = function (recipient, body) {
+    const queryArgs = `body: "${body}", recipient: "${recipient}"`;
+    const query = `mutation {composeMessage(${queryArgs}){ feedback }}`;
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        notify(response.data.composeMessage.feedback);
+    }).fail(function () {
+        notify("o mesaj gitmedi yalnız", "error");
+    });
+};
+
+$(".send-message-trigger").on("click", function () {
+    const recipient = $(this).attr("data-recipient");
+    $("input.author-search").val(recipient);
+    $("#sendMessageModal").modal("show");
+});
+
+$("#send_message_btn").on("click", function () {
+    const textarea = $("textarea#message_body");
+    const body = textarea.val();
+
+    if (body.length < 3) {
+        // not strictly needed but written so as to reduce api calls.
+        notify("az bir şeyler yaz yeğenim");
+        return;
+    }
+
+    const recipient = $("input.author-search").val();
+    $("#sendMessageModal").modal("hide");
+    composeMessage(recipient, body);
+    textarea.val("");
+});
 
 $("button#follow-category-trigger").on("click", function () {
     categoryAction("follow", $(this).data("category-id"));

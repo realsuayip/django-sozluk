@@ -29,6 +29,11 @@ DEBUG = True
 # SECURITY WARNING: don't allow any other hosts except your real host in production!
 ALLOWED_HOSTS = ['192.168.2.253', '127.0.0.1']
 
+
+GRAPHENE = {
+    'SCHEMA': 'dictionary_graph.schema.schema'
+}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,11 +43,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # extra
-    'dictionary.apps.DictionaryConfig',
+
+    # Main apps
+    'dictionary',
+    'dictionary_graph',
+
+    # Third Party
+    'graphene_django',
     'widget_tweaks',
+
+    # Django built-in
     'django.contrib.humanize',
 ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

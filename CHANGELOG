@@ -1,3 +1,18 @@
+[0.92.0-dev-unstable](2020.03.19)(compatible)
+
+--Additions--
+1) New application: Base Graph API for django-sozluk.
+2) New Graph Query: TopicListQuery (replaces views.json.AsyncTopicList)
+3) New Graph Mutation: ComposeMessage (replaces views.json.ComposeMessage)
+
+-- Changes --
+1) This project now requires graphene-django and its dependencies.
+2) Use new API endpoint in djdict.js for LeftFrame and message sending.
+3) Deprecate all JsonView related views.
+
+--Deletions--
+1) Removed json views: AsyncTopicList, ComposeMessage.
+
 [0.91.0-dev-pre](2020.03.16)(compatible)
 
 --Additions--
