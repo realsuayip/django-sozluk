@@ -100,8 +100,7 @@ class LeftFrame {
     }
 
     call () {
-        const self = this;
-        self.loadIndicator.css("display", "inline-block");
+        this.loadIndicator.css("display", "inline-block");
 
         const slug = `slug: "${this.slug}"`;
         const year = `${this.year ? `year: ${this.year}` : ""}`;
@@ -119,8 +118,15 @@ class LeftFrame {
             }
           }}`;
 
+        const self = this;
+
         $.post("/graphql/", JSON.stringify({ query }), function (response) {
-            self.render(response.data.topics);
+            if (response.errors) {
+                self.loadIndicator.css("display", "none");
+                notify("bir şeyler yanlış gitti", "error");
+            } else {
+                self.render(response.data.topics);
+            }
         }).fail(function () {
             notify("bir şeyler yanlış gitti", "error");
             self.loadIndicator.css("display", "none");
