@@ -17,7 +17,7 @@ class TopicManager(models.Manager):
             :param valid: Determines if the topic could be created
             using the requested title.
             """
-            self.title = turkish_lower(title).strip()
+            self.title = title
             self.exists = False
             self.valid = valid
 
@@ -25,6 +25,7 @@ class TopicManager(models.Manager):
             return f"<{self.__class__.__name__} {self.title}>"
 
     def _get_pseudo(self, title):
+        title = turkish_lower(title).strip()
         pseudo = self.PseudoTopic(title)
 
         if not slugify(title):
