@@ -1,3 +1,14 @@
+[0.93.0-dev-unstable](2020.03.19)(compatible)
+
+--Additions--
+1) AutoComplete endpoints (Topic and Author) for Graph API.
+
+-- Changes --
+1) Client-side AutoComplete calls adjusted for Graph API.
+
+--Deletions--
+1) Deleted the deprecated AutoComplete view.
+
 [0.92.0-dev-unstable](2020.03.19)(compatible)
 
 --Additions--

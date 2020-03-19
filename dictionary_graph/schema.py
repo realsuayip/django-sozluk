@@ -1,10 +1,11 @@
 from graphene import ObjectType, Schema
 
-from .topic.list import TopicListQuery
+from .autocomplete import AutoComplete
 from .messaging.compose import ComposeMessage
+from .topic.list import TopicListQuery
 
 
-class Query(TopicListQuery, ObjectType):
+class Query(AutoComplete, TopicListQuery, ObjectType):
     # This class will inherit from multiple Queries
     # as we begin to add more apps to our project
     pass

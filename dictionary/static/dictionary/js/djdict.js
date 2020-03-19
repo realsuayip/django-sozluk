@@ -374,10 +374,26 @@ $(function () {
     }
 
     $("#header_search").autocomplete({
-        serviceUrl: "/autocomplete/general/",
         triggerSelectOnValidInput: false,
         showNoSuggestionNotice: true,
         noSuggestionNotice: "-- buna yakın bir sonuç yok --",
+
+        lookup (lookup, done) {
+            if (lookup.startsWith("@") && lookup.substr(1)) {
+                const query = `{ autoCompleteAuthor(lookup: "${lookup.substr(1)}") { username } }`;
+                $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                    done({ suggestions: response.data.autoCompleteAuthor.map(user => ({ value: `@${user.username}` })) });
+                });
+            } else {
+                const query = `{ autoCompleteAuthor(lookup: "${lookup}", limit: 3) { username } 
+                                 autoCompleteTopic(lookup: "${lookup}", limit: 7) { title } }`;
+                $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                    const topicSuggestions = response.data.autoCompleteTopic.map(topic => ({ value: topic.title }));
+                    const authorSuggestions = response.data.autoCompleteAuthor.map(user => ({ value: `@${user.username}` }));
+                    done({ suggestions: topicSuggestions.concat(authorSuggestions) });
+                });
+            }
+        },
 
         onSelect (suggestion) {
             window.location.replace("/topic/?q=" + suggestion.value);
@@ -385,9 +401,13 @@ $(function () {
     });
 
     $(".author-search").autocomplete({
-        serviceUrl: "/autocomplete/general/",
-        triggerSelectOnValidInput: false,
-        paramName: "author",
+        lookup (lookup, done) {
+            const query = `{ autoCompleteAuthor(lookup: "${lookup}") { username } }`;
+            $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                done({ suggestions: response.data.autoCompleteAuthor.map(user => ({ value: user.username })) });
+            });
+        },
+
         onSelect (suggestion) {
             $("input.author-search").val(suggestion.value);
         }
