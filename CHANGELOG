@@ -1,3 +1,16 @@
+[0.94.0-dev-unstable](2020.03.20)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) [Graph] Semantic changes for AutoComplete API. (also folder structure)
+2) [Graph] Create types module to hold shared types
+3) Changes to front-end javascript to conform api.
+
+--Deletions--
+None
+
 [0.93.0-dev-unstable](2020.03.19)(compatible)
 
 --Additions--

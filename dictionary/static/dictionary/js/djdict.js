@@ -380,16 +380,16 @@ $(function () {
 
         lookup (lookup, done) {
             if (lookup.startsWith("@") && lookup.substr(1)) {
-                const query = `{ autoCompleteAuthor(lookup: "${lookup.substr(1)}") { username } }`;
+                const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
                 $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    done({ suggestions: response.data.autoCompleteAuthor.map(user => ({ value: `@${user.username}` })) });
+                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
                 });
             } else {
-                const query = `{ autoCompleteAuthor(lookup: "${lookup}", limit: 3) { username } 
-                                 autoCompleteTopic(lookup: "${lookup}", limit: 7) { title } }`;
+                const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
+                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
                 $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    const topicSuggestions = response.data.autoCompleteTopic.map(topic => ({ value: topic.title }));
-                    const authorSuggestions = response.data.autoCompleteAuthor.map(user => ({ value: `@${user.username}` }));
+                    const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
+                    const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
                     done({ suggestions: topicSuggestions.concat(authorSuggestions) });
                 });
             }
@@ -402,9 +402,9 @@ $(function () {
 
     $(".author-search").autocomplete({
         lookup (lookup, done) {
-            const query = `{ autoCompleteAuthor(lookup: "${lookup}") { username } }`;
+            const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
             $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                done({ suggestions: response.data.autoCompleteAuthor.map(user => ({ value: user.username })) });
+                done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
             });
         },
 
