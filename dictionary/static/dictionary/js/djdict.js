@@ -811,9 +811,9 @@ const categoryAction = (type, categoryId) => {
 
 const composeMessage = function (recipient, body) {
     const queryArgs = `body: "${body}", recipient: "${recipient}"`;
-    const query = `mutation {composeMessage(${queryArgs}){ feedback }}`;
+    const query = `mutation { message { compose(${queryArgs}) { feedback } } }`;
     $.post("/graphql/", JSON.stringify({ query }), function (response) {
-        notify(response.data.composeMessage.feedback);
+        notify(response.data.message.compose.feedback);
     }).fail(function () {
         notify("o mesaj gitmedi yalnız", "error");
     });
@@ -821,7 +821,7 @@ const composeMessage = function (recipient, body) {
 
 $(".send-message-trigger").on("click", function () {
     const recipient = $(this).attr("data-recipient");
-    $("input.author-search").val(recipient);
+    $("#message_body[data-for]").attr("data-for", recipient);
     $("#sendMessageModal").modal("show");
 });
 
@@ -835,7 +835,7 @@ $("#send_message_btn").on("click", function () {
         return;
     }
 
-    const recipient = $("input.author-search").val();
+    const recipient = textarea.attr("data-for");
     $("#sendMessageModal").modal("hide");
     composeMessage(recipient, body);
     textarea.val("");

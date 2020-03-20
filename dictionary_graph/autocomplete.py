@@ -1,7 +1,7 @@
 from functools import wraps
 
 from django.db.models import Q
-from graphene import Field, Int, List, ObjectType, String
+from graphene import Int, List, ObjectType, String
 
 from dictionary.models import Author, Topic
 
@@ -38,14 +38,5 @@ class TopicAutoCompleteQuery(ObjectType):
                                               is_censored=False)[:limit]
 
 
-class AutoCompleteQuery(AuthorAutoCompleteQuery, TopicAutoCompleteQuery):
+class AutoCompleteQueries(AuthorAutoCompleteQuery, TopicAutoCompleteQuery):
     """Inherits the queries of word completion"""
-
-
-class AutoComplete:
-    """Provides namespace for the queries"""
-    autocomplete = Field(AutoCompleteQuery)
-
-    @staticmethod
-    def resolve_autocomplete(*args, **kwargs):
-        return AutoCompleteQuery()

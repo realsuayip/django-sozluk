@@ -1,20 +1,28 @@
-from graphene import ObjectType, Schema
+from graphene import Field, ObjectType, Schema
 
-from .autocomplete import AutoComplete
-from .messaging.compose import ComposeMessage
+from .autocomplete import AutoCompleteQueries
+from .messaging import MessageMutations
 from .topic.list import TopicListQuery
 
 
-class Query(AutoComplete, TopicListQuery, ObjectType):
-    # This class will inherit from multiple Queries
+class Query(TopicListQuery, ObjectType):
+    # This class will include multiple Queries
     # as we begin to add more apps to our project
-    pass
+    autocomplete = Field(AutoCompleteQueries)
+
+    @staticmethod
+    def resolve_autocomplete(*args, **kwargs):
+        return AutoCompleteQueries()
 
 
 class Mutation(ObjectType):
     # This class will include multiple Mutations
     # as we begin to add more apps to our project
-    compose_message = ComposeMessage.Field()
+    message = Field(MessageMutations)
+
+    @staticmethod
+    def resolve_message(*args, **kwargs):
+        return MessageMutations()
 
 
 schema = Schema(query=Query, mutation=Mutation)

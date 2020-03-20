@@ -1,3 +1,16 @@
+[0.95.0-dev-unstable](2020.03.21)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) [Graph] Semantic changes for compose message mutation.
+2) [Graph] Move autocomplete namespace to schema.py
+
+--Deletions--
+1) On profile page, message sending modal no longer includes
+author username input. Also remove caching from modal template.
+
 [0.94.0-dev-unstable](2020.03.20)(compatible)
 
 --Additions--
