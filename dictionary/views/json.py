@@ -1,61 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
-from ..models import Author, Category, Entry, Topic
+from ..models import Category, Entry, Topic
 from ..utils.settings import VOTE_RATES
 from ..utils.views import JsonView
-
-
-class UserAction(LoginRequiredMixin, JsonView):
-    http_method_names = ['post']
-
-    sender = None
-    recipient = None
-
-    def handle(self):
-        action = self.request_data.get("type")
-        self.sender = self.request.user
-        self.recipient = get_object_or_404(Author, username=self.request_data.get("recipient_username"))
-
-        if self.sender == self.recipient or self.recipient.is_private:
-            return self.bad_request()
-
-        if action == "follow":
-            return self.follow()
-
-        if action == "block":
-            return self.block()
-
-        return super().handle()
-
-    def follow(self):
-        sender, recipient = self.sender, self.recipient
-
-        if sender in recipient.blocked.all() or recipient in sender.blocked.all():
-            return self.bad_request()
-
-        if recipient in sender.following.all():
-            sender.following.remove(recipient)
-        else:
-            sender.following.add(recipient)
-        return self.success()
-
-    def block(self):
-        sender, recipient = self.sender, self.recipient
-
-        if recipient in sender.blocked.all():
-            sender.blocked.remove(recipient)
-            return self.success()
-
-        if recipient in sender.following.all():
-            sender.following.remove(recipient)
-
-        if sender in recipient.following.all():
-            recipient.following.remove(sender)
-
-        sender.blocked.add(recipient)
-        return self.success(redirect_url=self.request.build_absolute_uri(reverse("home")))
 
 
 class EntryAction(LoginRequiredMixin, JsonView):

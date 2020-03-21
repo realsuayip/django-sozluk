@@ -621,30 +621,18 @@ $("#rate a#downvote").on("click", function () {
     $(this).toggleClass("active");
 });
 
-const userAction = (type, recipientUsername) => {
-    $.ajax({
-        url: "/user/action/",
-        type: "POST",
-        data: {
-            type,
-            recipient_username: recipientUsername
-        },
-        success: data => {
-            if (data.redirect_to) {
-                window.location.replace(data.redirect_to);
-            }
-        },
-        error: data => {
-            if (data.message) {
-                notify(data.message);
-            }
+const userAction = function (type, recipient) {
+    const query = `mutation { user { ${type}(username: "${recipient}") { feedback redirect } } }`;
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        const info = response.data.user[type];
+        if (info.redirect) {
+            window.location.replace(info.redirect);
+        } else {
+            notify(info.feedback);
         }
-
+    }).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
-};
-
-const blockUser = username => {
-    userAction("block", username);
 };
 
 $(".block-user-trigger").on("click", function () {
@@ -656,13 +644,13 @@ $(".block-user-trigger").on("click", function () {
 
 $("#block_user").on("click", function () {
     const targetUser = $(this).attr("data-username");
-    blockUser(targetUser);
+    userAction("block", targetUser);
     $("#blockUserModal").modal("hide");
 });
 
 $(".unblock-user-trigger").on("click", function () {
     if (confirm("engel kalksın mı?")) {
-        blockUser($(this).attr("data-username"));
+        userAction("block", $(this).attr("data-username"));
         $(this).hide();
     }
 });
