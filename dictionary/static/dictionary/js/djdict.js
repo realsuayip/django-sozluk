@@ -380,7 +380,7 @@ $(function () {
 
         lookup (lookup, done) {
             if (lookup.startsWith("@") && lookup.substr(1)) {
-                const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
+                const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
                 $.post("/graphql/", JSON.stringify({ query }), function (response) {
                     done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
                 });
@@ -753,7 +753,7 @@ const populateSearchResults = searchParameters => {
     const slug = "hayvan-ara";
 
     if (userIsMobile) {
-        window.location.replace("/basliklar/" + slug + "/" + searchParameters);
+        window.location.replace(`/basliklar/${slug}/?${searchParameters}`);
     }
     LeftFrame.populate(slug, null, null, searchParameters);
 };
