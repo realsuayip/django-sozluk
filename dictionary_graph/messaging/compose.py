@@ -2,6 +2,8 @@ from graphene import Mutation, String
 
 from dictionary.models import Author, Message
 
+from ..utils import login_required
+
 
 class ComposeMessage(Mutation):
     class Arguments:
@@ -11,12 +13,9 @@ class ComposeMessage(Mutation):
     feedback = String()
 
     @staticmethod
+    @login_required
     def mutate(root, info, body, recipient):
         sender = info.context.user
-
-        if not sender.is_authenticated:
-            return ComposeMessage(feedback="giriş yaparsan bu özellikten yararlanabilirsin aslında")
-
         if len(body) < 3:
             return ComposeMessage(feedback="az bir şeyler yaz yeğenim")
 
