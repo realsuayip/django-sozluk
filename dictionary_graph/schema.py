@@ -1,6 +1,7 @@
 from graphene import Field, ObjectType, Schema
 
 from .autocomplete import AutoCompleteQueries
+from .category import CategoryMutations
 from .messaging import MessageMutations
 from .topic import TopicMutations, TopicQueries
 from .user import UserMutations
@@ -22,6 +23,7 @@ class Mutation(ObjectType):
     message = Field(MessageMutations)
     user = Field(UserMutations)
     topic = Field(TopicMutations)
+    category = Field(CategoryMutations)
 
     @staticmethod
     def resolve_message(*args, **kwargs):
@@ -34,6 +36,10 @@ class Mutation(ObjectType):
     @staticmethod
     def resolve_topic(*args, **kwargs):
         return TopicMutations()
+
+    @staticmethod
+    def resolve_category(*args, **kwargs):
+        return CategoryMutations()
 
 
 schema = Schema(query=Query, mutation=Mutation)

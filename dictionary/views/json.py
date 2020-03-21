@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-from ..models import Category, Entry
+from ..models import Entry
 from ..utils.settings import VOTE_RATES
 from ..utils.views import JsonView
 
@@ -77,32 +77,6 @@ class EntryAction(LoginRequiredMixin, JsonView):
             else:
                 authors.append(user.username)
         return {"users": [authors, novices]}
-
-
-class CategoryAction(LoginRequiredMixin, JsonView):
-    http_method_names = ["post"]
-    category_object = None
-
-    def handle(self):
-        action = self.request_data.get("type")
-
-        try:
-            self.category_object = Category.objects.get(pk=int(self.request_data.get("category_id")))
-        except (ValueError, OverflowError, Category.DoesNotExist):
-            return self.bad_request()
-
-        if action in ["follow"]:
-            return self.follow()
-
-        return self.bad_request()
-
-    def follow(self):
-        if self.category_object in self.request.user.following_categories.all():
-            self.request.user.following_categories.remove(self.category_object)
-        else:
-            self.request.user.following_categories.add(self.category_object)
-
-        return self.success()
 
 
 class Vote(JsonView):

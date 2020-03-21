@@ -1,3 +1,15 @@
+[0.98.0-dev-unstable](2020.03.22)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) [Graph] Implemented category actions.
+2) Relevant javascript client code.
+
+--Deletions--
+1) Deleted the deprecated CategoryAction view.
+
 [0.97.0-dev-unstable](2020.03.22)(compatible)
 
 --Additions--

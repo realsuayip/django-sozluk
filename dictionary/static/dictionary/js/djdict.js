@@ -779,17 +779,10 @@ $("button#perform_advanced_search").on("click", function () {
     populateSearchResults(dictToParameters(keys));
 });
 
-const categoryAction = (type, categoryId) => {
-    $.ajax({
-        url: "/c/action/",
-        type: "POST",
-        data: {
-            type,
-            category_id: categoryId
-        },
-        error: () => {
-            notify("olmuyor", "error");
-        }
+const categoryAction = function (type, pk) {
+    const query = `mutation { category { ${type}(pk: "${pk}") { feedback } } }`;
+    $.post("/graphql/", JSON.stringify({ query })).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
 };
 
