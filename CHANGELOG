@@ -1,3 +1,15 @@
+[0.97.0-dev-unstable](2020.03.22)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) [Graph] Implemented topic actions.
+2) Relevant javascript client code.
+
+--Deletions--
+1) Deleted the deprecated TopicAction view.
+
 [0.96.0-dev-unstable](2020.03.21)(compatible)
 
 --Additions--

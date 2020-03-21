@@ -703,17 +703,13 @@ $(".pin-entry").on("click", function () {
     entryAction("pin", $(this).attr("data-target-entry"));
 });
 
-const topicAction = (type, topicId) => {
-    $.ajax({
-        url: "/t/action/",
-        type: "POST",
-        data: {
-            type,
-            topic_id: topicId
-        },
-        error: () => {
-            notify("olmuyor", "error");
-        }
+const topicAction = function (type, pk) {
+    const query = `mutation { topic { ${type}(pk: "${pk}") { feedback } } }`;
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        const info = response.data.topic[type];
+        notify(info.feedback);
+    }).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
 };
 

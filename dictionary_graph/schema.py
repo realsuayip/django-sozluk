@@ -2,11 +2,11 @@ from graphene import Field, ObjectType, Schema
 
 from .autocomplete import AutoCompleteQueries
 from .messaging import MessageMutations
-from .topic.list import TopicListQuery
+from .topic import TopicMutations, TopicQueries
 from .user import UserMutations
 
 
-class Query(TopicListQuery, ObjectType):
+class Query(TopicQueries, ObjectType):
     # This class will include multiple Queries
     # as we begin to add more apps to our project
     autocomplete = Field(AutoCompleteQueries)
@@ -21,6 +21,7 @@ class Mutation(ObjectType):
     # as we begin to add more apps to our project
     message = Field(MessageMutations)
     user = Field(UserMutations)
+    topic = Field(TopicMutations)
 
     @staticmethod
     def resolve_message(*args, **kwargs):
@@ -29,6 +30,10 @@ class Mutation(ObjectType):
     @staticmethod
     def resolve_user(*args, **kwargs):
         return UserMutations()
+
+    @staticmethod
+    def resolve_topic(*args, **kwargs):
+        return TopicMutations()
 
 
 schema = Schema(query=Query, mutation=Mutation)
