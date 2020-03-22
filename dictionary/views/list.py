@@ -15,11 +15,12 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, TemplateView
 
+from dateutil.relativedelta import relativedelta
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import time_threshold, proceed_or_404
+from ..utils import proceed_or_404, time_threshold
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
@@ -248,9 +249,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         with suppress(ValueError, OverflowError):
             if int(year) in YEAR_RANGE:
                 now = timezone.now()
-                return self.topic.entries.filter(
-                    date_created__year=year, date_created__month=now.month, date_created__day=now.day
-                )
+                diff = now.year - int(year)
+                delta = now - relativedelta(years=diff)
+                return self.topic.entries.filter(date_created__date=delta.date())
 
         return self.model.objects.none()
 

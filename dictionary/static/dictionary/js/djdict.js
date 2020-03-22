@@ -93,9 +93,17 @@ class LeftFrame {
         const cookieSearchKeys = cookies.get("search_parameters");
 
         if (this.slug === "tarihte-bugun") {
-            this.year = this.year ? this.year : cookieYear || null;
+            if (!this.year) {
+                this.year = cookieYear || null;
+            } else {
+                cookies.set("selected_year", this.year);
+            }
         } else if (this.slug === "hayvan-ara") {
-            this.searchKeys = this.searchKeys ? this.searchKeys : cookieSearchKeys || null;
+            if (!this.searchKeys) {
+                this.searchKeys = cookieSearchKeys || null;
+            } else {
+                cookies.set("search_parameters", this.searchKeys);
+            }
         }
     }
 

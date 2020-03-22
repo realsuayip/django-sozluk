@@ -49,7 +49,7 @@ class LeftFrameProcessor:
             return {}
 
         query = b64decode_utf8_or_none(self.cookies.get("search_parameters"))
-        return dict(parse_qsl(query[1:])) if query else {}  # [1:] to omit ? from query
+        return dict(parse_qsl(query)) if query else {}
 
     def get_context(self):
         manager = TopicListManager(self.user, self.slug, self._year, self._search_keys)
