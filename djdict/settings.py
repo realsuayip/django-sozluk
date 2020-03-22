@@ -147,7 +147,7 @@ SESSION_ENGINE = 'dictionary.backends.session_backend'
 # in development environment use Python's local mail server
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
-PASSWORD_RESET_TIMEOUT_DAYS = 1
+PASSWORD_RESET_TIMEOUT_DAYS = 1  # deprecated in django 3.1
 LOGIN_URL = "/login/"
 
 USE_I18N = True

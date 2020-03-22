@@ -5,7 +5,6 @@ from django.contrib import messages as notifications
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_decode
@@ -51,34 +50,40 @@ class Logout(LogoutView):
 
 class SignUp(FormView):
     form_class = SignUpForm
-    template_name = 'dictionary/registration/signup.html'
+    template_name = "dictionary/registration/signup.html"
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user.username = form.cleaned_data.get('username').lower()
-        user.birth_date = form.cleaned_data.get('birth_date')
-        user.gender = form.cleaned_data.get('gender')
+        user.username = form.cleaned_data.get("username").lower()
+        user.birth_date = form.cleaned_data.get("birth_date")
+        user.gender = form.cleaned_data.get("gender")
         user.save()
         send_email_confirmation(user, user.email)
-        notifications.info(self.request, "e-posta adresinize bir onay bağlantısı gönderildi. "
-                                         "bu bağlantıya tıklayarak hesabınızı aktif hale "
-                                         "getirip giriş yapabilirsiniz.")
-        return redirect('login')
+        notifications.info(
+            self.request,
+            "e-posta adresinize bir onay bağlantısı gönderildi."
+            " bu bağlantıya tıklayarak hesabınızı aktif hale getirip"
+            " giriş yapabilirsiniz.",
+        )
+        return redirect("login")
 
 
 class ConfirmEmail(View):
     success = False
+    template_name = "dictionary/registration/email/confirmation_result.html"
 
     def get(self, request, uidb64, token):
         try:
             user_id = urlsafe_base64_decode(uidb64).decode()
-            verification_object = UserVerification.objects.get(author_id=user_id,
-                                                               expiration_date__gte=time_threshold(hours=24))
+            verification_object = UserVerification.objects.get(
+                author_id=user_id, expiration_date__gte=time_threshold(hours=24)
+            )
         except (ValueError, UnicodeDecodeError, UserVerification.DoesNotExist):
-            return self.response()
+            return self.render_to_response()
 
         if check_password(token, verification_object.verification_token):
             author = Author.objects.get(id=user_id)
+
             if not author.is_active:
                 author.is_active = True
                 author.save()
@@ -89,11 +94,10 @@ class ConfirmEmail(View):
             self.success = True
             UserVerification.objects.filter(author=author).delete()
 
-        return self.response()
+        return self.render_to_response()
 
-    def response(self):
-        return render(self.request, "dictionary/registration/email/confirmation_result.html",
-                      context={"success": self.success})
+    def render_to_response(self):
+        return render(self.request, self.template_name, context={"success": self.success})
 
 
 class ResendEmailConfirmation(FormView):
@@ -117,7 +121,7 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            send_mail("şifreniz değişti", message, FROM_EMAIL, [self.request.user.email])
+            self.request.user.email_user("şifreniz değişti", message, FROM_EMAIL)
         except SMTPException:
             notifications.error(self.request, "şifrenizi değiştiremedik. daha sonra tekrar deneyin.")
             return super().form_invalid(form)
@@ -147,12 +151,12 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
 
         # Send a message to ensure security.
         try:
-            send_mail("hesabınız donduruldu", message, FROM_EMAIL, [self.request.user.email])
+            self.request.user.email_user("hesabınız donduruldu", message, FROM_EMAIL)
         except SMTPException:
             notifications.error(self.request, "işlem gerçekleştirilemedi. daha sonra tekrar deneyin.")
             return super().form_invalid(form)
 
-        termination_choice = form.cleaned_data.get('state')
+        termination_choice = form.cleaned_data.get("state")
         AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
         # Unlike logout(), this invalidates ALL sessions across devices.
         PairedSession.objects.filter(user=self.request.user).delete()

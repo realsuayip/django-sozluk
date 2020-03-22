@@ -1,5 +1,6 @@
 import datetime
 import math
+from contextlib import suppress
 
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
@@ -18,7 +19,7 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import time_threshold
+from ..utils import time_threshold, proceed_or_404
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
@@ -45,7 +46,7 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
     model = Conversation
     allow_empty = True
-    paginate_by = 3
+    paginate_by = 10
     template_name = "dictionary/conversation/inbox.html"
     context_object_name = "conversations"
     form_class = StandaloneMessageForm
@@ -59,12 +60,8 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
             return self.form_invalid(form)
 
         body = form.cleaned_data.get("body")
-        msg = Message.objects.compose(self.request.user, recipient, body)
-
-        if msg:
-            return redirect(reverse("conversation", kwargs={"username": username}))
-
-        return self.form_invalid(form)
+        sent = Message.objects.compose(self.request.user, recipient, body)
+        return redirect(reverse("conversation", kwargs={"username": username})) if sent else self.form_invalid(form)
 
     def form_invalid(self, form):
         if form.non_field_errors():
@@ -95,8 +92,8 @@ class ActivityList(LoginRequiredMixin, ListView):
         queryset = self.request.user.following_topics.annotate(
             latest=Max("entries__date_created", filter=~Q(entries__author=self.request.user)),
             read_at=F("topicfollowing__read_at"),
-            is_read=Case(When(Q(latest__gt=F("read_at")), then=False), default=True,
-                         output_field=BooleanField())).order_by("is_read", "-topicfollowing__read_at")
+            is_read=Case(When(Q(latest__gt=F("read_at")), then=False), default=True, output_field=BooleanField()),
+        ).order_by("is_read", "-topicfollowing__read_at")
         return queryset
 
 
@@ -108,6 +105,7 @@ class CategoryList(ListView):
 
 class TopicList(TemplateView):
     """Lists topics using LeftFrame interface."""
+
     template_name = "dictionary/list/topic_list.html"
 
     def get_context_data(self, **kwargs):
@@ -194,7 +192,6 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # Create topic
             try:
                 # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
-
                 if not slugify(self.topic.title):
                     notifications.error(self.request, "öyle başlık mı olur hıyarağası.")
                     return self.form_invalid(form)
@@ -224,10 +221,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """
 
         if form.errors:
-            for err in form.errors['content']:
+            for err in form.errors["content"]:
                 notifications.error(self.request, err)
 
         unicode_url_argument = None
+
         if self.kwargs.get("unicode_string"):
             unicode_url_argument = self.kwargs.get("unicode_string")
         elif self.request.GET.get("q"):
@@ -246,13 +244,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def today_in_history(self):
         year = self.request.GET.get("year")
-        try:
+
+        with suppress(ValueError, OverflowError):
             if int(year) in YEAR_RANGE:
                 now = timezone.now()
-                return self.topic.entries.filter(date_created__year=year, date_created__month=now.month,
-                                                 date_created__day=now.day)
-        except (ValueError, OverflowError):
-            return self.model.objects.none()
+                return self.topic.entries.filter(
+                    date_created__year=year, date_created__month=now.month, date_created__day=now.day
+                )
+
         return self.model.objects.none()
 
     def nice(self):
@@ -262,18 +261,18 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return self.today().order_by("-vote_rate")
 
     def search(self):
-        """IN topic (entry content) search."""
+        """In topic (entry content) search."""
         keywords = self.request.GET.get("keywords")
+
         if keywords:
             if keywords.startswith("@"):
-                try:
+                with suppress(Author.DoesNotExist):
                     author = Author.objects.get(username=keywords[1:])
                     return self.topic.entries.filter(author=author)
-                except Author.DoesNotExist:
-                    return self.model.objects.none()
             else:
                 # use postgresql to make searches more advanced if desired
                 return self.topic.entries.filter(content__icontains=keywords)
+
         return self.model.objects.none()
 
     def following(self):
@@ -361,34 +360,34 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
             if show_subsequent or show_previous:
                 first_entry_date = entries[0].date_created
+
                 previous_entries_count = self._qs_filter(
                     self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
-                    prefecth=False).count()
+                    prefecth=False,
+                ).count()
 
             if show_previous:
                 paginate_by = self.get_paginate_by()
                 previous_entries_page = math.ceil(previous_entries_count / paginate_by)
 
             if show_subsequent:
-                try:
+                with suppress(IndexError):
                     last_entry_date = entries[queryset_size - 1].date_created
+
                     subsequent_entries_count = self._qs_filter(
                         self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False),
-                        prefecth=False).count()
-                    if not subsequent_entries_count:
-                        subsequent_entries_page = 0
-                    else:
+                        prefecth=False,
+                    ).count()
+
+                    if subsequent_entries_count > 0:
                         subsequent_entries_page = self._find_subsequent_page(previous_entries_count)
-                except IndexError:
-                    subsequent_entries_page = 0
-                    subsequent_entries_count = 0
 
             context["previous_entries_count"] = previous_entries_count
             context["previous_entries_page"] = previous_entries_page
             context["subsequent_entries_count"] = subsequent_entries_count
             context["subsequent_entries_page"] = subsequent_entries_page
 
-        elif not entries:
+        else:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
             if self.view_mode in ("today", "today_in_history", "nice", "nicetoday", "search", "caylaklar", "following"):
                 context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
@@ -434,9 +433,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def render_to_response(self, context, **response_kwargs):
         # can only be caused by self.following()
         # this redirect is done here because we initially want to get the queryset first to decide if redirect is needed
-        if self.redirect:
-            return self._redirect_to_self()
-        return super().render_to_response(context, **response_kwargs)
+        return super().render_to_response(context, **response_kwargs) if not self.redirect else self._redirect_to_self()
 
     def get_topic(self):
         """
@@ -451,24 +448,24 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         #  Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
         elif self.kwargs.get("unicode_string"):
             self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string").strip())
+
             if self.topic.exists:
                 return self._redirect_to_self()
 
         #  Entry permalink handling
         elif self.kwargs.get("entry_id"):
-            try:
+            with proceed_or_404(ValueError, OverflowError):
                 entry_id = int(self.kwargs.get("entry_id"))
                 self.topic = Topic.objects.get_or_pseudo(entry_id=entry_id)
 
                 if self.request.user.is_authenticated:
-                    entry = self.topic.entries.filter(pk=entry_id).first()
+                    entry = self.topic.entries.get(pk=entry_id)
+
                     if entry.author in self.request.user.blocked.all():
                         raise Http404
 
                 self.entry_permalink = entry_id
                 self.view_mode = "entry_permalink"
-            except (ValueError, OverflowError):
-                raise Http404
 
         #  Search handling
         elif self.request.GET.get("q"):

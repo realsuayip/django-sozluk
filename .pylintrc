@@ -274,6 +274,7 @@ good-names=i,
            application,
            schema,
            app_name,
+           proceed_or_404,
            User
 
 

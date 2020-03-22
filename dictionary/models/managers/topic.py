@@ -1,7 +1,7 @@
 from django.core.validators import ValidationError
 from django.db import models
 from django.db.models import Count, Q
-from django.http import Http404
+from django.shortcuts import get_object_or_404
 
 from uuslug import slugify
 
@@ -53,10 +53,8 @@ class TopicManager(models.Manager):
                 return self._get_pseudo(slug)
 
         elif entry_id:
-            try:
-                return Entry.objects_published.get(id=entry_id).topic
-            except Entry.DoesNotExist:
-                raise Http404
+            entry = get_object_or_404(Entry.objects_published, pk=entry_id)
+            return entry.topic
         else:
             raise ValueError("No arguments given.")
 
@@ -69,5 +67,9 @@ class TopicManagerPublished(models.Manager):
     # Return topics which has published (by authors) entries
     def get_queryset(self):
         pub_filter = {"entries__is_draft": False, "entries__author__is_novice": False}
-        return super().get_queryset().annotate(num_published=Count("entries", filter=Q(**pub_filter))).exclude(
-            num_published__lt=1)
+        return (
+            super()
+            .get_queryset()
+            .annotate(num_published=Count("entries", filter=Q(**pub_filter)))
+            .exclude(num_published__lt=1)
+        )

@@ -1,7 +1,9 @@
 import base64
 import datetime
+from contextlib import suppress
 
 from django.contrib.auth import get_user_model
+from django.http import Http404
 from django.utils import timezone
 
 from dateutil.parser import parse
@@ -11,8 +13,19 @@ from .settings import GENERIC_SUPERUSER_ID
 
 # General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
 
+
+class proceed_or_404(suppress):
+    """If the supplied exceptions occur in a block of code, raise Http404"""
+
+    def __exit__(self, exctype, excinst, exctb):
+        failed = super().__exit__(exctype, excinst, exctb)
+
+        if failed:
+            raise Http404
+
+
 def turkish_lower(turkish_string):
-    lower_map = {ord(u'I'): u'ı', ord(u'İ'): u'i'}
+    lower_map = {ord("I"): "ı", ord("İ"): "i"}
     return turkish_string.translate(lower_map).lower()
 
 
@@ -31,7 +44,7 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwarg
     if not isinstance(date_string, str) or not date_string:
         return False
 
-    if delta and delta not in ('positive', 'negative'):
+    if delta and delta not in ("positive", "negative"):
         raise ValueError("Invalid delta option. Options are 'positive' or 'negative'")
 
     try:
@@ -77,7 +90,7 @@ def get_category_parameters(slug, year):
         "tarihte-bugun": f"?year={year}",
         "caylaklar": "?a=caylaklar",
         "generic": "?day=today",
-        "basiboslar": "?day=today"
+        "basiboslar": "?day=today",
     }  # @formatter:on
 
     return pairs.get(slug)

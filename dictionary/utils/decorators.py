@@ -6,6 +6,7 @@ from django.http import HttpResponseBadRequest
 
 # General decoratos
 
+
 def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"):
     """
     Decorator to cache functions using django's low-level cache api. Arguments are not taken into consideration while
@@ -55,23 +56,3 @@ def require_ajax(view):
         return HttpResponseBadRequest()
 
     return _wrapped_view
-
-
-def force_post(func):
-    # Compatible only with utils.views.JsonView
-    def inner(self, *args, **kwargs):
-        if self.method != "post":
-            return HttpResponseBadRequest()
-        return func(self, *args, **kwargs)
-
-    return inner
-
-
-def force_get(func):
-    # Compatible only with utils.views.JsonView
-    def inner(self, *args, **kwargs):
-        if self.method != "get":
-            return HttpResponseBadRequest()
-        return func(self, *args, **kwargs)
-
-    return inner

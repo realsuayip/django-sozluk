@@ -2,7 +2,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import UpdateView
@@ -59,11 +59,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
-
-        try:
-            obj = Entry.objects_all.get(pk=pk)
-        except Entry.DoesNotExist:
-            raise Http404
+        obj = get_object_or_404(Entry.objects_all, pk=pk)
 
         if obj.author != self.request.user:
             raise Http404

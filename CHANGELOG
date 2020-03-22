@@ -1,3 +1,16 @@
+[0.99.0-dev-unstable](2020.03.22)(compatible)
+
+--Additions--
+1) New proceed_or_404 context manager. See docstrings.
+
+-- Changes --
+1) Use black code style (line length == 120)
+2) Minimal changes to improve readibility & optimize
+existing code.
+
+--Deletions--
+1) Deleted unused force_post, force_get decorators.
+
 [0.98.0-dev-unstable](2020.03.22)(compatible)
 
 --Additions--
