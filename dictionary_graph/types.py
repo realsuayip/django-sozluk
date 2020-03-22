@@ -6,7 +6,7 @@ from dictionary.models import Author, Topic
 class AuthorType(DjangoObjectType):
     class Meta:
         model = Author
-        fields = ("username",)
+        fields = ("username", "is_novice")
 
 
 class TopicType(DjangoObjectType):

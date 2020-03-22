@@ -537,21 +537,23 @@ $("button#insert_link").on("click", function () {
 
 $(".favorite-entry-btn").on("click", function () {
     const self = this;
-    const entryId = $(self).closest("#rate").attr("data-entry-id");
-    $.ajax({
-        url: "/entry/action/",
-        type: "POST",
-        data: {
-            type: "favorite",
-            entry_id: entryId
-        },
-        success (data) {
-            $(self).next().html(data.count);
-            if (data.count === 0 || (data.count === 1 && data.status === 1)) {
-                $(self).next().toggleClass("dj-hidden");
-            }
-            $(self).toggleClass("fav-inverted");
+    const pk = $(self).closest("#rate").attr("data-entry-id");
+    const query = `mutation { entry { favorite(pk: "${pk}") { feedback count } } }`;
+
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        const count = response.data.entry.favorite.count;
+        const countHolder = $(self).next();
+
+        $(self).toggleClass("fav-inverted");
+        countHolder.text(count);
+
+        if (count > 0) {
+            countHolder.removeClass("dj-hidden");
+        } else {
+            countHolder.addClass("dj-hidden");
         }
+    }).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
 });
 
@@ -562,31 +564,36 @@ $(document).on("click", "div.entry_info div.rate .dropdown-menu, #dropdown_detai
 $(".dropdown-fav-count").on("click", function () {
     const self = this;
     const favoritesList = $(self).next();
-    $.ajax({
-        url: "/entry/action/",
-        type: "GET",
-        data: {
-            type: "favorite_list",
-            entry_id: $(self).closest("#rate").attr("data-entry-id")
-        },
-        success: data => {
-            favoritesList.html("");
-            if (data.users[0].length > 0) {
-                for (const author of data.users[0]) {
-                    favoritesList.append(`<a class="author-name" href="/biri/${author}/">@${author}</a>`);
-                }
-            }
+    const pk = $(self).closest("#rate").attr("data-entry-id");
 
-            if (data.users[1].length > 0) {
-                favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">...${data.users[1].length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
-                $("a#show_novice_button").on("click", () => {
-                    $("#favorites_list_novices").toggleClass("dj-hidden");
-                });
-                for (const novice of data.users[1]) {
-                    $("#favorites_list_novices").append(`<a class="author-name novice" href="/biri/${novice}/">@${novice}</a>`);
-                }
+    const query = `{ entry{ favoriters(pk:${pk}){ username isNovice } } } `;
+
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        const allUsers = response.data.entry.favoriters;
+        const authors = allUsers.filter(user => user.isNovice === false);
+        const novices = allUsers.filter(user => user.isNovice === true);
+
+        favoritesList.html("");
+
+        if (authors.length > 0) {
+            for (const author of authors) {
+                favoritesList.append(`<a class="author-name" href="/biri/${author.username}/">@${author.username}</a>`);
             }
         }
+
+        if (novices.length > 0) {
+            favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">...${novices.length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+
+            $("a#show_novice_button").on("click", function () {
+                $("#favorites_list_novices").toggleClass("dj-hidden");
+            });
+
+            for (const novice of novices) {
+                $("#favorites_list_novices").append(`<a class="author-name novice" href="/biri/${novice.username}/">@${novice.username}</a>`);
+            }
+        }
+    }).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
 });
 
@@ -661,28 +668,18 @@ $(".follow-user-trigger").on("click", function () {
     $(this).children("a").toggleText("takip et", "takip etme");
 });
 
-const entryAction = (type, entryId, redirect = false) => {
-    $.ajax({
-        url: "/entry/action/",
-        type: "POST",
-        data: {
-            type,
-            entry_id: entryId,
-            redirect
+const entryAction = (type, pk, redirect = false) => {
+    const query = `mutation { entry { ${type}(pk: "${pk}") { feedback ${redirect ? "redirect" : ""}} } }`;
+    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        const info = response.data.entry[type];
 
-        },
-        success: data => {
-            if (data.message) {
-                notify(data.message);
-            }
-
-            if (redirect) {
-                window.location.replace(data.redirect_to);
-            }
-        },
-        error: () => {
-            notify("olmuyor", "error");
+        if (redirect) {
+            window.location.replace(info.redirect);
+        } else {
+            notify(info.feedback);
         }
+    }).fail(function () {
+        notify("bir şeyler yanlış gitti", "error");
     });
 };
 

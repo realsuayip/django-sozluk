@@ -1,3 +1,17 @@
+[0.100.0-dev-unstable](2020.03.23)(compatible)
+
+--Additions--
+1) New m2m signal: update_vote_rate_favorite.
+Adding or removing from favorited_entries now
+automatically changes the vote rate of the entry.
+
+-- Changes --
+1) [Graph] Implemented entry actions.
+2) Relevant javascript client code.
+
+--Deletions--
+1) Deleted deprecated EntryAction view.
+
 [0.99.0-dev-unstable](2020.03.22)(compatible)
 
 --Additions--

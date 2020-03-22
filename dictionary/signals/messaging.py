@@ -6,7 +6,7 @@ from ..models.messaging import Conversation, Message
 
 
 @receiver(post_save, sender=Message, dispatch_uid="create_conversation")
-def create_conversation(sender, instance, **kwargs):
+def create_conversation(instance, **kwargs):
     """
         1) Creates a conversation if user messages the other for the first time
         2) Adds messages to conversation

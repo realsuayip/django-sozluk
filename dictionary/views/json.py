@@ -1,82 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
 
 from ..models import Entry
 from ..utils.settings import VOTE_RATES
 from ..utils.views import JsonView
-
-
-class EntryAction(LoginRequiredMixin, JsonView):
-    http_method_names = ['get', 'post']
-    owner_action = False
-    redirect_url = None
-    entry = None
-    success_message = "oldu bu iş"
-
-    def handle(self):
-        action = self.request_data.get("type")
-
-        try:
-            self.entry = get_object_or_404(Entry, id=int(self.request_data.get("entry_id")))
-        except (ValueError, TypeError, Entry.DoesNotExist):
-            return self.bad_request()
-
-        self.owner_action = self.entry.author == self.request.user
-        self.redirect_url = reverse_lazy("topic", kwargs={"slug": self.entry.topic.slug}) if self.request_data.get(
-            "redirect") == "true" else None
-
-        if action in ("delete", "pin"):
-            # This block returns either success or failure
-            return getattr(self, action)()
-
-        if action in ("favorite", "favorite_list"):
-            # This block returns data
-            self.data = getattr(self, action)()
-
-        return super().handle()
-
-    def delete(self):
-        if self.owner_action:
-            self.entry.delete()
-            self.success_message = "silindi"
-            if self.redirect_url:
-                return self.success(message_pop=True, redirect_url=self.redirect_url)
-            return self.success()
-
-        return self.error()
-
-    def pin(self):
-        if self.owner_action:
-            if self.request.user.pinned_entry == self.entry:  # unpin
-                self.request.user.pinned_entry = None
-            else:
-                self.request.user.pinned_entry = self.entry
-            self.request.user.save()
-            return self.success()
-        return self.error()
-
-    def favorite(self):
-        if self.entry in self.request.user.favorite_entries.all():
-            self.request.user.favorite_entries.remove(self.entry)
-            self.entry.update_vote(VOTE_RATES["reduce"])
-            status = -1
-        else:
-            self.request.user.favorite_entries.add(self.entry)
-            self.entry.update_vote(VOTE_RATES["increase"])
-            status = 1
-
-        return {"count": self.entry.favorited_by.count(), "status": status}
-
-    def favorite_list(self):
-        users_favorited = self.entry.favorited_by.all()
-        authors, novices = [], []
-        for user in users_favorited:
-            if user.is_novice:
-                novices.append(user.username)
-            else:
-                authors.append(user.username)
-        return {"users": [authors, novices]}
 
 
 class Vote(JsonView):
