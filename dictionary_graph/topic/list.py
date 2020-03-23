@@ -42,7 +42,7 @@ class TopicListQuery(ObjectType):
                    refresh=Boolean())
 
     @staticmethod
-    def resolve_topics(parent, info, slug, **kwargs):
+    def resolve_topics(_parent, info, slug, **kwargs):
         # Convert string query parameters to actual dicitonary to use it in TopicListHandler
         search_keys = dict(parse_qsl(kwargs.get("search_keys"))) if kwargs.get("search_keys") else {}
         manager = TopicListManager(info.context.user, slug, kwargs.get("year"), search_keys)

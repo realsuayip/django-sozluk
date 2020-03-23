@@ -14,7 +14,7 @@ class FollowCategory(Mutation):
 
     @staticmethod
     @login_required
-    def mutate(_, info, pk):
+    def mutate(_root, info, pk):
         category = get_object_or_404(Category, id=pk)
         following = info.context.user.following_categories
 

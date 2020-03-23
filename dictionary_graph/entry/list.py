@@ -11,5 +11,5 @@ class EntryFavoritesQuery(ObjectType):
 
     @staticmethod
     @login_required
-    def resolve_favoriters(_, info, pk, **kwargs):
+    def resolve_favoriters(_parent, _info, pk):
         return Entry.objects_published.get(pk=pk).favorited_by.all()

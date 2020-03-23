@@ -14,7 +14,7 @@ class ComposeMessage(Mutation):
 
     @staticmethod
     @login_required
-    def mutate(root, info, body, recipient):
+    def mutate(_root, info, body, recipient):
         sender = info.context.user
         if len(body) < 3:
             return ComposeMessage(feedback="az bir şeyler yaz yeğenim")

@@ -13,11 +13,11 @@ def useraction(mutator):
 
     @wraps(mutator)
     @login_required
-    def decorator(_, info, username):
+    def decorator(_root, info, username):
         subject, sender = get_object_or_404(Author, username=username), info.context.user
         if sender == subject or subject.is_private:
             raise ValueError("bu olmadı işte")
-        return mutator(_, info, sender, subject)
+        return mutator(_root, info, sender, subject)
 
     return decorator
 
@@ -35,17 +35,13 @@ class Action:
 class Block(Action, Mutation):
     @staticmethod
     @useraction
-    def mutate(root, info, sender, subject):
+    def mutate(_root, info, sender, subject):
         if sender.blocked.filter(pk=subject.pk).exists():
             sender.blocked.remove(subject)
             return Block(feedback="engeller ortadan kalktı")
 
-        if sender.following.filter(pk=subject.pk).exists():
-            sender.following.remove(subject)
-
-        if subject.following.filter(pk=sender.pk).exists():
-            subject.following.remove(sender)
-
+        sender.following.remove(subject)
+        subject.following.remove(sender)
         sender.blocked.add(subject)
         return Block(feedback="engelledim gitti", redirect=info.context.build_absolute_uri(reverse("home")))
 
@@ -53,7 +49,7 @@ class Block(Action, Mutation):
 class Follow(Action, Mutation):
     @staticmethod
     @useraction
-    def mutate(root, info, sender, subject):
+    def mutate(_root, _info, sender, subject):
         if subject.blocked.filter(pk=sender.pk).exists() or sender.blocked.filter(pk=subject.pk).exists():
             return Follow(feedback="olmaz")
 

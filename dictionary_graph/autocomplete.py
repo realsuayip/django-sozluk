@@ -24,7 +24,7 @@ class AuthorAutoCompleteQuery(ObjectType):
 
     @staticmethod
     @autocompleter
-    def resolve_authors(parent, info, lookup, limit, **kwargs):
+    def resolve_authors(_parent, _info, lookup, limit):
         return Author.objects.filter(username__istartswith=lookup, is_private=False)[:limit]
 
 
@@ -33,7 +33,7 @@ class TopicAutoCompleteQuery(ObjectType):
 
     @staticmethod
     @autocompleter
-    def resolve_topics(parent, info, lookup, limit, **kwargs):
+    def resolve_topics(_parent, _info, lookup, limit):
         return Topic.objects_published.filter(Q(title__istartswith=lookup) | Q(title__icontains=lookup),
                                               is_censored=False)[:limit]
 

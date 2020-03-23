@@ -14,7 +14,7 @@ class FollowTopic(Mutation):
 
     @staticmethod
     @login_required
-    def mutate(_, info, pk):
+    def mutate(_root, info, pk):
         topic = get_object_or_404(Topic, id=pk)
         following = info.context.user.following_topics
 
