@@ -1,7 +1,6 @@
 from functools import wraps
 
 from django.core.cache import cache
-from django.http import HttpResponseBadRequest
 
 
 # General decoratos
@@ -43,16 +42,3 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
     if initial_func:
         return decorator(initial_func)
     return decorator
-
-
-# View (function/method) decorators
-
-
-def require_ajax(view):
-    @wraps(view)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.is_ajax():
-            return view(request, *args, **kwargs)
-        return HttpResponseBadRequest()
-
-    return _wrapped_view

@@ -1,8 +1,7 @@
 from decimal import Decimal
 
-# @formatter:off
 # Default options for content object counts
-TOPICS_PER_PAGE_DEFAULT = 50   # For guests only
+TOPICS_PER_PAGE_DEFAULT = 50  # For guests only
 ENTRIES_PER_PAGE_DEFAULT = 10  # For guests only
 ENTRIES_PER_PAGE_PROFILE = 15  # Global setting
 
@@ -24,22 +23,23 @@ NON_DB_SLUGS_SAFENAMES = {
     "kenar": ("kenar", "kenara attığım entry'ler"),
     "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
     "debe": ("dünün en beğenilen entry'leri", "dünün en beğenilen entry'leri"),
-    "hayvan-ara": ("arama sonuçları", "hayvan ara")
+    "hayvan-ara": ("arama sonuçları", "hayvan ara"),
 }
 
 
 NON_DB_CATEGORIES = tuple(NON_DB_SLUGS_SAFENAMES.keys())
 
-# these categories are not open to visitors
+# These categories are not open to visitors
 LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "caylaklar")
 
-# default category to be shown when the user requests for the first time
-# should not be in LOGIN_REQUIRED_CATEGORIES
+# Default category to be shown when the user requests for the first time.
+# Should not be in LOGIN_REQUIRED_CATEGORIES
 DEFAULT_CATEGORY = "gundem"
 
-# don't cache these categories
-UNCACHED_CATEGORIES = ("kenar", )
+# Don't cache these categories
+UNCACHED_CATEGORIES = ("kenar",)
 
+# Years available for tarihte-bugun
 YEAR_RANGE = (2020, 2019, 2018)
 
 # Give entry id's for flat pages.
@@ -55,26 +55,36 @@ SOCIAL_URLS = {
     "twitter": "https://twitter.com/",
 }
 
-# Used in views.json.Vote
+
+# Set this to False to disallow anonymous votes.
+ALLOW_ANONYMOUS_VOTING = True
+
 VOTE_RATES = {
     "favorite": Decimal(".2"),
-    "increase": Decimal(".2"),
-    "reduce": Decimal("-.2"),
-    "anonymous_multiplier": Decimal(".5"),
-    "authenticated_multiplier": Decimal("1")
+    "vote": Decimal(".2"),
+    "anonymous": Decimal(".05"),
 }
 
-# messages
-NOVICE_ACCEPTED_MESSAGE = ("sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın"
-                           " olanaklarından faydalanabilirsin.")
+# Messages
 
-NOVICE_REJECTED_MESSAGE = ("sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry"
-                           " doldurursanız tekrar çaylak onay listesine alınacaksınız.")
+NOVICE_ACCEPTED_MESSAGE = (
+    "sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın"
+    " olanaklarından faydalanabilirsin."
+)
 
-PASSWORD_CHANGED_MESSAGE = ("sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
-                            " Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz.")
+NOVICE_REJECTED_MESSAGE = (
+    "sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry"
+    " doldurursanız tekrar çaylak onay listesine alınacaksınız."
+)
 
-TERMINATION_ONHOLD_MESSAGE = ("sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün"
-                              " sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş"
-                              " yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece"
-                              " dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz.")
+PASSWORD_CHANGED_MESSAGE = (
+    "sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
+    " Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz."
+)
+
+TERMINATION_ONHOLD_MESSAGE = (
+    "sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün"
+    " sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş"
+    " yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece"
+    " dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz."
+)

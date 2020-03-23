@@ -1,3 +1,21 @@
+[0.101.0-dev-pre](2020.03.23)(compatible)
+
+--Additions--
+1) New setting: ALLOW_ANONYMOUS_VOTING (self-descriptive)
+2) Altered & added m2m signals/utilities to handle vote_rate
+of entries more easily.
+
+-- Changes --
+1) [Graph] Implemented entry voting.
+2) Relevant javascript changes.
+3) In mobile, clicking header links caused ConnectionAbortedError
+due to an oversight caused by LeftFrame implemention, fixed that.
+4) VOTE_RATES setting syntax.
+
+--Deletions--
+1) Deleted deprecated: JSONView, JsonView, utils.require_ajax
+views.json, urls.json.
+
 [0.100.0-dev-unstable](2020.03.23)(compatible)
 
 --Additions--

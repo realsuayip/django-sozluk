@@ -2,11 +2,13 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
+
 from graphene import ID, Int, Mutation, String
 
 from dictionary.models import Entry
+from dictionary.utils.settings import ALLOW_ANONYMOUS_VOTING
 
-from ..utils import login_required
+from ..utils import AnonymousUserStorage, login_required
 
 
 def owneraction(mutator):
@@ -73,3 +75,58 @@ class FavoriteEntry(Action, Mutation):
 
         info.context.user.favorite_entries.add(entry)
         return FavoriteEntry(feedback="favorilendi", count=entry.favorited_by.count())
+
+
+def voteaction(mutator):
+    """Checks if sender is actually the owner of the object, gets the Entry object. Handle anonymous votes."""
+
+    @wraps(mutator)
+    def decorator(_root, info, pk):
+        entry, sender = Entry.objects_all.get(pk=pk), info.context.user
+
+        if entry.author == sender:
+            raise PermissionDenied("sen hayırdır?")
+
+        if not sender.is_authenticated:
+            if not ALLOW_ANONYMOUS_VOTING:
+                raise PermissionDenied("sen hayırdır?")
+
+            sender = AnonymousUserStorage(info.context)
+
+        upvoted, downvoted = sender.upvoted_entries, sender.downvoted_entries
+        in_upvoted, in_downvoted = upvoted.filter(pk=pk).exists(), downvoted.filter(pk=pk).exists()
+        return mutator(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted)
+
+    return decorator
+
+
+class UpvoteEntry(Action, Mutation):
+    """Mutation to upvote an entry."""
+
+    @staticmethod
+    @voteaction
+    def mutate(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted):
+        if in_upvoted:
+            upvoted.remove(entry)  # User removes the upvote
+        else:
+            if in_downvoted:
+                downvoted.remove(entry)  # User changes from downvote to upvote
+            upvoted.add(entry)  # Usual upvote
+
+        return UpvoteEntry(feedback="oldu")
+
+
+class DownvoteEntry(Action, Mutation):
+    """Mutation to downvote an entry, same logic with UpvoteEntry but reversed."""
+
+    @staticmethod
+    @voteaction
+    def mutate(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted):
+        if in_downvoted:
+            downvoted.remove(entry)
+        else:
+            if in_upvoted:
+                upvoted.remove(entry)
+            downvoted.add(entry)
+
+        return UpvoteEntry(feedback="oldu")

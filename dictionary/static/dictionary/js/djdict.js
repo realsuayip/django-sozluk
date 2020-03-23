@@ -72,6 +72,128 @@ const dictToParameters = function (dict) {
     return str.join("&");
 };
 
+let userIsMobile = false;
+
+$(function () {
+    const mql = window.matchMedia("(max-width: 810px)");
+    const desktopView = function () {
+        $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
+            e.preventDefault();
+        });
+    };
+
+    const mobileView = function () {
+        userIsMobile = true;
+        // add mobile listeners here.
+    };
+
+    if (mql.matches) {
+        mobileView();
+    } else {
+        desktopView();
+    }
+
+    $("input.with-datepicker-dropdown").datepicker(
+        {
+            container: "#dropdown_detailed_search",
+            todayHighlight: true,
+            language: "tr",
+            autoclose: true,
+            orientation: "auto bottom"
+        }
+    ).attr("placeholder", "gg.aa.yyyy");
+
+    $("input.with-datepicker-mobile").datepicker(
+        {
+            container: ".row",
+            todayHighlight: true,
+            language: "tr",
+            autoclose: true,
+            orientation: "auto left"
+        }
+    ).attr("placeholder", "gg.aa.yyyy");
+
+    const notificationHolder = $("#notifications");
+    const notifications = notificationHolder.attr("data-request-message");
+    if (notifications) {
+        for (const item of notifications.split("&&")) {
+            const nf = item.split("::"); // get type
+            notify(nf[0], nf[1]);
+        }
+    }
+
+    if (!userIsMobile && parseInt(localStorage.getItem("where")) > 0) {
+        $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
+    }
+
+    if (userIsMobile) {
+        // Code to hide some part of the header on mobile scroll.
+        let lastScrollTop = 0;
+        const delta = 30;
+        $(window).scroll(function () {
+            const st = $(this).scrollTop();
+            const header = $("header.page_header");
+            if (Math.abs(lastScrollTop - st) <= delta) {
+                return;
+            }
+
+            if (st > lastScrollTop) {
+                // downscroll code
+                $(".sub-nav").css("margin-top", ".75em");
+                header.css("top", "-55px").hover(function () {
+                    $(".sub-nav").css("margin-top", "0");
+                    header.css("top", "0px");
+                });
+            } else {
+                // upscroll code
+                $(".sub-nav").css("margin-top", "0");
+                header.css("top", "0px");
+            }
+            lastScrollTop = st;
+        });
+    }
+
+    $("#header_search").autocomplete({
+        triggerSelectOnValidInput: false,
+        showNoSuggestionNotice: true,
+        noSuggestionNotice: "-- buna yakın bir sonuç yok --",
+
+        lookup (lookup, done) {
+            if (lookup.startsWith("@") && lookup.substr(1)) {
+                const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
+                $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
+                });
+            } else {
+                const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
+                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
+                $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                    const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
+                    const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
+                    done({ suggestions: topicSuggestions.concat(authorSuggestions) });
+                });
+            }
+        },
+
+        onSelect (suggestion) {
+            window.location.replace("/topic/?q=" + suggestion.value);
+        }
+    });
+
+    $(".author-search").autocomplete({
+        lookup (lookup, done) {
+            const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
+            $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
+            });
+        },
+
+        onSelect (suggestion) {
+            $("input.author-search").val(suggestion.value);
+        }
+    });
+});
+
 class LeftFrame {
     constructor (slug, page = 1, year = null, searchKeys = null, refresh = false) {
         // slug -> str, year -> int or str, searchKeys -> str (query parameters)
@@ -225,6 +347,9 @@ class LeftFrame {
     }
 
     static populate (slug, page = 1, year = null, searchKeys = null, refresh = false) {
+        if (userIsMobile) {
+            return;
+        }
         const leftFrame = new LeftFrame(slug, page, year, searchKeys, refresh);
         leftFrame.call();
     }
@@ -298,128 +423,6 @@ $("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.
     // Visual guidance for active category
     $("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.regular)").removeClass("active");
     $(this).addClass("active");
-});
-
-let userIsMobile = false;
-
-$(function () {
-    const mql = window.matchMedia("(max-width: 810px)");
-    const desktopView = function () {
-        $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
-            e.preventDefault();
-        });
-    };
-
-    const mobileView = function () {
-        userIsMobile = true;
-        // add mobile listeners here.
-    };
-
-    if (mql.matches) {
-        mobileView();
-    } else {
-        desktopView();
-    }
-
-    $("input.with-datepicker-dropdown").datepicker(
-        {
-            container: "#dropdown_detailed_search",
-            todayHighlight: true,
-            language: "tr",
-            autoclose: true,
-            orientation: "auto bottom"
-        }
-    ).attr("placeholder", "gg.aa.yyyy");
-
-    $("input.with-datepicker-mobile").datepicker(
-        {
-            container: ".row",
-            todayHighlight: true,
-            language: "tr",
-            autoclose: true,
-            orientation: "auto left"
-        }
-    ).attr("placeholder", "gg.aa.yyyy");
-
-    const notificationHolder = $("#notifications");
-    const notifications = notificationHolder.attr("data-request-message");
-    if (notifications) {
-        for (const item of notifications.split("&&")) {
-            const nf = item.split("::"); // get type
-            notify(nf[0], nf[1]);
-        }
-    }
-
-    if (!userIsMobile && parseInt(localStorage.getItem("where")) > 0) {
-        $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
-    }
-
-    if (userIsMobile) {
-        // Code to hide some part of the header on mobile scroll.
-        let lastScrollTop = 0;
-        const delta = 30;
-        $(window).scroll(function () {
-            const st = $(this).scrollTop();
-            const header = $("header.page_header");
-            if (Math.abs(lastScrollTop - st) <= delta) {
-                return;
-            }
-
-            if (st > lastScrollTop) {
-                // downscroll code
-                $(".sub-nav").css("margin-top", ".75em");
-                header.css("top", "-55px").hover(function () {
-                    $(".sub-nav").css("margin-top", "0");
-                    header.css("top", "0px");
-                });
-            } else {
-                // upscroll code
-                $(".sub-nav").css("margin-top", "0");
-                header.css("top", "0px");
-            }
-            lastScrollTop = st;
-        });
-    }
-
-    $("#header_search").autocomplete({
-        triggerSelectOnValidInput: false,
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "-- buna yakın bir sonuç yok --",
-
-        lookup (lookup, done) {
-            if (lookup.startsWith("@") && lookup.substr(1)) {
-                const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
-                $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
-                });
-            } else {
-                const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
-                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
-                $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
-                    const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
-                    done({ suggestions: topicSuggestions.concat(authorSuggestions) });
-                });
-            }
-        },
-
-        onSelect (suggestion) {
-            window.location.replace("/topic/?q=" + suggestion.value);
-        }
-    });
-
-    $(".author-search").autocomplete({
-        lookup (lookup, done) {
-            const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
-            $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
-            });
-        },
-
-        onSelect (suggestion) {
-            $("input.author-search").val(suggestion.value);
-        }
-    });
 });
 
 // https://stackoverflow.com/questions/5999118/how-can-i-add-or-update-a-query-string-parameter
@@ -610,32 +613,6 @@ $("a#message_history_show").on("click", function () {
     $(this).toggle();
 });
 
-const entryRate = function (entryId, vote, anonAction = -1) {
-    $.ajax({
-        url: "/entry/vote/",
-        type: "POST",
-        data: {
-            entry_id: entryId,
-            vote,
-            anon_action: anonAction
-        }
-    });
-};
-
-$("#rate a#upvote").on("click", function () {
-    const entryId = $(this).closest("#rate").attr("data-entry-id");
-    entryRate(entryId, "up");
-    $(this).siblings("a#downvote").removeClass("active");
-    $(this).toggleClass("active");
-});
-
-$("#rate a#downvote").on("click", function () {
-    const entryId = $(this).closest("#rate").attr("data-entry-id");
-    entryRate(entryId, "down");
-    $(this).siblings("a#upvote").removeClass("active");
-    $(this).toggleClass("active");
-});
-
 const userAction = function (type, recipient) {
     const query = `mutation { user { ${type}(username: "${recipient}") { feedback redirect } } }`;
     $.post("/graphql/", JSON.stringify({ query }), function (response) {
@@ -676,7 +653,7 @@ $(".follow-user-trigger").on("click", function () {
     $(this).children("a").toggleText("takip et", "takip etme");
 });
 
-const entryAction = (type, pk, redirect = false) => {
+const entryAction = (type, pk, redirect = false, pop = true) => {
     const query = `mutation { entry { ${type}(pk: "${pk}") { feedback ${redirect ? "redirect" : ""}} } }`;
     $.post("/graphql/", JSON.stringify({ query }), function (response) {
         const info = response.data.entry[type];
@@ -684,12 +661,28 @@ const entryAction = (type, pk, redirect = false) => {
         if (redirect) {
             window.location.replace(info.redirect);
         } else {
-            notify(info.feedback);
+            if (pop) {
+                notify(info.feedback);
+            }
         }
     }).fail(function () {
         notify("bir şeyler yanlış gitti", "error");
     });
 };
+
+$("#rate a#upvote").on("click", function () {
+    const entryId = $(this).closest("#rate").attr("data-entry-id");
+    entryAction("upvote", entryId, false, false);
+    $(this).siblings("a#downvote").removeClass("active");
+    $(this).toggleClass("active");
+});
+
+$("#rate a#downvote").on("click", function () {
+    const entryId = $(this).closest("#rate").attr("data-entry-id");
+    entryAction("downvote", entryId, false, false);
+    $(this).siblings("a#upvote").removeClass("active");
+    $(this).toggleClass("active");
+});
 
 $(".delete-entry").on("click", function () {
     if (confirm("harbiden silinsin mi?")) {
