@@ -43,11 +43,8 @@
             <li title="son 1 ayda girdiği entry sayısı">{{ profile.entry_count_month }}</li>
             <li title="son 1 haftada girdiği entry sayısı">{{ profile.entry_count_week }}</li>
             <li title="son 24 saatte girdiği entry sayısı">{{ profile.entry_count_day }}</li>
-            {% if profile.last_entry_date %}
-                <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|naturalday }}</li>
-            {% else %}
-                <li class="nobullet" title="son entry girdiği zaman">hiç</li>
-            {% endif %}
+            <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|timesince|default:"hiç" }}</li>
+
             <li class="profile-badges nobullet ml-2">
                 {% if profile.is_novice %}
                     <a href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>

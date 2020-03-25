@@ -546,36 +546,34 @@ $("button#insert_link").on("click", function () {
     }
 });
 
-$(".favorite-entry-btn").on("click", function () {
+$("a.favorite[role='button']").on("click", function () {
     const self = this;
-    const pk = $(self).closest("#rate").attr("data-entry-id");
+    const pk = $(self).parents(".entry-full").attr("data-id");
     const query = `mutation { entry { favorite(pk: "${pk}") { feedback count } } }`;
 
     $.post("/graphql/", JSON.stringify({ query }), function (response) {
         const count = response.data.entry.favorite.count;
         const countHolder = $(self).next();
 
-        $(self).toggleClass("fav-inverted");
+        $(self).toggleClass("active");
         countHolder.text(count);
 
-        if (count > 0) {
-            countHolder.removeClass("dj-hidden");
-        } else {
-            countHolder.addClass("dj-hidden");
+        if (count === 0) {
+            countHolder.text("");
         }
     }).fail(function () {
         notify("bir şeyler yanlış gitti", "error");
     });
 });
 
-$(document).on("click", "div.entry_info div.rate .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown), .autocomplete-suggestions", e => {
+$(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown), .autocomplete-suggestions", e => {
     e.stopPropagation();
 });
 
-$(".dropdown-fav-count").on("click", function () {
+$("a.fav-count[role='button']").on("click", function () {
     const self = this;
     const favoritesList = $(self).next();
-    const pk = $(self).closest("#rate").attr("data-entry-id");
+    const pk = $(self).closest(".entry-full").attr("data-id");
 
     const query = `{ entry{ favoriters(pk:${pk}){ username isNovice } } } `;
 
@@ -588,19 +586,19 @@ $(".dropdown-fav-count").on("click", function () {
 
         if (authors.length > 0) {
             for (const author of authors) {
-                favoritesList.append(`<a class="author-name" href="/biri/${author.username}/">@${author.username}</a>`);
+                favoritesList.append(`<a class="author" href="/biri/${author.username}/">@${author.username}</a>`);
             }
         }
 
         if (novices.length > 0) {
-            favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">...${novices.length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+            favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">... ${novices.length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
 
             $("a#show_novice_button").on("click", function () {
                 $("#favorites_list_novices").toggleClass("dj-hidden");
             });
 
             for (const novice of novices) {
-                $("#favorites_list_novices").append(`<a class="author-name novice" href="/biri/${novice.username}/">@${novice.username}</a>`);
+                $("#favorites_list_novices").append(`<a class="novice" href="/biri/${novice.username}/">@${novice.username}</a>`);
             }
         }
     }).fail(function () {
@@ -627,8 +625,8 @@ const userAction = function (type, recipient) {
     });
 };
 
-$(".block-user-trigger").on("click", function () {
-    const username = $(this).attr("data-username");
+$(".entry-actions").on("click", ".block-user-trigger", function () {
+    const username = $(this).parent().siblings(".username").text();
     $("#block_user").attr("data-username", username);
     $("#username-holder").text(username);
     $("#blockUserModal").modal("show");
@@ -670,35 +668,37 @@ const entryAction = (type, pk, redirect = false, pop = true) => {
     });
 };
 
-$("#rate a#upvote").on("click", function () {
-    const entryId = $(this).closest("#rate").attr("data-entry-id");
+$("a.upvote[role='button']").on("click", function () {
+    const entryId = $(this).parents(".entry-full").attr("data-id");
     entryAction("upvote", entryId, false, false);
-    $(this).siblings("a#downvote").removeClass("active");
+    $(this).siblings("a.downvote[role='button']").removeClass("active");
     $(this).toggleClass("active");
 });
 
-$("#rate a#downvote").on("click", function () {
-    const entryId = $(this).closest("#rate").attr("data-entry-id");
+$("a.downvote[role='button']").on("click", function () {
+    const entryId = $(this).parents(".entry-full").attr("data-id");
     entryAction("downvote", entryId, false, false);
-    $(this).siblings("a#upvote").removeClass("active");
+    $(this).siblings("a.upvote[role='button']").removeClass("active");
     $(this).toggleClass("active");
 });
 
-$(".delete-entry").on("click", function () {
+$(".entry-actions").on("click", ".delete-entry", function () {
     if (confirm("harbiden silinsin mi?")) {
-        entryAction("delete", $(this).attr("data-target-entry"));
-        $(this).closest(".entry-full").css("display", "none");
+        const entry = $(this).parents(".entry-full");
+        let redirect = false;
+
+        if (entry.children("article").hasClass("permalink")) {
+            redirect = true;
+        } else {
+            $(this).closest(".entry-full").css("display", "none");
+        }
+
+        entryAction("delete", entry.attr("data-id"), redirect);
     }
 });
 
-$(".delete-entry-redirect").on("click", function () {
-    if (confirm("harbiden silinsin mi?")) {
-        entryAction("delete", $(this).attr("data-target-entry"), true);
-    }
-});
-
-$(".pin-entry").on("click", function () {
-    entryAction("pin", $(this).attr("data-target-entry"));
+$(".entry-actions").on("click", ".pin-entry", function () {
+    entryAction("pin", $(this).parents(".entry-full").attr("data-id"));
 });
 
 const topicAction = function (type, pk) {
@@ -794,14 +794,17 @@ const composeMessage = function (recipient, body) {
     });
 };
 
-$(".send-message-trigger").on("click", function () {
-    const recipient = $(this).attr("data-recipient");
-    $("#message_body[data-for]").attr("data-for", recipient);
-    $("#sendMessageModal").modal("show");
+$(".entry-actions").on("click", ".send-message-trigger", function () {
+    const recipient = $(this).parent().siblings(".username").text();
+    const msgModal = $("#sendMessageModal");
+    $("#sendMessageModal span.username").text(recipient);
+    msgModal.attr("data-for", recipient);
+    msgModal.modal("show");
 });
 
 $("#send_message_btn").on("click", function () {
-    const textarea = $("textarea#message_body");
+    const textarea = $("#sendMessageModal textarea");
+    const msgModal = $("#sendMessageModal");
     const body = textarea.val();
 
     if (body.length < 3) {
@@ -810,8 +813,8 @@ $("#send_message_btn").on("click", function () {
         return;
     }
 
-    const recipient = textarea.attr("data-for");
-    $("#sendMessageModal").modal("hide");
+    const recipient = msgModal.attr("data-for");
+    msgModal.modal("hide");
     composeMessage(recipient, body);
     textarea.val("");
 });
@@ -843,4 +846,28 @@ $("a[role=button].quicksearch").on("click", function () {
 
 $("#left-frame-nav").scroll(function () {
     localStorage.setItem("where", $(this).scrollTop());
+});
+
+$(".entry-full a.action[role='button']").on("click", function () {
+    const entry = $(this).parents(".entry-full");
+    const entryID = entry.attr("data-id");
+    const topicTitle = entry.attr("data-topic");
+    const actions = $(this).siblings(".entry-actions");
+
+    actions.empty();
+
+    if (!entry.hasClass("unauthenticated")) {
+        if (entry.hasClass("owner")) {
+            actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">profilime sabitle</a>`);
+            actions.append(` <a role="button" tabindex="0" class="dropdown-item delete-entry">sil</a>`);
+            actions.append(`<a href="/entry/update/${entryID}/" class="dropdown-item">düzelt</a>`);
+        } else {
+            if (!entry.hasClass("private")) {
+                actions.append(`<a role="button" tabindex="0" class="dropdown-item send-message-trigger">mesaj gönder</a>`);
+                actions.append(`<a role="button" tabindex="0" class="dropdown-item block-user-trigger">engelle</a>`);
+            }
+        }
+    }
+
+    actions.append(`<a class="dropdown-item" href="/iletisim/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
 });

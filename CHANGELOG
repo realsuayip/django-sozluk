@@ -1,3 +1,21 @@
+[0.102.0-dev-pre](2020.03.25)(compatible)
+
+--Additions--
+1) New filter entrydate to properly render entry date info.
+2) Icon sprite file for new entry style.
+
+-- Changes --
+1) Completely revisit the structure & design of entry footer.
+Implement a brand new look for mobile views.
+2) Related javascript changes.
+3) In profile, change the latest entry date format.
+4) In message sending modal, add username indicator.
+5) Use spaceless tag for all view templates.
+
+--Deletions--
+1) Remove vote indicators in entry footer due to
+performance concerns.
+
 [0.101.0-dev-pre](2020.03.23)(compatible)
 
 --Additions--

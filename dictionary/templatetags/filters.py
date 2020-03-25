@@ -1,9 +1,9 @@
 import calendar
 import re
+from datetime import datetime
 
 from django import template
 from django.utils.html import escape, mark_safe
-
 
 register = template.Library()
 
@@ -65,3 +65,15 @@ def formatted(raw_entry):
 @register.filter
 def timestamp(date):
     return int(calendar.timegm(date.timetuple()))
+
+
+@register.filter
+def entrydate(created, edited):
+    append = ""
+    if edited is not None:
+        if created.date() == edited.date():
+            append = datetime.strftime(edited, " ~ %H:%M")
+        else:
+            append = datetime.strftime(edited, " ~ %d.%m.%Y %H:%M")
+
+    return datetime.strftime(created, "%d.%m.%Y %H:%M") + append

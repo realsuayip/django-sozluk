@@ -1,3 +1,4 @@
+{% spaceless %}
 <!doctype html>
 <html lang="tr">
 
@@ -57,7 +58,7 @@
 
 
 <body {% block bodyattr %}class="default topic-entry-view"{% endblock %}>
-
+{% include "dictionary/includes/icons.svg" %}
 
 <header class="page_header">
 
@@ -300,3 +301,4 @@
 
 </body>
 </html>
+{% endspaceless %}
