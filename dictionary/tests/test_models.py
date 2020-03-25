@@ -150,7 +150,7 @@ class AuthorModelTests(TestCase):
         self.assertEqual(some_user.following_categories.all().count(), 2)
 
     def test_absolute_url(self):
-        absolute_url = reverse("user-profile", kwargs={"username": self.author.username})
+        absolute_url = reverse("user-profile", kwargs={"slug": self.author.slug})
         self.assertEqual(absolute_url, self.author.get_absolute_url())
 
     def test_entry_nice(self):

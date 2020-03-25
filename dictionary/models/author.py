@@ -9,6 +9,8 @@ from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from uuslug import uuslug
+
 from ..utils import time_threshold
 from .category import Category
 from .entry import Entry
@@ -16,17 +18,17 @@ from .managers.author import AccountTerminationQueueManager
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
-    regex = r'^[a-z\ ]+$'
+    regex = r"^[a-z\ ]+$"
     message = "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir"
 
 
 class Author(AbstractUser):
     # Gender options
-    MAN = 'MN'
-    WOMAN = 'WM'
-    OTHER = 'OT'
-    UNKNOWN = 'NO'
-    GENDERS = ((UNKNOWN, 'boşver'), (MAN, 'erkek'), (WOMAN, 'kadın'), (OTHER, 'diğer'))
+    MAN = "MN"
+    WOMAN = "WM"
+    OTHER = "OT"
+    UNKNOWN = "NO"
+    GENDERS = ((UNKNOWN, "boşver"), (MAN, "erkek"), (WOMAN, "kadın"), (OTHER, "diğer"))
 
     # Entry/topic per page preference options
     TEN = 10
@@ -42,29 +44,42 @@ class Author(AbstractUser):
     ON_HOLD = "OH"
     APPROVED = "AP"
     APPLICATION_STATUS = (
-        (PENDING, "çaylak listesinde"), (ON_HOLD, "entry girmesi bekleniyor"), (APPROVED, "yazar oldu"))
+        (PENDING, "çaylak listesinde"),
+        (ON_HOLD, "entry girmesi bekleniyor"),
+        (APPROVED, "yazar oldu"),
+    )
 
     # Recieving messages options
     DISABLED = "DS"
     ALL_USERS = "AU"
     AUTHOR_ONLY = "AO"
     FOLLOWING_ONLY = "FO"
-    MESSAGE_PREFERENCE = ((DISABLED, "hiçkimse"), (ALL_USERS, "yazar ve çaylaklar"), (AUTHOR_ONLY, "yazarlar"),
-                          (FOLLOWING_ONLY, "takip ettiklerim"))
+    MESSAGE_PREFERENCE = (
+        (DISABLED, "hiçkimse"),
+        (ALL_USERS, "yazar ve çaylaklar"),
+        (AUTHOR_ONLY, "yazarlar"),
+        (FOLLOWING_ONLY, "takip ettiklerim"),
+    )
 
     # Base auth related fields, notice: username field will be used for nicknames
-    username = models.CharField('nick', max_length=35, unique=True,
-                                help_text='şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe '
-                                          'karakter içeremez', validators=[AuthorNickValidator()],
-                                error_messages={'unique': "bu nick kapılmış"})
-    email = models.EmailField('e-posta adresi', unique=True)
+    username = models.CharField(
+        "nick",
+        max_length=35,
+        unique=True,
+        help_text="şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez",
+        validators=[AuthorNickValidator()],
+        error_messages={"unique": "bu nick kapılmış"},
+    )
+
+    slug = models.SlugField(max_length=35, unique=True, editable=False)
+    email = models.EmailField("e-posta adresi", unique=True)
     is_active = models.BooleanField(default=False, verbose_name="aktif")
 
     # Base auth field settings
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
 
     # A list of the field names that will be prompted for when creating a user via the createsuperuser command.
-    REQUIRED_FIELDS = ['username', 'is_active']
+    REQUIRED_FIELDS = ["username", "is_active"]
 
     # Novice application related fields
     is_novice = models.BooleanField(default=True, verbose_name="çaylak")
@@ -82,16 +97,17 @@ class Author(AbstractUser):
     blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
 
     # User-entry relations
-    favorite_entries = models.ManyToManyField('Entry', through="EntryFavorites", related_name="favorited_by",
-                                              blank=True)
-    upvoted_entries = models.ManyToManyField('Entry', related_name="upvoted_by", blank=True)
-    downvoted_entries = models.ManyToManyField('Entry', related_name="downvoted_by", blank=True)
+    favorite_entries = models.ManyToManyField(
+        "Entry", through="EntryFavorites", related_name="favorited_by", blank=True
+    )
+    upvoted_entries = models.ManyToManyField("Entry", related_name="upvoted_by", blank=True)
+    downvoted_entries = models.ManyToManyField("Entry", related_name="downvoted_by", blank=True)
 
     # User-category relations
-    following_categories = models.ManyToManyField('Category', blank=True)
+    following_categories = models.ManyToManyField("Category", blank=True)
 
     # User-topic relations
-    following_topics = models.ManyToManyField('Topic', through="TopicFollowing", related_name="followers", blank=True)
+    following_topics = models.ManyToManyField("Topic", through="TopicFollowing", related_name="followers", blank=True)
 
     # Personal info
     birth_date = models.DateField(blank=True, null=True)
@@ -101,18 +117,21 @@ class Author(AbstractUser):
     entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
     topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
-    pinned_entry = models.OneToOneField('Entry', blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
+    pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
 
     def __str__(self):
         return f"{self.username}:{self.id}"
 
     def save(self, *args, **kwargs):
-        created = self.pk is None
-        super().save(*args, **kwargs)
+        created = self.pk is None  # If True, the user is created (not updated).
+
         if created:
-            # newly created user
-            categories_list = list(Category.objects.all())
-            self.following_categories.add(*categories_list)
+            self.slug = uuslug(self.username, instance=self)
+
+        super().save(*args, **kwargs)
+
+        if created:
+            self.following_categories.add(*Category.objects.all())
 
     def delete(self, *args, **kwargs):
         # Delete related conversations before deleting messages (via self.delete())
@@ -120,7 +139,7 @@ class Author(AbstractUser):
         super().delete(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("user-profile", kwargs={"username": self.username})
+        return reverse("user-profile", kwargs={"slug": self.slug})
 
     class Meta:
         # Superusers need to have can_activate_user permission to accept a novice as an author.
@@ -180,15 +199,12 @@ class Author(AbstractUser):
 
     @cached_property
     def has_unread_topics(self):
-        # @formatter:off
         queryset = self.following_topics.annotate(
             latest=Max("entries__date_created", filter=~Q(entries__author=self)),
             is_read=Case(
-                When(Q(latest__gt=F("topicfollowing__read_at")), then=False),
-                default=True,
-                output_field=BooleanField())
+                When(Q(latest__gt=F("topicfollowing__read_at")), then=False), default=True, output_field=BooleanField()
+            ),
         ).filter(is_read=False)
-        # @formatter:on
         return queryset.exists()
 
 
@@ -211,7 +227,7 @@ class Memento(models.Model):
     patient = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="+")
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=['holder', 'patient'], name='unique_memento')]
+        constraints = [models.UniqueConstraint(fields=["holder", "patient"], name="unique_memento")]
 
     def __str__(self):
         return f"{self.__class__.__name__}#{self.id}, from {self.holder} about {self.patient}"
@@ -229,10 +245,10 @@ class UserVerification(models.Model):
 
 
 class AccountTerminationQueue(models.Model):
-    NO_TRACE = 'NT'
-    LEGACY = 'LE'
-    FROZEN = 'FZ'
-    STATES = ((NO_TRACE, 'hesabı komple sil'), (LEGACY, 'hesabı miras bırakarak sil'), (FROZEN, 'hesabı dondur'))
+    NO_TRACE = "NT"
+    LEGACY = "LE"
+    FROZEN = "FZ"
+    STATES = ((NO_TRACE, "hesabı komple sil"), (LEGACY, "hesabı miras bırakarak sil"), (FROZEN, "hesabı dondur"))
 
     author = models.OneToOneField(Author, on_delete=models.CASCADE)
     state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=" son sözünüz?")

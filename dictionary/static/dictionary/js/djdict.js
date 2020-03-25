@@ -625,11 +625,22 @@ const userAction = function (type, recipient) {
     });
 };
 
-$(".entry-actions").on("click", ".block-user-trigger", function () {
-    const username = $(this).parent().siblings(".username").text();
-    $("#block_user").attr("data-username", username);
-    $("#username-holder").text(username);
+const showBlockDialog = function (recipient) {
+    $("#block_user").attr("data-username", recipient);
+    $("#username-holder").text(recipient);
     $("#blockUserModal").modal("show");
+};
+
+const showMessageDialog = function (recipient) {
+    const msgModal = $("#sendMessageModal");
+    $("#sendMessageModal span.username").text(recipient);
+    msgModal.attr("data-for", recipient);
+    msgModal.modal("show");
+};
+
+$(".entry-actions").on("click", ".block-user-trigger", function () {
+    const recipient = $(this).parent().siblings(".username").text();
+    showBlockDialog(recipient);
 });
 
 $("#block_user").on("click", function () {
@@ -796,10 +807,7 @@ const composeMessage = function (recipient, body) {
 
 $(".entry-actions").on("click", ".send-message-trigger", function () {
     const recipient = $(this).parent().siblings(".username").text();
-    const msgModal = $("#sendMessageModal");
-    $("#sendMessageModal span.username").text(recipient);
-    msgModal.attr("data-for", recipient);
-    msgModal.modal("show");
+    showMessageDialog(recipient);
 });
 
 $("#send_message_btn").on("click", function () {
@@ -870,4 +878,18 @@ $(".entry-full a.action[role='button']").on("click", function () {
     }
 
     actions.append(`<a class="dropdown-item" href="/iletisim/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
+});
+
+$("ul.user-links").on("click", "li.block-user a", function () {
+    const recipient = $(this).parents(".user-links").attr("data-username");
+    showBlockDialog(recipient);
+});
+
+$("ul.user-links").on("click", "li.send-message a", function () {
+    const recipient = $(this).parents(".user-links").attr("data-username");
+    showMessageDialog(recipient);
+});
+
+$(".block-user-trigger").on("click", function () {
+    showBlockDialog($(this).attr("data-username"));
 });

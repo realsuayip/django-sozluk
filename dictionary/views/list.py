@@ -62,7 +62,7 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
         body = form.cleaned_data.get("body")
         sent = Message.objects.compose(self.request.user, recipient, body)
-        return redirect(reverse("conversation", kwargs={"username": username})) if sent else self.form_invalid(form)
+        return redirect(reverse("conversation", kwargs={"slug": recipient.slug})) if sent else self.form_invalid(form)
 
     def form_invalid(self, form):
         if form.non_field_errors():
@@ -476,7 +476,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 return False
 
             if query.startswith("@") and slugify(query):
-                return redirect("user-profile", username=slugify(query[1:]))
+                return redirect("user-profile", slug=slugify(query[1:]))
 
             if query.startswith("#") and query[1:].isdigit():
                 return redirect("entry-permalink", entry_id=query[1:])

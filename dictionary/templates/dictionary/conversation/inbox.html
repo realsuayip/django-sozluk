@@ -14,11 +14,11 @@
                 <li {% if lastmsg.recipient == request.user and not lastmsg.read_at %}class="unread"{% endif %}>
                     {% with sender=lastmsg.sender recipient=lastmsg.recipient %}
                         {% if sender == request.user %}
-                            <a href="{% url 'conversation' username=recipient.username %}">
+                            <a href="{% url 'conversation' slug=recipient.slug %}">
                             <h5>{{ recipient.username }}</h5>
 
                         {% else %}
-                            <a href="{% url 'conversation' username=sender.username %}">
+                            <a href="{% url 'conversation' slug=sender.slug %}">
                             <h5>{{ sender.username }}</h5>
                         {% endif %}
                     {% endwith %}

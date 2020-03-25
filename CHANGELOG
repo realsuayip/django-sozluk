@@ -1,3 +1,31 @@
+[0.103.0-dev-pre](2020.03.26)(incompatible)
+
+--Additions--
+1) Add slug field for Author. This is **incompatible**.
+
+To migrate & preserve your current data:
+
+a) Remove unique=True from Author.slug, add null=True then run makemigrations+migrate.
+b) Run this script to properly update existing Author's slugs.
+
+    from uuslug import slugify
+    for author in Author.objects.filter(slug__isnull=True):
+        author.slug = slugify(author.username)
+        author.save()
+
+(at this point make sure you don't have any null value on slugs)
+c) Revert Author.slug to it's original state. run makemigrations,
+when prompted, select option 2 (handle existing rows with NULL myself)
+then run migrate.
+
+-- Changes --
+1) Fix the regression caused by the previous commit which
+malfunctioned block and message buttons (in profile).
+2) Use Author's slug field instead of username in relevant urls.
+
+--Deletions--
+None
+
 [0.102.0-dev-pre](2020.03.25)(compatible)
 
 --Additions--
