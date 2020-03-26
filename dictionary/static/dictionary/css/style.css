@@ -432,7 +432,7 @@ footer.entry-footer > .meta > a.permalink {
 
 footer.entry-footer > .feedback {
     display: grid;
-    grid-template-columns: repeat(3, 55px);
+    grid-template-columns: repeat(3, 50px);
 }
 
 footer.entry-footer > .feedback svg {
@@ -490,6 +490,11 @@ footer.entry-footer > .feedback > .favorites > .favorites-list {
 footer.entry-footer > .feedback > .favorites > .favorites-list a {
     display: block;
     padding: 0 1em;
+}
+
+section.user_entries ul li.entry-full.owner footer.entry-footer > .feedback,
+section.user_entries ul li.entry-full.unauthenticated footer.entry-footer > .feedback {
+    grid-template-columns: repeat(2, 50px);
 }
 
 footer.entry-footer > .feedback > .favorites > .favorites-list a.novice {
@@ -1527,7 +1532,7 @@ footer.body-footer > ul {
 
     footer.entry-footer > .feedback {
         display: grid;
-        grid-template-columns: repeat(2, 55px) auto;
+        grid-template-columns: repeat(2, 50px) auto;
         height: 21px;
     }
 
@@ -1538,7 +1543,7 @@ footer.body-footer > ul {
 
     section.user_entries ul li.entry-full.owner footer.entry-footer > .feedback,
     section.user_entries ul li.entry-full.unauthenticated footer.entry-footer > .feedback {
-        grid-template-columns: 55px auto;
+        grid-template-columns: 50px auto;
     }
 
     footer.entry-footer > .feedback > div {
