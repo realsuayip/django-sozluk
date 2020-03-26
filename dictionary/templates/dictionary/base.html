@@ -3,33 +3,33 @@
 <html lang="tr">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     {% load static %}
     {% load functions %}
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
     <link href="{% static "dictionary/css/style.css" %}" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
-    <script defer
-            src="http://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    <script defer src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+
+    <script defer src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
             crossorigin="anonymous"></script>
-    <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+
+    <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+
     <script defer
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script defer
@@ -43,20 +43,6 @@
 
     <title>{% block title %}{% endblock %} - django sözlük </title>
 </head>
-
-{# Body classes explained #}
-{# Some sphaggeti stuff, but 99% of the time, you have nothing to do with body classes below, maybe just has-entries. #}
-
-{# 1) default (standalone use deprecated) => when the width shrinks show LEFT FRAME #}
-{# |=> In order to use default and default only, you should enable left frame loading in mobile views in djdict.js #}
-
-{# 2) topic-entry-view => when shrinked show CONTENT FRAME and RIGHT FRAME (use WITH default) #}
-{# 3) topic-list-view => when shrinked show only CONTENT FRAME WITH left-frame-in embedded (do not use with default) #}
-
-{# 4) has-entries => If the page is supposed to include 'includes/entry.html' be sure to append this class to body #}
-{# |=> It basically adds read more button if entries are too long #}
-
-
 <body {% block bodyattr %}class="default topic-entry-view"{% endblock %}>
 {% include "dictionary/includes/icons.svg" %}
 
@@ -85,10 +71,12 @@
                             <span class="sr-only">hayvan ara</span>
                         </button>
 
-                        <button class="btn searchbtn" type="submit" id="button-addon2" title="ara beni ara yar"><i
-                                class="material-icons">
-                            search
-                        </i></button>
+                        <button class="btn searchbtn" type="submit" id="button-addon2" title="ara beni ara yar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="24px" viewBox="0 0 16 16">
+                                <use href="#search"></use>
+                            </svg>
+
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search px-3 py-2"
                              id="dropdown_detailed_search">
 
@@ -113,30 +101,38 @@
                 <ul class="user-navigation">
 
                     <li><a class="nav-quicklink" href="{{ request.user.get_absolute_url }}">
-                        <i class="material-icons">
-                            person
-                        </i><span>ben</span></a>
+                        <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 16 16"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <use href="#person"></use>
+                        </svg>
+                        <span>ben</span></a>
                     </li>
 
 
                     <li {% if user.has_unread_messages %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}">
-                            <i class="material-icons">
-                                chat_bubble_outline
-                            </i><span>mesaj</span></a>
+                            <svg fill="currentColor" width="22px" height="24px" viewBox="0 0 16 16"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <use href="#chat"></use>
+                            </svg>
+                            <span class="ml-2">mesaj</span></a>
                     </li>
 
                     <li {% if user.has_unread_topics %}class="new"{% endif %}><a class="nav-quicklink"
                                                                                  href="{% url 'activity' %}">
-                        <i class="material-icons">
-                            timeline
-                        </i><span>olay</span></a>
+                        <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 16 16"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <use href="#bell"></use>
+                        </svg>
+                        <span>olay</span></a>
                     </li>
 
 
                     <li class="desktop-only">
                         <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true">
-                            <i class="material-icons">more_horiz</i></a>
+                            <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#more"></use>
+                            </svg>
 
 
                         <div class="user-dropdown dropdown-menu dropdown-menu-right"
@@ -180,7 +176,9 @@
 
                 {% if request.user.is_authenticated %}
                     <li id="usermenu_mobile" data-toggle="dropdown">
-                        <i class="material-icons">more_horiz</i>
+                        <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#more"></use>
+                        </svg>
                     </li>
 
                     <div class="usermenu-dropdown dropdown-menu dropdown-menu-right"
@@ -224,7 +222,9 @@
                 {% endfor %}
 
                 <li id="more_tags_button" data-toggle="dropdown" tabindex="0" aria-haspopup="true">
-                    <i class="material-icons">more_horiz</i>
+                    <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#more"></use>
+                    </svg>
                 </li>
 
                 <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right"

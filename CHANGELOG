@@ -1,3 +1,25 @@
+[0.104.0-dev-pre](2020.03.26)(incompatible)
+
+--Additions--
+1) Added bunch of new icons. (to be used instead of
+material icons)
+
+-- Changes --
+1) Upgrade front-end libraries.
+2) Minor front-end changes.
+3) Changed the icon library.
+4) Remove unused prefetch_related parameters in
+TopicEntryList.
+5) (ara: xyz) tag did not work properly due to
+regression caused by previous commits. Fixed that.
+6) (ara: xyz) can now alternatively be used like
+(ara: @xyz) which will search for the author.
+7) In mobile, swh tag now renders properly.
+8) Optimize handling media queries of javascript.
+
+--Deletions--
+1) Removed material-icons library.
+
 [0.103.0-dev-pre](2020.03.26)(incompatible)
 
 --Additions--

@@ -51,6 +51,9 @@ header.page_header {
     height: 32px;
 }
 
+.searchbox .searchbtn {
+    width: 32px;
+}
 
 .searchbox > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle) {
     -webkit-border-top-right-radius: .25rem;
@@ -80,10 +83,6 @@ header.page_header {
     border-radius: 0;
 }
 
-
-.searchbox .searchbtn i {
-    font-size: 24px;
-}
 
 nav.usermenu ul li {
     display: inline-block;
@@ -202,7 +201,7 @@ nav.sub-nav ul .more_tags_dropdown,
 
 .left-frame {
     height: calc(100% - 9rem);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     position: fixed;
     width: 250px;
@@ -308,8 +307,6 @@ ul.topic-list li a {
 }
 
 ul.topic-list li small.total_entries {
-
-    float: right;
     color: #888;
     font-size: 1em;
     position: absolute;
@@ -584,6 +581,7 @@ ul.user-navigation li.new {
 
 ul.user-navigation li.new a {
     color: #fff;
+    font-weight: 600;
 }
 
 
@@ -638,14 +636,19 @@ a[role=button] {
     cursor: pointer;
 }
 
-body a {
+body a,
+body a[role="button"]:not(.dropdown-item) {
     color: #16784f;
 }
 
 article.entry a[target="_blank"]:after {
-    font-family: 'Material Icons', serif;
-    content: 'launch';
-    margin-left: 1px;
+    display: inline-block;
+    content: '';
+    background-image: url('data:image/svg+xml, <svg fill="%2316784f" xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16"><path fill-rule="evenodd" d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
 }
 
 body a:hover {
@@ -668,6 +671,7 @@ section.user-comments .editor-buttons button.add-code {
     -moz-border-radius: 4px;
     border-radius: 4px;
     border: 1px solid #ffffff;
+    margin-right: .25em;
 }
 
 section.user-comments .editor-buttons button.add-code:hover {
@@ -932,11 +936,6 @@ ul.chat li.bubble time {
 
 }
 
-ul.chat li.bubble time i {
-    font-size: 1em;
-    margin: 0 .25em;
-}
-
 ul.chat li.bubble.recieved {
     left: 0;
 }
@@ -945,8 +944,6 @@ ul.chat li.bubble.recieved {
 ul.chat li.bubble.sent {
     left: 50%;
     background: #F0F0F0;
-
-
 }
 
 ul.chat li.bubble.sent time {

@@ -9,7 +9,13 @@
     </h4>
 
     <span class="chat-quick-links">
-        <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda"><i class="material-icons">reply</i>mesajlara dön</a>
+        <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
+           <span>
+            <svg fill="currentColor" width="24px" height="16px" viewBox="0 0 16 16"
+                 xmlns="http://www.w3.org/2000/svg">
+                <use href="#arrow-left"></use>
+            </svg>
+        </span>mesajlara dön</a>
         {% if not recipient in request.user.blocked.all %}
             <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger"
                data-username="{{ recipient.username }}">bu herifi engelle</a>
@@ -32,9 +38,19 @@
                         <p>{{ message.body|formatted|linebreaksbr }}</p>
                         <time>{{ message.sent_at|naturaltime }}
                             {% if message.read_at %}
-                                <i title="görüldü, {{ message.read_at|naturalday }}" class="material-icons">done_all</i>
+                                <span title="görüldü, {{ message.read_at|timesince }} önce">
+                                    <svg width="2em" height="1em" viewBox="0 0 16 16"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <use href="#msgread"></use>
+                                    </svg>
+                                </span>
                             {% else %}
-                                <i title="gönderildi" class="material-icons">done</i>
+                                <span title="gönderildi">
+                                    <svg width="2em" height="1em" viewBox="0 0 16 16"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <use href="#msgsent"></use>
+                                    </svg>
+                                </span>
                             {% endif %}
                         </time>
                     </li>
@@ -57,12 +73,14 @@
     {% elif request.user not in recipient.following.all and recipient.message_preference == "FO" %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
-        <h5>cevap yaz</h5>
+        <label for="message-body">
+            <h5>cevap yaz <small style="font-size: 10px">(entry biçimlendirme seçenekleri kullanılabilir)</small></h5>
+        </label>
         <section class="chat-reply mb-3">
             {% load widget_tweaks %}
             <form method="POST">
                 {% csrf_token %}
-                {% render_field form.body|attr:"autofocus" class="mr-2 form-control" rows="5" spellcheck="true" %}
+                {% render_field form.body|attr:"autofocus" id="message-body" class="mr-2 form-control" rows="5" spellcheck="true" %}
                 <button type="submit" class="btn btn-django">gönder</button>
             </form>
         </section>

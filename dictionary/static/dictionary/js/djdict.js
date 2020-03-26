@@ -73,46 +73,80 @@ const dictToParameters = function (dict) {
 };
 
 let userIsMobile = false;
+let lastScrollTop = 0;
+
+const hideRedundantHeader = function () {
+    const delta = 30;
+    const st = $(this).scrollTop();
+    const header = $("header.page_header");
+    if (Math.abs(lastScrollTop - st) <= delta) {
+        return;
+    }
+
+    if (st > lastScrollTop) {
+        // downscroll code
+        $(".sub-nav").css("margin-top", ".75em");
+        header.css("top", "-55px").hover(function () {
+            $(".sub-nav").css("margin-top", "0");
+            header.css("top", "0px");
+        });
+    } else {
+        // upscroll code
+        $(".sub-nav").css("margin-top", "0");
+        header.css("top", "0px");
+    }
+    lastScrollTop = st;
+};
+
+const mql = window.matchMedia("(max-width: 810px)");
+
+const desktopView = function () {
+    userIsMobile = false;
+
+    // Find left frame scroll position.
+    if (parseInt(localStorage.getItem("where")) > 0) {
+        $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
+    }
+
+    // Restore header.
+    window.removeEventListener("scroll", hideRedundantHeader);
+    $(".sub-nav").css("margin-top", "0");
+    $("header.page_header").css("top", "0px");
+
+    // Code to render swh references properly (reverse)
+    $("a[data-sup]").each(function () {
+        $(this).html(`*`);
+    });
+};
+
+const mobileView = function () {
+    userIsMobile = true;
+    // Code to hide some part of the header on mobile scroll.
+    window.addEventListener("scroll", hideRedundantHeader);
+
+    // Code to render swh references properly
+    $("a[data-sup]").each(function () {
+        $(this).html(`<sup>${$(this).attr("data-sup")}</sup>`);
+    });
+};
+
+mql.addEventListener("change", function (e) {
+    if (e.matches) {
+        mobileView();
+    } else {
+        desktopView();
+    }
+});
 
 $(function () {
-    const mql = window.matchMedia("(max-width: 810px)");
-    const desktopView = function () {
-        $("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
-            e.preventDefault();
-        });
-    };
-
-    const mobileView = function () {
-        userIsMobile = true;
-        // add mobile listeners here.
-    };
-
+    // DOM ready.
     if (mql.matches) {
         mobileView();
     } else {
         desktopView();
     }
 
-    $("input.with-datepicker-dropdown").datepicker(
-        {
-            container: "#dropdown_detailed_search",
-            todayHighlight: true,
-            language: "tr",
-            autoclose: true,
-            orientation: "auto bottom"
-        }
-    ).attr("placeholder", "gg.aa.yyyy");
-
-    $("input.with-datepicker-mobile").datepicker(
-        {
-            container: ".row",
-            todayHighlight: true,
-            language: "tr",
-            autoclose: true,
-            orientation: "auto left"
-        }
-    ).attr("placeholder", "gg.aa.yyyy");
-
+    // Handles notifications passed by django's message framework.
     const notificationHolder = $("#notifications");
     const notifications = notificationHolder.attr("data-request-message");
     if (notifications) {
@@ -121,77 +155,66 @@ $(function () {
             notify(nf[0], nf[1]);
         }
     }
+});
 
-    if (!userIsMobile && parseInt(localStorage.getItem("where")) > 0) {
-        $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
+$("input.with-datepicker-dropdown").datepicker(
+    {
+        container: "#dropdown_detailed_search",
+        todayHighlight: true,
+        language: "tr",
+        autoclose: true,
+        orientation: "auto bottom"
     }
+).attr("placeholder", "gg.aa.yyyy");
 
-    if (userIsMobile) {
-        // Code to hide some part of the header on mobile scroll.
-        let lastScrollTop = 0;
-        const delta = 30;
-        $(window).scroll(function () {
-            const st = $(this).scrollTop();
-            const header = $("header.page_header");
-            if (Math.abs(lastScrollTop - st) <= delta) {
-                return;
-            }
-
-            if (st > lastScrollTop) {
-                // downscroll code
-                $(".sub-nav").css("margin-top", ".75em");
-                header.css("top", "-55px").hover(function () {
-                    $(".sub-nav").css("margin-top", "0");
-                    header.css("top", "0px");
-                });
-            } else {
-                // upscroll code
-                $(".sub-nav").css("margin-top", "0");
-                header.css("top", "0px");
-            }
-            lastScrollTop = st;
-        });
+$("input.with-datepicker-mobile").datepicker(
+    {
+        container: ".row",
+        todayHighlight: true,
+        language: "tr",
+        autoclose: true,
+        orientation: "auto left"
     }
+).attr("placeholder", "gg.aa.yyyy");
 
-    $("#header_search").autocomplete({
-        triggerSelectOnValidInput: false,
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "-- buna yakın bir sonuç yok --",
+$("#header_search").autocomplete({
+    triggerSelectOnValidInput: false,
+    showNoSuggestionNotice: true,
+    noSuggestionNotice: "-- buna yakın bir sonuç yok --",
 
-        lookup (lookup, done) {
-            if (lookup.startsWith("@") && lookup.substr(1)) {
-                const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
-                $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
-                });
-            } else {
-                const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
-                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
-                $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                    const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
-                    const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
-                    done({ suggestions: topicSuggestions.concat(authorSuggestions) });
-                });
-            }
-        },
-
-        onSelect (suggestion) {
-            window.location.replace("/topic/?q=" + suggestion.value);
-        }
-    });
-
-    $(".author-search").autocomplete({
-        lookup (lookup, done) {
-            const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
+    lookup (lookup, done) {
+        if (lookup.startsWith("@") && lookup.substr(1)) {
+            const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
             $.post("/graphql/", JSON.stringify({ query }), function (response) {
-                done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
+                done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
             });
-        },
-
-        onSelect (suggestion) {
-            $("input.author-search").val(suggestion.value);
+        } else {
+            const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
+                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
+            $.post("/graphql/", JSON.stringify({ query }), function (response) {
+                const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
+                const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
+                done({ suggestions: topicSuggestions.concat(authorSuggestions) });
+            });
         }
-    });
+    },
+
+    onSelect (suggestion) {
+        window.location.replace("/topic/?q=" + suggestion.value);
+    }
+});
+
+$(".author-search").autocomplete({
+    lookup (lookup, done) {
+        const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
+        $.post("/graphql/", JSON.stringify({ query }), function (response) {
+            done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
+        });
+    },
+
+    onSelect (suggestion) {
+        $("input.author-search").val(suggestion.value);
+    }
 });
 
 class LeftFrame {
@@ -230,7 +253,7 @@ class LeftFrame {
     }
 
     call () {
-        this.loadIndicator.css("display", "inline-block");
+        this.loadIndicator.css("display", "inline");
 
         const slug = `slug: "${this.slug}"`;
         const year = `${this.year ? `year: ${this.year}` : ""}`;
@@ -360,6 +383,10 @@ class LeftFrame {
 }
 
 /* Start of LefFrame related triggers */
+
+$("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
+    e.preventDefault();
+});
 
 $("[data-lf-slug]").on("click", function () {
     // Regular, slug-only
@@ -848,7 +875,14 @@ $("a[role=button]").keypress(function (event) {
 });
 
 $("a[role=button].quicksearch").on("click", function () {
-    const searchParameters = "?keywords=" + $(this).attr("data-keywords") + "&ordering=newer";
+    const term = $(this).attr("data-keywords");
+    let parameter;
+    if (term.startsWith("@") && term.substr(1)) {
+        parameter = `author_nick=${term.substr(1)}`;
+    } else {
+        parameter = `keywords=${term}`;
+    }
+    const searchParameters = parameter + "&ordering=newer";
     populateSearchResults(searchParameters);
 });
 

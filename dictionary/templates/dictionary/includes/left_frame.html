@@ -3,8 +3,12 @@
     <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
 
         <h2 class="col-lg-auto p-0" id="top">
-            <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span><i
-                class="material-icons spinning" id="load_indicator" style="display: none">refresh</i>
+            <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span>
+            <span id="load_indicator" style="display: none;">
+                <svg class="spinning" width="22px" height="24px" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <use href="#loading"></use>
+                </svg>
+            </span>
         </h2>
 
         <select {% if lf.slug != "tarihte-bugun" %}style="display: none;"{% endif %}

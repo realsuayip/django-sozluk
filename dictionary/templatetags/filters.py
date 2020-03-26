@@ -38,23 +38,26 @@ def formatted(raw_entry):
     a new tab. Protocol name (http/https only) required. Rules for text is the same as (2)
     """
     entry = escape(raw_entry)  # Prevent XSS
-    # @formatter:off
     replacements = (
-        (r'\(bkz: #([1-9]\d{0,10})\)', r'(bkz: <a href="/entry/\1">#\1</a>)'),
-        (r'\(bkz: (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)', r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
-        (r'\(bkz: @(?!\s)([a-z\ ]+)(?<!\s)\)', r'(bkz: <a href="/biri/\1/">@\1</a>)'),
-        (r'`:(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`', r'<a href="/topic/?q=\1" title="(bkz: \1)">*</a>'),
-        (r'`#([1-9]\d{0,10})`', r'<a href="/entry/\1">#\1</a>'),
-        (r'`(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`', r'<a href="/topic/?q=\1">\1</a>'),
-
-        (r'\(ara: (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)',
-         r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)'),
-
-        (r'\[(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}'
-         r'|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}) (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\]',
-         r'<a rel="nofollow noopener" target="_blank" href="\1">\2</a>'),
+        (r"\(bkz: #([1-9]\d{0,10})\)", r'(bkz: <a href="/entry/\1">#\1</a>)'),
+        (r"\(bkz: (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
+        (r"\(bkz: @(?!\s)([a-z\ ]+)(?<!\s)\)", r'(bkz: <a href="/biri/\1/">@\1</a>)'),
+        (
+            r"`:(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`",
+            r'<a data-sup="(bkz: \1)" href="/topic/?q=\1" title="(bkz: \1)">*</a>',
+        ),
+        (r"`#([1-9]\d{0,10})`", r'<a href="/entry/\1">#\1</a>'),
+        (r"`(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`", r'<a href="/topic/?q=\1">\1</a>'),
+        (
+            r"\(ara: (?!\s)(@?[a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)",
+            r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
+        ),
+        (
+            r"\[(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}"
+            r"|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}) (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\]",
+            r'<a rel="nofollow noopener" target="_blank" href="\1">\2</a>',
+        ),
     )
-    # @ formatter:on
 
     for tag in replacements:
         entry = re.sub(*tag, entry)
