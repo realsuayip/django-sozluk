@@ -590,7 +590,7 @@ ul.user-navigation li.new a {
 }
 
 
-ul.user-navigation li:nth-child(-n+3) {
+ul.user-navigation li:not(:nth-child(n+4)) {
     margin-right: 1em;
 }
 
@@ -1428,6 +1428,9 @@ footer.body-footer > ul {
         display: none;
     }
 
+    ul.user-navigation li:nth-child(n+3) {
+        margin-right: 0;
+    }
 
     nav.sub-nav ul li a {
         padding-bottom: .5em;
@@ -1502,6 +1505,7 @@ footer.body-footer > ul {
 
     .logo a {
         background: url('../img/django_logo_small.svg') no-repeat;
+        background-size: 40px 40px;
     }
 
     header.entry_header .pagination a,
@@ -1558,20 +1562,21 @@ footer.body-footer > ul {
     footer.entry-footer > .meta {
         display: none;
     }
-}
 
-
-@media (max-width: 420px) {
-    ul.user-navigation li:nth-child(-n+3) {
+    ul.user-navigation li:not(:nth-child(n+3)) {
         margin-right: 0;
     }
+}
 
+@media (max-width: 420px) {
     .logo {
-        width: 65px;
+        width: 50px;
     }
+}
 
-    .logo a {
-        background-size: 40px 40px;
+@media (max-width: 380px) {
+    .logo {
+        width: 70px;
     }
 }
 

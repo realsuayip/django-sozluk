@@ -735,6 +735,12 @@ $(".entry-actions").on("click", ".delete-entry", function () {
     }
 });
 
+$(".delete-entry-redirect").on("click", function () {
+    if (confirm("harbiden silinsin mi?")) {
+        entryAction("delete", $(this).attr("data-target-entry"), true);
+    }
+});
+
 $(".entry-actions").on("click", ".pin-entry", function () {
     entryAction("pin", $(this).parents(".entry-full").attr("data-id"));
 });
