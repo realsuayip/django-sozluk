@@ -1,4 +1,17 @@
-[0.104.0-dev-pre](2020.03.26)(incompatible)
+[0.105.0-dev-pre](2020.03.29)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Move m2m models to new m2m.py.
+2) Adjusted some property methods of Author model.
+
+--Deletions--
+1) Removed blank=True and null=True from EntryFavorites date_created.
+Run makemigrations+migrate and ignore the warning.
+
+[0.104.0-dev-pre](2020.03.26)(compatible)
 
 --Additions--
 1) Added bunch of new icons. (to be used instead of

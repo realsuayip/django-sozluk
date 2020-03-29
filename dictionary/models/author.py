@@ -176,22 +176,15 @@ class Author(AbstractUser):
 
     @property
     def entry_nice(self):
-        entry = Entry.objects_published.filter(author=self).order_by("-vote_rate").first()
-        if entry and entry.vote_rate > Decimal("1"):
-            return entry
-        return None
+        return Entry.objects_published.filter(author=self, vote_rate__gt=Decimal("1")).order_by("-vote_rate").first()
 
     @property
     def email_confirmed(self):
-        if self.userverification_set.filter(expiration_date__gte=time_threshold(hours=24)).exists():
-            return False
-        return True
+        return not self.userverification_set.filter(expiration_date__gte=time_threshold(hours=24)).exists()
 
     @property
     def is_suspended(self):
-        if self.suspended_until and self.suspended_until > timezone.now():
-            return True
-        return False
+        return self.suspended_until is not None and self.suspended_until > timezone.now()
 
     @cached_property
     def has_unread_messages(self):
@@ -206,19 +199,6 @@ class Author(AbstractUser):
             ),
         ).filter(is_read=False)
         return queryset.exists()
-
-
-class EntryFavorites(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
-    date_created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-
-    def __str__(self):
-        return self._meta.verbose_name + " #" + str(self.pk)
-
-    class Meta:
-        verbose_name = "Entry favorisi"
-        verbose_name_plural = "Entry favorilenmeleri"
 
 
 class Memento(models.Model):
