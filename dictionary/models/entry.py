@@ -1,13 +1,14 @@
 import re
 from decimal import Decimal
 
+from django.apps import apps
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import F
 from django.shortcuts import reverse
 from django.utils import timezone
 
-from ..utils import turkish_lower
+from ..utils import get_generic_superuser, turkish_lower
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 
 
@@ -50,6 +51,19 @@ class Entry(models.Model):
         if not self.is_draft and not self.topic.created_by:
             self.topic.created_by = self.author
             self.topic.save()
+
+        # Inform wishers
+        if self.topic.entries.exists() and self.topic.wishes.exists():
+            for wish in self.topic.wishes.all():
+                if wish.author != self.author:
+                    message = (
+                        f"ukte bıraktığınız `{self.topic.title}` başlığına `@{self.author.username}` "
+                        f"tarafından entry girildi: (bkz: #{self.pk})"
+                    )
+                    apps.get_model("dictionary", "Message").objects.compose(
+                        get_generic_superuser(), wish.author, message
+                    )
+            self.topic.wishes.clear()
 
     def get_absolute_url(self):
         return reverse("entry-permalink", kwargs={"entry_id": self.pk})

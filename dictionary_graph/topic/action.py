@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from graphene import ID, Mutation, String
 
-from dictionary.models import Topic
+from dictionary.models import Topic, Wish
 
 from ..utils import login_required
 
@@ -24,3 +24,32 @@ class FollowTopic(Mutation):
 
         following.add(topic)
         return FollowTopic("bu başlık takipte")
+
+
+class WishTopic(Mutation):
+    class Arguments:
+        title = String()
+        hint = String()
+
+    feedback = String()
+
+    @staticmethod
+    @login_required
+    def mutate(_root, info, title, hint=None):
+        sender = info.context.user
+        topic = Topic.objects.get_or_pseudo(unicode_string=title)
+
+        if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
+            raise ValueError("öyle olmaz ki")
+
+        if not topic.exists:
+            topic = Topic.objects.create_topic(title=title)
+        else:
+            previous_wish = topic.wishes.filter(author=sender)
+            if previous_wish.exists():
+                previous_wish.delete()
+                return WishTopic(feedback="ukte silindi.")
+
+        wish = Wish.objects.create(author=sender, hint=hint)
+        topic.wishes.add(wish)
+        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.")

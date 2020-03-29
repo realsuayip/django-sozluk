@@ -1,0 +1,25 @@
+{% load humanize %}
+{% load filters %}
+
+{% with wishes=topic.wishes.all %}
+    <ul class="list-group list-group-flush mb-3{{ wishes|yesno:", dj-hidden" }}" id="wish-list">
+        {% for wish in wishes %}
+            <li class="list-group-item{% if user == wish.author %} owner{% endif %}">{{ wish.date_created|naturaltime }} verilen
+                <a href="{{ wish.author.get_absolute_url }}">{{ wish.author.username }}</a> uktesi bu.
+                {% if wish.hint %}notu da şöyle: <p class="m-0 p-0"><i>{{ wish.hint|linebreaksbr }}</i></p>{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endwith %}
+
+
+{% if user.is_authenticated %}
+    <div class="wish" data-topic="{{ topic.title }}">
+        <textarea class="form-control dj-hidden" rows="3" placeholder="notlar (opsiyonel)"></textarea>
+        <a role="button" tabindex="0" style="font-weight: 600;" class="wish-send mr-2 dj-hidden">biri bu başlığı doldursun</a>
+        {% with wished=topic|wished_by:user %}
+            <a role="button" tabindex="0" class="wish-purge{{ wished|yesno:', dj-hidden' }}">bu başlığa verdiğim ukteyi sil</a>
+            <a role="button" tabindex="0" class="wish-prepare{{ wished|yesno:' dj-hidden,' }}">biri bu başlığı doldursun</a>
+        {% endwith %}
+    </div>
+{% endif %}

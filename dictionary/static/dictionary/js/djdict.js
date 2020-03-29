@@ -933,3 +933,43 @@ $("ul.user-links").on("click", "li.send-message a", function () {
 $(".block-user-trigger").on("click", function () {
     showBlockDialog($(this).attr("data-username"));
 });
+
+const wishTopic = function (title, hint = null) {
+    const query = `mutation{topic{wish(title:"${title}" ${hint ? `hint: "${hint.replace(/\n/g, " ")}"` : ""}){feedback}}}`;
+    return $.post("/graphql/", JSON.stringify({ query })).done(function (response) {
+        notify(response.data.topic.wish.feedback);
+    }).fail(function () {
+        notify("bu işlemi şimdi gerçekleştiremiyoruz", "error");
+    });
+};
+
+$("a.wish-prepare[role=button]").on("click", function () {
+    $(this).siblings(":not(.wish-purge)").toggle();
+    $(this).toggleText("biri bu başlığı doldursun", "boşver");
+});
+
+$("a.wish-send[role=button]").on("click", function () {
+    const self = $(this);
+    const textarea = self.siblings("textarea");
+    const title = self.parent().attr("data-topic");
+    const hint = textarea.val();
+    wishTopic(title, hint).then(function () {
+        textarea.val("");
+        self.toggle();
+        self.siblings().toggle();
+        $("ul#wish-list").show().prepend(`<li class="list-group-item owner">bu başlığa az önce ukte verdiniz. ${hint ? `notunuz: <p class="m-0"><i>${hint}</i></p>` : ""}</li>`);
+        $(window).scrollTop(0);
+    });
+});
+
+$("a.wish-purge[role=button]").on("click", function () {
+    const self = $(this);
+    const title = self.parent().attr("data-topic");
+    if (confirm("harbiden silinsin mi?")) {
+        wishTopic(title).then(function () {
+            self.toggle();
+            self.siblings(".wish-prepare").text("biri bu başlığı doldursun").toggle();
+            $("ul#wish-list").children("li.owner").hide();
+        });
+    }
+});

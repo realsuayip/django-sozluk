@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from django.core.validators import ValidationError
 from django.db import models
 from django.db.models import Count, Q
@@ -25,7 +27,6 @@ class TopicManager(models.Manager):
             return f"<{self.__class__.__name__} {self.title}>"
 
     def _get_pseudo(self, title):
-        title = turkish_lower(title).strip()
         pseudo = self.PseudoTopic(title)
 
         if not slugify(title):
@@ -39,24 +40,28 @@ class TopicManager(models.Manager):
         pseudo.valid = True
         return pseudo
 
+    @staticmethod
+    def _format_title(title):
+        return turkish_lower(title).strip()
+
     def get_or_pseudo(self, slug=None, unicode_string=None, entry_id=None):
         if unicode_string:
-            try:
+            unicode_string = self._format_title(unicode_string)
+            with suppress(self.model.DoesNotExist):
                 return self.get(title=unicode_string)
-            except self.model.DoesNotExist:
-                return self._get_pseudo(unicode_string)
+            return self._get_pseudo(unicode_string)
 
-        elif slug:
-            try:
+        if slug:
+            slug = self._format_title(slug)
+            with suppress(self.model.DoesNotExist):
                 return self.get(slug=slug)
-            except self.model.DoesNotExist:
-                return self._get_pseudo(slug)
+            return self._get_pseudo(slug)
 
-        elif entry_id:
+        if entry_id:
             entry = get_object_or_404(Entry.objects_published, pk=entry_id)
             return entry.topic
-        else:
-            raise ValueError("No arguments given.")
+
+        raise ValueError("No arguments given.")
 
     def create_topic(self, title, created_by=None):
         topic = self.create(title=title, created_by=created_by)

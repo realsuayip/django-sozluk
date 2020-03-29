@@ -25,10 +25,11 @@ class Topic(models.Model):
     title = models.CharField(max_length=50, unique=True, validators=TOPIC_TITLE_VALIDATORS, verbose_name="başlık")
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="oluşturulma tarihi")
     created_by = models.ForeignKey(
-        Author, null=True, blank=True, on_delete=models.SET_NULL, verbose_name="ilk entry giren"
+        Author, null=True, editable=False, on_delete=models.SET_NULL, verbose_name="ilk entry giren kullanıcı"
     )
-    category = models.ManyToManyField(Category, blank=True, verbose_name="kanal")
-    slug = models.SlugField(max_length=96, unique=True, blank=True)
+    category = models.ManyToManyField(Category, blank=True, verbose_name="kanallar")
+    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name="ukteler")
+    slug = models.SlugField(max_length=96, unique=True, editable=False)
     is_banned = models.BooleanField(default=False, verbose_name="entry girişine kapalı")
     is_censored = models.BooleanField(default=False, verbose_name="başlık listesinde ve aramalarda sansürlü")
 
@@ -76,3 +77,15 @@ class Topic(models.Model):
     @property
     def has_entries(self):
         return self.entries.exclude(is_draft=True).exists()
+
+
+class Wish(models.Model):
+    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="wishes")
+    hint = models.TextField(null=True, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.__class__.__name__}#{self.pk} u:{self.author.username}"
+
+    class Meta:
+        ordering = ("-date_created",)

@@ -174,8 +174,11 @@
 
 
                 {% else %}
+                    {# Topic does exist but has no entries #}
                     <p>böyle bir şey yok.</p>
-                    {# topic_exists but has no entries Ukte button here #}
+                    {% if not banned %}
+                        {% include "dictionary/includes/forms/wish.html" %}
+                    {% endif %}
                 {% endif %}
 
             {% else %}
@@ -183,18 +186,10 @@
                 <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a>
                 </h1>
                 <p>böyle bir şey yok.</p>
-
-                {% if subsequent_entries_count > 0 %}
-                    <a title="tümünü göster"
-                       href="{{ topic.get_absolute_url }}"
-                       class="more-entries-button">
-                        {{ subsequent_entries_count }} entry daha
-                    </a>
-                {% endif %}
-
-
-                {% if banned or not valid %}
+                {% if not valid %}
                     <p>lanet olsun böyle başlığa zaten</p>
+                {% else %}
+                    {% include "dictionary/includes/forms/wish.html" %}
                 {% endif %}
 
             {% endif %}

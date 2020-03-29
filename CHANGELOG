@@ -1,3 +1,25 @@
+[0.106.0-dev-pre](2020.03.29)(incompatible)
+
+--Additions--
+1) Add ukte feature. Related additions are:
+Wish Model, [Graph] mutation WishTopic, Javascript
+client code for WishTopic calls, wish.html, entry_list.html
+Entry save() method additions, Topic m2m wishes, minimal css
+and wished_by filter. **incompatible** Run makemigrations+migrate.
+2) Add new tag for entry formatting. (formatted docstrings 7th explanation)
+
+-- Changes --
+1) Disabled some fields related to Topic and adjusted
+verbose names.
+2) Yet again, get_or_pseudo had a regression where
+users redirected to 404 topic page instead of existing topic.
+Fixed that.
+
+--Deletions--
+1) in entry_list.html there was a redundant subsequent_entries_count
+block, removed that.
+2) in entry_list.html there was a redundant banned check, removed that.
+
 [0.105.0-dev-pre](2020.03.29)(compatible)
 
 --Additions--

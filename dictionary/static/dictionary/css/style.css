@@ -1312,6 +1312,10 @@ footer.body-footer > ul {
     padding: 0;
 }
 
+#wish-list > li.owner{
+    background: #efefef;
+    padding-left: 1em;
+}
 
 /** MEDIA QUERIES **/
 

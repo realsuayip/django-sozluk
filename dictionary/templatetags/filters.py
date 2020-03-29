@@ -32,9 +32,10 @@ def formatted(raw_entry):
     4) Input: `:swh`, Output: * (an asterisks) -- This is a link that points to the topic 'swh', same rules of (2)
     5) Input: `#90`, Output: #90 -- This is a link that points to the entry with pk 90, same rules of (1)
     6) Input: `unicode topic title` Output: unicode topic title -- A link that points to the topic, same rules of (2)
-    7) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
+    7) Input: `@username` Output: @username -- A link that points to the user profile
+    8) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
     in topics and appends to the left frame (redirects to the advanced search page on mobile). Same rules of (2)
-    8) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
+    9) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
     a new tab. Protocol name (http/https only) required. Rules for text is the same as (2)
     """
     entry = escape(raw_entry)  # Prevent XSS
@@ -48,6 +49,7 @@ def formatted(raw_entry):
         ),
         (r"`#([1-9]\d{0,10})`", r'<a href="/entry/\1">#\1</a>'),
         (r"`(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`", r'<a href="/topic/?q=\1">\1</a>'),
+        (r"`@(?!\s)([a-z\ ]+)(?<!\s)`", r'<a href="/biri/\1/">@\1</a>'),
         (
             r"\(ara: (?!\s)(@?[a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)",
             r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
@@ -80,3 +82,10 @@ def entrydate(created, edited):
             append = datetime.strftime(edited, " ~ %d.%m.%Y %H:%M")
 
     return datetime.strftime(created, "%d.%m.%Y %H:%M") + append
+
+
+@register.filter
+def wished_by(topic, author):
+    if not topic.exists:
+        return False
+    return topic.wishes.filter(author=author).exists()
