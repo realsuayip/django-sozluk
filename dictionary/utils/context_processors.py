@@ -3,7 +3,6 @@ from urllib.parse import parse_qsl
 from django.utils.functional import cached_property
 
 from ..models import Category
-from . import b64decode_utf8_or_none
 from .decorators import cached_context
 from .managers import TopicListManager
 from .serializers import LeftFrame
@@ -21,7 +20,7 @@ class LeftFrameProcessor:
 
     @cached_property
     def slug(self):
-        _slug = b64decode_utf8_or_none(self.cookies.get("active_category")) or DEFAULT_CATEGORY
+        _slug = self.cookies.get("active_category") or DEFAULT_CATEGORY
         unauthorized = not self.user.is_authenticated and _slug in LOGIN_REQUIRED_CATEGORIES
         not_found = _slug not in NON_DB_CATEGORIES and not Category.objects.filter(slug=_slug).exists()
 
@@ -32,23 +31,19 @@ class LeftFrameProcessor:
 
     @cached_property
     def _page(self):
-        try:
-            page = int(b64decode_utf8_or_none(self.cookies.get("navigation_page")))
-        except (TypeError, ValueError, OverflowError):
-            page = 1
-
-        return page
+        page = self.cookies.get("navigation_page", "1")
+        return int(page) if page.isdigit() else 1
 
     @cached_property
     def _year(self):
-        return b64decode_utf8_or_none(self.cookies.get("selected_year"))
+        return self.cookies.get("selected_year")
 
     @cached_property
     def _search_keys(self):
         if self.slug != "hayvan-ara":
             return {}
 
-        query = b64decode_utf8_or_none(self.cookies.get("search_parameters"))
+        query = self.cookies.get("search_parameters")
         return dict(parse_qsl(query)) if query else {}
 
     def get_context(self):

@@ -1,4 +1,4 @@
-import base64
+import hashlib
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
@@ -13,8 +13,13 @@ from dateutil.relativedelta import relativedelta
 
 from ..models import Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
-from ..utils.settings import (LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES, TOPICS_PER_PAGE_DEFAULT,
-                              UNCACHED_CATEGORIES, YEAR_RANGE)
+from ..utils.settings import (
+    LOGIN_REQUIRED_CATEGORIES,
+    NON_DB_CATEGORIES,
+    TOPICS_PER_PAGE_DEFAULT,
+    UNCACHED_CATEGORIES,
+    YEAR_RANGE,
+)
 
 
 class TopicQueryHandler:
@@ -29,7 +34,7 @@ class TopicQueryHandler:
     base_filter = {"entries__is_draft": False, "entries__author__is_novice": False, "is_censored": False}
 
     # Queryset annotations
-    base_annotation = {"latest": Max('entries__date_created')}  # to order_by("-latest")
+    base_annotation = {"latest": Max("entries__date_created")}  # to order_by("-latest")
     base_count = {"count": Count("entries", filter=Q(**day_filter))}
 
     # Queryset values
@@ -38,40 +43,66 @@ class TopicQueryHandler:
 
     def bugun(self, user):
         blocked = user.blocked.all()  # To exclude blocked users' topics.
-        return Topic.objects.filter(Q(category__in=user.following_categories.all()) | Q(category=None),
-                                    **self.base_filter, **self.day_filter).order_by('-latest').annotate(
-            **self.base_annotation, **self.base_count).exclude(created_by__in=blocked).values(*self.values)
+        return (
+            Topic.objects.filter(
+                Q(category__in=user.following_categories.all()) | Q(category=None),
+                **self.base_filter,
+                **self.day_filter,
+            )
+            .order_by("-latest")
+            .annotate(**self.base_annotation, **self.base_count)
+            .exclude(created_by__in=blocked)
+            .values(*self.values)
+        )
 
     def tarihte_bugun(self, year):
         now = timezone.now()
         diff = now.year - year
         delta = now - relativedelta(years=diff)
-        return Topic.objects.filter(**self.base_filter, entries__date_created__date=delta.date()).annotate(
-            count=Count("entries")).order_by("-count").values(*self.values)
+        return (
+            Topic.objects.filter(**self.base_filter, entries__date_created__date=delta.date())
+            .annotate(count=Count("entries"))
+            .order_by("-count")
+            .values(*self.values)
+        )
 
     def gundem(self):
-        return [{'title': f'{self.__doc__}', 'slug': 'unimplemented', 'count': 1}]
+        return [{"title": f"{self.__doc__}", "slug": "unimplemented", "count": 1}]
 
     def debe(self):
         boundary = time_threshold(hours=24)
-        debe = Entry.objects.filter(date_created__date=boundary.date(), topic__is_censored=False).order_by(
-            "-vote_rate").annotate(title=F("topic__title"), slug=F("pk")).values(*self.values_entry)
+        debe = (
+            Entry.objects.filter(date_created__date=boundary.date(), topic__is_censored=False)
+            .order_by("-vote_rate")
+            .annotate(title=F("topic__title"), slug=F("pk"))
+            .values(*self.values_entry)
+        )
         return debe[:TOPICS_PER_PAGE_DEFAULT]
 
     def kenar(self, user):
-        return Entry.objects_all.filter(author=user, is_draft=True).order_by("-date_created").annotate(
-            title=F('topic__title'), slug=F("pk")).values(*self.values_entry)
+        return (
+            Entry.objects_all.filter(author=user, is_draft=True)
+            .order_by("-date_created")
+            .annotate(title=F("topic__title"), slug=F("pk"))
+            .values(*self.values_entry)
+        )
 
     def takip(self, user):
-        return Entry.objects.filter(date_created__gte=time_threshold(hours=24),
-                                    author__in=user.following.all()).order_by("-date_created").annotate(
-            title=Concat(F('topic__title'), Value("/#"), F('author__username')), slug=F("pk")).values(
-            *self.values_entry)
+        return (
+            Entry.objects.filter(date_created__gte=time_threshold(hours=24), author__in=user.following.all())
+            .order_by("-date_created")
+            .annotate(title=Concat(F("topic__title"), Value("/#"), F("author__username")), slug=F("pk"))
+            .values(*self.values_entry)
+        )
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
-        return Topic.objects.filter(**self.day_filter, **caylak_filter).order_by('-latest').annotate(
-            **self.base_annotation, **self.base_count).values(*self.values)
+        return (
+            Topic.objects.filter(**self.day_filter, **caylak_filter)
+            .order_by("-latest")
+            .annotate(**self.base_annotation, **self.base_count)
+            .values(*self.values)
+        )
 
     def hayvan_ara(self, user, search_keys):
         """
@@ -129,12 +160,20 @@ class TopicQueryHandler:
 
     def generic_category(self, slug):
         category = get_object_or_404(Category, slug=slug)
-        return Topic.objects.filter(**self.base_filter, **self.day_filter, category=category).order_by(
-            '-latest').annotate(**self.base_annotation, **self.base_count).values(*self.values)
+        return (
+            Topic.objects.filter(**self.base_filter, **self.day_filter, category=category)
+            .order_by("-latest")
+            .annotate(**self.base_annotation, **self.base_count)
+            .values(*self.values)
+        )
 
     def basiboslar(self):
-        return Topic.objects.filter(**self.base_filter, **self.day_filter, category=None).order_by('-latest').annotate(
-            **self.base_annotation, **self.base_count).values(*self.values)
+        return (
+            Topic.objects.filter(**self.base_filter, **self.day_filter, category=None)
+            .order_by("-latest")
+            .annotate(**self.base_annotation, **self.base_count)
+            .values(*self.values)
+        )
 
 
 class TopicListHandler:
@@ -172,13 +211,13 @@ class TopicListHandler:
     def _get_data(self):
         """No cache found, prepare the query. (serialized hits the db)"""
 
-        # Arguments to be passed for TopicQueryHandler methods. @formatter:off
+        # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
             **dict.fromkeys(("bugun", "kenar", "takip"), [self.user]),
             "tarihte_bugun": [self.year],
             "generic_category": [self.slug],
-            "hayvan_ara": [self.user, self.search_keys]
-        }  # @formatter:on
+            "hayvan_ara": [self.user, self.search_keys],
+        }
 
         # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
         slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
@@ -218,11 +257,18 @@ class TopicListHandler:
         cache_search_suffix = ""
 
         if self.slug == "hayvan-ara":
-            # Create special base64 suffix for search parameters
+            # Create special hashed suffix for search parameters
             available_search_params = (
-                "keywords", "author_nick", "is_in_favorites", "is_nice_ones", "from_date", "to_date", "ordering")
+                "keywords",
+                "author_nick",
+                "is_in_favorites",
+                "is_nice_ones",
+                "from_date",
+                "to_date",
+                "ordering",
+            )
             params = {param: self.search_keys.get(param, "_") for param in available_search_params}
-            cache_search_suffix = base64.b64encode("".join(params.values()).encode("utf-8")).decode("utf-8")
+            cache_search_suffix = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
 
         self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_search_suffix}"
 

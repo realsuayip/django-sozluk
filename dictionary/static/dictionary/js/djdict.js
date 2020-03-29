@@ -1,33 +1,5 @@
 /* global Cookies */
 
-// b64 functions source: https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
-const b64EncodeUnicode = function (str) {
-    // first we use encodeURIComponent to get percent-encoded UTF-8,
-    // then we convert the percent encodings into raw bytes which
-    // can be fed into btoa.
-    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-        function toSolidBytes (match, p1) {
-            return String.fromCharCode("0x" + p1);
-        }));
-};
-
-const b64DecodeUnicode = function (str) {
-    // Going backwards: from bytestream, to percent-encoding, to original string.
-    return decodeURIComponent(atob(str).split("").map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(""));
-};
-
-// Use ONLY with custom cookies
-const cookies = Cookies.withConverter({
-    write (value) {
-        return b64EncodeUnicode(value);
-    },
-    read (value) {
-        return b64DecodeUnicode(value);
-    }
-}).withAttributes({ sameSite: "Lax" });
-
 $.ajaxSetup({
     beforeSend (xhr, settings) {
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -213,7 +185,7 @@ $(".author-search").autocomplete({
     },
 
     onSelect (suggestion) {
-        $("input.author-search").val(suggestion.value);
+        $(this).val(suggestion.value);
     }
 });
 
@@ -231,23 +203,23 @@ class LeftFrame {
     }
 
     setCookies () {
-        cookies.set("active_category", this.slug);
-        cookies.set("navigation_page", this.page);
+        Cookies.set("active_category", this.slug);
+        Cookies.set("navigation_page", this.page);
 
-        const cookieYear = cookies.get("selected_year");
-        const cookieSearchKeys = cookies.get("search_parameters");
+        const cookieYear = Cookies.get("selected_year");
+        const cookieSearchKeys = Cookies.get("search_parameters");
 
         if (this.slug === "tarihte-bugun") {
             if (!this.year) {
                 this.year = cookieYear || null;
             } else {
-                cookies.set("selected_year", this.year);
+                Cookies.set("selected_year", this.year);
             }
         } else if (this.slug === "hayvan-ara") {
             if (!this.searchKeys) {
                 this.searchKeys = cookieSearchKeys || null;
             } else {
-                cookies.set("search_parameters", this.searchKeys);
+                Cookies.set("search_parameters", this.searchKeys);
             }
         }
     }
@@ -402,7 +374,7 @@ $("#year_select").on("change", function () {
 
 $("select#left_frame_paginator").on("change", function () {
     // Page is changed
-    LeftFrame.populate(cookies.get("active_category"), this.value);
+    LeftFrame.populate(Cookies.get("active_category"), this.value);
 });
 
 $("#lf_total_pages").on("click", function () {
@@ -431,7 +403,7 @@ $("#lf_navigate_after").on("click", function () {
 
 $("a#show_more").on("click", function () {
     // Show more button event
-    const slug = cookies.get("active_category");
+    const slug = Cookies.get("active_category");
 
     if (slug) {
         LeftFrame.populate(slug, 2);
@@ -797,7 +769,7 @@ const populateSearchResults = searchParameters => {
     if (userIsMobile) {
         window.location.replace(`/basliklar/${slug}/?${searchParameters}`);
     }
-    LeftFrame.populate(slug, null, null, searchParameters);
+    LeftFrame.populate(slug, 1, null, searchParameters);
 };
 
 $("button#perform_advanced_search").on("click", function () {

@@ -1,4 +1,3 @@
-import base64
 import datetime
 from contextlib import suppress
 
@@ -70,17 +69,6 @@ def time_threshold(**timedelta_kwargs):
 
 def get_generic_superuser():
     return get_user_model().objects.get(pk=GENERIC_SUPERUSER_ID)
-
-
-def b64decode_utf8_or_none(b64_str):
-    """Return decoded b64 string (utf-8), if the b64 cannot be decoded, return None"""
-    if not b64_str:
-        return None
-
-    try:
-        return base64.b64decode(b64_str).decode("utf-8")
-    except (base64.binascii.Error, AttributeError, UnicodeDecodeError):
-        return None
 
 
 def get_category_parameters(slug, year):

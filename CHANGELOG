@@ -1,3 +1,19 @@
+[0.107.0-dev-pre](2020.03.30)(compatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Instead of encoding hayvan-ara's search parameters
+with base 64 to use it as cache key, hash it with blake2.
+2) Updated js cookie library.
+3) Applied black to managers.py
+4) Changes related to cookie encoding removal.
+
+--Deletions--
+1) Don't encode cookies. Remove all stuff related
+to encoding & decoding.
+
 [0.106.0-dev-pre](2020.03.29)(incompatible)
 
 --Additions--
