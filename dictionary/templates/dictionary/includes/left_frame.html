@@ -11,9 +11,7 @@
             </span>
         </h2>
 
-        <select {% if lf.slug != "tarihte-bugun" %}style="display: none;"{% endif %}
-                class="year-select col-lg-auto py-1 px-1 mb-1 form-control"
-                id="year_select">
+        <select {% if lf.slug != "tarihte-bugun" %}style="display: none;"{% endif %} class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select" aria-label="Yıl seçici">
             {% for year in lf.year_range %}
                 <option value="{{ year }}" {% if year == lf.year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
@@ -31,7 +29,7 @@
     <div id="lf_pagination_wrapper" class="lf_pagination index{% if lf.page.number == 1 or not lf.page.has_other_pages %} dj-hidden{% endif %}">
         <a id="lf_navigate_before" role="button" tabindex="0">«</a>
 
-        <select id="left_frame_paginator">
+        <select id="left_frame_paginator" aria-label="Sayfa seçici">
             {% for page in lf.page.paginator.page_range %}
                 <option value="{{ page }}" {% if page == lf.page.number %}selected{% endif %}>{{ page }}</option>
             {% endfor %}

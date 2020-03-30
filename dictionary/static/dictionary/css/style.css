@@ -152,7 +152,7 @@ nav.sub-nav ul li a {
     -moz-transition: all .2s ease-in-out;
     display: block;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 1rem;
     text-decoration: none;
 }
 
@@ -296,22 +296,22 @@ ul.topic-list li:hover {
 }
 
 ul.topic-list li a {
-    padding: 10px 0 10px 0;
-    display: block;
-    width: 100%;
+    padding: 10px 0;
+    display: grid;
+    grid-gap: .25em;
+    grid-template-columns: 1fr minmax(min-content, 35px);
     text-decoration: none;
     color: #333;
     font-size: 1em;
-    max-width: calc(100% - 2em);
     word-break: break-word;
+    align-items: center;
+    text-align: left;
 }
 
 ul.topic-list li small.total_entries {
     color: #888;
-    font-size: 1em;
-    position: absolute;
-    right: .7em;
-    top: 10px;
+    font-size: inherit;
+    text-align: center;
 }
 
 header.entry_header h1 {
@@ -389,7 +389,6 @@ section.user_entries article.entry {
     font-size: 16px;
     text-overflow: ellipsis;
 }
-
 
 section.user_entries article.entry p {
     overflow: hidden;
@@ -713,7 +712,11 @@ section.topic-categories-list ul {
 
 section.topic-categories-list ul li {
     list-style-type: none;
-    display: inline;
+    display: inline-block;
+}
+
+section.topic-categories-list ul li:not(:last-child) a {
+    margin-right: 1em;
 }
 
 section.topic-categories-list h2 {
@@ -1312,7 +1315,7 @@ footer.body-footer > ul {
     padding: 0;
 }
 
-#wish-list > li.owner{
+#wish-list > li.owner {
     background: #efefef;
     padding-left: 1em;
 }

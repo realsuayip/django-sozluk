@@ -8,13 +8,12 @@
 
             <div class="mobile">
                 {% if not entry.author.is_private %}
-                    <a class="username" href="{{ entry.author.get_absolute_url }}"
-                       style="font-weight: 600;">{{ entry.author.username }}</a>
+                    <a class="username" href="{{ entry.author.get_absolute_url }}" style="font-weight: 600;">{{ entry.author.username }}</a>
                 {% else %}
                     <span><i>anonim</i></span>
                 {% endif %}
 
-                <a role="button" tabindex="0" class="action" data-toggle="dropdown" aria-haspopup="true">
+                <a role="button" title="entry aksiyonları" tabindex="0" class="action" data-toggle="dropdown" aria-haspopup="true">
                     <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>
@@ -27,24 +26,19 @@
             </div>
         </header>
 
-        <article
-                class="entry{% if entry.author.is_novice %} by_novice{% endif %}{% if permalink == "yes" %} permalink{% endif %}">
+        <article class="entry{% if entry.author.is_novice %} by_novice{% endif %}{% if permalink == "yes" %} permalink{% endif %}">
             <p>{{ entry.content|formatted|linebreaksbr }}</p>
         </article>
 
         <footer class="entry-footer">
             <div class="feedback">
                 <div class="social">
-                    <a target="_blank"
-                       href="https://www.facebook.com/sharer/sharer.php?u={% entry_full_url req=request entry_id=entry.id %}"
-                       title="facebook'ta paylaş" class="facebook">
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={% entry_full_url req=request entry_id=entry.id %}" title="facebook'ta paylaş" class="facebook" rel="noopener">
                         <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#facebook"></use>
                         </svg>
                     </a>
-                    <a target="_blank"
-                       href="https://twitter.com/intent/tweet?text={{ entry.topic.title }}: {% entry_full_url req=request entry_id=entry.id %}"
-                       title="twitter'da tweetle" class="twitter">
+                    <a target="_blank" href="https://twitter.com/intent/tweet?text={{ entry.topic.title }}: {% entry_full_url req=request entry_id=entry.id %}" title="twitter'da tweetle" class="twitter" rel="noopener">
                         <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#twitter"></use>
                         </svg>
@@ -70,16 +64,12 @@
                 {% if user.is_authenticated %}
                     <div class="favorites">
                         {% with favorites=entry.favorited_by.all %}
-                            <a role="button" tabindex="0" {% if user in favorites %}title="favorilerden çıkar"
-                               class="favorite active"
-                               {% else %}title="favorilere ekle" class="favorite"{% endif %}>
+                            <a role="button" tabindex="0" {% if user in favorites %}title="favorilerden çıkar" class="favorite active" {% else %}title="favorilere ekle" class="favorite"{% endif %}>
                                 <svg width="25" height="13" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                     <use href="#favorite"></use>
                                 </svg>
                             </a>
-                            <a role="button" class="fav-count" tabindex="0" class="count" data-toggle="dropdown"
-                               aria-haspopup="true"
-                               aria-expanded="false">{% if favorites %}{{ favorites|length }}{% endif %}</a>
+                            <a role="button" class="fav-count" tabindex="0" class="count" data-toggle="dropdown" aria-label="Favoriler" aria-haspopup="true" aria-expanded="false">{% if favorites %}{{ favorites|length }}{% endif %}</a>
                             <span class="dropdown-menu favorites-list"></span>
                         {% endwith %}
                     </div>
@@ -96,8 +86,7 @@
                     <span><i>anonim</i></span>
                 {% endif %}
 
-                <a role="button" tabindex="0" title="aksiyonlar" class="action" data-toggle="dropdown"
-                   aria-haspopup="true">
+                <a role="button" tabindex="0" title="entry aksiyonları" class="action" data-toggle="dropdown" aria-haspopup="true">
                         <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>

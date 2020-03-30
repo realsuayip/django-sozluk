@@ -79,7 +79,7 @@
                         <a title="önceki sayfa"
                            href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
                     {% endif %}
-                    <select class="page-selector">
+                    <select class="page-selector" aria-label="Sayfa seçici">
                         {% for page in page_obj.paginator.page_range %}
                             {% if page == page_obj.number %}
                                 <option selected>{{ page }}</option>
@@ -217,7 +217,7 @@
                     {% csrf_token %}
 
                     {% with topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
-                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" %}
+                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label="Entry yazı alanı" %}
                     {% endwith %}
 
                     <div class="row">
@@ -225,8 +225,7 @@
                             {% if not request.user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
                                     {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                    <label class="custom-control-label" for="is_draft">kenarda dursun
-                                        şimdilik</label>
+                                    <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
                                 </div>
                             {% else %}
                                 <p class="text-danger">entry'niz kenara atılacak.</p>
@@ -258,8 +257,7 @@
 
                     {% for category in categories %}
                         <li>
-                            <a id="category_view_ls" data-lf-slug="{{ category.slug }}"
-                               href="{{ category.get_absolute_url }}">#{{ category }}</a>
+                            <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category }}</a>
                         </li>
                     {% endfor %}
 

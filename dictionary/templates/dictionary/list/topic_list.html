@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if slug == "tarihte-bugun" %}
-            <select class="mobile-topic-list form-control" id="mobile_year_changer">
+            <select class="mobile-topic-list form-control" id="mobile_year_changer" aria-label="Yıl seçici">
                 {% for y in year_range %}
                     <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}

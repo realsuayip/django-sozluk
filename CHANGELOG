@@ -1,3 +1,16 @@
+[0.108.0-dev-pre](2020.03.30)(incompatible)
+
+--Additions--
+None
+
+-- Changes --
+1) Bunch of changes, related to user experience
+and overall optimization. **incompatible**
+Run makemigrations+migrate.
+
+--Deletions--
+None
+
 [0.107.0-dev-pre](2020.03.30)(compatible)
 
 --Additions--

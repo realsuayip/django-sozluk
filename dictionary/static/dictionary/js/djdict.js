@@ -356,7 +356,7 @@ class LeftFrame {
 
 /* Start of LefFrame related triggers */
 
-$("ul#category_view li a, div#category_view_in a:not(.regular), a#category_view_ls").on("click", function (e) {
+$("ul#category_view li a, div#category_view_in a:not(.regular), section.topic-categories-list ul li a").on("click", function (e) {
     e.preventDefault();
 });
 
@@ -744,7 +744,7 @@ $.fn.overflown = function () {
 const truncateEntryText = () => {
     for (const element of $("article.entry p ")) {
         if ($(element).overflown()) {
-            $(element).parent().append(`<div class="read_more">devamını okuyayım</div>`);
+            $(element).parent().append(`<div role="button" tabindex="0" class="read_more">devamını okuyayım</div>`);
         }
     }
 };
@@ -846,7 +846,7 @@ $("form.search_mobile").submit(function () {
     return true;
 });
 
-$("a[role=button]").keypress(function (event) {
+$("body").on("keypress", "[role=button]", function (event) {
     if (event.which === 13 || event.which === 32) { // space or enter
         $(this).trigger("click");
     }

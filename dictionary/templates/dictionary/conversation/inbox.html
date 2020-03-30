@@ -3,7 +3,7 @@
 {% block content %}
     {% load humanize %}
     <h4><strong><a href="{% url 'messages' %}">mesajlar</a></strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}
-        {% if request.GET.search_term %}[arama terimi: <strong>{{ request.GET.search_term }}</strong>]{% endif %}</h4>
+        {% if request.GET.search_term.strip %}[arama terimi: <strong>{{ request.GET.search_term.strip }}</strong>]{% endif %}</h4>
     <hr>
 
     {% if conversations %}

@@ -20,7 +20,7 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import proceed_or_404, time_threshold
+from ..utils import proceed_or_404, time_threshold, turkish_lower
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
@@ -73,9 +73,8 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
         return redirect(reverse("messages"))
 
     def get_queryset(self):
-        query_term = self.request.GET.get("search_term")
-        term = query_term.strip() if query_term else None
-        return Conversation.objects.list_for_user(self.request.user, term)
+        query_term = turkish_lower(self.request.GET.get("search_term", "")).strip() or None
+        return Conversation.objects.list_for_user(self.request.user, query_term)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
