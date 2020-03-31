@@ -15,7 +15,7 @@ class AccountTerminationQueueManager(models.Manager):
 
     @staticmethod
     def terminate_no_trace(user):
-        logger.info(f"User account terminated: {user.username}<->{user.pk}")
+        logger.info("User account terminated: %s<->%d", user.username, user.pk)
         user.delete()
 
     def terminate_legacy(self, user):
@@ -24,7 +24,7 @@ class AccountTerminationQueueManager(models.Manager):
         if not user.is_novice:
             # Migrate entries before deleting the user completely
             user.entry_set.all().update(author=anonymous_author_placeholder)
-            logger.info(f"User entires migrated: {user.username}<->{user.pk}")
+            logger.info("User entires migrated: %s<->%d", user.username, user.pk)
 
         self.terminate_no_trace(user)
 

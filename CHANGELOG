@@ -1,3 +1,21 @@
+[0.109.0-dev-pre](2020.03.31)(compatible)
+
+--Additions--
+1) Add tabbing feature to left frame.
+Related additions: TABBED_CATEGORIES setting
+and other additions to files which make use of LeftFrame
+2) New setting: USER_EXCLUSIVE_CATEGORIES (check settings.py info)
+
+-- Changes --
+1) Rename NON_DB_SLUGS_SAFENAMES into NON_DB_CATEGORIES_META.
+2) 'takip' is now divided into 2 tabs; 'entries': the entries
+written by user's following, 'favorites': the entries favorited
+by user's following. (using the new tab feature)
+3) takip is now properly cached. (using new USER_EXCLUSIVE_CATEGORIES)
+
+--Deletions--
+None
+
 [0.108.0-dev-pre](2020.03.30)(incompatible)
 
 --Additions--

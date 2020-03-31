@@ -2,7 +2,7 @@ from django import template
 from django.urls import reverse
 
 from ..models import Entry
-from ..utils.settings import FLATPAGE_URLS, LOGIN_REQUIRED_CATEGORIES, NON_DB_SLUGS_SAFENAMES, SOCIAL_URLS
+from ..utils.settings import FLATPAGE_URLS, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META, SOCIAL_URLS
 
 register = template.Library()
 
@@ -56,6 +56,6 @@ def render_header_link(context, slug):
     if slug in LOGIN_REQUIRED_CATEGORIES and not context['user'].is_authenticated:
         return {"unauthorized": True}
 
-    details = NON_DB_SLUGS_SAFENAMES[slug]
+    details = NON_DB_CATEGORIES_META[slug]
     is_active = context['active_category'] == slug
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}

@@ -46,8 +46,12 @@ class LeftFrameProcessor:
         query = self.cookies.get("search_parameters")
         return dict(parse_qsl(query)) if query else {}
 
+    @cached_property
+    def _tab(self):
+        return self.cookies.get("active_tab")
+
     def get_context(self):
-        manager = TopicListManager(self.user, self.slug, self._year, self._search_keys)
+        manager = TopicListManager(self.user, self.slug, self._year, self._search_keys, self._tab)
         frame = LeftFrame(manager, page=self._page)
         return frame.as_context()
 

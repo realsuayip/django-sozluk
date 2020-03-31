@@ -15,6 +15,16 @@
             {% endif %}
         </h2>
 
+        {% if tabs %}
+            <ul class="nav nav-tabs nav-fill">
+            {% for name, safename in tabs.available.items %}
+                <li class="nav-item">
+                    <a class="nav-link{% if name == tabs.current %} active{% endif %}" href="?tab={{ name }}">{{ safename }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
         {% if slug == "bugun" %}
             {% if refresh_count %}
                 <form method="post">

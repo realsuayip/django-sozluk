@@ -1,10 +1,11 @@
 import hashlib
 from decimal import Decimal
 
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, Max, Q, Value
+from django.db.models import CharField, Count, F, Max, Q, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -16,8 +17,11 @@ from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (
     LOGIN_REQUIRED_CATEGORIES,
     NON_DB_CATEGORIES,
+    NON_DB_CATEGORIES_META,
+    TABBED_CATEGORIES,
     TOPICS_PER_PAGE_DEFAULT,
     UNCACHED_CATEGORIES,
+    USER_EXCLUSIVE_CATEGORIES,
     YEAR_RANGE,
 )
 
@@ -87,11 +91,28 @@ class TopicQueryHandler:
             .values(*self.values_entry)
         )
 
-    def takip(self, user):
+    def takip(self, user, tab):
+        return getattr(self, f"takip_{tab}")(user)
+
+    def takip_entries(self, user):
         return (
             Entry.objects.filter(date_created__gte=time_threshold(hours=24), author__in=user.following.all())
             .order_by("-date_created")
-            .annotate(title=Concat(F("topic__title"), Value("/#"), F("author__username")), slug=F("pk"))
+            .annotate(title=Concat(F("topic__title"), Value(" (@"), F("author__username"), Value(")")), slug=F("pk"))
+            .values(*self.values_entry)
+        )
+
+    def takip_favorites(self, user):
+        return (
+            Entry.objects.filter(
+                favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24)
+            )
+            .annotate(
+                title=Concat(F("topic__title"), Value(" (#"), F("pk"), Value(")"), output_field=CharField()),
+                slug=F("pk"),
+                latest=Max("entryfavorites__date_created"),
+            )
+            .order_by("-latest")
             .values(*self.values_entry)
         )
 
@@ -187,7 +208,7 @@ class TopicListHandler:
     cache_exists = False
     cache_key = None
 
-    def __init__(self, user=None, slug=None, year=None, search_keys=None):
+    def __init__(self, user=None, slug=None, year=None, search_keys=None, tab=None):
         """
         :param user: only pass request.user, required for topics per page and checking categories with login requirement
         :param slug: slug of the category
@@ -202,6 +223,7 @@ class TopicListHandler:
 
         self.slug = slug
         self.year = self._validate_year(year)
+        self.tab = self._validate_tab(tab)
         self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
 
         # Check cache
@@ -213,10 +235,11 @@ class TopicListHandler:
 
         # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
-            **dict.fromkeys(("bugun", "kenar", "takip"), [self.user]),
+            **dict.fromkeys(("bugun", "kenar"), [self.user]),
             "tarihte_bugun": [self.year],
             "generic_category": [self.slug],
             "hayvan_ara": [self.user, self.search_keys],
+            "takip": [self.user, self.tab],
         }
 
         # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
@@ -224,6 +247,13 @@ class TopicListHandler:
 
         # Get the method from TopicQueryHandler.
         return getattr(self, slug_method)(*arg_map.get(slug_method, []))
+
+    def _validate_tab(self, tab):
+        if self.slug in TABBED_CATEGORIES:
+            tab_meta = NON_DB_CATEGORIES_META.get(self.slug)[2]
+            avaiable_tabs, default_tab = tab_meta[0].keys(), tab_meta[1]
+            return tab if tab in avaiable_tabs else default_tab
+        return None
 
     def _validate_year(self, year):
         """Validates and sets the year."""
@@ -252,9 +282,10 @@ class TopicListHandler:
         return data
 
     def _create_cache_key(self):
-        cache_type = f"pri_uid_{self.user.id}" if self.slug == "bugun" else "global"
+        cache_type = f"pri_uid_{self.user.id}" if self.slug in USER_EXCLUSIVE_CATEGORIES else "global"
         cache_year = str(self.year) if self.year else ""
         cache_search_suffix = ""
+        cache_tab_suffix = self.tab or ""
 
         if self.slug == "hayvan-ara":
             # Create special hashed suffix for search parameters
@@ -270,7 +301,7 @@ class TopicListHandler:
             params = {param: self.search_keys.get(param, "_") for param in available_search_params}
             cache_search_suffix = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
 
-        self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_search_suffix}"
+        self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_tab_suffix}{cache_search_suffix}"
 
     def _check_cache(self):
         self._create_cache_key()

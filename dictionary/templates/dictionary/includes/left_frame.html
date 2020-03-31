@@ -20,6 +20,19 @@
     </div>
     {# CATEGORY NAME AND YEAR SELECTOR END #}
 
+    {# TABS #}
+    <ul class="nav nav-tabs nav-fill{% if not lf.tabs %} dj-hidden{% endif %}" id="left-frame-tabs">
+    {% if lf.tabs %}
+        {% for name, safename in lf.tabs.available.items %}
+            <li class="nav-item">
+                <a role="button" tabindex="0" data-lf-slug="{{ lf.slug }}" data-tab="{{ name }}" class="nav-link{% if name == lf.tabs.current %} active{% endif %}">{{ safename }}</a>
+            </li>
+        {% endfor %}
+    {% endif %}
+    </ul>
+    {# TABS #}
+
+
     {#  REFRESH BUTTON  #}
     <div class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun"
          title="akıt gelsin">yenile <span id="new_content_count">({{ lf.refresh_count }})</span></div>

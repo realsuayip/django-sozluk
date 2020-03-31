@@ -190,13 +190,14 @@ $(".author-search").autocomplete({
 });
 
 class LeftFrame {
-    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false) {
+    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null) {
         // slug -> str, year -> int or str, searchKeys -> str (query parameters)
         this.slug = slug;
         this.page = page;
         this.year = year;
         this.refresh = refresh;
         this.searchKeys = searchKeys;
+        this.tab = tab;
 
         this.setCookies();
         this.loadIndicator = $("#load_indicator");
@@ -205,6 +206,12 @@ class LeftFrame {
     setCookies () {
         Cookies.set("active_category", this.slug);
         Cookies.set("navigation_page", this.page);
+
+        if (this.tab) {
+            Cookies.set("active_tab", this.tab);
+        } else {
+            this.tab = Cookies.get("active_tab") || null;
+        }
 
         const cookieYear = Cookies.get("selected_year");
         const cookieSearchKeys = Cookies.get("search_parameters");
@@ -232,16 +239,14 @@ class LeftFrame {
         const page = `${this.page ? `page: ${this.page}` : ""}`;
         const searchKeys = `${this.searchKeys ? `searchKeys: "${this.searchKeys}"` : ""}`;
         const refresh = `${this.refresh ? `refresh: ${this.refresh}` : ""}`;
-        const queryParams = [slug, year, page, searchKeys, refresh].filter(val => val).join(", ");
+        const tab = `${this.tab ? `tab: "${this.tab}"` : ""}`;
+        const queryParams = [slug, year, page, searchKeys, refresh, tab].filter(val => val).join(", ");
 
         const query = `{topics(${queryParams}){
             safename refreshCount year yearRange slugIdentifier
-            page { 
-              objectList { slug title count }
-              paginator { pageRange numPages }
-              number hasOtherPages
-            }
-          }}`;
+            page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages }
+            tabs{current available{name, safename}}
+        }}`;
 
         const self = this;
 
@@ -266,6 +271,7 @@ class LeftFrame {
         this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number);
         this.renderTopicList(data.page.objectList, data.slugIdentifier, data.parameters);
         this.renderShowMoreButton(data.page.number, data.page.hasOtherPages);
+        this.renderTabs(data.tabs);
         this.loadIndicator.css("display", "none");
     }
 
@@ -286,6 +292,21 @@ class LeftFrame {
             showMoreButton.addClass("dj-hidden");
         } else {
             showMoreButton.removeClass("dj-hidden");
+        }
+    }
+
+    renderTabs (tabData) {
+        const tabHolder = $("ul#left-frame-tabs");
+        if (tabData) {
+            tabHolder.html("");
+            const availableTabs = tabData.available;
+            const current = tabData.current;
+            for (const tab of availableTabs) {
+                tabHolder.append(`<li class="nav-item"><a role="button" tabindex="0" data-lf-slug="${this.slug}" data-tab="${tab.name}" class="nav-link${current === tab.name ? " active" : ""}">${tab.safename}</a></li>`);
+            }
+            tabHolder.removeClass("dj-hidden");
+        } else {
+            tabHolder.addClass("dj-hidden");
         }
     }
 
@@ -341,11 +362,11 @@ class LeftFrame {
         }
     }
 
-    static populate (slug, page = 1, year = null, searchKeys = null, refresh = false) {
+    static populate (slug, page = 1, ...args) {
         if (userIsMobile) {
             return;
         }
-        const leftFrame = new LeftFrame(slug, page, year, searchKeys, refresh);
+        const leftFrame = new LeftFrame(slug, page, ...args);
         leftFrame.call();
     }
 
@@ -360,10 +381,16 @@ $("ul#category_view li a, div#category_view_in a:not(.regular), section.topic-ca
     e.preventDefault();
 });
 
-$("[data-lf-slug]").on("click", function () {
+$("body").on("click", "[data-lf-slug]", function () {
     // Regular, slug-only
     const slug = $(this).attr("data-lf-slug");
-    LeftFrame.populate(slug);
+
+    if ($(this)[0].hasAttribute("data-tab")) {
+        // Check for the requested tab.
+        LeftFrame.populate(slug, 1, null, null, false, $(this).attr("data-tab"));
+    } else {
+        LeftFrame.populate(slug);
+    }
 });
 
 $("#year_select").on("change", function () {

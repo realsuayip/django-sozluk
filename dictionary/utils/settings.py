@@ -12,13 +12,18 @@ GENERIC_SUPERUSER_ID = 1
 # This anonymous user is used to hold the entries of deleted accounts.
 GENERIC_PRIVATEUSER_ID = 35
 
-# Category related settings, don't change the current keys of NON_DB_SLUGS_SAFENAMES, they are hard-coded.
-# Structure: {key: (safename, description)}
-NON_DB_SLUGS_SAFENAMES = {
+# Category related settings, don't change the current keys of NON_DB_CATEGORIES_META, they are hard-coded.
+# Structure: {key: (safename, description, ({"tab_slug": "tab_safename", ...}, "default_tab_slug"))...}
+# dict{str:tuple(str, str, tuple(dict{str:str}, str))}
+NON_DB_CATEGORIES_META = {
     "bugun": ("bugün", "en son girilenler"),
     "gundem": ("gündem", "neler olup bitiyor"),
     "basiboslar": ("başıboşlar", "kanalsız başlıklar"),
-    "takip": ("takip", "takip ettiğim yazarlar ne yazmış?"),
+    "takip": (
+        "takip",
+        "takip ettiğim yazarlar ne yapmış?",
+        ({"entries": "yazdıkları", "favorites": "favoriledikleri"}, "entries"),
+    ),
     "tarihte-bugun": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
     "kenar": ("kenar", "kenara attığım entry'ler"),
     "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
@@ -27,10 +32,16 @@ NON_DB_SLUGS_SAFENAMES = {
 }
 
 
-NON_DB_CATEGORIES = tuple(NON_DB_SLUGS_SAFENAMES.keys())
+NON_DB_CATEGORIES = tuple(NON_DB_CATEGORIES_META.keys())
+
+# These categories have tabs. Make sure you configured metadata correctly.
+TABBED_CATEGORIES = ("takip",)
 
 # These categories are not open to visitors
 LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "caylaklar")
+
+# Cache (if enabled) these categories PER USER. (The list of objects in those categories varies on user.)
+USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip")
 
 # Default category to be shown when the user requests for the first time.
 # Should not be in LOGIN_REQUIRED_CATEGORIES

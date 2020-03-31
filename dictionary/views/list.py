@@ -112,9 +112,10 @@ class TopicList(TemplateView):
         slug = self.kwargs.get("slug")
         year = self.request.GET.get("year")
         page = self.request.GET.get("page")
+        tab = self.request.GET.get("tab")
         search_keys = self.request.GET
 
-        manager = TopicListManager(self.request.user, slug, year, search_keys)
+        manager = TopicListManager(self.request.user, slug, year, search_keys, tab)
         frame = LeftFrame(manager, page)
         return frame.as_context()
 

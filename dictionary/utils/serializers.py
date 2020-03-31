@@ -5,7 +5,7 @@ from django.utils.functional import cached_property
 
 from ..models import Category
 from . import get_category_parameters
-from .settings import (NON_DB_CATEGORIES, NON_DB_SLUGS_SAFENAMES, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE)
+from .settings import NON_DB_CATEGORIES, NON_DB_CATEGORIES_META, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE
 
 
 class PlainSerializer:
@@ -15,19 +15,16 @@ class PlainSerializer:
     """A tuple of names of attributes/methods to be ignored while serializing."""
 
     def get_serialized(self):
-        """Outer dictionary comprehension removes null values from inner dictionary. @formatter:off"""
+        """Outer dictionary comprehension removes null values from inner dictionary."""
         return {
             key: value
             for key, value in {
                 name: getattr(self, name)
                 for name in dir(self)
-                if not name.startswith(
-                    ("_", "get_serialized", "exclude") + self.exclude
-                )
+                if not name.startswith(("_", "get_serialized", "exclude") + self.exclude)
             }.items()
             if value is not None
         }
-    # @formatter:on
 
 
 class PageSerializer(PlainSerializer):
@@ -81,7 +78,7 @@ class LeftFrame(PlainSerializer):
     @cached_property
     def safename(self):
         if self.slug in NON_DB_CATEGORIES:
-            return NON_DB_SLUGS_SAFENAMES[self.slug][0]
+            return NON_DB_CATEGORIES_META[self.slug][0]
 
         with suppress(Category.DoesNotExist):
             return Category.objects.get(slug=self.slug).name
@@ -103,9 +100,17 @@ class LeftFrame(PlainSerializer):
     def page(self):
         """Get current page_obj via Paginator and serialize it using PageSerializer"""
         user = self._manager.user
-        paginate_by = (user.topics_per_page if user.is_authenticated else TOPICS_PER_PAGE_DEFAULT)
+        paginate_by = user.topics_per_page if user.is_authenticated else TOPICS_PER_PAGE_DEFAULT
         paginator = Paginator(self._manager.serialized, paginate_by)
         return PageSerializer(paginator.get_page(self._page)).get_serialized()
+
+    @cached_property
+    def tabs(self):
+        tab = self._manager.tab
+        if tab is not None:
+            available = NON_DB_CATEGORIES_META.get(self.slug)[2][0]
+            return {"current": tab, "available": available}
+        return None
 
     def as_context(self):
         return self.get_serialized()
