@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from graphene import ID, Mutation, String
 
 from dictionary.models import Topic, Wish
+from dictionary.utils import turkish_lower
 
 from ..utils import login_required
 
@@ -32,12 +33,14 @@ class WishTopic(Mutation):
         hint = String()
 
     feedback = String()
+    hint = String()
 
     @staticmethod
     @login_required
-    def mutate(_root, info, title, hint=None):
+    def mutate(_root, info, title, hint=""):
         sender = info.context.user
         topic = Topic.objects.get_or_pseudo(unicode_string=title)
+        hint = turkish_lower(hint).strip() or None
 
         if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
             raise ValueError("öyle olmaz ki")
@@ -52,4 +55,4 @@ class WishTopic(Mutation):
 
         wish = Wish.objects.create(author=sender, hint=hint)
         topic.wishes.add(wish)
-        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.")
+        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.", hint=hint)

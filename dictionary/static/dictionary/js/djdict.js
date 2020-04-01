@@ -934,8 +934,9 @@ $(".block-user-trigger").on("click", function () {
 });
 
 const wishTopic = function (title, hint = null) {
-    const query = `mutation{topic{wish(title:"${title}" ${hint ? `hint: "${hint.replace(/\n/g, " ")}"` : ""}){feedback}}}`;
-    return $.post("/graphql/", JSON.stringify({ query })).done(function (response) {
+    const query = `mutation wish($title: String!, $hint: String){topic{wish(title: $title, hint: $hint){feedback hint}}}`;
+    const variables = { title, hint };
+    return $.post("/graphql/", JSON.stringify({ query, variables })).done(function (response) {
         notify(response.data.topic.wish.feedback);
     }).fail(function () {
         notify("bu işlemi şimdi gerçekleştiremiyoruz", "error");
@@ -952,11 +953,12 @@ $("a.wish-send[role=button]").on("click", function () {
     const textarea = self.siblings("textarea");
     const title = self.parent().attr("data-topic");
     const hint = textarea.val();
-    wishTopic(title, hint).then(function () {
+    wishTopic(title, hint).then(function (response) {
         textarea.val("");
         self.toggle();
         self.siblings().toggle();
-        $("ul#wish-list").show().prepend(`<li class="list-group-item owner">bu başlığa az önce ukte verdiniz. ${hint ? `notunuz: <p class="m-0"><i>${hint}</i></p>` : ""}</li>`);
+        const hintFormatted = response.data.topic.wish.hint;
+        $("ul#wish-list").show().prepend(`<li class="list-group-item owner">bu başlığa az önce ukte verdiniz. ${hintFormatted ? `notunuz: <p class="m-0"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
         $(window).scrollTop(0);
     });
 });
