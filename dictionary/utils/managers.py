@@ -15,6 +15,7 @@ from dateutil.relativedelta import relativedelta
 from ..models import Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (
+    DISABLE_CATEGORY_CACHING,
     LOGIN_REQUIRED_CATEGORIES,
     NON_DB_CATEGORIES,
     NON_DB_CATEGORIES_META,
@@ -115,6 +116,24 @@ class TopicQueryHandler:
             .order_by("-latest")
             .values(*self.values_entry)
         )
+
+    def ukteler(self, user, tab):
+        return getattr(self, f"ukteler_{tab}")(user)
+
+    def ukteler_all(self, user):
+        return (
+            Topic.objects.exclude(wishes__author__in=user.blocked.all())
+            .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
+            .filter(count__gte=1)
+            .order_by("-count", "-latest")
+        ).values(*self.values)
+
+    def ukteler_owned(self, user):
+        return (
+            Topic.objects.annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
+            .filter(wishes__author=user)
+            .order_by("-latest")
+        ).values(*self.values)
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
@@ -227,7 +246,7 @@ class TopicListHandler:
         self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
 
         # Check cache
-        if self.slug not in UNCACHED_CATEGORIES:
+        if self._caching_allowed:
             self._check_cache()
 
     def _get_data(self):
@@ -236,10 +255,10 @@ class TopicListHandler:
         # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
             **dict.fromkeys(("bugun", "kenar"), [self.user]),
+            **dict.fromkeys(("takip", "ukteler"), [self.user, self.tab]),
             "tarihte_bugun": [self.year],
             "generic_category": [self.slug],
             "hayvan_ara": [self.user, self.search_keys],
-            "takip": [self.user, self.tab],
         }
 
         # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
@@ -272,8 +291,16 @@ class TopicListHandler:
             return default
         return None
 
+    @property
+    def _caching_allowed(self):
+        return not (
+            self.slug in UNCACHED_CATEGORIES
+            or f"{self.slug}_{self.tab}" in UNCACHED_CATEGORIES
+            or DISABLE_CATEGORY_CACHING
+        )
+
     def _cache_data(self, data):
-        if self.slug in UNCACHED_CATEGORIES:
+        if not self._caching_allowed:
             return data  # Bypass caching
 
         # Set exclusive timeouts by slug. (default: self.cache_timeout)

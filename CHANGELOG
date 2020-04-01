@@ -1,3 +1,20 @@
+[0.110.0-dev-pre](2020.04.01)(compatible)
+
+--Additions--
+1) Add ukteler category.
+2) Add DISABLE_CATEGORY_CACHING setting.
+
+-- Changes --
+1) TopicListHandler now uses _caching_allowed
+property.
+2) Wishes are now deleted after they
+are fulfilled.
+3) UNCACHED_CATEGORIES setting now accepts tabs.
+4) Django version up 2.2.12 from 2.2.11.
+
+--Deletions--
+None
+
 [0.109.0-dev-pre](2020.03.31)(compatible)
 
 --Additions--

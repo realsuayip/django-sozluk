@@ -25,7 +25,6 @@ class Entry(models.Model):
     vote_rate = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0))
     is_draft = models.BooleanField(default=False)
 
-    # notice: all these managers are created after the usages, so there may be some leftovers which need to be corrected
     objects_all = EntryManagerAll()
     objects_published = EntryManagerOnlyPublished()
     objects = EntryManager()
@@ -53,17 +52,18 @@ class Entry(models.Model):
             self.topic.save()
 
         # Inform wishers
-        if self.topic.entries.exists() and self.topic.wishes.exists():
-            for wish in self.topic.wishes.all():
+        if self.topic.wishes.exists() and self.topic.has_entries:
+            wishes = self.topic.wishes.all()
+            for wish in wishes:
                 if wish.author != self.author:
                     message = (
-                        f"ukte bıraktığınız `{self.topic.title}` başlığına `@{self.author.username}` "
-                        f"tarafından entry girildi: (bkz: #{self.pk})"
+                        f"ukte bıraktığınız `{self.topic.title}` başlığına `@{self.author.username}`"
+                        f" tarafından entry girildi: (bkz: #{self.pk})"
                     )
                     apps.get_model("dictionary", "Message").objects.compose(
                         get_generic_superuser(), wish.author, message
                     )
-            self.topic.wishes.clear()
+            wishes.delete()
 
     def get_absolute_url(self):
         return reverse("entry-permalink", kwargs={"entry_id": self.pk})

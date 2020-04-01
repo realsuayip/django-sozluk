@@ -12,6 +12,8 @@ GENERIC_SUPERUSER_ID = 1
 # This anonymous user is used to hold the entries of deleted accounts.
 GENERIC_PRIVATEUSER_ID = 35
 
+#  <-----> START OF CATEGORY RELATED SETTINGS <----->  #
+
 # Category related settings, don't change the current keys of NON_DB_CATEGORIES_META, they are hard-coded.
 # Structure: {key: (safename, description, ({"tab_slug": "tab_safename", ...}, "default_tab_slug"))...}
 # dict{str:tuple(str, str, tuple(dict{str:str}, str))}
@@ -24,6 +26,11 @@ NON_DB_CATEGORIES_META = {
         "takip ettiğim yazarlar ne yapmış?",
         ({"entries": "yazdıkları", "favorites": "favoriledikleri"}, "entries"),
     ),
+    "ukteler": (
+        "ukteler",
+        "diğer yazarların entry girilmesini istediği başlıklar",
+        ({"all": "hepsi", "owned": "benimkiler"}, "all"),
+    ),
     "tarihte-bugun": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
     "kenar": ("kenar", "kenara attığım entry'ler"),
     "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
@@ -34,24 +41,35 @@ NON_DB_CATEGORIES_META = {
 
 NON_DB_CATEGORIES = tuple(NON_DB_CATEGORIES_META.keys())
 
-# These categories have tabs. Make sure you configured metadata correctly.
-TABBED_CATEGORIES = ("takip",)
+# These categories have tabs. Make sure you configure metadata correctly.
+TABBED_CATEGORIES = ("takip", "ukteler")
 
 # These categories are not open to visitors
-LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "caylaklar")
+LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "caylaklar")
 
 # Cache (if enabled) these categories PER USER. (The list of objects in those categories varies on user.)
-USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip")
+USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip", "ukteler")
 
 # Default category to be shown when the user requests for the first time.
 # Should not be in LOGIN_REQUIRED_CATEGORIES
 DEFAULT_CATEGORY = "gundem"
 
-# Don't cache these categories
-UNCACHED_CATEGORIES = ("kenar",)
+# Don't cache these categories.
+# (To disable a tab of a category, you can insert "categoryname_tabname", "categoryname" will affect both tabs)
+UNCACHED_CATEGORIES = ("kenar", "ukteler_owned")
+
+# Set this to True to disable caching of all categories. The site will
+# be more responsive & dynamic but much slower. If the website is low
+# in demand, you may set this to true so that existing user base
+# can interact more quickly. Consider using UNCACHED_CATEGORIES if
+# you don't want to disable ALL categories.
+# You may also (better) use this for debugging purposes.
+DISABLE_CATEGORY_CACHING = False
 
 # Years available for tarihte-bugun
 YEAR_RANGE = (2020, 2019, 2018)
+
+#  <-----> END OF CATEGORY RELATED SETTINGS <----->  #
 
 # Give entry id's for flat pages.
 FLATPAGE_URLS = {
