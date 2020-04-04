@@ -72,14 +72,12 @@ def get_generic_superuser():
 
 
 def get_category_parameters(slug, year):
-    pairs = {  # @formatter:off
-        "bugun": "?day=today",
-        "gundem": "?day=today",
-        "tarihte-bugun": f"?year={year}",
-        "caylaklar": "?a=caylaklar",
-        "generic": "?day=today",
-        "basiboslar": "?day=today",
-    }  # @formatter:on
+    pairs = {
+        **dict.fromkeys(("bugun", "gundem", "basiboslar", "generic"), "?a=today"),
+        "tarihte-bugun": f"?a=history&year={year}",
+        "caylaklar": "?a=novices",
+        "son": "?a=recent",
+    }
 
     return pairs.get(slug)
 

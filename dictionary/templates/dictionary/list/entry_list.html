@@ -1,9 +1,9 @@
 {% extends "dictionary/base.html" %}
 {% block title %}{{ topic.title }}{% if entry_permalink %} - #{{ entries.0.pk }}{% endif %}{% if mode == "today" %} -
-    bugünün entry'leri{% endif %}{% if mode == "caylaklar" %} - çaylaklar{% endif %}
-    {% if mode == "today_in_history" and entries %} - {{ request.GET.year }} yılında bugün{% endif %}
-    {% if page_obj.number > 1 %} - sayfa
-        {{ page_obj.number }}{% endif %}{% endblock %}
+    bugünün entry'leri{% endif %}{% if mode == "novices" %} - çaylaklar{% endif %}
+    {% if mode == "history" and entries %} - {{ request.GET.year }} yılında bugün{% endif %}
+    {% if page_obj.number > 1 %} - sayfa{{ page_obj.number }}{% endif %}
+{% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}
 {% block bodyattr %}class="default topic-entry-view {% if not entry_permalink %}has-entries{% endif %}"{% endblock %}
@@ -135,7 +135,7 @@
 
                             {% else %}
                                 {# topic has entries but parameters returned no corresponding entries #}
-                                {% if mode == "caylaklar" %}
+                                {% if mode == "novices" %}
                                     <p>bu başlığa bugün pek çaylak entry'si girilmemiş.</p>
                                 {% else %}
                                     <p>başlıkta aradığınız kritere uygun entry bulunamadı</p>

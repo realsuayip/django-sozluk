@@ -243,7 +243,7 @@ class LeftFrame {
         const queryParams = [slug, year, page, searchKeys, refresh, tab].filter(val => val).join(", ");
 
         const query = `{topics(${queryParams}){
-            safename refreshCount year yearRange slugIdentifier
+            safename refreshCount year yearRange slugIdentifier parameters
             page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages }
             tabs{current available{name, safename}}
         }}`;

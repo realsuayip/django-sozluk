@@ -33,6 +33,7 @@ NON_DB_CATEGORIES_META = {
     ),
     "tarihte-bugun": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
     "kenar": ("kenar", "kenara attığım entry'ler"),
+    "son": ("son", "benden sonra neler girilmiş?"),
     "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
     "debe": ("dünün en beğenilen entry'leri", "dünün en beğenilen entry'leri"),
     "hayvan-ara": ("arama sonuçları", "hayvan ara"),
@@ -45,10 +46,10 @@ NON_DB_CATEGORIES = tuple(NON_DB_CATEGORIES_META.keys())
 TABBED_CATEGORIES = ("takip", "ukteler")
 
 # These categories are not open to visitors
-LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "caylaklar")
+LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "caylaklar", "son")
 
 # Cache (if enabled) these categories PER USER. (The list of objects in those categories varies on user.)
-USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip", "ukteler")
+USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "son")
 
 # Default category to be shown when the user requests for the first time.
 # Should not be in LOGIN_REQUIRED_CATEGORIES
@@ -56,7 +57,7 @@ DEFAULT_CATEGORY = "gundem"
 
 # Don't cache these categories.
 # (To disable a tab of a category, you can insert "categoryname_tabname", "categoryname" will affect both tabs)
-UNCACHED_CATEGORIES = ("kenar", "ukteler_owned")
+UNCACHED_CATEGORIES = ("kenar", "ukteler_owned", "son")
 
 # Set this to True to disable caching of all categories. The site will
 # be more responsive & dynamic but much slower. If the website is low

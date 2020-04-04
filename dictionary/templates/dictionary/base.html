@@ -159,6 +159,7 @@
                         <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
                         <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
                         <a href="{% url "topic_list" slug="ukteler" %}" class="dropdown-item">ukteler</a>
+                        <a href="{% url "topic_list" slug="son" %}" class="dropdown-item">son</a>
                         <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
                         <a href="{% url "topic_list" slug="hayvan-ara" %}" class="dropdown-item">hayvan ara</a>
                         <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
@@ -184,6 +185,7 @@
                 {% render_header_link 'debe' %}
                 {% render_header_link 'takip' %}
                 {% render_header_link 'kenar' %}
+                {% render_header_link 'son' %}
                 {% render_header_link 'ukteler' %}
                 {% render_header_link 'caylaklar' %}
                 {% render_header_link 'tarihte-bugun' %}

@@ -161,8 +161,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     """This will be set to (entry_id) if user requests a single entry. It's similar to view_mode, but it needs some
        other metadata and seperated from view_mode as they use different urls."""
 
+    modes = ("regular", "today", "history", "nice", "nicetoday", "search", "following", "novices", "recent")
+    """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
+       parameter 'a'. For example ?a=today returns only today's entries."""
+
     redirect = False
-    """When handling following topics, if there are no new entries found, redirect user to full topic view."""
+    """When handling queryset, if there are no new entries found, redirect user (if desired) to full topic view."""
 
     def form_valid(self, form):
         """
@@ -173,7 +177,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         # Hinders sending entries to banned topics.
         if self.topic.exists and self.topic.is_banned:  # Cannot check is_banned before chechking its existance
-            # not likely to occur in normal circumstances so you may include some humor here.
+            # Not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, "olmaz ki canım... hürrüpü")
             return self.form_invalid(form)
 
@@ -240,11 +244,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         return redirect(reverse("topic", kwargs={"slug": self.kwargs.get("slug")}))
 
+    def regular(self):
+        return self.topic.entries.all()
+
     def today(self):
         return self.topic.entries.filter(date_created__gte=time_threshold(hours=24))
 
-    def today_in_history(self):
-        year = self.request.GET.get("year")
+    def history(self):
+        year = self.request.GET.get("year", "")
 
         with suppress(ValueError, OverflowError):
             if int(year) in YEAR_RANGE:
@@ -253,7 +260,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 delta = now - relativedelta(years=diff)
                 return self.topic.entries.filter(date_created__date=delta.date())
 
-        return self.model.objects.none()
+        return None
 
     def nice(self):
         return self.topic.entries.order_by("-vote_rate")
@@ -274,7 +281,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 # use postgresql to make searches more advanced if desired
                 return self.topic.entries.filter(content__icontains=keywords)
 
-        return self.model.objects.none()
+        return None
 
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""
@@ -302,25 +309,25 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         notifications.info(self.request, "pek bişey bulamadım açıkçası, buyrun hepsi")
         self.redirect = True
-        return self.model.objects.none()
+        return None
 
-    def caylaklar(self):
+    def novices(self):
         return self.topic.entries.filter(author__is_novice=True, date_created__gte=time_threshold(hours=24))
+
+    def recent(self):
+        with suppress(Entry.DoesNotExist):
+            latest = self.topic.entries.filter(author=self.request.user).latest("date_created")
+            return self.topic.entries.filter(date_created__gte=latest.date_created)
+        return None
 
     def get_queryset(self):
         """Filter queryset by self.view_mode"""
         queryset = None
-        filtering_modes = ("today", "today_in_history", "nice", "nicetoday", "search", "following", "caylaklar")
 
         if self.entry_permalink:
             queryset = self.topic.entries.filter(pk=self.entry_permalink)
-
         elif self.topic.exists:
-            if self.view_mode in filtering_modes:
-                queryset = getattr(self, self.view_mode)()
-            else:
-                # view mode is regular
-                queryset = self.topic.entries.all()
+            queryset = getattr(self, self.view_mode)()
 
         if queryset is not None:
             return self._qs_filter(queryset)
@@ -353,9 +360,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             show_subsequent, show_previous = False, False
 
             # view_mode specific settings
-            if self.view_mode in ("today", "following", "caylaklar"):
+            if self.view_mode in ("today", "following", "novices"):
                 show_previous = True
-            elif self.view_mode in ("today_in_history", "entry_permalink", "search", "nicetoday"):
+            elif self.view_mode in ("history", "entry_permalink", "search", "nicetoday", "recent"):
                 show_previous = True
                 show_subsequent = True
 
@@ -390,17 +397,16 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         else:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
-            if self.view_mode in ("today", "today_in_history", "nice", "nicetoday", "search", "caylaklar", "following"):
-                context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
+            context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
 
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        search_redirect = self.get_topic()
+        setup_or_redirect = self.get_topic()
 
         # Did get_topic() returned a search result?
-        if search_redirect:
-            return search_redirect
+        if setup_or_redirect:
+            return setup_or_redirect
 
         # Empty request (direct request to /topic/)
         if self.topic is None:
@@ -408,18 +414,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         # Regular view. view_mode is used to determine queryset
         if not self.view_mode:
-            if request.GET.get("day") == "today":
-                self.view_mode = "today"
-            elif request.GET.get("year"):
-                self.view_mode = "today_in_history"
-            elif request.GET.get("a"):
-                self.view_mode = request.GET.get("a")
-            else:
-                self.view_mode = "regular"
+            requested = request.GET.get("a")
+            self.view_mode = requested if requested in self.modes else "regular"
 
         # Check login requirements
-
-        login_required_modes = ("caylaklar", "following")
+        login_required_modes = ("novices", "following", "recent")
         if not request.user.is_authenticated and self.view_mode in login_required_modes:
             notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
             return redirect(reverse("login"))
@@ -427,13 +426,10 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return super().dispatch(request)
 
     def get_paginate_by(self, *args):
-        if self.request.user.is_authenticated:
-            return self.request.user.entries_per_page
-        return ENTRIES_PER_PAGE_DEFAULT
+        return self.request.user.entries_per_page if self.request.user.is_authenticated else ENTRIES_PER_PAGE_DEFAULT
 
     def render_to_response(self, context, **response_kwargs):
-        # can only be caused by self.following()
-        # this redirect is done here because we initially want to get the queryset first to decide if redirect is needed
+        # This redirect is done here because we initially want to get the queryset first to decide if redirect is needed
         return super().render_to_response(context, **response_kwargs) if not self.redirect else self._redirect_to_self()
 
     def get_topic(self):
@@ -442,18 +438,18 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         object that could be created via post. If unicode_string or query search points to a valid slug
         (or author or entry permalink), redirect to that object.
         """
-        #  Normal handling of an existing topic
+        # Normal handling of an existing topic
         if self.kwargs.get("slug"):
             self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug").strip())
 
-        #  Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
+        # Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
         elif self.kwargs.get("unicode_string"):
             self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string").strip())
 
             if self.topic.exists:
                 return self._redirect_to_self()
 
-        #  Entry permalink handling
+        # Entry permalink handling
         elif self.kwargs.get("entry_id"):
             with proceed_or_404(ValueError, OverflowError):
                 entry_id = int(self.kwargs.get("entry_id"))
@@ -468,7 +464,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 self.entry_permalink = entry_id
                 self.view_mode = "entry_permalink"
 
-        #  Search handling
+        # Search handling
         elif self.request.GET.get("q"):
             query = self.request.GET.get("q").strip()
 
@@ -515,7 +511,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         qs = queryset.exclude(is_draft=True)
 
-        if self.view_mode not in ["caylaklar", "entry_permalink"]:
+        if self.view_mode not in ("novices", "entry_permalink"):
             qs = qs.exclude(author__is_novice=True)
 
         if self.request.user.is_authenticated:

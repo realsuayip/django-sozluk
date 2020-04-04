@@ -1,3 +1,18 @@
+[0.111.0-dev-pre](2020.04.04)(compatible)
+
+--Additions--
+1) Base set for 'son' category.
+
+-- Changes --
+1) Asynchronous calls for topic lists in desktop
+missed the category parameters. Fixed that.
+2) Fix a unimplemented case where TopicEntryList raised
+http 500. Overall optimization & semantic related changes
+made to TopicEntryList.
+
+--Deletions--
+None
+
 [0.110.0-dev-pre](2020.04.01)(compatible)
 
 --Additions--

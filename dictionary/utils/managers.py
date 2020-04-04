@@ -72,7 +72,13 @@ class TopicQueryHandler:
         )
 
     def gundem(self):
-        return [{"title": f"{self.__doc__}", "slug": "unimplemented", "count": 1}]
+        return [
+            {
+                "title": f"Sorry! This category is yet to be implemented. Source: {self.__module__}",
+                "slug": "unimplemented",
+                "count": 1,
+            }
+        ]
 
     def debe(self):
         boundary = time_threshold(hours=24)
@@ -134,6 +140,9 @@ class TopicQueryHandler:
             .filter(wishes__author=user)
             .order_by("-latest")
         ).values(*self.values)
+
+    def son(self, user):
+        return self.gundem()  # unimplemented
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
@@ -254,7 +263,7 @@ class TopicListHandler:
 
         # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
-            **dict.fromkeys(("bugun", "kenar"), [self.user]),
+            **dict.fromkeys(("bugun", "kenar", "son"), [self.user]),
             **dict.fromkeys(("takip", "ukteler"), [self.user, self.tab]),
             "tarihte_bugun": [self.year],
             "generic_category": [self.slug],
