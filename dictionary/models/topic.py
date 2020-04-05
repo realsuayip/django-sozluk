@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
@@ -8,7 +9,6 @@ from uuslug import uuslug
 from ..utils import turkish_lower
 from .author import Author
 from .category import Category
-from .entry import Entry
 from .m2m import TopicFollowing
 from .managers.topic import TopicManager, TopicManagerPublished
 
@@ -98,12 +98,11 @@ class Topic(models.Model):
     def latest_entry_date(self, sender):
         try:
             return (
-                Entry.objects.filter(topic=self)
-                .exclude(Q(author__in=sender.blocked.all()) | Q(author=sender))
+                self.entries.exclude(Q(author__in=sender.blocked.all()) | Q(author=sender))
                 .latest("date_created")
                 .date_created
             )
-        except Entry.DoesNotExist:
+        except ObjectDoesNotExist:
             return self.date_created
 
     @property

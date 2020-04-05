@@ -397,6 +397,9 @@ class TopicModelTest(TransactionTestCase):
     def test_existence(self):
         self.assertEqual(self.some_topic.exists, True)
 
+    def test_valid(self):
+        self.assertEqual(self.some_topic.valid, True)
+
     def test_has_entries(self):
         # Initial status
         self.assertEqual(self.some_topic.has_entries, False)
