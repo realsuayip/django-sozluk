@@ -8,12 +8,21 @@ from ..utils.admin import IntermediateActionHandler
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ("title", "created_by", "date_created")
-    search_fields = ["title"]
-    autocomplete_fields = ("category",)
-    readonly_fields = ("created_by", "date_created")
+    fieldsets = (
+        (None, {"fields": ("title", "category", "mirrors")}),
+        ("Erişilebilirlik seçenekleri", {"fields": ("is_banned", "is_censored")}),
+        ("Üstveri", {"fields": ("created_by", "date_created")}),
+    )
 
-    actions = ["move_topic"]
+    list_display = ("title", "created_by", "is_censored", "is_banned", "date_created")
+    list_filter = ("category", "is_censored", "is_banned")
+    search_fields = ("title",)
+    autocomplete_fields = ("category", "mirrors")
+    actions = ("move_topic",)
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = ("created_by", "date_created")
+        return readonly + ("title",) if obj else readonly
 
     def get_urls(self):
         urls = super().get_urls()

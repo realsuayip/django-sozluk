@@ -5,6 +5,7 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
 from ..models.author import Author, Entry
+from ..models.topic import Topic
 from ..utils.settings import VOTE_RATES
 
 
@@ -58,3 +59,36 @@ def update_vote_rate_downvote(action, entries, **kwargs):
         entries.update(vote_rate=F("vote_rate") - rate)
     else:
         entries.update(vote_rate=F("vote_rate") + rate)
+
+
+@receiver(m2m_changed, sender=Topic.mirrors.through)
+def update_topic_disambiguation(instance, action, pk_set, **kwargs):
+    """Signal to auto update all mirrors of given topic's related objects."""
+
+    appended_topics = Topic.objects.filter(pk__in=pk_set)
+    current = instance.mirrors.all()
+
+    if action not in ("post_add", "post_remove"):
+        return
+
+    for topic in appended_topics:
+
+        related = topic.mirrors.all()
+
+        for mirror in related:
+            if mirror != instance:
+                if action == "post_add":
+                    if mirror not in current:
+                        instance.mirrors.add(mirror)
+                else:
+                    if mirror in current:
+                        instance.mirrors.remove(mirror)
+
+        for neighbor in current:
+            if neighbor != topic:
+                if neighbor not in related:
+                    if action == "post_add":
+                        topic.mirrors.add(neighbor)
+                else:
+                    if action == "post_remove":
+                        topic.mirrors.remove(neighbor)

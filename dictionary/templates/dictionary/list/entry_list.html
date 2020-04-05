@@ -23,6 +23,19 @@
                         <small style="font-size: 1rem;">[arama terimi:
                             <strong>{{ request.GET.keywords }}]</strong></small>{% endif %}</h1>
 
+            {% with mirrors=topic.mirrors.all %}
+                {% if mirrors %}
+                    <div class="mirror-list">
+                     <span>aynı isimdeki diğer başlıklar:</span>
+                        <ul>
+                            {% for mirror in mirrors %}
+                               <li><a href="{{ mirror.get_absolute_url }}">{{ mirror.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
                 {% if populated %}
                     <div class="lower">
                     <div class="title_sub">

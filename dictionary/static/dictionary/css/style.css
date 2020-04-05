@@ -319,6 +319,22 @@ header.entry_header h1 {
     font-weight: 700;
 }
 
+header.entry_header > .mirror-list{
+    background: #ddd;
+    padding: 1em;
+    margin-bottom: .5em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+header.entry_header > .mirror-list > ul{
+    padding-left: 1em;
+}
+
+header.entry_header > .mirror-list > ul > li{
+    padding: 0;
+}
 
 header.entry_header .lower a:not(.active) {
     color: #333;

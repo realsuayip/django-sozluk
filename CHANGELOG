@@ -1,3 +1,17 @@
+[0.112.0-dev-pre](2020.04.05)(incompatible)
+
+--Additions--
+1) Add topic disambiguation feature. Use admin
+page to add disambiguations for topics. **incomptabile**
+Run makemigrations+migrate for dictionary.
+
+-- Changes --
+1) Tweaked Topic's admin page (to be end-user friendly).
+2) Tweaked Topic's fields.
+
+--Deletions--
+None
+
 [0.111.0-dev-pre](2020.04.04)(compatible)
 
 --Additions--

@@ -15,23 +15,63 @@ from .managers.topic import TopicManager, TopicManagerPublished
 
 TOPIC_TITLE_VALIDATORS = [
     RegexValidator(
-        r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/",.!?~\[\]{}<>^;\\|-]+$""", message="bu başlık geçerisz karakterler içeriyor"
+        r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/",.!?~\[\]{}<>^;\\|-]+$""",
+        message="bu başlık tanımı geçersiz karakterler içeriyor",
     ),
     MaxLengthValidator(50, message="bu başlık çok uzun"),
 ]
 
 
 class Topic(models.Model):
-    title = models.CharField(max_length=50, unique=True, validators=TOPIC_TITLE_VALIDATORS, verbose_name="başlık")
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name="oluşturulma tarihi")
-    created_by = models.ForeignKey(
-        Author, null=True, editable=False, on_delete=models.SET_NULL, verbose_name="ilk entry giren kullanıcı"
+    title = models.CharField(
+        max_length=50,
+        unique=True,
+        validators=TOPIC_TITLE_VALIDATORS,
+        verbose_name="Başlığın tanımı",
+        help_text="Başlık oluşturulduktan sonra tanımını değiştirmek için başlık taşıma özelliğini kullanmalısınız.",
     )
-    category = models.ManyToManyField(Category, blank=True, verbose_name="kanallar")
-    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name="ukteler")
+
     slug = models.SlugField(max_length=96, unique=True, editable=False)
-    is_banned = models.BooleanField(default=False, verbose_name="entry girişine kapalı")
-    is_censored = models.BooleanField(default=False, verbose_name="başlık listesinde ve aramalarda sansürlü")
+
+    created_by = models.ForeignKey(
+        Author,
+        null=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        verbose_name="İlk entry giren kullanıcı",
+        help_text="Bu başlığa ilk kez halka açık bir şekilde entry giren yazar veya çaylak.",
+    )
+
+    category = models.ManyToManyField(Category, blank=True, verbose_name="Kanallar")
+    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name="Ukteler")
+
+    mirrors = models.ManyToManyField(
+        "self",
+        blank=True,
+        verbose_name="Başlık ayrımı",
+        help_text="<p style='color: #ba2121'><b>Dikkat!</b> Girdiğiniz başlıklara otomatik olarak başlık ayrımı"
+        " eklenecek. Bu nedenle seçtiğiniz bir ana başlık üzerinde çalışmanız önerilir.<br> Bir başlığı ayrımdan"
+        " kaldırmak <b>tüm</b> ayrımların silinmesine neden olacaktır; bu nedenle silmek istediğiniz başlık"
+        " haricindeki başlıkları tekrar toplu halde eklemek üzere not etmelisiniz.</p>",
+    )
+
+    is_banned = models.BooleanField(
+        default=False,
+        verbose_name="Yasaklı",
+        help_text="Yazar ve çaylakların bu başlığa entry girmesini engellemek istiyorsanız işaretleyin.",
+    )
+
+    is_censored = models.BooleanField(
+        default=False,
+        verbose_name="Sansürlü",
+        help_text="Bu başlığın sözlük içi aramalarda ve başlık listelerinde gözükmesini istemiyorsanız işaretleyin.",
+    )
+
+    date_created = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Oluşturulma tarihi",
+        help_text="<i>Her zaman ilk entry ile örtüşmeyebilir.</i>",
+    )
 
     objects = TopicManager()
     objects_published = TopicManagerPublished()
