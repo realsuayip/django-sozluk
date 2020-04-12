@@ -6,8 +6,14 @@
 {% block content %}
     {% load humanize %}
     <section class="user-info">
-        <h4><a href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a></h4>
-
+        <h4>
+            <a href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a>
+            {% with gen=profile.generation %}
+                {% if gen %}
+                    <small class="ml-2" style="font-size: .5em; vertical-align: middle">{{ gen|ordinal }} nesil {{ profile.is_novice|yesno:"çaylak,yazar" }}</small>
+                {% endif %}
+            {% endwith %}
+        </h4>
 
         {% if request.user.is_authenticated and request.user != profile %}
             {% include "dictionary/includes/send_message_modal.html" %}

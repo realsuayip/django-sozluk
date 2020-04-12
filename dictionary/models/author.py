@@ -1,3 +1,4 @@
+import math
 from decimal import Decimal
 
 from django.apps import apps
@@ -11,7 +12,8 @@ from django.utils.functional import cached_property
 
 from uuslug import uuslug
 
-from ..utils import time_threshold
+from ..utils import parse_date_or_none, time_threshold
+from ..utils.settings import DISABLE_GENERATIONS, FIRST_GENERATION_DATE, GENERATION_GAP_DAYS
 from .category import Category
 from .entry import Entry
 from .managers.author import AccountTerminationQueueManager
@@ -122,6 +124,12 @@ class Author(AbstractUser):
     def __str__(self):
         return f"{self.username}:{self.id}"
 
+    class Meta:
+        # Superusers need to have can_activate_user permission to accept a novice as an author.
+        permissions = (("can_activate_user", "çaylak lisesine erişim"), ("suspend_user", "kullanıcıyı askıya alma"))
+        verbose_name = "yazar"
+        verbose_name_plural = "yazarlar"
+
     def save(self, *args, **kwargs):
         created = self.pk is None  # If True, the user is created (not updated).
 
@@ -141,11 +149,18 @@ class Author(AbstractUser):
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"slug": self.slug})
 
-    class Meta:
-        # Superusers need to have can_activate_user permission to accept a novice as an author.
-        permissions = (("can_activate_user", "çaylak lisesine erişim"), ("suspend_user", "kullanıcıyı askıya alma"))
-        verbose_name = "yazar"
-        verbose_name_plural = "yazarlar"
+    @property
+    def generation(self):
+        if DISABLE_GENERATIONS:
+            return None
+
+        gen_start_date = parse_date_or_none(FIRST_GENERATION_DATE)
+
+        if gen_start_date is None:
+            raise ValueError("Invalid configuration for 'FIRST_GENERATION_DATE'. Please provide a valid date.")
+
+        delta = self.date_joined - gen_start_date
+        return math.ceil((delta.days / GENERATION_GAP_DAYS) or 1)
 
     @property
     def entry_count(self):

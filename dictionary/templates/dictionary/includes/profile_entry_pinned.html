@@ -1,20 +1,10 @@
+{% load filters %}
 <div class="blackquote-container">
-    {% load filters %}
     <blockquote class="user-pin m-0">
-        <h5><a href="{{ entry.topic.get_absolute_url }}"> {{ entry.topic }}</a></h5>
-        <span class="entry-content">  {{ entry.content|formatted|linebreaks }} </span>
+        <h5><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic }}</a></h5>
+        <span class="entry-content">{{ entry.content|formatted|linebreaksbr }}</span>
         <div class="entry-permalink">
-            <a href="{{ entry.get_absolute_url }}">
-                {{ entry.date_created|date:"d.m.Y H:i" }}
-                {% if entry.date_edited != entry.date_created %}
-                    {% now "d.m.Y" as today %}
-                    {% if today == entry.date_edited|date:"d.m.Y" %}
-                        {{ entry.date_edited|date:" ~ H:i" }}
-                    {% else %}
-                        {{ entry.date_edited|date:" ~ d.m.Y H:i" }}
-                    {% endif %}
-                {% endif %}
-            </a>
+            <a href="{{ entry.get_absolute_url }}">{{ entry.date_created|entrydate:entry.date_edited }}</a>
         </div>
     </blockquote>
 </div>

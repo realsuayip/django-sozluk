@@ -72,6 +72,22 @@ YEAR_RANGE = (2020, 2019, 2018)
 
 #  <-----> END OF CATEGORY RELATED SETTINGS <----->  #
 
+"""
+Generations create classification for users using their
+registration date, so that users that using (or used) the site at the
+same can identify each other. This also provides feedback to users
+to see which users are newbies.
+"""
+
+DISABLE_GENERATIONS = False
+"""Set this to True if you do not want generations to appear in profile pages."""
+
+FIRST_GENERATION_DATE = "09.08.2019"
+"""Set this to first user's registration date."""
+
+GENERATION_GAP_DAYS = 180
+"""Set the interval for seperating generations."""
+
 # Give entry id's for flat pages.
 FLATPAGE_URLS = {
     "terms-of-use": 37631,

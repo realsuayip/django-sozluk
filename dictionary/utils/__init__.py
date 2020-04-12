@@ -30,7 +30,7 @@ def turkish_lower(turkish_string):
 
 def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwargs):
     """
-    Return a django timezone aware date object if string is parsable else None or False.
+    Return a django timezone aware date object if string is parsable else None.
     :param date_string: A string containing a date
     :param delta: 'negative' or 'positive'. A date string such as '01.02.2010' is parsed into a datetime string whose
     time is on midnight. So if you want that time to be included in range you should deduct 1 day so that you can get a
@@ -41,7 +41,7 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwarg
     """
 
     if not isinstance(date_string, str) or not date_string:
-        return False
+        return None
 
     if delta and delta not in ("positive", "negative"):
         raise ValueError("Invalid delta option. Options are 'positive' or 'negative'")

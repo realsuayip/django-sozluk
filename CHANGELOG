@@ -1,3 +1,17 @@
+[0.113.0-dev-pre](2020.04.12)(compatible)
+
+--Additions--
+1) Add generation feature and related settings.
+
+-- Changes --
+1) parse_date_or_none now always returns None
+in case of failure.
+2) Updated profile_entry_pinned.html to use entrydate filter.
+3) Clean whitespace in some html files.
+
+--Deletions--
+None
+
 [0.112.0-dev-pre](2020.04.05)(incompatible)
 
 --Additions--
