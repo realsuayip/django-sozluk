@@ -1,6 +1,6 @@
 import hashlib
 from decimal import Decimal
-
+from typing import List, Union
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
@@ -12,10 +12,13 @@ from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 
-from ..models import Category, Entry, Topic
+from ..models import Author, Category, Entry, Topic
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (
+    DEFAULT_CACHE_TIMEOUT,
     DISABLE_CATEGORY_CACHING,
+    EXCLUDABLE_CATEGORIES,
+    EXCLUSIVE_TIMEOUTS,
     LOGIN_REQUIRED_CATEGORIES,
     NON_DB_CATEGORIES,
     NON_DB_CATEGORIES_META,
@@ -47,7 +50,6 @@ class TopicQueryHandler:
     values_entry = values[:2]  # values with count excluded (used for entry listing)
 
     def bugun(self, user):
-        blocked = user.blocked.all()  # To exclude blocked users' topics.
         return (
             Topic.objects.filter(
                 Q(category__in=user.following_categories.all()) | Q(category=None),
@@ -56,7 +58,7 @@ class TopicQueryHandler:
             )
             .order_by("-latest")
             .annotate(**self.base_annotation, **self.base_count)
-            .exclude(created_by__in=blocked)
+            .exclude(created_by__in=user.blocked.all())
             .values(*self.values)
         )
 
@@ -71,14 +73,19 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def gundem(self):
-        return [
-            {
-                "title": f"Sorry! This category is yet to be implemented. Source: {self.__module__}",
-                "slug": "unimplemented",
-                "count": 1,
-            }
-        ]
+    def gundem(self, exclusions):
+        def counter(hours):
+            return Count("entries", filter=Q(entries__date_created__gte=time_threshold(hours=hours)))
+
+        return (
+            Topic.objects.filter(**self.base_filter)
+            .annotate(**self.base_count)
+            .filter(Q(count__gte=10) | Q(is_pinned=True))
+            .exclude(category__slug__in=exclusions)
+            .annotate(q1=counter(3), q2=counter(6), q3=counter(12), **self.base_annotation)
+            .order_by("-is_pinned", "-q1", "-q2", "-q3", "-count", "-latest")
+            .values(*self.values)
+        )
 
     def debe(self):
         boundary = time_threshold(hours=24)
@@ -142,7 +149,13 @@ class TopicQueryHandler:
         ).values(*self.values)
 
     def son(self, user):
-        return self.gundem()  # unimplemented
+        return [
+            {
+                "title": f"Sorry! This category is yet to be implemented. Source: {self.__module__}",
+                "slug": "unimplemented",
+                "count": 1,
+            }
+        ]
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
@@ -228,30 +241,40 @@ class TopicQueryHandler:
 class TopicListHandler:
     """
     Handles given topic slug and finds corresponding method in TopicQueryHandler to serialize data. Caches topic lists.
-    Handles authentication 6 validation.
+    Handles authentication and validation.
     """
 
-    cache_timeout = 90  # 1.5 minutes, some categories have their exclusively set
     data = None
     cache_exists = False
     cache_key = None
 
-    def __init__(self, user=None, slug=None, year=None, search_keys=None, tab=None):
+    def __init__(
+        self,
+        slug: str,
+        user: Union[Author, AnonymousUser] = AnonymousUser,
+        year: Union[str, int] = None,
+        search_keys: dict = None,
+        tab: str = None,
+        exclusions: List[str] = None,
+    ):
         """
-        :param user: only pass request.user, required for topics per page and checking categories with login requirement
-        :param slug: slug of the category
-        :param year: only required for tarihte-bugun (only pass int or str with digits only)
-        :param search_keys request.GET for "hayvan-ara" (advanced search).
+        :param user: User requesting the list. Used for topics per page and checking login requirements.
+        :param slug: Slug of the category.
+        :param year: Required for tarihte-bugun.
+        :param search_keys: Search keys for "hayvan-ara" (advanced search).
+        :param tab: Tab name for tabbed categories.
+        :param exclusions: List of category slugs to be excluded in gundem.
         """
 
-        self.user = user if user is not None else AnonymousUser
-
-        if not self.user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
+        if not user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
             raise PermissionDenied("User not logged in")
 
         self.slug = slug
+        self.user = user
+
         self.year = self._validate_year(year)
         self.tab = self._validate_tab(tab)
+        self.exclusions = self._validate_exclusions(exclusions)
         self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
 
         # Check cache
@@ -268,6 +291,7 @@ class TopicListHandler:
             "tarihte_bugun": [self.year],
             "generic_category": [self.slug],
             "hayvan_ara": [self.user, self.search_keys],
+            "gundem": [self.exclusions],
         }
 
         # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
@@ -275,6 +299,13 @@ class TopicListHandler:
 
         # Get the method from TopicQueryHandler.
         return getattr(self, slug_method)(*arg_map.get(slug_method, []))
+
+    def _validate_exclusions(self, exclusions):
+        return (
+            tuple(slug for slug in exclusions if slug in EXCLUDABLE_CATEGORIES)
+            if self.slug == "gundem" and exclusions is not None
+            else ()
+        )
 
     def _validate_tab(self, tab):
         if self.slug in TABBED_CATEGORIES:
@@ -309,19 +340,23 @@ class TopicListHandler:
         )
 
     def _cache_data(self, data):
-        if not self._caching_allowed:
-            return data  # Bypass caching
-
-        # Set exclusive timeouts by slug. (default: self.cache_timeout)
-        timeouts = {**dict.fromkeys(("debe", "tarihte-bugun"), 86400), "bugun": 300}
-        cache.set(self.cache_key, {"data": data, "set_at": timezone.now()}, timeouts.get(self.slug, self.cache_timeout))
+        if self._caching_allowed:
+            cache.set(
+                self.cache_key,
+                {"data": data, "set_at": timezone.now()},
+                EXCLUSIVE_TIMEOUTS.get(self.slug, DEFAULT_CACHE_TIMEOUT),
+            )
         return data
 
     def _create_cache_key(self):
-        cache_type = f"pri_uid_{self.user.id}" if self.slug in USER_EXCLUSIVE_CATEGORIES else "global"
-        cache_year = str(self.year) if self.year else ""
-        cache_search_suffix = ""
-        cache_tab_suffix = self.tab or ""
+        private = f"private_uid_{self.user.id}"
+        public = "public"
+
+        scope = private if self.slug in USER_EXCLUSIVE_CATEGORIES else public
+        year = self.year or ""
+        tab = self.tab or ""
+        search_keys = ""
+        exclusions = "_".join(sorted(self.exclusions)) if self.exclusions else ""
 
         if self.slug == "hayvan-ara":
             # Create special hashed suffix for search parameters
@@ -334,10 +369,15 @@ class TopicListHandler:
                 "to_date",
                 "ordering",
             )
-            params = {param: self.search_keys.get(param, "_") for param in available_search_params}
-            cache_search_suffix = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
 
-        self.cache_key = f"{cache_type}_{self.slug}{cache_year}{cache_tab_suffix}{cache_search_suffix}"
+            params = {param: self.search_keys.get(param, "_") for param in available_search_params}
+
+            if params["is_in_favorites"] != "_":
+                scope = private
+
+            search_keys = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
+
+        self.cache_key = f"{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}"
 
     def _check_cache(self):
         self._create_cache_key()
@@ -406,7 +446,6 @@ class TopicListHandler:
 
 class TopicListManager(TopicListHandler, TopicQueryHandler):
     """
-    Base class for Topic List Management. Whenever a topic list is called, this manager is responsible for it.
-    To customize this, do not override this class, instead override each parent class seperately, and create a new
-    manager class. This way base classes will always be available.
+    Responsible for topic list management at the back-end level.
+    Whenever a topic list is called, this manager is behind it.
     """

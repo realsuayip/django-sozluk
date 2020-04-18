@@ -1,24 +1,53 @@
 {% with left_frame as lf %}
-    {# CATEGORY NAME AND YEAR SELECTOR  @formatter:off #}
+    {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
     <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
 
         <h2 class="col-lg-auto p-0" id="top">
+
+            {# CATEGORY SAFENAME #}
             <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span>
+            {# CATEGORY SAFENAME #}
+
+            {# GUNDEM FILTER TOGGLER BUTTON #}
+            <span title="Gündem filtresi" {% if lf.slug != "gundem" %}class="dj-hidden"{% endif %} id="gundem_excluder">
+                <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <use href="#cog"></use>
+                </svg>
+            </span>
+            {# GUNDEM FILTER TOGGLER BUTTON END #}
+
+            {# LOADING INDICATOR #}
             <span id="load_indicator" style="display: none;">
                 <svg class="spinning" width="22px" height="24px" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#loading"></use>
                 </svg>
             </span>
+            {# LOADING INDICATOR END #}
         </h2>
 
+        {# YEAR SELECTOR START #}
         <select {% if lf.slug != "tarihte-bugun" %}style="display: none;"{% endif %} class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select" aria-label="Yıl seçici">
             {% for year in lf.year_range %}
                 <option value="{{ year }}" {% if year == lf.year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
-
+        {# YEAR SELECTOR END #}
     </div>
-    {# CATEGORY NAME AND YEAR SELECTOR END #}
+    {# CATEGORY NAME AND DATA OPTIONS END #}
+
+    {# GUNDEM FILTER OPTIONS #}
+
+    <div class="dj-hidden exclusion-settings" id="exlusion-choices">
+        <small style="display: block">gündeminizi kişiselleştirin:</small>
+        <ul class="exlusion-choices">
+            {% if lf.slug == "gundem" %}
+                {% for category in lf.exclusions.available %}
+                    <li><a role="button" title="{{category.description}}" {% if category.slug in lf.exclusions.active %}class="active"{% endif %} tabindex="0" data-slug="{{ category.slug }}">#{{ category.name }}</a></li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+    {# GUNDEM FILTER END #}
 
     {# TABS #}
     <ul class="nav nav-tabs nav-fill{% if not lf.tabs %} dj-hidden{% endif %}" id="left-frame-tabs">
@@ -59,16 +88,16 @@
             {% if lf.page.object_list %}
                 {% for topic in lf.page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters }}">{{ topic.title }}<small class="total_entries">{{ topic.count }}</small></a>
+                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small></a>
                     </li>
                 {% endfor %}
             {% else %}
                 <small>yok ki</small>
             {% endif %}
             </ul>
-    {# TOPIC LIST END @formatter:on #}
+    {# TOPIC LIST END #}
 
     {# SHOW MORE LINK  #}
-    <a href="#top" id="show_more"
-       {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
+    <a href="#top" id="show_more" {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
+    {# SHOW MORE LINK  #}
 {% endwith %}

@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from graphene import ID, Int, Mutation, String
 
 from dictionary.models import Entry
-from dictionary.utils.settings import ALLOW_ANONYMOUS_VOTING
+from dictionary.utils.settings import DISABLE_ANONYMOUS_VOTING
 
 from ..utils import AnonymousUserStorage, login_required
 
@@ -88,7 +88,7 @@ def voteaction(mutator):
             raise PermissionDenied("sen hayırdır?")
 
         if not sender.is_authenticated:
-            if not ALLOW_ANONYMOUS_VOTING:
+            if DISABLE_ANONYMOUS_VOTING:
                 raise PermissionDenied("sen hayırdır?")
 
             sender = AnonymousUserStorage(info.context)

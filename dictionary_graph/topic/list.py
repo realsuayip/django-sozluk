@@ -5,6 +5,8 @@ from graphene import Boolean, Field, Int, List, ObjectType, String
 from dictionary.utils.managers import TopicListManager
 from dictionary.utils.serializers import LeftFrame
 
+from ..types import CategoryType
+
 
 class Topic(ObjectType):
     title = String()
@@ -31,6 +33,11 @@ class Tab(ObjectType):
     safename = String()
 
 
+class Exclusions(ObjectType):
+    active = List(String)
+    available = List(CategoryType)
+
+
 class Tabs(ObjectType):
     current = String()
     available = List(Tab)
@@ -46,6 +53,7 @@ class TopicList(ObjectType):
     slug = String()
     slug_identifier = String()
     tabs = Field(Tabs)
+    exclusions = Field(Exclusions)
 
 
 class TopicListQuery(ObjectType):
@@ -57,13 +65,16 @@ class TopicListQuery(ObjectType):
         search_keys=String(),
         refresh=Boolean(),
         tab=String(),
+        exclusions=List(String),
     )
 
     @staticmethod
     def resolve_topics(_parent, info, slug, **kwargs):
         # Convert string query parameters to actual dicitonary to use it in TopicListHandler
         search_keys = dict(parse_qsl(kwargs.get("search_keys"))) if kwargs.get("search_keys") else {}
-        manager = TopicListManager(info.context.user, slug, kwargs.get("year"), search_keys, kwargs.get("tab"))
+        manager = TopicListManager(
+            slug, info.context.user, kwargs.get("year"), search_keys, kwargs.get("tab"), kwargs.get("exclusions")
+        )
 
         if kwargs.get("refresh"):
             manager.delete_cache()
@@ -81,6 +92,12 @@ class TopicListQuery(ObjectType):
                 available=[Tab(name=key, safename=value) for key, value in frame.tabs["available"].items()],
             )
             if frame.tabs
+            else None
+        )
+
+        exclusions = (
+            Exclusions(active=frame.exclusions["active"], available=frame.exclusions["available"])
+            if frame.exclusions
             else None
         )
 
@@ -103,6 +120,7 @@ class TopicListQuery(ObjectType):
             "slug": frame.slug,
             "slug_identifier": frame.slug_identifier,
             "tabs": tabs,
+            "exclusions": exclusions,
         }
 
         return TopicList(**data)

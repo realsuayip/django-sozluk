@@ -1,9 +1,11 @@
 import calendar
 import re
-from datetime import datetime
 
 from django import template
+from django.template import defaultfilters
+from django.utils import timezone
 from django.utils.html import escape, mark_safe
+
 
 register = template.Library()
 
@@ -72,16 +74,19 @@ def timestamp(date):
     return int(calendar.timegm(date.timetuple()))
 
 
-@register.filter
+@register.filter(expects_localtime=True)
 def entrydate(created, edited):
     append = ""
-    if edited is not None:
-        if created.date() == edited.date():
-            append = datetime.strftime(edited, " ~ %H:%M")
-        else:
-            append = datetime.strftime(edited, " ~ %d.%m.%Y %H:%M")
 
-    return datetime.strftime(created, "%d.%m.%Y %H:%M") + append
+    if edited is not None:
+        edited = timezone.localtime(edited)
+
+        if created.date() == edited.date():
+            append = defaultfilters.date(edited, " ~ H:i")
+        else:
+            append = defaultfilters.date(edited, " ~ d.m.Y H:i")
+
+    return defaultfilters.date(created, "d.m.Y H:i") + append
 
 
 @register.filter

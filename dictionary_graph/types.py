@@ -1,6 +1,6 @@
 from graphene_django import DjangoObjectType
 
-from dictionary.models import Author, Topic
+from dictionary.models import Author, Category, Topic
 
 
 class AuthorType(DjangoObjectType):
@@ -13,3 +13,9 @@ class TopicType(DjangoObjectType):
     class Meta:
         model = Topic
         fields = ("title",)
+
+
+class CategoryType(DjangoObjectType):
+    class Meta:
+        model = Category
+        fields = ("name", "slug", "description")

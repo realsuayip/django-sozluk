@@ -1,3 +1,4 @@
+import json
 from urllib.parse import parse_qsl
 
 from django.utils.functional import cached_property
@@ -50,8 +51,13 @@ class LeftFrameProcessor:
     def _tab(self):
         return self.cookies.get("active_tab")
 
+    @cached_property
+    def _exclusions(self):
+        exclusions = self.cookies.get("exclusions")
+        return [slug for slug in json.loads(exclusions) if isinstance(slug, str)] if exclusions else None
+
     def get_context(self):
-        manager = TopicListManager(self.user, self.slug, self._year, self._search_keys, self._tab)
+        manager = TopicListManager(self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions)
         frame = LeftFrame(manager, page=self._page)
         return frame.as_context()
 

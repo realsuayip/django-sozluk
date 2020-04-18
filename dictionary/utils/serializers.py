@@ -5,7 +5,14 @@ from django.utils.functional import cached_property
 
 from ..models import Category
 from . import get_category_parameters
-from .settings import NON_DB_CATEGORIES, NON_DB_CATEGORIES_META, TOPICS_PER_PAGE_DEFAULT, YEAR_RANGE
+from .decorators import cached_context
+from .settings import (
+    EXCLUDABLE_CATEGORIES,
+    NON_DB_CATEGORIES,
+    NON_DB_CATEGORIES_META,
+    TOPICS_PER_PAGE_DEFAULT,
+    YEAR_RANGE,
+)
 
 
 class PlainSerializer:
@@ -110,6 +117,18 @@ class LeftFrame(PlainSerializer):
         if tab is not None:
             available = NON_DB_CATEGORIES_META.get(self.slug)[2][0]
             return {"current": tab, "available": available}
+        return None
+
+    @cached_context
+    def _get_available_exclusions(self):
+        return list(Category.objects.filter(slug__in=EXCLUDABLE_CATEGORIES))
+
+    @cached_property
+    def exclusions(self):
+        if self.slug == "gundem":
+            active = self._manager.exclusions
+            available = self._get_available_exclusions()
+            return {"active": active, "available": available}
         return None
 
     def as_context(self):

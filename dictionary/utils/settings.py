@@ -51,9 +51,18 @@ LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "caylaklar", 
 # Cache (if enabled) these categories PER USER. (The list of objects in those categories varies on user.)
 USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "son")
 
+EXCLUDABLE_CATEGORIES = ("spor", "siyaset", "anket", "yetiskin")
+"""List of category slugs (database categories) that users can opt out to see in gundem."""
+
 # Default category to be shown when the user requests for the first time.
-# Should not be in LOGIN_REQUIRED_CATEGORIES
+# Should NOT be in LOGIN_REQUIRED_CATEGORIES
 DEFAULT_CATEGORY = "gundem"
+
+DEFAULT_CACHE_TIMEOUT = 90
+"""Advanced: Set default timeout for category caching."""
+
+EXCLUSIVE_TIMEOUTS = {"debe": 86400, "tarihte-bugun": 86400, "bugun": 300, "gundem": 30}
+"""Advanced: Set exclusive timeouts (seconds) for categories if you don't want them to use the default."""
 
 # Don't cache these categories.
 # (To disable a tab of a category, you can insert "categoryname_tabname", "categoryname" will affect both tabs)
@@ -102,8 +111,12 @@ SOCIAL_URLS = {
 }
 
 
-# Set this to False to disallow anonymous votes.
-ALLOW_ANONYMOUS_VOTING = True
+DISABLE_ANONYMOUS_VOTING = False
+"""
+Set this to True to disallow anonymous votes.
+Vote section will be visible to guests but they
+won't have any effect.
+"""
 
 VOTE_RATES = {
     "favorite": Decimal(".2"),
@@ -124,7 +137,7 @@ NOVICE_REJECTED_MESSAGE = (
 )
 
 PASSWORD_CHANGED_MESSAGE = (
-    "sayın {}, şifreniz değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
+    "sayın {}, parolanız değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
     " Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz."
 )
 

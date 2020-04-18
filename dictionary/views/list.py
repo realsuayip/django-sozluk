@@ -113,9 +113,10 @@ class TopicList(TemplateView):
         year = self.request.GET.get("year")
         page = self.request.GET.get("page")
         tab = self.request.GET.get("tab")
+        exclusions = list(filter(None, self.request.GET.get("exclude", "").split(","))) or None
         search_keys = self.request.GET
 
-        manager = TopicListManager(self.request.user, slug, year, search_keys, tab)
+        manager = TopicListManager(slug, self.request.user, year, search_keys, tab, exclusions)
         frame = LeftFrame(manager, page)
         return frame.as_context()
 
@@ -131,7 +132,7 @@ class TopicList(TemplateView):
     def post(self, *args, **kwargs):
         """Resets bugun's cache (refresh button mobile click event)"""
         if self.kwargs.get("slug") == "bugun":
-            manager = TopicListManager(self.request.user, "bugun")
+            manager = TopicListManager("bugun", self.request.user)
             manager.delete_cache(flush=True)
             return redirect(self.request.path)
         return HttpResponseBadRequest()

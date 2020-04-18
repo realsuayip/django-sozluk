@@ -121,9 +121,9 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            self.request.user.email_user("şifreniz değişti", message, FROM_EMAIL)
+            self.request.user.email_user("parolanız değişti", message, FROM_EMAIL)
         except SMTPException:
-            notifications.error(self.request, "şifrenizi değiştiremedik. daha sonra tekrar deneyin.")
+            notifications.error(self.request, "parolanızı değiştiremedik. daha sonra tekrar deneyin.")
             return super().form_invalid(form)
 
         notifications.info(self.request, "işlem tamam")

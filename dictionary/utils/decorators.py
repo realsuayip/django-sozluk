@@ -9,8 +9,8 @@ from django.core.cache import cache
 def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"):
     """
     Decorator to cache functions using django's low-level cache api. Arguments are not taken into consideration while
-    caching, so values of func(a, b) and func(b, d) will be the same (the value of first called). The decorated function
-    should have request as it's first argument. This is used to cache context processors, but not limited to.
+    caching, so values of func(a, b) and func(b, d) will be the same (the value of first called). This is used to cache
+    context processors, but not limited to.
 
     :param initial_func: (decorator thingy, passed when used with parameters)
     :param timeout: Set the cache timeout, None to cache indefinitely.
@@ -21,11 +21,18 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
 
     def decorator(func):
         @wraps(func)
-        def wrapper(request, *args, **kwargs):
+        def wrapper(*args, **kwargs):
             user_prefix = ""
 
             if vary_on_user:
-                user_prefix = "_anonymous" if not request.user.is_authenticated else f"_usr{request.user.pk}"
+                request = kwargs.get("request")
+
+                if request is not None:
+                    user = request.user
+                else:
+                    user = kwargs.get("user")
+
+                user_prefix = "_anonymous" if not user.is_authenticated else f"_usr{user.pk}"
 
             key = f"{prefix}_context__{func.__name__}{user_prefix}"
             cached_value = cache.get(key)
@@ -33,7 +40,7 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
             if cached_value is not None:
                 return cached_value
 
-            calculated_value = func(request, *args, **kwargs)
+            calculated_value = func(*args, **kwargs)
             cache.set(key, calculated_value, timeout)
             return calculated_value
 

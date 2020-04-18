@@ -2,18 +2,27 @@
 {% block title %}{{ safename }}{% endblock %}
 {% block bodyattr %}class="topic-list-view"{% endblock %}
 {% block content %}
+
     <div class="left-frame-in">
-        <h2>
-            {% if request.GET.ordering and slug == "hayvan-ara" %}
-                <a class="expand" type="button" data-toggle="collapse"
-                   data-target="#search_form_extended_mobile"
-                   aria-expanded="false">
+        <div>
+            <h2>
+                {% if request.GET.ordering and slug == "hayvan-ara" %}
+                    <a class="expand" type="button" data-toggle="collapse" data-target="#search_form_extended_mobile" aria-expanded="false">
+                        {{ safename }}
+                    </a>
+                {% else %}
                     {{ safename }}
-                </a>
-            {% else %}
-                {{ safename }}
+                {% endif %}
+
+            {% if slug == "gundem" %}
+                <span role="button" style="display: inline-block; vertical-align: baseline;" class="exclusion-button">
+                    <svg tabindex="0" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#cog"></use>
+                    </svg>
+               </span>
             {% endif %}
-        </h2>
+            </h2>
+        </div>
 
         {% if tabs %}
             <ul class="nav nav-tabs nav-fill">
@@ -32,6 +41,17 @@
                     <button class="refresh-button-mobile">yenile ({{ refresh_count }})</button>
                 </form>
             {% endif %}
+        {% endif %}
+
+        {% if slug == "gundem" %}
+            <div class="exclusion-settings {% if not exclusions.active %}dj-hidden{% endif %}" id="exclusion-settings-mobile">
+                <small>gündeminizi kişiselleştirin:</small>
+                <ul class="exlusion-choices">
+                    {% for category in exclusions.available %}
+                        <li><a role="button" tabindex="0" {% if category.slug in exclusions.active %}class="active"{% endif %} data-slug="{{ category.slug }}">#{{ category.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endif %}
 
         {% if slug == "tarihte-bugun" %}
@@ -61,8 +81,7 @@
             {% if page.object_list %}
                 {% for topic in page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ parameters }}">{{ topic.title }}<small
-                                class="total_entries">{{ topic.count }}</small></a>
+                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small></a>
                     </li>
                 {% endfor %}
             {% else %}

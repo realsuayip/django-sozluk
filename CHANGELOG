@@ -1,3 +1,43 @@
+[0.114.0-dev-pre](2020.04.18)(incompatible)
+
+--Additions--
+1) Add is_pinned field to Topic. This is **incompatible**,
+run makemigrations+migrate.
+2) Add gundem feature along with gundem filtering feature.
+3) [GraphQL] Add CategoryType.
+4) Add cog icon (icons.svg).
+5) Add breadcrumbs to login related pages to improve accessibility.
+
+-- Changes --
+1) In djdict.js's LeftFrame implemention, use graphql arguments.
+2) In djdict.js's LeftFrame setCookies, move variables to their proper places.
+3) When there is no entry is present in a topic in topic list,
+the count is hidden instead of showing zero (0).
+4) Fixed the critical bug in which entry dates were shown as
+UTC+0 instead of UTC+3 (in that settings.py local time).
+5) cached_context decorator no longer strictly requires
+first argument to be 'request'. Pass 'user' or 'request'
+argument to use with vary_on_user.
+6) TopicListManager changes:
+    a) Changed the position of the __init__'s 'slug' argument. It is now REQUIRED
+    as the first argument. User argument is second and the rest are the same.
+    b) Added type hints for __init__ method.
+    c) 'cache_timeout' now present in settings as DEFAULT_CACHE_TIMEOUT
+    d) 'timeouts' now present in settings as EXCLUSIVE_TIMEOUTS.
+    e) Adjusted _create_cache_key to be more readable.
+    f) Fixed a critical caching bug in 'hayvan-ara' where using is_in_favorites
+    (sadece entry favorilediğim başlıklarda ara) resulted in inconsistent results
+    due to global caching. It now caches per user when that option is selected.
+    g) Changed some docstrings and comments to be more explanatory.
+    h) Removed uneccessary variable in bugun.
+    j) Tidied up _cache_data to be more pythonic.
+7) Rename all "şifre" to "parola".
+8) Rename ALLOW_ANONYMOUS_VOTING settings to DISABLE_ANONYMOUS_VOTING for consistency.
+9) Updated readme a little.
+
+--Deletions--
+None
+
 [0.113.0-dev-pre](2020.04.12)(compatible)
 
 --Additions--

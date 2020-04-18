@@ -190,14 +190,14 @@ $(".author-search").autocomplete({
 });
 
 class LeftFrame {
-    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null) {
-        // slug -> str, year -> int or str, searchKeys -> str (query parameters)
+    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null, exclusions = null) {
         this.slug = slug;
         this.page = page;
         this.year = year;
         this.refresh = refresh;
         this.searchKeys = searchKeys;
         this.tab = tab;
+        this.exclusions = exclusions;
 
         this.setCookies();
         this.loadIndicator = $("#load_indicator");
@@ -213,44 +213,64 @@ class LeftFrame {
             this.tab = Cookies.get("active_tab") || null;
         }
 
-        const cookieYear = Cookies.get("selected_year");
-        const cookieSearchKeys = Cookies.get("search_parameters");
-
         if (this.slug === "tarihte-bugun") {
+            const cookieYear = Cookies.get("selected_year");
             if (!this.year) {
                 this.year = cookieYear || null;
             } else {
                 Cookies.set("selected_year", this.year);
             }
         } else if (this.slug === "hayvan-ara") {
+            const cookieSearchKeys = Cookies.get("search_parameters");
             if (!this.searchKeys) {
                 this.searchKeys = cookieSearchKeys || null;
             } else {
                 Cookies.set("search_parameters", this.searchKeys);
+            }
+        } else if (this.slug === "gundem") {
+            const cookieExclusions = JSON.parse(Cookies.get("exclusions") || "[]");
+            if (this.exclusions) {
+                if (cookieExclusions) {
+                    for (const exclusion of this.exclusions) {
+                        if (cookieExclusions.includes(exclusion)) {
+                            this.exclusions = cookieExclusions.filter(item => item !== exclusion);
+                        } else {
+                            cookieExclusions.push(exclusion);
+                            this.exclusions = cookieExclusions;
+                        }
+                    }
+                }
+                Cookies.set("exclusions", JSON.stringify(this.exclusions));
+            } else {
+                this.exclusions = cookieExclusions || null;
             }
         }
     }
 
     call () {
         this.loadIndicator.css("display", "inline");
+        const variables = {
+            slug: this.slug,
+            year: this.year,
+            page: this.page,
+            searchKeys: this.searchKeys,
+            refresh: this.refresh,
+            tab: this.tab,
+            exclusions: this.exclusions
+        };
 
-        const slug = `slug: "${this.slug}"`;
-        const year = `${this.year ? `year: ${this.year}` : ""}`;
-        const page = `${this.page ? `page: ${this.page}` : ""}`;
-        const searchKeys = `${this.searchKeys ? `searchKeys: "${this.searchKeys}"` : ""}`;
-        const refresh = `${this.refresh ? `refresh: ${this.refresh}` : ""}`;
-        const tab = `${this.tab ? `tab: "${this.tab}"` : ""}`;
-        const queryParams = [slug, year, page, searchKeys, refresh, tab].filter(val => val).join(", ");
-
-        const query = `{topics(${queryParams}){
+        const query = `query($slug: String!, $year: Int, $page: Int, $searchKeys: String, $refresh: Boolean,
+        $tab: String, $exclusions: [String]) { topics(slug: $slug, year: $year, page: $page, searchKeys: $searchKeys,
+        refresh: $refresh, tab: $tab, exclusions: $exclusions){
             safename refreshCount year yearRange slugIdentifier parameters
             page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages }
             tabs{current available{name, safename}}
-        }}`;
+            exclusions{active, available{name, slug, description}
+        }}}`;
 
         const self = this;
 
-        $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        $.post("/graphql/", JSON.stringify({ query, variables }), function (response) {
             if (response.errors) {
                 self.loadIndicator.css("display", "none");
                 notify("bir şeyler yanlış gitti", "error");
@@ -272,6 +292,7 @@ class LeftFrame {
         this.renderTopicList(data.page.objectList, data.slugIdentifier, data.parameters);
         this.renderShowMoreButton(data.page.number, data.page.hasOtherPages);
         this.renderTabs(data.tabs);
+        this.renderExclusions(data.exclusions);
         this.loadIndicator.css("display", "none");
     }
 
@@ -307,6 +328,25 @@ class LeftFrame {
             tabHolder.removeClass("dj-hidden");
         } else {
             tabHolder.addClass("dj-hidden");
+        }
+    }
+
+    renderExclusions (exclusions) {
+        const toggler = $("#gundem_excluder");
+        const categoryHolder = $("#exlusion-choices");
+        const categoryList = categoryHolder.children("ul.exlusion-choices");
+
+        if (exclusions) {
+            categoryList.empty();
+            toggler.removeClass("dj-hidden");
+
+            for (const category of exclusions.available) {
+                const isActive = exclusions.active.includes(category.slug);
+                categoryList.append(`<li><a role="button" title="${category.description}" ${isActive ? `class="active"` : ""} tabindex="0" data-slug="${category.slug}">#${category.name}</a></li>`);
+            }
+        } else {
+            toggler.addClass("dj-hidden");
+            categoryHolder.hide();
         }
     }
 
@@ -441,6 +481,41 @@ $("a#show_more").on("click", function () {
 
 $("#refresh_bugun").on("click", function () {
     LeftFrame.refreshPopulate();
+});
+
+$(".exclusion-button").on("click", function () {
+    $(this).closest("div").siblings(".exclusion-settings").toggle(250);
+});
+
+$("#exlusion-choices").on("click", "ul li a", function () {
+    $(this).toggleClass("active");
+    LeftFrame.populate("gundem", 1, null, null, null, null, [$(this).attr("data-slug")]);
+});
+
+$("#exclusion-settings-mobile").on("click", "ul li a", function () {
+    const slug = $(this).attr("data-slug");
+    const excludeParam = new URLSearchParams(window.location.search).get("exclude");
+    let exclusions;
+
+    if (excludeParam) {
+        exclusions = excludeParam.split(",");
+    } else {
+        exclusions = [];
+    }
+
+    if (exclusions.includes(slug)) {
+        exclusions = exclusions.filter(item => item !== slug);
+    } else {
+        exclusions.push(slug);
+    }
+
+    const exclude = exclusions.join(",");
+
+    if (exclude) {
+        window.location.replace("?exclude=" + exclude);
+    } else {
+        window.location.replace(window.location.href.split("?")[0]);
+    }
 });
 
 /* End of LefFrame related triggers */

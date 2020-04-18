@@ -67,6 +67,13 @@ class Topic(models.Model):
         help_text="Bu başlığın sözlük içi aramalarda ve başlık listelerinde gözükmesini istemiyorsanız işaretleyin.",
     )
 
+    is_pinned = models.BooleanField(
+        default=False,
+        verbose_name="Sabitlenmiş",
+        help_text="Bu başlığın gündemde en üstte görünmesini istiyorsanız işaretleyin."
+                  " <br>Başlığa en az 1 entry girilmiş olmalı.",
+    )
+
     date_created = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Oluşturulma tarihi",
