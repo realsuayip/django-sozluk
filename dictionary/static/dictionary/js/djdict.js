@@ -10,26 +10,31 @@ $.ajaxSetup({
     }
 });
 
-const sleep = function (ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
+let toastQueue = 0;
 
-const notify = async (message, type = "default") => {
-    const notifictionHolder = $("#notifications");
-    notifictionHolder.append(`<li class="${type} dj-hidden">${message}</li>`);
-    const nfList = $("#notifications li");
-    const numberOfMessages = nfList.length;
+const notify = (message, level = "default", initialDelay = 2000) => {
+    const toastHolder = $(".toast-holder");
+    const toastTemplate = `
+    <div ${level === "error" ? `role="alert" aria-live="assertive"` : `role="status" aria-live="polite"`} aria-atomic="true" class="toast shadow-sm" data-autohide="true">
+        <div class="toast-body ${level}">
+            <div class="toast-content">
+                <span>${message}</span>
+                <button type="button" class="ml-2 close" data-dismiss="toast" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>`;
 
-    for (const ele of nfList) {
-        $(ele).slideDown();
-    }
+    const toast = $(toastTemplate).prependTo(toastHolder);
+    const delay = initialDelay + (toastQueue * 1000);
 
-    for (const ele of nfList) {
-        await sleep(2750 - numberOfMessages * 300);
-        $(ele).slideUp(400);
-        await sleep(400);
-        $(ele).remove();
-    }
+    $(toast).toast({ delay }).toast("show").on("shown.bs.toast", function () {
+        toastQueue += 1;
+    }).on("hidden.bs.toast", function () {
+        $(this).remove();
+        toastQueue -= 1;
+    });
 };
 
 const dictToParameters = function (dict) {
@@ -119,12 +124,14 @@ $(function () {
     }
 
     // Handles notifications passed by django's message framework.
-    const notificationHolder = $("#notifications");
-    const notifications = notificationHolder.attr("data-request-message");
+    const requestMessages = $("#request-messages");
+    const notifications = requestMessages.attr("data-messages");
+    let delay = 2000;
     if (notifications) {
         for (const item of notifications.split("&&")) {
             const nf = item.split("::"); // get type
-            notify(nf[0], nf[1]);
+            notify(nf[0], nf[1], delay);
+            delay += 1000;
         }
     }
 });

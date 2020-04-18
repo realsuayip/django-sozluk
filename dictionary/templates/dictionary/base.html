@@ -262,11 +262,9 @@
 
 </div>
 
-<div class="notification-bubble" id="notifications"
-     {% if messages %}data-request-message="{% for message in messages %}
-        {% if messages|length > 1 and forloop.counter > 1 %}&&{% endif %}{{ message }}::{{ message.tags }}
-    {% endfor %}"{% endif %}>
-</div>
+
+<div style="display: none" id="request-messages" data-messages="{% for message in messages %}{% if forloop.counter > 1 %}&&{% endif %}{{ message }}::{{ message.tags }}{% endfor %}"></div>
+<div class="toast-holder"></div>
 
 </body>
 </html>

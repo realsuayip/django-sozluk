@@ -319,7 +319,7 @@ header.entry_header h1 {
     font-weight: 700;
 }
 
-header.entry_header > .mirror-list{
+header.entry_header > .mirror-list {
     background: #ddd;
     padding: 1em;
     margin-bottom: .5em;
@@ -328,11 +328,11 @@ header.entry_header > .mirror-list{
     border-radius: 4px;
 }
 
-header.entry_header > .mirror-list > ul{
+header.entry_header > .mirror-list > ul {
     padding-left: 1em;
 }
 
-header.entry_header > .mirror-list > ul > li{
+header.entry_header > .mirror-list > ul > li {
     padding: 0;
 }
 
@@ -995,37 +995,6 @@ section.chat-reply form textarea {
     padding: .5em;
 }
 
-
-.notification-bubble {
-    cursor: pointer;
-    position: fixed;
-    right: 0;
-    z-index: 9999;
-    top: 0;
-    margin: 10em 8em;
-
-}
-
-.notification-bubble li {
-    list-style-type: none;
-    cursor: pointer;
-    margin-bottom: 1em;
-    background: #fff;
-    padding: .5em 1em;
-    border: 1px solid #272727;
-    border-left: 5px solid;
-    font-size: 13px;
-    width: 160px;
-    word-wrap: break-word;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
-
-.notification-bubble li.error {
-    border-color: #e20000;
-}
-
 .people-list {
     padding: 0 1em;
     margin: .5em;
@@ -1336,13 +1305,13 @@ footer.body-footer > ul {
     padding-left: 1em;
 }
 
-.exclusion-button{
+.exclusion-button {
     vertical-align: sub;
     margin-left: 3px;
     cursor: pointer;
 }
 
-.exclusion-settings{
+.exclusion-settings {
     background: #ddd;
     padding: .5em;
     -webkit-border-radius: 4px;
@@ -1351,7 +1320,7 @@ footer.body-footer > ul {
     margin: 0 0 .25em;
 }
 
-ul.exlusion-choices{
+ul.exlusion-choices {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -1368,6 +1337,28 @@ ul.exlusion-choices > li:not(:last-child) {
 
 ul.exlusion-choices > li > a.active {
     color: #686868;
+}
+
+.toast-holder {
+    position: fixed;
+    top: 140px;
+    right: 5%;
+    z-index: 5000;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 160px;
+}
+
+.toast-body.error {
+    border-left: 4px solid red;
+}
+
+.toast-body.info {
+    border-left: 4px solid #0d2f18;
 }
 
 /** MEDIA QUERIES **/
