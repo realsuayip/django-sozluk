@@ -12,10 +12,10 @@ $.ajaxSetup({
 
 let toastQueue = 0;
 
-const notify = (message, level = "default", initialDelay = 2000) => {
+const notify = (message, level = "default", initialDelay = 2000, persistent = false) => {
     const toastHolder = $(".toast-holder");
     const toastTemplate = `
-    <div ${level === "error" ? `role="alert" aria-live="assertive"` : `role="status" aria-live="polite"`} aria-atomic="true" class="toast shadow-sm" data-autohide="true">
+    <div ${level === "error" ? `role="alert" aria-live="assertive"` : `role="status" aria-live="polite"`} aria-atomic="true" class="toast shadow-sm" data-autohide="${!persistent}">
         <div class="toast-body ${level}">
             <div class="toast-content">
                 <span>${message}</span>
@@ -125,12 +125,11 @@ $(function () {
 
     // Handles notifications passed by django's message framework.
     const requestMessages = $("#request-messages");
-    const notifications = requestMessages.attr("data-messages");
-    let delay = 2000;
-    if (notifications) {
-        for (const item of notifications.split("&&")) {
-            const nf = item.split("::"); // get type
-            notify(nf[0], nf[1], delay);
+    if (requestMessages.attr("data-has-messages") === "true") {
+        let delay = 2000;
+        for (const message of requestMessages.children("li")) {
+            const isPersistent = $(message).attr("data-extra").includes("persistent");
+            notify($(message).attr("data-message"), $(message).attr("data-level"), delay, isPersistent);
             delay += 1000;
         }
     }

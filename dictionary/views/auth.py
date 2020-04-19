@@ -137,7 +137,7 @@ class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
 
     def form_valid(self, form):
         send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
-        notifications.info(self.request, "e-posta onayından sonra adresiniz değişecektir.")
+        notifications.info(self.request, "e-posta onayından sonra adresiniz değişecektir.", extra_tags="persistent")
         return redirect(self.success_url)
 
 

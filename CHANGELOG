@@ -1,3 +1,15 @@
+[0.117.0-dev-pre](2020.04.19)(compatible)
+--Additions--
+1) You can now use extra_tags="persistent" argument
+in django messages framework to disable auto hiding
+behaviour of toasts. (I included an example.)
+
+-- Changes --
+1) Optimized notification back-end.
+
+--Deletions--
+None
+
 [0.116.0-dev-pre](2020.04.19)(compatible)
 --Additions--
 1) 'son' feature.

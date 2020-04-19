@@ -262,8 +262,11 @@
 
 </div>
 
-
-<div style="display: none" id="request-messages" data-messages="{% for message in messages %}{% if forloop.counter > 1 %}&&{% endif %}{{ message }}::{{ message.tags }}{% endfor %}"></div>
+<ul style="display: none;" id="request-messages" data-has-messages="{{ messages|yesno:'true,false' }}">
+    {% for message in messages %}
+        <li data-message="{{ message }}" data-level="{% get_message_level message.level %}" data-extra="{{ message.extra_tags }}"></li>
+    {% endfor %}
+</ul>
 <div class="toast-holder"></div>
 
 </body>
