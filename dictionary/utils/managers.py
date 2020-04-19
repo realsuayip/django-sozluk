@@ -5,6 +5,7 @@ from typing import List, Union
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
+from django.db import connection
 from django.db.models import CharField, Count, F, Max, Q, Value
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
@@ -149,13 +150,73 @@ class TopicQueryHandler:
         ).values(*self.values)
 
     def son(self, user):
-        return [
-            {
-                "title": f"Sorry! This category is yet to be implemented. Source: {self.__module__}",
-                "slug": "unimplemented",
-                "count": 1,
-            }
-        ]
+        """
+        Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
+
+        todo: If you can convert this to native orm or create a queryset that will result in same data, please do.
+        I tried to make the sql easy-to-read, but failed as there were many aliases that I couldn't find a meaningful
+        name. They are named arbitrarily, if you think you can make it more readable, please do.
+
+        Query Description: List topics on condition that the user has entries in in (written in last 24 hours), along
+        with count of entries that were written after the user's latest entry on that topic.
+        """
+
+        pk = user.pk
+        threshold = time_threshold(hours=24)
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+            select
+              s.title,
+              s.slug,
+              s.count
+            from
+              (
+                select
+                  tt.title,
+                  tt.slug,
+                  e.count,
+                  e.max_id
+                from
+                  (
+                    select
+                      z.topic_id,
+                      count(
+                        case when z.id > k.max_id then z.id end
+                      ) as count,
+                      k.max_id
+                    from
+                      dictionary_entry z
+                      inner join (
+                        select
+                          topic_id,
+                          max(de.id) as max_id
+                        from
+                          dictionary_entry de
+                        where
+                          de.date_created >= %s
+                          and de.author_id = %s
+                        group by
+                          author_id,
+                          topic_id
+                      ) k on k.topic_id = z.topic_id
+                    group by
+                      z.topic_id,
+                      k.max_id
+                  ) e
+                  inner join dictionary_topic tt on tt.id = e.topic_id
+              ) s
+            where
+              s.count > 0
+            order by
+              s.max_id desc
+            """,
+                [threshold, pk],
+            )
+
+            columns = [col[0] for col in cursor.description]
+            return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
     def caylaklar(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
