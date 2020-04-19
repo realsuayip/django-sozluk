@@ -713,6 +713,10 @@ section.user-comments button.entry_submit {
     float: right;
 }
 
+section.user-comments .entry-editor-footer{
+    align-items: center;
+}
+
 section.topic-categories-list {
     background: #ddd;
     padding: 1em;
@@ -1078,7 +1082,6 @@ a.expand::after {
     -moz-border-radius-bottomleft: 3px;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
-    border: 1px solid #888;
 }
 
 

@@ -34,7 +34,7 @@ class Login(LoginView):
         # Check if the user cancels account termination.
         with suppress(AccountTerminationQueue.DoesNotExist):
             AccountTerminationQueue.objects.get(author=form.get_user()).delete()
-            notifications.info(self.request, "tekrar hoşgeldiniz. hesabınız aktif oldu.")
+            notifications.info(self.request, "tekrar hoşgeldiniz. hesabınız aktif oldu.", extra_tags="persistent")
 
         notifications.info(self.request, "başarıyla giriş yaptınız efendim")
         return super().form_valid(form)
@@ -42,9 +42,9 @@ class Login(LoginView):
 
 class Logout(LogoutView):
     def dispatch(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
+        if request.user.is_authenticated:
             success_message = "başarıyla çıkış yaptınız efendim"
-            notifications.info(self.request, success_message)
+            notifications.info(request, success_message)
         return super().dispatch(request)
 
 

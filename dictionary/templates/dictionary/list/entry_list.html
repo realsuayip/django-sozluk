@@ -38,9 +38,9 @@
                     <div class="title_sub">
 
 
-                    <span class="mr-3 nice-filter">şükela:&nbsp;<a
+                    <span class="mr-3 nice-filter">şükela:&nbsp;<a title="tüm zamanların en çok beğenilenleri"
                             href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}"
-                            {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a
+                            {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a title="bugün en çok beğenilenler"
                             href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
                             {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
 
@@ -59,13 +59,9 @@
                                 <form method="GET" action="{{ topic.get_absolute_url }}">
                                     <div class="input-group input-group-sm">
                                         <input type="hidden" name="a" value="search">
-                                        <input name="keywords" class="searchbox-text" type="text"
-                                               placeholder="kelime ya da @yazar"
-                                               aria-label="kelime ya da @yazar" aria-describedby="basic-addon2"
-                                               required>
+                                        <input name="keywords" class="searchbox-text form-control" type="text" placeholder="kelime ya da @yazar" aria-label="kelime ya da @yazar" required>
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="submit">ara</button>
-
+                                            <input class="btn btn-django-link" type="submit" value="ara">
                                         </div>
                                     </div>
                                 </form>
@@ -214,11 +210,11 @@
             <hr>
             <section class="user-comments">
                 <div class="editor-buttons">
-                    <button id="insert_bkz" class="add-code">(bkz: hede)</button>
-                    <button id="insert_hede" class="add-code">hede</button>
-                    <button id="insert_swh" class="add-code">&#8727;</button>
-                    <button id="insert_spoiler" class="add-code">- spoiler -</button>
-                    <button id="insert_link" class="add-code">http://</button>
+                    <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
+                    <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
+                    <button title="ironik bakınız" id="insert_swh" class="add-code">&#8727;</button>
+                    <button title="sürprizbozan diye de bilinir" id="insert_spoiler" class="add-code">- spoiler -</button>
+                    <button title="dış dünyaya link" id="insert_link" class="add-code">http://</button>
                 </div>
                 {% load widget_tweaks %}
 
@@ -229,12 +225,12 @@
                         {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label="Entry yazı alanı" %}
                     {% endwith %}
 
-                    <div class="row">
+                    <div class="row entry-editor-footer">
                         <div class="col-6">
                             {% if not request.user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
                                     {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                    <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
+                                    <label title="bu entry'i halka açık olarak yayınlamadan tut" class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
                                 </div>
                             {% else %}
                                 <p class="text-danger">entry'niz kenara atılacak.</p>

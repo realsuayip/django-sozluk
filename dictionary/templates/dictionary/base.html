@@ -205,11 +205,11 @@
                 <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right" aria-labelledby="more_tags_button">
 
                     {% for category in nav_categories|slice:"4:12" %}
-                        <a data-lf-slug="{{ category.slug }}" class="dropdown-item{% if active_category == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                        <a title="{{ category.description }}" data-lf-slug="{{ category.slug }}" class="dropdown-item{% if active_category == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item{% if active_category == "basiboslar" %} active{% endif %}" data-lf-slug="basiboslar" href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
+                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if active_category == "basiboslar" %} active{% endif %}" data-lf-slug="basiboslar" href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
                     <a href="{% url 'category_list' %}" class="dropdown-item regular">tüm kanallar</a>
                 </div>
             </ul>

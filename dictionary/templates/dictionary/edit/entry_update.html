@@ -10,11 +10,11 @@
 
     <section class="user-comments">
         <div class="editor-buttons">
-            <button id="insert_bkz" class="add-code">(bkz: hede)</button>
-            <button id="insert_hede" class="add-code">hede</button>
-            <button id="insert_swh" class="add-code">&#8727;</button>
-            <button id="insert_spoiler" class="add-code">- spoiler -</button>
-            <button id="insert_link" class="add-code">http://</button>
+            <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
+            <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
+            <button title="ironik bakınız" id="insert_swh" class="add-code">&#8727;</button>
+            <button title="sürprizbozan diye de bilinir" id="insert_spoiler" class="add-code">- spoiler -</button>
+            <button title="dış dünyaya link" id="insert_link" class="add-code">http://</button>
         </div>
         {% load widget_tweaks %}
 
@@ -25,7 +25,7 @@
                 {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" %}
             {% endwith %}
 
-            <div class="row">
+            <div class="row entry-editor-footer">
                 <div class="col-6">
                     {% if entry.is_draft and not request.user.is_suspended %}
                         <div class="custom-control custom-checkbox">
