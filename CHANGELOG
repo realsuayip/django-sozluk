@@ -1,3 +1,17 @@
+[0.118.0-dev-pre](2020.04.21)(incompatible)
+--Additions--
+1) Reporting now needs e-mail verification. Added
+related fields to GeneralReport model, this is **incompatible**
+and could be challenging to migrate. I suggest you delete
+all your data in GeneralReport table then makemigrations+migrate.
+2) General optimizations for reporting feature.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.117.0-dev-pre](2020.04.19)(compatible)
 --Additions--
 1) You can now use extra_tags="persistent" argument
