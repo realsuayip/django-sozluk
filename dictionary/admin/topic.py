@@ -3,7 +3,7 @@ from django.urls import path
 
 from ..admin.views.topic import TopicMove
 from ..models import Topic
-from ..utils.admin import IntermediateActionHandler
+from ..utils.admin import intermediate
 
 
 @admin.register(Topic)
@@ -35,9 +35,9 @@ class TopicAdmin(admin.ModelAdmin):
         return request.user.has_perm("dictionary.move_topic")
 
     # Actions
+    @intermediate
     def move_topic(self, request, queryset):
-        action = IntermediateActionHandler(queryset, "admin:topic-move")
-        return action.redirect_url
+        return "admin:topic-move"
 
     # Short descriptions
     move_topic.short_description = "Seçili başlıklardaki entry'leri taşı"

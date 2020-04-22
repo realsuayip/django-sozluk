@@ -1,3 +1,22 @@
+[0.119.0-dev-pre](2020.04.23)(compatible)
+--Additions--
+1) Add 'intermediate' decorator to better handle
+admin actions with intermediate pages.
+2) Tiny amount of docs (to be extended in the future).
+
+-- Changes --
+1) Use intermediate decorator for such actions.
+2) Optimize get_source_list method of IntermediateActionHandler.
+3) Added data-loaded tag for favorite list of entries so that
+uneccessary requests are hindered.
+4) Fixed a bug in favorite list where authors' names used in
+profile page links instead of the slug field.
+5) [Graph] Removed csrf_exempt from the endpoint.
+6) Removed some whitespace from HTML files.
+
+--Deletions--
+None
+
 [0.118.0-dev-pre](2020.04.21)(incompatible)
 --Additions--
 1) Reporting now needs e-mail verification. Added

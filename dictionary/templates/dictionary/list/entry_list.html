@@ -38,14 +38,12 @@
                     <div class="title_sub">
 
 
-                    <span class="mr-3 nice-filter">şükela:&nbsp;<a title="tüm zamanların en çok beğenilenleri"
-                            href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}"
-                            {% if mode == "nice" %}class="active" {% endif %}>tümü</a><span>&nbsp;|&nbsp;</span><a title="bugün en çok beğenilenler"
-                            href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}"
-                            {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a></span>
+                    <span class="mr-3 nice-filter">şükela:&nbsp;&nbsp;<a title="tüm zamanların en çok beğenilenleri" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>tümü</a>
+                        <span>&nbsp;|&nbsp;</span>
+                        <a title="bugün en çok beğenilenler" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a>
+                    </span>
 
-                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button"
-                           tabindex="0">başlıkta ara</a>
+                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">başlıkta ara</a>
 
                         <div class="dropdown-menu topic-dropdown">
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">bugün</a>
@@ -70,9 +68,7 @@
                         </div>
                         {% if request.user.is_authenticated %}
                             {% check_follow_status request.user topic as status %}
-                            <a role="button" tabindex="0" class="follow-topic-trigger"
-                               data-topic-id="{{ topic.id }}">{% if status %}takip
-                                etme{% else %}takip et{% endif %}</a>
+                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip etme{% else %}takip et{% endif %}</a>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -95,12 +91,9 @@
                         {% endfor %}
                     </select>
                     <span style="color:#444">&nbsp;/&nbsp;</span>
-                    <a title="son sayfa"
-                       href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+                    <a title="son sayfa" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
                     {% if page_obj.has_next %}
-                        <a title="sonraki sayfa"
-                           href="?{% url_replace request 'page' page_obj.next_page_number %}"
-                           style="margin-left:4px;">»</a>
+                        <a title="sonraki sayfa" href="?{% url_replace request 'page' page_obj.next_page_number %}" style="margin-left:4px;">»</a>
                     {% endif %}
                 </div>
                 </div>

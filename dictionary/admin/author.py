@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 
 from ..models import Author
-from ..utils.admin import IntermediateActionHandler
+from ..utils.admin import intermediate
 from .views.author import SuspendUser, UnsuspendUser
 from .views.novices import NoviceList, NoviceLookup
 
@@ -11,26 +11,50 @@ from .views.novices import NoviceList, NoviceLookup
 @admin.register(Author)
 class AuthorAdmin(UserAdmin):
     model = Author
-    raw_id_fields = ['upvoted_entries', 'downvoted_entries', 'following', 'blocked', 'pinned_entry']
+    raw_id_fields = ["upvoted_entries", "downvoted_entries", "following", "blocked", "pinned_entry"]
     search_fields = ["username"]
     list_display = ("username", "email", "is_active", "is_novice", "date_joined")
 
-    fieldsets = UserAdmin.fieldsets + (("DEBUG FIELDS", {'fields': (
-        'is_novice', 'application_status', 'application_date', 'last_activity', 'suspended_until', 'birth_date',
-        'gender', 'following', "blocked", 'upvoted_entries', 'downvoted_entries', 'pinned_entry',
-        "following_categories", "is_frozen", "is_private")}),)
+    fieldsets = UserAdmin.fieldsets + (
+        (
+            "DEBUG FIELDS",
+            {
+                "fields": (
+                    "is_novice",
+                    "application_status",
+                    "application_date",
+                    "last_activity",
+                    "suspended_until",
+                    "birth_date",
+                    "gender",
+                    "following",
+                    "blocked",
+                    "upvoted_entries",
+                    "downvoted_entries",
+                    "pinned_entry",
+                    "following_categories",
+                    "is_frozen",
+                    "is_private",
+                )
+            },
+        ),
+    )
 
-    add_fieldsets = ((None, {'fields': ('email',)}),) + UserAdmin.add_fieldsets
+    add_fieldsets = ((None, {"fields": ("email",)}),) + UserAdmin.add_fieldsets
     actions = ("suspend_user", "unsuspend_user")
 
     def get_urls(self):
         urls = super().get_urls()
-        custom_urls = [path('novices/list/', self.admin_site.admin_view(NoviceList.as_view()), name="novice_list"),
-                       path('novices/lookup/<str:username>/', self.admin_site.admin_view(NoviceLookup.as_view()),
-                            name="novice_lookup"),
-                       path('actions/suspend/', self.admin_site.admin_view(SuspendUser.as_view()), name="suspend-user"),
-                       path('actions/unsuspend/', self.admin_site.admin_view(UnsuspendUser.as_view()),
-                            name="unsuspend-user"), ]
+        custom_urls = [
+            path("novices/list/", self.admin_site.admin_view(NoviceList.as_view()), name="novice_list"),
+            path(
+                "novices/lookup/<str:username>/",
+                self.admin_site.admin_view(NoviceLookup.as_view()),
+                name="novice_lookup",
+            ),
+            path("actions/suspend/", self.admin_site.admin_view(SuspendUser.as_view()), name="suspend-user"),
+            path("actions/unsuspend/", self.admin_site.admin_view(UnsuspendUser.as_view()), name="unsuspend-user"),
+        ]
 
         return custom_urls + urls
 
@@ -40,13 +64,13 @@ class AuthorAdmin(UserAdmin):
         return request.user.has_perm("dictionary.suspend_user")
 
     # Actions
+    @intermediate
     def suspend_user(self, request, queryset):
-        action = IntermediateActionHandler(queryset, "admin:suspend-user")
-        return action.redirect_url
+        return "admin:suspend-user"
 
+    @intermediate
     def unsuspend_user(self, request, queryset):
-        action = IntermediateActionHandler(queryset, "admin:unsuspend-user")
-        return action.redirect_url
+        return "admin:unsuspend-user"
 
     # Short descriptions
     suspend_user.short_description = f"Seçili {model._meta.verbose_name_plural} nesnelerini askıya al"

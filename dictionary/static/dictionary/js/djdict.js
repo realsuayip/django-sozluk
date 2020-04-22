@@ -668,6 +668,8 @@ $("a.favorite[role='button']").on("click", function () {
         if (count === 0) {
             countHolder.text("");
         }
+
+        $(self).siblings("span.favorites-list").attr("data-loaded", "false");
     }).fail(function () {
         notify("bir şeyler yanlış gitti", "error");
     });
@@ -680,9 +682,14 @@ $(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-
 $("a.fav-count[role='button']").on("click", function () {
     const self = this;
     const favoritesList = $(self).next();
+
+    if (favoritesList.attr("data-loaded") === "true") {
+        return;
+    }
+
     const pk = $(self).closest(".entry-full").attr("data-id");
 
-    const query = `{ entry{ favoriters(pk:${pk}){ username isNovice } } } `;
+    const query = `{ entry{ favoriters(pk:${pk}){ username slug isNovice } } } `;
 
     $.post("/graphql/", JSON.stringify({ query }), function (response) {
         const allUsers = response.data.entry.favoriters;
@@ -693,7 +700,7 @@ $("a.fav-count[role='button']").on("click", function () {
 
         if (authors.length > 0) {
             for (const author of authors) {
-                favoritesList.append(`<a class="author" href="/biri/${author.username}/">@${author.username}</a>`);
+                favoritesList.append(`<a class="author" href="/biri/${author.slug}/">@${author.username}</a>`);
             }
         }
 
@@ -705,9 +712,11 @@ $("a.fav-count[role='button']").on("click", function () {
             });
 
             for (const novice of novices) {
-                $("#favorites_list_novices").append(`<a class="novice" href="/biri/${novice.username}/">@${novice.username}</a>`);
+                $("#favorites_list_novices").append(`<a class="novice" href="/biri/${novice.slug}/">@${novice.username}</a>`);
             }
         }
+
+        favoritesList.attr("data-loaded", "true");
     }).fail(function () {
         notify("bir şeyler yanlış gitti", "error");
     });
