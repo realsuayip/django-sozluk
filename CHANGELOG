@@ -1,3 +1,21 @@
+[0.120.0-dev-pre](2020.04.23)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed several issues with 'son' feature. The count
+now do not include draft entries, entries that were written
+by blocked users and entries that were written by novice
+users (only for authors). Novices lacked actual 'son'
+feature, they have it now. They'll see entries of novices
+and authors that were written after them.
+2) utils.admin logentry_instance function lacked
+object_repr argument, which resulted in undesired
+'blank' history in admin page, fixed that.
+
+--Deletions--
+None
+
 [0.119.0-dev-pre](2020.04.23)(compatible)
 --Additions--
 1) Add 'intermediate' decorator to better handle

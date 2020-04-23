@@ -183,7 +183,19 @@ class TopicQueryHandler:
                     select
                       z.topic_id,
                       count(
-                        case when z.id > k.max_id then z.id end
+                        case
+                        when z.id > k.max_id
+                        and not z.is_draft
+                        and z.author_id not in (
+                          select to_author_id
+                          from dictionary_author_blocked 
+                          where from_author_id = k.sender_id
+                        )
+                        and case
+                            when not k.sender_is_novice then
+                            not (select is_novice from dictionary_author where id = z.author_id)
+                            else true end
+                        then z.id end
                       ) as count,
                       k.max_id
                     from
@@ -191,7 +203,9 @@ class TopicQueryHandler:
                       inner join (
                         select
                           topic_id,
-                          max(de.id) as max_id
+                          max(de.id) as max_id,
+                          de.author_id as sender_id,
+                          (select is_novice from dictionary_author where id = de.author_id) as sender_is_novice
                         from
                           dictionary_entry de
                         where

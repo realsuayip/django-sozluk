@@ -510,9 +510,15 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         :return: qs
         """
 
+        novice_view_modes = ("novices", "entry_permalink")  # modes in which novice entries are visible
+
+        if self.view_mode == "recent" and self.request.user.is_novice:
+            # 'son' doesn't include novice entries for authors, but does for novices.
+            novice_view_modes += ("recent",)
+
         qs = queryset.exclude(is_draft=True)
 
-        if self.view_mode not in ("novices", "entry_permalink"):
+        if self.view_mode not in novice_view_modes:
             qs = qs.exclude(author__is_novice=True)
 
         if self.request.user.is_authenticated:

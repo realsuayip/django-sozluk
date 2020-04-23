@@ -24,6 +24,7 @@ def logentry_instance(msg, authorizer, model_type, model_object, flag=CHANGE):
         user_id=authorizer.pk,
         content_type=ContentType.objects.get_for_model(model_type),
         object_id=model_object.pk,
+        object_repr=str(model_object),
         change_message=msg,
         action_flag=flag,
     )
