@@ -9,9 +9,10 @@
             {# CATEGORY SAFENAME #}
 
             {# GUNDEM FILTER TOGGLER BUTTON #}
-            <span title="Gündem filtresi" {% if lf.slug != "gundem" %}class="dj-hidden"{% endif %} id="gundem_excluder">
-                <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <span {% if lf.slug != "gundem" %}class="dj-hidden"{% endif %} id="gundem_excluder">
+                <svg class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#cog"></use>
+                    <title>gündem filtresi</title>
                 </svg>
             </span>
             {# GUNDEM FILTER TOGGLER BUTTON END #}
@@ -20,6 +21,7 @@
             <span id="load_indicator" style="display: none;">
                 <svg class="spinning" width="22px" height="24px" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#loading"></use>
+                    <title>yükleniyor</title>
                 </svg>
             </span>
             {# LOADING INDICATOR END #}

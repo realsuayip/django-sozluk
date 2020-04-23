@@ -22,7 +22,7 @@ class Entry(models.Model):
     content = models.TextField(validators=[ENTRY_VALIDATOR])
     date_created = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(blank=True, null=True, default=None)
-    vote_rate = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal(0))
+    vote_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal(0))
     is_draft = models.BooleanField(default=False)
 
     objects_all = EntryManagerAll()

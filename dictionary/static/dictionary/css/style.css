@@ -713,7 +713,7 @@ section.user-comments button.entry_submit {
     float: right;
 }
 
-section.user-comments .entry-editor-footer{
+section.user-comments .entry-editor-footer {
     align-items: center;
 }
 
@@ -824,7 +824,7 @@ section.user-info ul.user-links, ul.user-stats {
 }
 
 section.user-info ul.user-links, ul.user-stats {
-    margin-bottom: 1em;
+    margin-bottom: .25em;
 }
 
 section.user-info ul.user-stats li {
@@ -1010,6 +1010,7 @@ section.chat-reply form textarea {
 
 
 .profile-badges a {
+    display: inline-block;
     color: #fff;
     background: #16784f;
     padding: .5em 1em;
@@ -1018,6 +1019,10 @@ section.chat-reply form textarea {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
+}
+
+.profile-badges a.badge-item {
+    margin-right: .4em;
 }
 
 .profile-badges a:hover {

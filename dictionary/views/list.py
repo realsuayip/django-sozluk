@@ -29,7 +29,6 @@ from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES
 
 def index(request):
     """
-    # todo karma skor
     # todo conversation archiving
     """
     return render(request, "dictionary/index.html")

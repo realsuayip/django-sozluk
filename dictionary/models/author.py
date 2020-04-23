@@ -13,7 +13,14 @@ from django.utils.functional import cached_property
 from uuslug import uuslug
 
 from ..utils import parse_date_or_none, time_threshold
-from ..utils.settings import DISABLE_GENERATIONS, FIRST_GENERATION_DATE, GENERATION_GAP_DAYS
+from ..utils.settings import (
+    DISABLE_GENERATIONS,
+    FIRST_GENERATION_DATE,
+    GENERATION_GAP_DAYS,
+    KARMA_EXPRESSIONS,
+    OVERWHELMING_KARMA_EXPRESSION,
+    UNDERWHELMING_KARMA_EXPRESSION,
+)
 from .category import Category
 from .entry import Entry
 from .managers.author import AccountTerminationQueueManager
@@ -121,6 +128,9 @@ class Author(AbstractUser):
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
     pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
 
+    # Other
+    karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)
+
     def __str__(self):
         return f"{self.username}:{self.id}"
 
@@ -161,6 +171,27 @@ class Author(AbstractUser):
 
         delta = self.date_joined - gen_start_date
         return math.ceil((delta.days / GENERATION_GAP_DAYS) or 1)
+
+    @cached_property
+    def karma_flair(self):
+        karma = round(self.karma)
+
+        if karma < -99:
+            return f"{UNDERWHELMING_KARMA_EXPRESSION} ({karma})"
+
+        if karma > 999:
+            return f"{OVERWHELMING_KARMA_EXPRESSION} ({karma})"
+
+        for key in KARMA_EXPRESSIONS:
+            if karma in key:
+                return f"{KARMA_EXPRESSIONS[key]} ({karma})"
+
+        return None
+
+    @property
+    def is_karma_eligibile(self):
+        """Eligible users will be able to influence other users' karma points by voting."""
+        return not (self.is_novice or self.is_suspended or self.karma < -200)
 
     @property
     def entry_count(self):

@@ -35,6 +35,7 @@ class AuthorAdmin(UserAdmin):
                     "following_categories",
                     "is_frozen",
                     "is_private",
+                    "karma",
                 )
             },
         ),

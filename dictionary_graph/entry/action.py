@@ -1,12 +1,13 @@
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied
+from django.db.models import F
 from django.urls import reverse_lazy
 
 from graphene import ID, Int, Mutation, String
 
 from dictionary.models import Entry
-from dictionary.utils.settings import DISABLE_ANONYMOUS_VOTING
+from dictionary.utils.settings import DISABLE_ANONYMOUS_VOTING, KARMA_RATES
 
 from ..utils import AnonymousUserStorage, login_required
 
@@ -95,7 +96,15 @@ def voteaction(mutator):
 
         upvoted, downvoted = sender.upvoted_entries, sender.downvoted_entries
         in_upvoted, in_downvoted = upvoted.filter(pk=pk).exists(), downvoted.filter(pk=pk).exists()
-        return mutator(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted)
+
+        constants = (
+            F("karma"),
+            KARMA_RATES["cost"],
+            KARMA_RATES["downvote"],
+            KARMA_RATES["upvote"],
+        )
+
+        return mutator(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants)
 
     return decorator
 
@@ -105,15 +114,43 @@ class UpvoteEntry(Action, Mutation):
 
     @staticmethod
     @voteaction
-    def mutate(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted):
-        if in_upvoted:
-            upvoted.remove(entry)  # User removes the upvote
-        else:
-            if in_downvoted:
-                downvoted.remove(entry)  # User changes from downvote to upvote
-            upvoted.add(entry)  # Usual upvote
+    def mutate(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants):
+        response = UpvoteEntry(feedback="oldu")
+        karma, cost, downvote_rate, upvote_rate = constants
 
-        return UpvoteEntry(feedback="oldu")
+        # User removes the upvote
+        if in_upvoted:
+            upvoted.remove(entry)
+
+            if sender.is_karma_eligibile:
+                sender.karma = karma + cost  # refund
+                entry.author.karma = karma - upvote_rate
+                sender.save()
+                entry.author.save()
+
+            return response
+
+        # User changes from downvote to upvote
+        if in_downvoted:
+            downvoted.remove(entry)
+            upvoted.add(entry)
+
+            if sender.is_karma_eligibile:
+                entry.author.karma = karma + (downvote_rate + upvote_rate)
+                entry.author.save()
+
+            return response
+
+        # Usual upvote
+        upvoted.add(entry)
+
+        if sender.is_karma_eligibile:
+            sender.karma = karma - cost
+            entry.author.karma = karma + upvote_rate
+            sender.save()
+            entry.author.save()
+
+        return response
 
 
 class DownvoteEntry(Action, Mutation):
@@ -121,12 +158,39 @@ class DownvoteEntry(Action, Mutation):
 
     @staticmethod
     @voteaction
-    def mutate(_root, entry, upvoted, downvoted, in_upvoted, in_downvoted):
+    def mutate(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants):
+        response = DownvoteEntry(feedback="oldu")
+        karma, cost, downvote_rate, upvote_rate = constants
+
+        # User removes the downvote
         if in_downvoted:
             downvoted.remove(entry)
-        else:
-            if in_upvoted:
-                upvoted.remove(entry)
+
+            if sender.is_karma_eligibile:
+                sender.karma = karma + cost  # refund
+                entry.author.karma = karma + downvote_rate
+                sender.save()
+                entry.author.save()
+            return response
+
+        # User changes from upvote to downvote
+        if in_upvoted:
+            upvoted.remove(entry)
             downvoted.add(entry)
 
-        return UpvoteEntry(feedback="oldu")
+            if sender.is_karma_eligibile:
+                entry.author.karma = karma - (downvote_rate + upvote_rate)
+                entry.author.save()
+
+            return response
+
+        # Usual downvote
+        downvoted.add(entry)
+
+        if sender.is_karma_eligibile:
+            sender.karma = karma - cost
+            entry.author.karma = karma - downvote_rate
+            sender.save()
+            entry.author.save()
+
+        return response

@@ -188,7 +188,7 @@ class TopicQueryHandler:
                         and not z.is_draft
                         and z.author_id not in (
                           select to_author_id
-                          from dictionary_author_blocked 
+                          from dictionary_author_blocked
                           where from_author_id = k.sender_id
                         )
                         and case

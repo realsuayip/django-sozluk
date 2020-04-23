@@ -44,25 +44,30 @@
             </div>
         {% endif %}
 
-        <ul class="user-stats">
+        <ul class="user-stats mb-2">
             <li title="toplam entry sayısı">{{ profile.entry_count }}</li>
             <li title="son 1 ayda girdiği entry sayısı">{{ profile.entry_count_month }}</li>
             <li title="son 1 haftada girdiği entry sayısı">{{ profile.entry_count_week }}</li>
             <li title="son 24 saatte girdiği entry sayısı">{{ profile.entry_count_day }}</li>
-            <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|timesince|default:"hiç" }}</li>
+            <li class="nobullet" title="son entry girdiği zaman">{% with last=profile.last_entry_date %}{% if last %}{{ last|timesince }} önce{% else %}hiç{% endif %}{% endwith %}</li>
 
-            <li class="profile-badges nobullet ml-2">
+            {% if novice_queue %}
+                <li class="float-right nobullet">çaylak onay listesinde {{ novice_queue|ordinal }} sıradasınız</li>
+            {% endif %}
+
+            <li class="profile-badges nobullet d-block mt-2">
                 {% if profile.is_novice %}
-                    <a href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
+                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
                 {% endif %}
+
                 {% if profile.is_suspended %}
-                    <a href="{% url 'topic-unicode-url' unicode_string="lanetli" %}"
-                       title="{{ profile.suspended_until|naturaltime }} boyunca">lanetli</a>
+                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string="lanetli" %}" title="{{ profile.suspended_until|naturaltime }} boyunca">lanetli</a>
+                {% endif %}
+
+                {% if profile.karma_flair %}
+                    <span>{{ profile.karma_flair }}</span>
                 {% endif %}
             </li>
-            {% if novice_queue %}
-                <span style="float: right">çaylak onay listesinde {{ novice_queue|ordinal }} sıradasınız </span>
-            {% endif %}
         </ul>
 
 

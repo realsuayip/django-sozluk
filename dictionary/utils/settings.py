@@ -118,11 +118,73 @@ Vote section will be visible to guests but they
 won't have any effect.
 """
 
+# Notice: Decimal places larger than 2 is not allowed. e.g. 0.125 is not valid.
+
 VOTE_RATES = {
-    "favorite": Decimal(".2"),
-    "vote": Decimal(".2"),
-    "anonymous": Decimal(".05"),
+    "favorite": Decimal(".2"),      # The amount of rate an entry will get when favorited.
+    "vote": Decimal(".2"),          # The amount of rate to be deducted/added when entry gets voted.
+    "anonymous": Decimal(".05"),    # Same with vote, but for anonymous users.
 }
+
+# Karma related settings
+
+KARMA_RATES = {
+    "upvote": Decimal("0.24"),      # The amount of karma that the user will gain upon getting an upvote.
+    "downvote": Decimal("0.36"),    # The amount of karma that the user will lose upon getting an downvote.
+    "cost": Decimal("0.08"),        # The amount of karma that the user will lose upon voting an entry.
+}
+
+KARMA_EXPRESSIONS = {
+    range(25, 50): "kaotik nötral",
+    range(50, 100): "müzmin yedek",
+    range(100, 125): "padawan",
+    range(125, 150): "çılgın",
+    range(150, 200): "kofti anarşist",
+    range(200, 250): "anarşist",
+    range(250, 300): "hırçın golcü",
+    range(300, 350): "anadolu çocuğu",
+    range(350, 370): "battal gazi",
+    range(370, 400): "çetrefilli",
+    range(400, 430): "hippi",
+    range(430, 450): "delikanlı",
+    range(450, 470): "ağır abi",
+    range(470, 500): "bıçkın",
+    range(500, 530): "mangal yürekli rişar",
+    range(530, 550): "mülayim ama sempatik",
+    range(550, 575): "aklı selim",
+    range(575, 600): "prezentabl",
+    range(600, 620): "şeker abi",
+    range(620, 630): "bal küpü",
+    range(630, 650): "baldan tatlı",
+    range(650, 665): "leziz",
+    range(665, 680): "entry uğruna ruhunu satmış",
+    range(680, 700): "şekerpare",
+    range(700, 725): "şamda kayısı",
+    range(725, 750): "her eve lazım",
+    range(750, 775): "tadına doyum olmaz",
+    range(775, 800): "energizer tavşanı",
+    range(800, 850): "gençlerin sevgilisi",
+    range(850, 900): "anka kuşu",
+    range(900, 1000): "rating canavarı",
+}
+"""
+Karma expressions for specific karma ranges. All expressions are
+excerpted from ekşi sözlük. Their rights might be reserved.
+"""
+
+
+# Points for the following two expressions are hard-coded in
+# dictionary.models.Author's karma_flair property.
+
+UNDERWHELMING_KARMA_EXPRESSION = "geri zekâlı"
+"""Expression for too low karma points."""
+
+OVERWHELMING_KARMA_EXPRESSION = "halkın şampiyonu"
+"""
+Expression for the karma points that are larger than the
+maximum specified in KARMA_EXPRESSIONS.
+"""
+
 
 # Messages
 

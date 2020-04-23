@@ -1,3 +1,17 @@
+[0.121.0-dev-pre](2020.04.24)(incompatible)
+--Additions--
+1) Added karma feature. This is **incompatible**
+run makemigrations+migrate for dictionary app.
+
+-- Changes --
+1) Entry vote rate now allows up to 100k.
+2) Adjusted user profile page and fixed small
+accessibility problem in left_frame.html
+
+--Deletions--
+None
+
+
 [0.120.0-dev-pre](2020.04.23)(compatible)
 --Additions--
 None
