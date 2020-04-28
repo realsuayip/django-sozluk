@@ -5,8 +5,11 @@ TOPICS_PER_PAGE_DEFAULT = 50  # For guests only
 ENTRIES_PER_PAGE_DEFAULT = 10  # For guests only
 ENTRIES_PER_PAGE_PROFILE = 15  # Global setting
 
-# Give id of the user who does administrative actions in the site. (with is_novice=False)
-GENERIC_SUPERUSER_ID = 1
+
+GENERIC_SUPERUSER_USERNAME = "djangosozluk"
+"""
+Give the username of the user who does administrative actions in the site.
+"""
 
 # Create an anonymous user with is_private=True and is_novice=False.
 # This anonymous user is used to hold the entries of deleted accounts.

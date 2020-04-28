@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from dateutil.parser import parse
 
-from .settings import GENERIC_SUPERUSER_ID
+from .settings import GENERIC_SUPERUSER_USERNAME
 
 
 # General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
@@ -68,7 +68,7 @@ def time_threshold(**timedelta_kwargs):
 
 
 def get_generic_superuser():
-    return get_user_model().objects.get(pk=GENERIC_SUPERUSER_ID)
+    return get_user_model().objects.get(username=GENERIC_SUPERUSER_USERNAME)
 
 
 def get_category_parameters(slug, year):

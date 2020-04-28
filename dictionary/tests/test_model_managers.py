@@ -2,6 +2,7 @@ from django.http import Http404
 from django.test import TestCase, TransactionTestCase
 
 from ..models import Author, Entry, Conversation, Message, Topic
+from ..utils.settings import GENERIC_SUPERUSER_USERNAME
 
 
 class EntryModelManagersTests(TestCase):
@@ -49,14 +50,15 @@ class EntryModelManagersTests(TestCase):
 class ConversationModelManagersTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.author_1 = Author.objects.create(username="a1", email="1")
-        cls.author_2 = Author.objects.create(username="a2", email="2")
-        cls.author_3 = Author.objects.create(username="a3", email="3")
-        cls.author_4 = Author.objects.create(username="a4", email="4")
+        cls.generic_superuser = Author.objects.create(username=GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True)
+        cls.author_1 = Author.objects.create(username="a1", email="1", is_active=True)
+        cls.author_2 = Author.objects.create(username="a2", email="2", is_active=True)
+        cls.author_3 = Author.objects.create(username="a3", email="3", is_active=True)
+        cls.author_4 = Author.objects.create(username="a4", email="4", is_active=True)
 
-        author_5 = Author.objects.create(username="a5", email="5")
-        author_6 = Author.objects.create(username="a6", email="7")
-        author_7 = Author.objects.create(username="a8", email="8")
+        author_5 = Author.objects.create(username="a5", email="5", is_active=True)
+        author_6 = Author.objects.create(username="a6", email="7", is_active=True)
+        author_7 = Author.objects.create(username="a8", email="8", is_active=True)
 
         cls.convo_1_2_msg = Message.objects.compose(cls.author_1, cls.author_2, "domates")
         Message.objects.compose(cls.author_1, cls.author_3, "biber")

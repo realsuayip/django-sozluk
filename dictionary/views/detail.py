@@ -158,7 +158,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        self.profile = get_object_or_404(Author, slug=self.kwargs.get("slug"))
+        self.profile = get_object_or_404(Author, slug=self.kwargs.get("slug"), is_active=True)
 
         # Check accessibility
         if self.profile.is_frozen or self.profile.is_private:

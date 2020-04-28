@@ -1,3 +1,20 @@
+[0.123.0-dev-pre](2020.04.28)(compatible)
+--Additions--
+1) New management command: create_generic_superuser.
+Use this command to create superuser via
+GENERIC_SUPERUSER_USERNAME setting.
+2) Some docs related to generic_superuser.
+
+-- Changes --
+1) Change GENERIC_SUPERUSER_ID to GENERIC_SUPERUSER_USERNAME.
+2) Generic superuser can now send messages to everyone.
+3) Inactive users' profiles are now inacessible, they are
+not visible in autocomplete fields and they cannot recieve messages.
+4) Add/change some tests regarding message sending changes.
+
+--Deletions--
+None
+
 [0.122.0-dev-pre](2020.04.28)(compatible)
 --Additions--
 1) Added 'pin' icon to entry_list.html to

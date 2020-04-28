@@ -1,5 +1,8 @@
 # Dökümantasyon
 Kategoriler:
+* [Ayarlar](settings.md)
+    * [GENERIC_SUPERUSER_USERNAME](settings.md#generic_superuser_username)
+
 * [Güvenlik](security.md)
     * [Bildirimler](security.md#bildirimler)
     

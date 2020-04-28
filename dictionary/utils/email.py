@@ -13,7 +13,7 @@ from ..models import UserVerification
 
 DOMAIN = "127.0.0.1:8000"
 PROTOCOL = "http"
-FROM_EMAIL = "test@django.org"
+FROM_EMAIL = "noreply@yourdomaindjsz.org"
 
 
 class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
