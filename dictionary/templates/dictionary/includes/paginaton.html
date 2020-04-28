@@ -4,7 +4,7 @@
         {% if hr == "yes" %}
             <hr>
         {% endif %}
-        <div class="lf_pagination {% if stretch == "yes" %}stretch{% endif %}">
+        <div class="lf_pagination{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
             {% if page_obj.has_previous %}
                 <a title="önceki sayfa" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
             {% endif %}
@@ -20,12 +20,10 @@
             </select>
 
             <span style="color:#444;">&nbsp;/&nbsp;</span>
-            <a class="number" title="son sayfa"
-               href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+            <a class="number" title="son sayfa" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
 
             {% if page_obj.has_next %}
-                <a title="sonraki sayfa" href="?{% url_replace request 'page' page_obj.next_page_number %}"
-                   style="margin-left:4px;">»</a>
+                <a title="sonraki sayfa" href="?{% url_replace request 'page' page_obj.next_page_number %}" style="margin-left:4px;">»</a>
             {% endif %}
         </div>
     {% endif %}

@@ -161,9 +161,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     """This will be set to (entry_id) if user requests a single entry. It's similar to view_mode, but it needs some
        other metadata and seperated from view_mode as they use different urls."""
 
-    modes = ("regular", "today", "history", "nice", "nicetoday", "search", "following", "novices", "recent")
+    modes = ("regular", "today", "popular", "history", "nice", "nicetoday", "search", "following", "novices", "recent")
     """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
        parameter 'a'. For example ?a=today returns only today's entries."""
+
+    login_required_modes = ("novices", "following", "recent")
+    """These filtering modes require user authenticatation. (they need to be present in modes)"""
 
     redirect = False
     """When handling queryset, if there are no new entries found, redirect user (if desired) to full topic view."""
@@ -250,6 +253,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def today(self):
         return self.topic.entries.filter(date_created__gte=time_threshold(hours=24))
 
+    def popular(self):
+        return self.regular() if self.topic.is_pinned else self.today()
+
     def history(self):
         year = self.request.GET.get("year", "")
 
@@ -270,7 +276,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def search(self):
         """In topic (entry content) search."""
-        keywords = self.request.GET.get("keywords")
+        keywords = self.request.GET.get("keywords", "").strip()
 
         if keywords:
             if keywords.startswith("@"):
@@ -360,7 +366,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             show_subsequent, show_previous = False, False
 
             # view_mode specific settings
-            if self.view_mode in ("today", "following", "novices"):
+            if self.view_mode in ("popular", "today", "following", "novices"):
                 show_previous = True
             elif self.view_mode in ("history", "entry_permalink", "search", "nicetoday", "recent"):
                 show_previous = True
@@ -418,8 +424,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             self.view_mode = requested if requested in self.modes else "regular"
 
         # Check login requirements
-        login_required_modes = ("novices", "following", "recent")
-        if not request.user.is_authenticated and self.view_mode in login_required_modes:
+
+        if not request.user.is_authenticated and self.view_mode in self.login_required_modes:
             notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
             return redirect(reverse("login"))
 

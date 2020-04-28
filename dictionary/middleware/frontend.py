@@ -7,7 +7,7 @@ class MobileDetectionMiddleware:
         self.get_response = get_response  # One-time configuration and initialization.
 
     def __call__(self, request):
-        ua_string = request.META.get("HTTP_USER_AGENT")
+        ua_string = request.headers.get("User-Agent")
         user_agent = parse(ua_string)
         request.is_mobile = user_agent.is_mobile
 

@@ -512,8 +512,6 @@ class TopicListHandler:
     def refresh_count(self):  # (yenile count)
         if self.cache_exists and self.slug == "bugun":
             set_at = cache.get(self.cache_key).get("set_at")
-            if set_at is None:
-                return 0
             return Entry.objects.filter(date_created__gte=set_at).count()
 
         return 0

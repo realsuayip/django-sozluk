@@ -6,11 +6,12 @@ from django.shortcuts import reverse
 
 from uuslug import uuslug
 
-from ..utils import turkish_lower
+from ..utils import get_generic_superuser, turkish_lower
 from .author import Author
 from .category import Category
 from .m2m import TopicFollowing
 from .managers.topic import TopicManager, TopicManagerPublished
+from .messaging import Message
 
 
 TOPIC_TITLE_VALIDATORS = [
@@ -64,14 +65,15 @@ class Topic(models.Model):
     is_censored = models.BooleanField(
         default=False,
         verbose_name="Sansürlü",
-        help_text="Bu başlığın sözlük içi aramalarda ve başlık listelerinde gözükmesini istemiyorsanız işaretleyin.",
+        help_text="Bu başlığın sözlük içi aramalarda ve <strong>halka açık</strong>"
+        " başlık listelerinde gözükmesini istemiyorsanız işaretleyin.",
     )
 
     is_pinned = models.BooleanField(
         default=False,
         verbose_name="Sabitlenmiş",
         help_text="Bu başlığın gündemde en üstte görünmesini istiyorsanız işaretleyin."
-                  " <br>Başlığa en az 1 entry girilmiş olmalı.",
+        " <br>Başlığa en az 1 entry girilmiş olmalı.",
     )
 
     date_created = models.DateTimeField(
@@ -111,6 +113,29 @@ class Topic(models.Model):
             )
         except ObjectDoesNotExist:
             return self.date_created
+
+    def register_wishes(self, fulfiller_entry=None):
+        """To delete fulfilled wishes and inform wishers."""
+
+        if self.wishes.exists() and self.has_entries:
+            invoked_by_entry = fulfiller_entry is not None
+            wishes = self.wishes.all().select_related("author")
+
+            for wish in wishes:
+                self_fulfillment = invoked_by_entry and fulfiller_entry.author == wish.author
+
+                if not self_fulfillment:
+                    message = (
+                        f"ukte verdiğiniz `{self.title}` başlığına `@{fulfiller_entry.author.username}`"
+                        f" tarafından entry girildi: (bkz: #{fulfiller_entry.pk})"
+                        if invoked_by_entry
+                        else f"ukte verdiğiniz `{self.title}` başlığına entry geldi."
+                    )
+
+                    Message.objects.compose(get_generic_superuser(), wish.author, message)
+
+            return wishes.delete()
+        return None
 
     @property
     def exists(self):

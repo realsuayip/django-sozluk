@@ -1,3 +1,28 @@
+[0.122.0-dev-pre](2020.04.28)(compatible)
+--Additions--
+1) Added 'pin' icon to entry_list.html to
+indicate that the topic is pinned.
+2) Add index parameter to pagination.html,
+using it will give the left-frame style.
+
+-- Changes --
+1) When moving entries, if the target topic had
+wishes, that wishes didn't seem to be fulfilled,
+fixed that.
+2) Update jQuery to 3.5.0
+3) TopicEntryList changes:
+    a) Add 'popular' mode to support 'gundem'
+    b) Use login_required_modes as attribute
+    c) search now stirps whitespaces
+4) Removed a redundant line in TopicListHandler
+5) In profile page view:
+    a) Removed redundant prefetch_related fields
+    b) Some tabs are now have proper querysets.
+    c) Adjusted pagination front-end.
+
+--Deletions--
+None
+
 [0.121.0-dev-pre](2020.04.24)(incompatible)
 --Additions--
 1) Added karma feature. This is **incompatible**
@@ -10,7 +35,6 @@ accessibility problem in left_frame.html
 
 --Deletions--
 None
-
 
 [0.120.0-dev-pre](2020.04.23)(compatible)
 --Additions--

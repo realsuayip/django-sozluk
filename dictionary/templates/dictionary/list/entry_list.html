@@ -18,7 +18,16 @@
 
 
             {% if topic.exists %}
-                <h1 class="topic-title"><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>{% if mode == "search" %}<small style="font-size: 1rem;" class="ml-2">[arama terimi: <strong>{{ request.GET.keywords }}</strong>]</small>{% endif %}</h1>
+                <h1 class="topic-title">
+                    <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                    {% if mode == "search" %}<small style="font-size: 1rem;" class="ml-2">[arama terimi: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
+                    {% if topic.is_pinned %}
+                        <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#pin"></use>
+                            <title>Bu başlık sabitlenmiş.</title>
+                        </svg>
+                    {% endif %}
+                </h1>
 
             {% with mirrors=topic.mirrors.all %}
                 {% if mirrors %}

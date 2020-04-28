@@ -73,7 +73,8 @@ def get_generic_superuser():
 
 def get_category_parameters(slug, year):
     pairs = {
-        **dict.fromkeys(("bugun", "gundem", "basiboslar", "generic"), "?a=today"),
+        **dict.fromkeys(("bugun", "basiboslar", "generic"), "?a=today"),
+        "gundem": "?a=popular",
         "tarihte-bugun": f"?a=history&year={year}",
         "caylaklar": "?a=novices",
         "son": "?a=recent",

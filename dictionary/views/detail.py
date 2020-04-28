@@ -108,7 +108,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         tab_obj_type = self.tabs.get(self.tab)["type"]
 
         if tab_obj_type == "entry":
-            return qs.select_related("author", "topic").prefetch_related("favorited_by", "downvoted_by", "upvoted_by")
+            return qs.select_related("author", "topic").prefetch_related("favorited_by")
 
         if tab_obj_type == "author":
             return qs
@@ -124,11 +124,14 @@ class UserProfile(IntegratedFormMixin, ListView):
 
     def popular(self):
         return (
-            Entry.objects_published.filter(author=self.profile).annotate(count=Count("favorited_by")).order_by("-count")
+            Entry.objects_published.filter(author=self.profile)
+            .annotate(count=Count("favorited_by"))
+            .filter(count__gte=1)
+            .order_by("-count")
         )
 
     def liked(self):
-        return Entry.objects_published.filter(author=self.profile).order_by("-vote_rate")
+        return Entry.objects_published.filter(author=self.profile).filter(vote_rate__gt=0).order_by("-vote_rate")
 
     def weeklygoods(self):
         return self.liked().filter(date_created__gte=time_threshold(days=7))
@@ -141,7 +144,7 @@ class UserProfile(IntegratedFormMixin, ListView):
     def authors(self):
         favorites = self.profile.favorite_entries.all()
         return (
-            Author.objects.filter(entry__in=favorites)
+            Author.objects.filter(entry__in=favorites, is_private=False)
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
             .order_by("-frequency")[:10]

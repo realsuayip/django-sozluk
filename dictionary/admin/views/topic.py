@@ -13,15 +13,17 @@ class TopicMove(IntermediateActionView):
     Move entries in (selected range of) (a) topic(s) to another topic. If wanted, include a reference for new topic in
     (the) old topic(s). An admin log -for target topic- is created for this action.
     """
+
     max_input = 15
-    permission_required = ('dictionary.move_topic', 'dictionary.change_topic')
+    permission_required = ("dictionary.move_topic", "dictionary.change_topic")
     model = Topic
     template_name = "dictionary/admin/actions/topic_move.html"
     page_title = "Başlık taşıma"
 
     def get_queryset(self):
-        queryset = self.model.objects.annotate(entry_count=Count("entries")).filter(pk__in=self.get_source_ids(),
-                                                                                    entry_count__gt=0)
+        queryset = self.model.objects.annotate(entry_count=Count("entries")).filter(
+            pk__in=self.get_source_ids(), entry_count__gt=0
+        )
         return queryset
 
     def post(self, request):
@@ -31,7 +33,7 @@ class TopicMove(IntermediateActionView):
         to_date = parse_date_or_none(request.POST.get("to_date"))
 
         try:
-            target_object = Topic.objects.get(title=target_topic)
+            target_topic = Topic.objects.get(title=target_topic)
             generic_superuser = get_generic_superuser()
 
             topic_list_raw = list(self.get_object_list())
@@ -44,17 +46,25 @@ class TopicMove(IntermediateActionView):
                 entries_list = entries_list.filter(date_created__lte=to_date)
 
             entries_count = entries_list.count()
-            entries_list.update(topic=target_object)  # Bulk update, does not call save()
+            entries_list.update(topic=target_topic)  # Bulk update, does not call save()
+            target_topic.register_wishes()
 
             # Include an informative entry on old topic to indicate the new topic
             if add_bkz:
-                bulk_list = [Entry(topic=obj, content=f"(bkz: {target_object.title})", author=generic_superuser) for obj
-                             in topic_list_raw]
+                bulk_list = [
+                    Entry(topic=obj, content=f"(bkz: {target_topic.title})", author=generic_superuser)
+                    for obj in topic_list_raw
+                ]
                 Entry.objects.bulk_create(bulk_list)
 
             # Admin log
-            log_admin(f"bu başlığa {entries_count} entry(ler) taşındı. sources->{topic_list_raw},"
-                      f"from->{from_date} to->{to_date}", request.user, Topic, target_object)
+            log_admin(
+                f"bu başlığa {entries_count} entry(ler) taşındı. sources->{topic_list_raw},"
+                f"from->{from_date} to->{to_date}",
+                request.user,
+                Topic,
+                target_topic,
+            )
 
             notifications.success(request, f"{entries_count} tane entry güncellendi.")
         except Topic.DoesNotExist:
