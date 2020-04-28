@@ -18,7 +18,7 @@ ayarı yapmanız gerekiyor.
 2. [Ayar dosyası](/dictionary/utils/settings.py)nda kullanıcı adını belirleyin. Halihazırda
 `djangosozluk` olarak durur. Bu isimle bir kullanıcının var olması gerekmiyor, bu adımdan
 sonra oluşturulacak.
-3. [Proje ana dizini](/)nde komut satırını açıp şu komutu çalıştırın ve adımları takip edin:\
+3. [Proje ana dizini](/../../)nde komut satırını açıp şu komutu çalıştırın ve adımları takip edin:\
 `python manage.py create_generic_superuser KULLANICIN_ŞİFRESİ`\
 Not: E-posta adresi için `FROM_EMAIL` kullanılacak. Eğer bunu istemiyorsanız `--email`
 parametresini kullanmalısınız.
