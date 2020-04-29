@@ -15,16 +15,14 @@
             {% endwith %}
         </h4>
 
-        {% if request.user.is_authenticated and request.user != profile %}
+        {% if user.is_authenticated and user != profile %}
             {% include "dictionary/includes/send_message_modal.html" %}
             {% include "dictionary/includes/block_user_modal.html" %}
 
             <ul class="user-links" data-username="{{ profile.username }}">
-                {#  @formatter:off #}
                 <li class="follow-user-trigger">
-                    <a role="button" tabindex="0">{% if profile in request.user.following.all %}takip etme{% else %}takip et{% endif %}</a>
+                    <a role="button" tabindex="0">{% if profile in user.following.all %}takip etme{% else %}takip et{% endif %}</a>
                 </li>
-                {#  @formatter:on #}
 
                 <li class="block-user">
                     <a role="button" tabindex="0">engelle</a>
@@ -36,11 +34,11 @@
             </ul>
         {% endif %}
 
-        {% if profile.is_suspended and request.user == profile %}
+        {% if profile.is_suspended and user == profile %}
             <div class="alert alert-secondary" role="alert">
                 Hesabınız {{ profile.suspended_until }} tarihine kadar askıya alınmıştır. Ayrıntılı bilgi için size
-                gönderilen özel mesajı kontrol edin. Eğer bir yanlışlık olduğunu düşünüyorsanız <a
-                    href="{% url 'general-report' %}">iletişim formunu</a> kullanarak bizimle iletişime geçin.
+                gönderilen özel mesajı kontrol edin. Eğer bir yanlışlık olduğunu düşünüyorsanız
+                <a href="{% url 'general-report' %}">iletişim formunu</a> kullanarak bizimle iletişime geçin.
             </div>
         {% endif %}
 
@@ -83,70 +81,69 @@
             {% endif %}
         {% endif %}
 
-
     </section>
 
-    <section class="user-info-detail">
-        <div class="detail-nav" id="detail_nav">
-            <ul>
-                <li {% if tab.name == "latest" %}class="active"{% endif %}><a
-                        href="{{ profile.get_absolute_url }}">entry'ler</a></li>
+    {% with object_count=page_obj.paginator.count %}
 
-                <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
+        <section class="user-info-detail">
+            <div class="detail-nav" id="detail_nav">
+                <ul>
+                    <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
+                    <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
 
-                <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
-                    <a class="expand" role="button" tabindex="0" id="dropdownMenuLink"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        istatistikler
-                    </a>
+                    <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
+                        <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">istatistikler</a>
 
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
-                        <a class="dropdown-item" href="?t=liked">en beğenilenleri</a>
-                        <a class="dropdown-item" href="?t=weeklygoods">bu hafta dikkat çekenleri</a>
-                        <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
-                        <a class="dropdown-item" href="?t=authors">favori yazarları</a>
-                    </div>
-                </li>
+                        <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
+                            <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
+                            <a class="dropdown-item" href="?t=liked">en beğenilenleri</a>
+                            <a class="dropdown-item" href="?t=weeklygoods">bu hafta dikkat çekenleri</a>
+                            <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
+                            <a class="dropdown-item" href="?t=authors">favori yazarları</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-            </ul>
-        </div>
-    </section>
+        <h5 class="mt-3"><strong><a href="{{ author.get_absolute_url }}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a></strong></h5>
 
-    <h5 class="mt-3"><strong><a href="{{ author.get_absolute_url }}">{{ tab.label }}</a></strong></h5>
-    {% if object_list.exists %}
-        {% if tab.type == "entry" %}
-            <section class="user_entries">
-                <ul class="profile">
-                    {% for entry in object_list %}
-                        {% include "dictionary/includes/entry.html" with show_title="yes" %}
+        {% if object_count > 0 %}
+
+            {% if tab.type == "entry" %}
+                <section class="user_entries">
+                    <ul class="profile">
+                        {% for entry in object_list %}
+                            {% include "dictionary/includes/entry.html" with show_title="yes" %}
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if tab.type == "author" %}
+                <ul class="list-group">
+                    {% for author in object_list %}
+                        <li class="list-group-item" data-username="{{ author.username }}">
+                            <a href="{{ author.get_absolute_url }}"><strong>{{ author.username }}</strong></a>
+                        </li>
                     {% endfor %}
                 </ul>
-            </section>
+            {% endif %}
+
+        {% else %}
+            <small>yok ki</small>
         {% endif %}
 
-        {% if tab.type == "author" %}
-            <ul class="list-group">
-                {% for author in object_list %}
-
-                    <li class="list-group-item" data-username="{{ author.username }}">
-                        <a href="{{ author.get_absolute_url }}"><strong>{{ author.username }}</strong></a>
-                    </li>
-
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% else %}
-        <small>yok ki</small>
-    {% endif %}
+    {% endwith %}
 
     {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" stretch="yes" index="yes" %}
     <br>
+
 {% endblock %}
 
 
 {% block rightframe %}
-    {% if request.user.is_authenticated %}
+    {% if user.is_authenticated %}
 
         <label for="memento"><h5><strong>notlar</strong></h5></label>
 

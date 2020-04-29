@@ -117,28 +117,30 @@ class UserProfile(IntegratedFormMixin, ListView):
 
     def latest(self):
         # default tab
-        return Entry.objects_published.filter(author=self.profile).order_by("-date_created")
+        return self.profile.entry_set(manager="objects_published").order_by("-date_created")
 
     def favorites(self):
         return self.profile.favorite_entries.filter(author__is_novice=False).order_by("-entryfavorites__date_created")
 
     def popular(self):
         return (
-            Entry.objects_published.filter(author=self.profile)
+            self.profile.entry_set(manager="objects_published")
             .annotate(count=Count("favorited_by"))
             .filter(count__gte=1)
             .order_by("-count")
         )
 
     def liked(self):
-        return Entry.objects_published.filter(author=self.profile).filter(vote_rate__gt=0).order_by("-vote_rate")
+        return self.profile.entry_set(manager="objects_published").filter(vote_rate__gt=0).order_by("-vote_rate")
 
     def weeklygoods(self):
         return self.liked().filter(date_created__gte=time_threshold(days=7))
 
     def beloved(self):
-        return Entry.objects_published.filter(author=self.profile, favorited_by__in=[self.profile]).order_by(
-            "-date_created"
+        return (
+            self.profile.entry_set(manager="objects_published")
+            .filter(favorited_by__in=[self.profile])
+            .order_by("-date_created")
         )
 
     def authors(self):
@@ -147,6 +149,8 @@ class UserProfile(IntegratedFormMixin, ListView):
             Author.objects.filter(entry__in=favorites, is_private=False)
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
+            .exclude(pk=self.profile.pk)
+            .only("username")
             .order_by("-frequency")[:10]
         )
 

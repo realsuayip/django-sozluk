@@ -132,9 +132,9 @@ VOTE_RATES = {
 # Karma related settings
 
 KARMA_RATES = {
-    "upvote": Decimal("0.24"),      # The amount of karma that the user will gain upon getting an upvote.
-    "downvote": Decimal("0.36"),    # The amount of karma that the user will lose upon getting an downvote.
-    "cost": Decimal("0.08"),        # The amount of karma that the user will lose upon voting an entry.
+    "upvote": Decimal("0.18"),      # The amount of karma that the user will gain upon getting an upvote.
+    "downvote": Decimal("0.27"),    # The amount of karma that the user will lose upon getting an downvote.
+    "cost": Decimal("0.06"),        # The amount of karma that the user will lose upon voting an entry.
 }
 
 KARMA_EXPRESSIONS = {
@@ -167,7 +167,7 @@ KARMA_EXPRESSIONS = {
     range(750, 775): "tadına doyum olmaz",
     range(775, 800): "energizer tavşanı",
     range(800, 850): "gençlerin sevgilisi",
-    range(850, 900): "anka kuşu",
+    range(850, 900): "fevkalbeşer",
     range(900, 1000): "rating canavarı",
 }
 """

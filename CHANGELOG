@@ -1,3 +1,22 @@
+[0.124.0-dev-pre](2020.04.30)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed minor visual issue related to searchbox's right border.
+2) Profile page changes:
+    a) Total object counts are now present near the title.
+    b) Instead of using Entry model, use related 'entry_set' to
+    be consistent and concise.
+    c) Favorite authors tab now do not include user itself. The
+    query now also selects only the username field.
+    d) etc. in template file.
+3) Reduced karma rates (and changed one of the karma expressions).
+
+--Deletions--
+1) Removed use_for_related_fields from EntryManagerOnlyPublished,
+it didn't have any effect, and we don't want it anyway.
+
 [0.123.0-dev-pre](2020.04.28)(compatible)
 --Additions--
 1) New management command: create_generic_superuser.
