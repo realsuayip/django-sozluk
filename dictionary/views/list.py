@@ -6,7 +6,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import BooleanField, Case, F, Max, Q, When
+from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import redirect, render
@@ -88,12 +88,7 @@ class ActivityList(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        queryset = self.request.user.following_topics.annotate(
-            latest=Max("entries__date_created", filter=~Q(entries__author=self.request.user)),
-            read_at=F("topicfollowing__read_at"),
-            is_read=Case(When(Q(latest__gt=F("read_at")), then=False), default=True, output_field=BooleanField()),
-        ).order_by("is_read", "-topicfollowing__read_at")
-        return queryset
+        return self.request.user.get_following_topics_with_receipt().order_by("is_read", "-topicfollowing__read_at")
 
 
 class CategoryList(ListView):
@@ -292,26 +287,30 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""
         queryset = None
+        following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
 
-        if self.request.user.is_authenticated:
-            following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
+        if following:
+            epoch = self.request.GET.get("d")
 
-            if following:
-                date = self.request.GET.get("d")
+            try:
+                last_read = timezone.make_aware(datetime.datetime.fromtimestamp(int(epoch)))
+            except (ValueError, TypeError, OSError):
+                last_read = None
 
-                try:
-                    last_read = timezone.make_aware(datetime.datetime.fromtimestamp(int(date)))
-                except (ValueError, TypeError, OSError):
-                    last_read = None
+            if last_read:
+                queryset = self._qs_filter(
+                    self.topic.entries.filter(date_created__gt=last_read).exclude(Q(author=self.request.user))
+                )  # Note: we need to apply _qs_filter because we use queryset results in here.
 
-                if last_read:
-                    queryset = self.topic.entries.filter(date_created__gt=last_read).exclude(author=self.request.user)
+        if queryset is not None and queryset.exists():
+            following.read_at = timezone.now()
+            following.save()
 
-            if queryset is not None and queryset.exists():
-                following.read_at = timezone.now()
-                following.save()
+            page = self.request.GET.get("page", "1")
+            if page.isdigit() and int(page) == 1:
                 notifications.info(self.request, f"{queryset.count()} tane entry")
-                return queryset
+
+            return queryset
 
         notifications.info(self.request, "pek bişey bulamadım açıkçası, buyrun hepsi")
         self.redirect = True
@@ -336,6 +335,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             queryset = getattr(self, self.view_mode)()
 
         if queryset is not None:
+            if self.view_mode == "following":
+                return queryset  # _qs_filter is applied in the method already
+
             return self._qs_filter(queryset)
 
         return self.model.objects.none()

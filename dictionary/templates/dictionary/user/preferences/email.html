@@ -11,7 +11,7 @@
             </div>
         {% endfor %}
     {% endif %}
-    <div class="mb-2"><strong style="font-weight: 600;">mevcut e-posta adresiniz: </strong>{{ request.user.email }}</div>
+    <div class="mb-2"><strong style="font-weight: 600;">mevcut e-posta adresiniz: </strong>{{ user.email }}</div>
     <hr>
     {% if not user.email_confirmed %}
         <div class="alert alert-info" role="alert">

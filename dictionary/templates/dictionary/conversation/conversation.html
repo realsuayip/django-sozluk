@@ -16,9 +16,8 @@
                 <use href="#arrow-left"></use>
             </svg>
         </span>mesajlara dön</a>
-        {% if not recipient in request.user.blocked.all %}
-            <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger"
-               data-username="{{ recipient.username }}">bu herifi engelle</a>
+        {% if recipient not in user.blocked.all %}
+            <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
         {% endif %}
 
     </span>
@@ -27,20 +26,19 @@
 
     {% with messages=conversation.messages.all %}
         {% if messages|length > 4 %}
-            <a id="message_history_show" role="button" tabindex="0" title="aksın">
-                sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
+            <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
         {% endif %}
 
         <ul id="message_list" class="chat">
             {% for message in messages %}
-                {% if message.sender == request.user %}
+                {% if message.sender == user %}
                     <li class="bubble sent">
                         <p>{{ message.body|formatted|linebreaksbr }}</p>
-                        <time>{{ message.sent_at|naturaltime }}
+                        <span class="date-info">
+                            <time>{{ message.sent_at|naturaltime }}</time>
                             {% if message.read_at %}
                                 <span title="görüldü, {{ message.read_at|timesince }} önce">
-                                    <svg width="2em" height="1em" viewBox="0 0 16 16"
-                                         xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="2em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                         <use href="#msgread"></use>
                                     </svg>
                                 </span>
@@ -52,7 +50,7 @@
                                     </svg>
                                 </span>
                             {% endif %}
-                        </time>
+                        </span>
                     </li>
                 {% else %}
                     <li class="bubble recieved">
@@ -66,11 +64,11 @@
 
     <hr>
 
-    {% if recipient.message_preference == "DS" or request.user == recipient or request.user in recipient.blocked.all or recipient in request.user.blocked.all %}
+    {% if recipient.message_preference == "DS" or user == recipient or user in recipient.blocked.all or recipient in user.blocked.all %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
-    {% elif request.user.is_novice and recipient.message_preference == "AO" %}
+    {% elif user.is_novice and recipient.message_preference == "AO" %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
-    {% elif request.user not in recipient.following.all and recipient.message_preference == "FO" %}
+    {% elif user not in recipient.following.all and recipient.message_preference == "FO" %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
         <label for="message-body">

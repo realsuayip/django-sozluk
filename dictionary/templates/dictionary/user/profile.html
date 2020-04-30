@@ -47,7 +47,7 @@
             <li title="son 1 ayda girdiği entry sayısı">{{ profile.entry_count_month }}</li>
             <li title="son 1 haftada girdiği entry sayısı">{{ profile.entry_count_week }}</li>
             <li title="son 24 saatte girdiği entry sayısı">{{ profile.entry_count_day }}</li>
-            <li class="nobullet" title="son entry girdiği zaman">{% with last=profile.last_entry_date %}{% if last %}{{ last|timesince }} önce{% else %}hiç{% endif %}{% endwith %}</li>
+            <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|naturaltime|default:"hiç" }}</li>
 
             {% if novice_queue %}
                 <li class="float-right nobullet">çaylak onay listesinde {{ novice_queue|ordinal }} sıradasınız</li>

@@ -11,9 +11,11 @@ GENERIC_SUPERUSER_USERNAME = "djangosozluk"
 Give the username of the user who does administrative actions in the site.
 """
 
-# Create an anonymous user with is_private=True and is_novice=False.
-# This anonymous user is used to hold the entries of deleted accounts.
-GENERIC_PRIVATEUSER_ID = 35
+GENERIC_PRIVATEUSER_USERNAME = "anonymous"
+"""
+Create an anonymous user with is_private=True and is_novice=False.
+This anonymous user is used to hold the entries of deleted accounts.
+"""
 
 #  <-----> START OF CATEGORY RELATED SETTINGS <----->  #
 

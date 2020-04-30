@@ -2,7 +2,7 @@
 {% block title %}{{ topic.title }}{% if entry_permalink %} - #{{ entries.0.pk }}{% endif %}{% if mode == "today" %} -
     bugünün entry'leri{% endif %}{% if mode == "novices" %} - çaylaklar{% endif %}
     {% if mode == "history" and entries %} - {{ request.GET.year }} yılında bugün{% endif %}
-    {% if page_obj.number > 1 %} - sayfa{{ page_obj.number }}{% endif %}
+    {% if page_obj.number > 1 %} - sayfa {{ page_obj.number }}{% endif %}
 {% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}
@@ -58,8 +58,8 @@
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">bugün</a>
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=http://">linkler</a>
 
-                            {% if request.user.is_authenticated %}
-                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ request.user.username }}">benimkiler</a>
+                            {% if user.is_authenticated %}
+                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">benimkiler</a>
                             {% endif %}
 
                             <a class="dropdown-item pb-2">
@@ -75,8 +75,8 @@
                             </a>
 
                         </div>
-                        {% if request.user.is_authenticated %}
-                            {% check_follow_status request.user topic as status %}
+                        {% if user.is_authenticated %}
+                            {% check_follow_status user topic as status %}
                             <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip etme{% else %}takip et{% endif %}</a>
                         {% endif %}
                     </div>
@@ -113,18 +113,7 @@
 
                     {# previous entries button #}
                     {% if previous_entries_count > 0 %}
-                        {% if entry_permalink %}
-                            <a title="tümünü göster"
-                               href="{{ topic.get_absolute_url }}?page={{ previous_entries_page }}"
-                               class="more-entries-button mt-2">
-                                {{ previous_entries_count }} entry daha
-                            </a>
-                        {% else %}
-                            <a title="tümünü göster" href="?page={{ previous_entries_page }}"
-                               class="more-entries-button mt-2">
-                                {{ previous_entries_count }} entry daha
-                            </a>
-                        {% endif %}
+                        <a title="tümünü göster" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ previous_entries_page }}" class="more-entries-button mt-2">{{ previous_entries_count }} entry daha</a>
                     {% endif %}
                     {# end of previous entries button #}
 
@@ -149,11 +138,7 @@
                                 {% endif %}
 
                                 {% if all_entries_count %}
-                                    <a title="tümünü göster"
-                                       href="{{ topic.get_absolute_url }}"
-                                       class="more-entries-button">
-                                        tümünü göster ({{ all_entries_count }} entry)
-                                    </a>
+                                    <a title="tümünü göster" href="{{ topic.get_absolute_url }}" class="more-entries-button">tümünü göster ({{ all_entries_count }} entry)</a>
                                 {% endif %}
 
                             {% endif %}
@@ -163,19 +148,7 @@
 
                     {# subsequent entries button #}
                     {% if subsequent_entries_count > 0 %}
-                        {% if entry_permalink %}
-                            <a title="tümünü göster"
-                               href="{{ topic.get_absolute_url }}?page={{ subsequent_entries_page }}"
-                               class="more-entries-button">
-                                {{ subsequent_entries_count }} entry daha
-                            </a>
-
-                        {% else %}
-                            <a title="tümünü göster" href="?page={{ subsequent_entries_page }}"
-                               class="more-entries-button">
-                                {{ subsequent_entries_count }} entry daha
-                            </a>
-                        {% endif %}
+                        <a title="tümünü göster" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ subsequent_entries_page }}" class="more-entries-button">{{ subsequent_entries_count }} entry daha</a>
                     {% endif %}
                     {# end of subsequent entries button #}
 
@@ -204,7 +177,7 @@
     </section>
 
     {# add entry form & user related modal import #}
-    {% if request.user.is_authenticated %}
+    {% if user.is_authenticated %}
 
         {% include "dictionary/includes/send_message_modal.html" %}
         {% include "dictionary/includes/block_user_modal.html" %}
@@ -229,7 +202,7 @@
 
                     <div class="row entry-editor-footer">
                         <div class="col-6">
-                            {% if not request.user.is_suspended %}
+                            {% if not user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
                                     {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
                                     <label title="bu entry'i halka açık olarak yayınlamadan tut" class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>

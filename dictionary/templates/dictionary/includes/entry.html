@@ -20,7 +20,7 @@
                 </a>
 
                 <a href="{{ entry.get_absolute_url }}" class="permalink">
-                    <time>{{ time }}</time>
+                    <time datetime="{{ entry.date_created|date:"c" }}">{{ time }}</time>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right entry-actions"></div>
             </div>
@@ -78,7 +78,7 @@
 
             <div class="meta">
                 <a href="{{ entry.get_absolute_url }}" class="permalink">
-                    <time>{{ time }}</time>
+                    <time datetime="{{ entry.date_created|date:"c" }}">{{ time }}</time>
                 </a>
                 {% if not entry.author.is_private %}
                     <a class="username" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>

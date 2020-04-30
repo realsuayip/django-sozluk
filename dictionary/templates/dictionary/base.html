@@ -42,7 +42,7 @@
             </div>
 
             {# HAYVAN-ARA #}
-            <form method="GET" class="header-search-form{% if request.user.is_authenticated %} logged-in{% endif %}" action="{% url 'topic-search' %}" id="header_search_form">
+            <form method="GET" class="header-search-form{{ user.is_authenticated|yesno:" logged-in," }}" action="{% url 'topic-search' %}" id="header_search_form">
                 <div class="input-group searchbox">
                     <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="Arama terimi">
                     <div class="input-group-append">
@@ -74,10 +74,10 @@
             {# <!--- user navigation --> #}
 
 
-            {% if request.user.is_authenticated %}
+            {% if user.is_authenticated %}
                 <ul class="user-navigation">
                     <li>
-                        <a class="nav-quicklink" href="{{ request.user.get_absolute_url }}" aria-label="profilim">
+                        <a class="nav-quicklink" href="{{ user.get_absolute_url }}" aria-label="profilim">
                             <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#person"></use>
                             </svg>
@@ -148,7 +148,7 @@
                 {% render_header_link "tarihte-bugun" %}
                 {% render_header_link "takip" %}
 
-                {% if request.user.is_authenticated %}
+                {% if user.is_authenticated %}
                     <li id="usermenu_mobile" data-toggle="dropdown">
                         <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#more"></use>

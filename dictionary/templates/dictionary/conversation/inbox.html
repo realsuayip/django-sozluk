@@ -11,9 +11,9 @@
         <ul class="threads">
             {% for chat in conversations %}
                 {% with lastmsg=chat.last_message %}
-                <li {% if lastmsg.recipient == request.user and not lastmsg.read_at %}class="unread"{% endif %}>
+                <li {% if lastmsg.recipient == user and not lastmsg.read_at %}class="unread"{% endif %}>
                     {% with sender=lastmsg.sender recipient=lastmsg.recipient %}
-                        {% if sender == request.user %}
+                        {% if sender == user %}
                             <a href="{% url 'conversation' slug=recipient.slug %}">
                             <h5>{{ recipient.username }}</h5>
 

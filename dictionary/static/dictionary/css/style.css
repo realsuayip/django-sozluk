@@ -55,9 +55,6 @@ header.page_header {
     border-right: none;
 }
 
-.searchbox .searchbtn {
-    width: 32px;
-}
 
 .searchbox > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle) {
     -webkit-border-top-right-radius: .25rem;
@@ -72,6 +69,7 @@ header.page_header {
     background: #092e20;
     color: #fff;
     padding: 3px 4px;
+    width: 32px;
 }
 
 .searchbox .dropbtn {
@@ -230,7 +228,7 @@ nav.sub-nav ul .more_tags_dropdown,
 }
 
 .left-frame::-webkit-scrollbar-thumb:hover {
-    background-color: #666666;
+    background-color: #666;
 }
 
 .left-frame::-webkit-scrollbar-track {
@@ -245,17 +243,14 @@ nav.sub-nav ul .more_tags_dropdown,
     width: 6px;
 }
 
-
 .left-frame-in {
     height: 100%;
     width: 20%;
 }
 
-
 .right-frame {
     width: 250px;
 }
-
 
 .content-frame {
     width: calc(100% - 500px);
@@ -523,18 +518,6 @@ footer.entry-footer > .meta > a.action svg:hover {
     fill: #0d2f18;
 }
 
-
-form.login-form .btn {
-    background: #092e20;
-    color: #fff;
-    font-size: 1em;
-    padding: .5em 6em;
-}
-
-form.login-form .btn:hover {
-    color: #CCC;
-}
-
 form.login-form .errors {
     list-style-type: none;
 }
@@ -590,7 +573,6 @@ ul.user-navigation li a.nav-quicklink:hover > span {
     text-decoration: underline;
 }
 
-
 ul.user-navigation li.new {
     background: #092e20;
     -webkit-border-radius: 4px;
@@ -601,12 +583,10 @@ ul.user-navigation li.new {
     vertical-align: middle;
 }
 
-
 ul.user-navigation li.new a {
     color: #fff;
     font-weight: 600;
 }
-
 
 ul.user-navigation li:not(:nth-child(n+4)) {
     margin-right: 1em;
@@ -629,7 +609,6 @@ ul.user-navigation > li > .user-dropdown a.dropdown-item {
     font-size: 13px;
     padding: .3em 1.5em;
 }
-
 
 ul.topics-stdalone {
     padding: 0;
@@ -685,7 +664,6 @@ section.user-comments {
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
-
 
 section.user-comments .editor-buttons button.add-code {
     background: #fff;
@@ -760,13 +738,8 @@ a.more-entries-button {
 
 a.more-entries-button:hover {
     text-decoration: none;
-}
-
-
-.more-entries-button:hover {
     background: #f6f7f7;
 }
-
 
 .autocomplete-suggestions {
     -webkit-box-sizing: border-box;
@@ -961,7 +934,7 @@ ul.chat li.bubble:not(:nth-last-child(-n+4)) {
 }
 
 
-ul.chat li.bubble time {
+ul.chat li.bubble > span.date-info {
     display: flex;
     align-items: center;
 
@@ -977,7 +950,7 @@ ul.chat li.bubble.sent {
     background: #F0F0F0;
 }
 
-ul.chat li.bubble.sent time {
+ul.chat li.bubble.sent > span.date-info {
     justify-content: flex-end;
 }
 

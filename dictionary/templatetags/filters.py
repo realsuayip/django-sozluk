@@ -1,4 +1,3 @@
-import calendar
 import re
 
 from django import template
@@ -67,11 +66,6 @@ def formatted(raw_entry):
         entry = re.sub(*tag, entry)
 
     return mark_safe(entry)
-
-
-@register.filter
-def timestamp(date):
-    return int(calendar.timegm(date.timetuple()))
 
 
 @register.filter(expects_localtime=True)

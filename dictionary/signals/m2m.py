@@ -4,7 +4,8 @@ from django.db.models import F
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-from ..models.author import Author, Entry
+from ..models.author import Author
+from ..models.entry import Entry
 from ..models.topic import Topic
 from ..utils.settings import VOTE_RATES
 

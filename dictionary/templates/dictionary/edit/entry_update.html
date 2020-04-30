@@ -27,7 +27,7 @@
 
             <div class="row entry-editor-footer">
                 <div class="col-6">
-                    {% if entry.is_draft and not request.user.is_suspended %}
+                    {% if entry.is_draft and not user.is_suspended %}
                         <div class="custom-control custom-checkbox">
                             {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
                             <label class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>

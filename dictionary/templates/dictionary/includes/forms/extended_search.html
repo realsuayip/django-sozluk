@@ -13,7 +13,7 @@
         <label class="custom-control-label" for="nice_ones_{{ source }}">güzelinden olsun</label>
     </div>
 
-    {% if request.user.is_authenticated %}
+    {% if user.is_authenticated %}
         <div class="custom-control custom-checkbox">
             <input form="search_form_extended_{{ source }}" name="is_in_favorites" type="checkbox" class="custom-control-input" id="in_favorites_{{ source }}" value="true" {% if request.GET.is_in_favorites == "true" %}checked{% endif %}>
             <label class="custom-control-label" for="in_favorites_{{ source }}">sadece entry favorilediğim başlıklarda ara</label>

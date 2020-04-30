@@ -1,10 +1,9 @@
 import logging
 
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from ...utils.settings import GENERIC_PRIVATEUSER_ID
+from ...utils import get_generic_privateuser
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +18,9 @@ class AccountTerminationQueueManager(models.Manager):
         user.delete()
 
     def terminate_legacy(self, user):
-        anonymous_author_placeholder = get_user_model().objects.get(pk=GENERIC_PRIVATEUSER_ID)
-
         if not user.is_novice:
             # Migrate entries before deleting the user completely
-            user.entry_set.all().update(author=anonymous_author_placeholder)
+            user.entry_set.all().update(author=get_generic_privateuser())
             logger.info("User entires migrated: %s<->%d", user.username, user.pk)
 
         self.terminate_no_trace(user)

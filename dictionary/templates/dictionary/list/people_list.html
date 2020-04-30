@@ -6,7 +6,7 @@
     <h4><strong>takip ettiğin ve engellenmiş insanlar</strong></h4>
     <hr>
     <h6>takip ettiklerin: </h6>
-    {% with following=request.user.following.all %}
+    {% with following=user.following.all %}
         {% if following %}
             {{ following.count }} kişi
             <ul class="people-list">
@@ -22,7 +22,7 @@
     {% endwith %}
 
     <h6>engellediklerin:</h6>
-    {% with blocked=request.user.blocked.all %}
+    {% with blocked=user.blocked.all %}
         {% if blocked %}
             {{ blocked.count }} kişi, engeli kaldırmak için üstüne tıkla
             <ul class="people-list">

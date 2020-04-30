@@ -1,9 +1,11 @@
 import math
+from contextlib import suppress
 from decimal import Decimal
 
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import BooleanField, Case, F, Max, Q, When
 from django.shortcuts import reverse
@@ -22,7 +24,6 @@ from ..utils.settings import (
     UNDERWHELMING_KARMA_EXPRESSION,
 )
 from .category import Category
-from .entry import Entry
 from .managers.author import AccountTerminationQueueManager
 
 
@@ -159,6 +160,31 @@ class Author(AbstractUser):
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"slug": self.slug})
 
+    def get_following_topics_with_receipt(self):
+        """Get user's following topics with read receipts."""
+        return self.following_topics.annotate(
+            latest=Max(
+                "entries__date_created",
+                filter=~(
+                    Q(entries__author=self)
+                    | Q(entries__author__in=self.blocked.all())
+                    | Q(entries__author__is_novice=True)
+                    | Q(entries__is_draft=True)
+                ),
+            ),
+            last_read_at=F("topicfollowing__read_at"),
+            is_read=Case(
+                When(Q(latest__gt=F("topicfollowing__read_at")), then=False), default=True, output_field=BooleanField()
+            ),
+        )
+
+    def get_entry_count_by_threshold(self, **timedelta_kwargs):
+        return (
+            self.entry_set(manager="objects_published")
+            .filter(date_created__gte=time_threshold(**timedelta_kwargs))
+            .count()
+        )
+
     @property
     def generation(self):
         if DISABLE_GENERATIONS:
@@ -195,26 +221,26 @@ class Author(AbstractUser):
 
     @property
     def entry_count(self):
-        return Entry.objects_published.filter(author=self).count()
+        return self.entry_set(manager="objects_published").count()
 
     @property
     def entry_count_month(self):
-        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=30)).count()
+        return self.get_entry_count_by_threshold(days=30)
 
     @property
     def entry_count_week(self):
-        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=7)).count()
+        return self.get_entry_count_by_threshold(days=7)
 
     @property
     def entry_count_day(self):
-        return Entry.objects_published.filter(author=self, date_created__gte=time_threshold(days=1)).count()
+        return self.get_entry_count_by_threshold(days=1)
 
     @property
     def last_entry_date(self):
-        try:
-            return Entry.objects_published.filter(author=self).latest("date_created").date_created
-        except Entry.DoesNotExist:
-            return None
+        with suppress(ObjectDoesNotExist):
+            return self.entry_set(manager="objects_published").latest("date_created").date_created
+
+        return None
 
     @property
     def followers(self):
@@ -222,7 +248,12 @@ class Author(AbstractUser):
 
     @property
     def entry_nice(self):
-        return Entry.objects_published.filter(author=self, vote_rate__gt=Decimal("1")).order_by("-vote_rate").first()
+        return (
+            self.entry_set(manager="objects_published")
+            .filter(vote_rate__gt=Decimal("1"))
+            .order_by("-vote_rate")
+            .first()
+        )
 
     @property
     def email_confirmed(self):
@@ -238,13 +269,7 @@ class Author(AbstractUser):
 
     @cached_property
     def has_unread_topics(self):
-        queryset = self.following_topics.annotate(
-            latest=Max("entries__date_created", filter=~Q(entries__author=self)),
-            is_read=Case(
-                When(Q(latest__gt=F("topicfollowing__read_at")), then=False), default=True, output_field=BooleanField()
-            ),
-        ).filter(is_read=False)
-        return queryset.exists()
+        return self.get_following_topics_with_receipt().filter(is_read=False).exists()
 
 
 class Memento(models.Model):
