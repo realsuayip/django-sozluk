@@ -60,10 +60,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Using custom csrf middleware here. Check the module to see the rationale.
+    'dictionary.middleware.csrf.CsrfViewMiddleware',
     'dictionary.middleware.users.NoviceActivityMiddleware',
     'dictionary.middleware.frontend.MobileDetectionMiddleware'
 ]

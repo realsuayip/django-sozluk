@@ -1174,7 +1174,8 @@ li.profile-stat-expand .dropdown-menu .dropdown-item {
     color: #16784f;
 }
 
-li.profile-stat-expand .dropdown-menu .dropdown-item:focus {
+li.profile-stat-expand .dropdown-menu .dropdown-item:focus,
+li.profile-stat-expand .dropdown-menu .dropdown-item:active {
     background: inherit;
 }
 

@@ -218,29 +218,23 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def form_invalid(self, form):
         """
-        This can be called by invalid Topic title or banned topic post. Because no queryset is returned, a custom
-        form_invalid method is necessary. In this method, appropriate redirections are made to ensure that user finds
-        themselves where they started. Error messages supplied via notifications in form_valid exception catch.
+        This can be called by: invalid topic title, banned topic post or invalid content. Because no queryset is set,
+        a custom form_invalid method is necessary. Non-field error messages supplied via notifications in form_valid.
         """
-
         if form.errors:
             for err in form.errors["content"]:
-                notifications.error(self.request, err)
+                notifications.error(self.request, err, extra_tags="persistent")
 
-        unicode_url_argument = None
+        # This part is a bit tricky: Normally form views don't have get_queryset method,
+        # so when you call super().form_invalid(form) it doesn't work because ListView's
+        # get_context_data() interferes, and says: "Hey, if this view wants the context
+        # now, then it must have defined self.object_list so I can use that to paginate it!"
+        # But there is no such attribute because the view first proceeded to resolve the form.
+        # So we add that attribute here in order that the view can actually process the objects.
+        # We could also redirect the user (form_valid does this), but it doesn't preserve form data.
 
-        if self.kwargs.get("unicode_string"):
-            unicode_url_argument = self.kwargs.get("unicode_string")
-        elif self.request.GET.get("q"):
-            unicode_url_argument = self.request.GET.get("q")
-
-        if unicode_url_argument:
-            return redirect(reverse("topic-unicode-url", kwargs={"unicode_string": unicode_url_argument}))
-
-        if self.kwargs.get("entry_id"):
-            return redirect(reverse("entry-permalink", kwargs={"entry_id": self.kwargs.get("entry_id")}))
-
-        return redirect(reverse("topic", kwargs={"slug": self.kwargs.get("slug")}))
+        self.object_list = self.get_queryset()  # pylint: disable=attribute-defined-outside-init
+        return super().form_invalid(form)
 
     def regular(self):
         return self.topic.entries.all()

@@ -36,8 +36,8 @@ class GeneralReportView(CreateView):
                 " bu bağlantıya tıkladıktan sonra isteğiniz bize ulaşacak.",
                 extra_tags="persistent",
             )
-        except SMTPException:
-            return super().form_invalid(form)
+        except (SMTPException, ConnectionRefusedError):
+            return self.form_invalid(form)
 
         return super().form_valid(form)
 

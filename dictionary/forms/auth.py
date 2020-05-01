@@ -8,7 +8,7 @@ from ..models import Author, AccountTerminationQueue
 class LoginForm(AuthenticationForm):
     error_messages = {'invalid_login': (
         "giriş yapılamadı. doğru e-posta ve parola kombinasyonunu girdiğinizden emin olun. bilgileriniz büyük-küçük "
-        "harf hassastır. e-posta adresinizi onayladığınzdan emin olun.")}
+        "harf duyarlıdır. e-posta adresinizi onayladığınızdan emin olun.")}
     remember_me = forms.BooleanField(required=False, label="beni hatırla")
 
 

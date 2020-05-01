@@ -12,7 +12,7 @@ from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPubli
 
 
 ENTRY_RE = re.compile(r"""^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#₺&@()_+=':%/",.!?*~`\[\]{}<>^;\\|-]+$""", re.MULTILINE)
-ENTRY_VALIDATOR = RegexValidator(ENTRY_RE, message="bu entry geçerisz karakterler içeriyor")
+ENTRY_VALIDATOR = RegexValidator(ENTRY_RE, message="bu entry geçersiz karakterler içeriyor")
 
 
 class Entry(models.Model):

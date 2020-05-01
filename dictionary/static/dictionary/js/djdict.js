@@ -107,7 +107,9 @@ const mobileView = function () {
     });
 };
 
-mql.addEventListener("change", function (e) {
+// Safari doesn't support mql.addEventListener yet, so we have
+// to use deprecated addListener.
+mql.addListener(function (e) {
     if (e.matches) {
         mobileView();
     } else {
@@ -747,9 +749,10 @@ const showBlockDialog = function (recipient) {
     $("#blockUserModal").modal("show");
 };
 
-const showMessageDialog = function (recipient) {
+const showMessageDialog = function (recipient, extraContent) {
     const msgModal = $("#sendMessageModal");
     $("#sendMessageModal span.username").text(recipient);
+    $("#sendMessageModal textarea#message_body").val(extraContent);
     msgModal.attr("data-for", recipient);
     msgModal.modal("show");
 };
@@ -918,9 +921,9 @@ const categoryAction = function (type, pk) {
 };
 
 const composeMessage = function (recipient, body) {
-    const queryArgs = `body: "${body}", recipient: "${recipient}"`;
-    const query = `mutation { message { compose(${queryArgs}) { feedback } } }`;
-    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+    const variables = { recipient, body };
+    const query = `mutation compose($body: String!, $recipient: String!) { message { compose(body: $body, recipient: $recipient) { feedback } } }`;
+    $.post("/graphql/", JSON.stringify({ query, variables }), function (response) {
         notify(response.data.message.compose.feedback);
     }).fail(function () {
         notify("o mesaj gitmedi yalnız", "error");
@@ -929,7 +932,8 @@ const composeMessage = function (recipient, body) {
 
 $(".entry-actions").on("click", ".send-message-trigger", function () {
     const recipient = $(this).parent().siblings(".username").text();
-    showMessageDialog(recipient);
+    const entryInQuestion = $(this).parents(".entry-full").attr("data-id");
+    showMessageDialog(recipient, `\`#${entryInQuestion}\` hakkında:\n`);
 });
 
 $("#send_message_btn").on("click", function () {
@@ -955,7 +959,7 @@ $("button#follow-category-trigger").on("click", function () {
     $(this).toggleClass("faded");
 });
 
-$("form.search_mobile").submit(function () {
+$("form.search_mobile, form.reporting-form").submit(function () {
     const emptyFields = $(this).find(":input").filter(function () {
         return $(this).val() === "";
     });

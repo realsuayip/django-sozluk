@@ -1,3 +1,28 @@
+[0.126.0-dev-pre](2020.05.02)(compatible)
+--Additions--
+1) New CsrfViewMiddleware.
+2) When using message sending modal, the entry in question
+is now added to the text area.
+
+-- Changes --
+1) Fixed the javascript file to make Safari users happy.
+2) When users first requested the site the csrftoken
+was not available, so they couldn't browse any categories
+until they got into a page with csrf_token. Fixed that.
+Now the csrf_token is set immediately when they first visit.
+3) In TopicEntryList, when users sent entries with invalid
+content, the entry content had been flushed, the content
+is now preserved.
+4) When using message sending modal, sending messages with
+multiple lines was impossible, fixed that.
+5) When sending reports, if the mail server couldn't send the mail,
+the form didn't show the error message it supposed to show, fixed that.
+(Such messages will be added to other e-mail sending views.)
+6) Typos.
+
+--Deletions--
+None
+
 [0.125.0-dev-pre](2020.04.30)(compatible)
 --Additions--
 1) Add get_following_topics_with_receipt method
