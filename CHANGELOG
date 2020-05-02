@@ -1,3 +1,13 @@
+[0.127.0-dev-pre](2020.05.02)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fix a security flaw introduced in the previous commit.
+
+--Deletions--
+None
+
 [0.126.0-dev-pre](2020.05.02)(compatible)
 --Additions--
 1) New CsrfViewMiddleware.

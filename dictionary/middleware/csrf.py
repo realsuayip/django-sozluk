@@ -1,4 +1,5 @@
-from django.views.decorators.csrf import _EnsureCsrfCookie
+from django.middleware.csrf import CsrfViewMiddleware as _CsrfViewMiddleware
+from django.middleware.csrf import get_token
 
 
 # Normally django.middleware.csrf.CsrfViewMiddleware
@@ -9,5 +10,10 @@ from django.views.decorators.csrf import _EnsureCsrfCookie
 # of their content set the csrf cookie. This is required because
 # our website dynamically requests the csrftoken cookie.
 
-class CsrfViewMiddleware(_EnsureCsrfCookie):
-    pass
+
+class CsrfViewMiddleware(_CsrfViewMiddleware):
+    def process_view(self, request, callback, callback_args, callback_kwargs):
+        retval = super().process_view(request, callback, callback_args, callback_kwargs)
+        # Force process_response to send the cookie
+        get_token(request)
+        return retval
