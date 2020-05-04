@@ -1,11 +1,25 @@
 import logging
 
+from django.contrib.auth.models import UserManager
+from django.db.models import Q
 from django.db import models
 from django.utils import timezone
 
 from ...utils import get_generic_privateuser
 
+
 logger = logging.getLogger(__name__)
+
+
+class AuthorManagerAccessible(UserManager):
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .exclude(
+                Q(is_frozen=True) | Q(is_private=True) | Q(is_active=False) | Q(suspended_until__gt=timezone.now())
+            )
+        )
 
 
 class AccountTerminationQueueManager(models.Manager):

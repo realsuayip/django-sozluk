@@ -118,7 +118,7 @@
                     {# end of previous entries button #}
 
                     {# list of entries #}
-                    <ul>
+                    <ul class="topic-view-entries">
                         {% if entry_permalink %}
                             {% for entry in entries %}
                                 {% include "dictionary/includes/entry.html" with permalink="yes" %}

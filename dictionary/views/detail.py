@@ -146,7 +146,7 @@ class UserProfile(IntegratedFormMixin, ListView):
     def authors(self):
         favorites = self.profile.favorite_entries.all()
         return (
-            Author.objects.filter(entry__in=favorites, is_private=False)
+            Author.objects_accessible.filter(entry__in=favorites)
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
             .exclude(pk=self.profile.pk)

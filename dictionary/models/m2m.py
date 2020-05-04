@@ -22,3 +22,15 @@ class EntryFavorites(models.Model):
     class Meta:
         verbose_name = "Entry favorisi"
         verbose_name_plural = "Entry favorilenmeleri"
+
+
+class UpvotedEntries(models.Model):
+    author = models.ForeignKey("Author", on_delete=models.CASCADE)
+    entry = models.ForeignKey("Entry", on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+
+class DownvotedEntries(models.Model):
+    author = models.ForeignKey("Author", on_delete=models.CASCADE)
+    entry = models.ForeignKey("Entry", on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)

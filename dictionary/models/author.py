@@ -3,7 +3,7 @@ from contextlib import suppress
 from decimal import Decimal
 
 from django.apps import apps
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -14,17 +14,23 @@ from django.utils.functional import cached_property
 
 from uuslug import uuslug
 
+from ..models.m2m import DownvotedEntries, UpvotedEntries
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (
+    DAILY_VOTE_LIMIT,
+    DAILY_VOTE_LIMIT_PER_USER,
     DISABLE_GENERATIONS,
     FIRST_GENERATION_DATE,
     GENERATION_GAP_DAYS,
+    KARMA_BOUNDARY_LOWER,
+    KARMA_BOUNDARY_UPPER,
     KARMA_EXPRESSIONS,
     OVERWHELMING_KARMA_EXPRESSION,
+    TOTAL_VOTE_LIMIT_PER_USER,
     UNDERWHELMING_KARMA_EXPRESSION,
 )
 from .category import Category
-from .managers.author import AccountTerminationQueueManager
+from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
@@ -110,8 +116,12 @@ class Author(AbstractUser):
     favorite_entries = models.ManyToManyField(
         "Entry", through="EntryFavorites", related_name="favorited_by", blank=True
     )
-    upvoted_entries = models.ManyToManyField("Entry", related_name="upvoted_by", blank=True)
-    downvoted_entries = models.ManyToManyField("Entry", related_name="downvoted_by", blank=True)
+
+    upvoted_entries = models.ManyToManyField("Entry", through="UpvotedEntries", related_name="upvoted_by", blank=True)
+
+    downvoted_entries = models.ManyToManyField(
+        "Entry", through="DownvotedEntries", related_name="downvoted_by", blank=True
+    )
 
     # User-category relations
     following_categories = models.ManyToManyField("Category", blank=True)
@@ -131,6 +141,10 @@ class Author(AbstractUser):
 
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)
+
+    # https://docs.djangoproject.com/en/3.0/topics/db/managers/#django.db.models.Model._default_manager
+    objects = UserManager()
+    objects_accessible = AuthorManagerAccessible()
 
     def __str__(self):
         return f"{self.username}:{self.id}"
@@ -185,6 +199,38 @@ class Author(AbstractUser):
             .count()
         )
 
+    def has_exceeded_vote_limit(self, against=None):
+        """Check vote limits. This is done before the vote is registered."""
+
+        # Notice: couldn't filter on unions, so both models are explicitly written.
+        h24 = {"date_created__gte": time_threshold(hours=24)}  # Filter objects that has been created in last 24 hours.
+
+        upvoted = UpvotedEntries.objects.filter(author=self)
+        downvoted = DownvotedEntries.objects.filter(author=self)
+
+        daily_vote_count = upvoted.filter(**h24).count() + downvoted.filter(**h24).count()
+
+        if daily_vote_count >= DAILY_VOTE_LIMIT:
+            return True, "bir gün içerisinde kullanabileceğiniz oy hakkınızı doldurdunuz. daha sonra tekrar deneyin."
+
+        if against:
+            upvoted_against = upvoted.filter(entry__author=against).count()
+            downvoted_against = downvoted.filter(entry__author=against).count()
+
+            daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
+            daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
+
+            total_votes_against = upvoted_against + downvoted_against
+            daily_votes_against = daily_upvoted_against + daily_downvoted_against
+
+            if total_votes_against >= TOTAL_VOTE_LIMIT_PER_USER:
+                return True, "olmaz. bu kullanıcıyla yeterince haşır neşir oldunuz."
+
+            if daily_votes_against >= DAILY_VOTE_LIMIT_PER_USER:
+                return True, "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara baksanız?"
+
+        return False, None
+
     @property
     def generation(self):
         if DISABLE_GENERATIONS:
@@ -202,10 +248,10 @@ class Author(AbstractUser):
     def karma_flair(self):
         karma = round(self.karma)
 
-        if karma < -99:
+        if karma <= KARMA_BOUNDARY_LOWER:
             return f"{UNDERWHELMING_KARMA_EXPRESSION} ({karma})"
 
-        if karma > 999:
+        if karma >= KARMA_BOUNDARY_UPPER:
             return f"{OVERWHELMING_KARMA_EXPRESSION} ({karma})"
 
         for key in KARMA_EXPRESSIONS:
@@ -215,9 +261,9 @@ class Author(AbstractUser):
         return None
 
     @property
-    def is_karma_eligibile(self):
+    def is_karma_eligible(self):
         """Eligible users will be able to influence other users' karma points by voting."""
-        return not (self.is_novice or self.is_suspended or self.karma < -200)
+        return not (self.is_novice or self.is_suspended or self.karma <= KARMA_BOUNDARY_LOWER)
 
     @property
     def entry_count(self):

@@ -11,7 +11,7 @@ from .views.novices import NoviceList, NoviceLookup
 @admin.register(Author)
 class AuthorAdmin(UserAdmin):
     model = Author
-    raw_id_fields = ["upvoted_entries", "downvoted_entries", "following", "blocked", "pinned_entry"]
+    raw_id_fields = ["following", "blocked", "pinned_entry"]
     search_fields = ["username"]
     list_display = ("username", "email", "is_active", "is_novice", "date_joined")
 
@@ -29,8 +29,6 @@ class AuthorAdmin(UserAdmin):
                     "gender",
                     "following",
                     "blocked",
-                    "upvoted_entries",
-                    "downvoted_entries",
                     "pinned_entry",
                     "following_categories",
                     "is_frozen",

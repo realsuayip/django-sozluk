@@ -5,6 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="authentication" content="{{ user.is_authenticated|yesno:"1,0" }}">
 
     {% load static %}
     {% load functions %}
@@ -24,7 +25,7 @@
     <script defer src="{% static 'dictionary/js/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
 
-    <title>{% block title %}{% endblock %} - django sözlük </title>
+    <title>{% block title %}{% endblock %} - django sözlük</title>
 </head>
 <body {% block bodyattr %}class="default topic-entry-view"{% endblock %}>
 {% include "dictionary/includes/icons.svg" %}

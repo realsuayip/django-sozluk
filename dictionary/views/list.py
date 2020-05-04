@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponseBadRequest
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -474,7 +474,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 return False
 
             if query.startswith("@") and slugify(query):
-                return redirect("user-profile", slug=slugify(query[1:]))
+                author = get_object_or_404(Author, username=query[1:])
+                return redirect(author.get_absolute_url())
 
             if query.startswith("#") and query[1:].isdigit():
                 return redirect("entry-permalink", entry_id=query[1:])

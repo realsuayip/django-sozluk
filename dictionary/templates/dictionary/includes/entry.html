@@ -1,5 +1,5 @@
 {% load filters %}{% load functions %}
-<li data-topic="{{ entry.topic.title }}" data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% else %} unauthenticated{% endif %}">
+<li data-topic="{{ entry.topic.title }}" data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% endif %}">
     {% with time=entry.date_created|entrydate:entry.date_edited %}
         <header class="entry-individual">
             {% if show_title == "yes" %}

@@ -68,5 +68,8 @@ class AnonymousUserStorage:
         return VoteStorage(self.request, name="downvoted_entries", rate=VOTE_RATES["anonymous"] * -1)
 
     @property
-    def is_karma_eligibile(self):
+    def is_karma_eligible(self):
         return False
+
+    def has_exceeded_vote_limit(self, **kwargs):
+        return False, None

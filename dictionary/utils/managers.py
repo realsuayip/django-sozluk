@@ -162,7 +162,7 @@ class TopicQueryHandler:
         """
 
         pk = user.pk
-        threshold = time_threshold(hours=24)
+        threshold = time_threshold(hours=120)  # in 5 days
 
         with connection.cursor() as cursor:
             cursor.execute(

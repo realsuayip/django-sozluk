@@ -45,7 +45,7 @@ NON_DB_CATEGORIES_META = {
 }
 
 
-NON_DB_CATEGORIES = tuple(NON_DB_CATEGORIES_META.keys())
+NON_DB_CATEGORIES = NON_DB_CATEGORIES_META.keys()
 
 # These categories have tabs. Make sure you configure metadata correctly.
 TABBED_CATEGORIES = ("takip", "ukteler")
@@ -136,8 +136,18 @@ VOTE_RATES = {
 KARMA_RATES = {
     "upvote": Decimal("0.18"),      # The amount of karma that the user will gain upon getting an upvote.
     "downvote": Decimal("0.27"),    # The amount of karma that the user will lose upon getting an downvote.
-    "cost": Decimal("0.06"),        # The amount of karma that the user will lose upon voting an entry.
+    "cost": Decimal("0.09"),        # The amount of karma that the user will lose upon voting an entry.
 }
+
+DAILY_VOTE_LIMIT = 240
+"""The total number of entries that a user can vote in a 24 hour period."""
+
+DAILY_VOTE_LIMIT_PER_USER = 24
+"""Same with daily vote limit but applies for one author. E.g. author X
+can only vote 24 entries of author Y"""
+
+TOTAL_VOTE_LIMIT_PER_USER = 160
+"""Similar to daily vote limit per user, but considers all time votes."""
 
 KARMA_EXPRESSIONS = {
     range(25, 50): "kaotik nötral",
@@ -177,19 +187,26 @@ Karma expressions for specific karma ranges. All expressions are
 excerpted from ekşi sözlük. Their rights might be reserved.
 """
 
+KARMA_BOUNDARY_UPPER = 1000
+"""
+Karma points required to earn the overwhelming karma expression.
+Notice: This number must be the stop parameter of the largest range item in
+KARMA_EXPRESSIONS, otherwise the flair won't be visible for those who have
+more than max specified in KARMA_EXPRESSIONS but less than KARMA_BOUNDARY_UPPER.
+"""
 
-# Points for the following two expressions are hard-coded in
-# dictionary.models.Author's karma_flair property.
+KARMA_BOUNDARY_LOWER = -200
+"""
+Karma points required to be given the underwhelming karma expression.
+Also, if an user has has such karma, they won't be able to influence
+other people's karma by voting.
+"""
 
 UNDERWHELMING_KARMA_EXPRESSION = "geri zekâlı"
-"""Expression for too low karma points."""
+"""Expression for too low karma points. (decided by KARMA_BOUNDARY_LOWER)"""
 
 OVERWHELMING_KARMA_EXPRESSION = "halkın şampiyonu"
-"""
-Expression for the karma points that are larger than the
-maximum specified in KARMA_EXPRESSIONS.
-"""
-
+"""Expression for too high karma points. (decided by KARMA_BOUNDARY_UPPER)"""
 
 # Messages
 

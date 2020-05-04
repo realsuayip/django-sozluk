@@ -1,3 +1,30 @@
+[0.128.0-dev-pre](2020.05.04)(incompatible)
+--Additions--
+1) New manager for Author: AuthorManagerAccessible,
+only returns accessible users.
+2) Add vote limiting feature. See related settings.
+3) You can now change upper and lower karma boundaries
+in settings file.
+
+-- Changes --
+1) Extended upvoted and downvoted entries. This
+is **incompatible**. see before makemirations+migrate:
+https://stackoverflow.com/questions/26927705/
+2) Action button's context menu now loads only once.
+3) Context menu now checks for authentication in header,
+meta tag, not through individual entries.
+4) You are now properly redirected when you delete the
+last entry in the topic view.
+5) Increased voting cost.
+6) 'son' now looks for last 5 days.
+7) Author autocomplete and favorite authors in profile page
+now properly show authors (using accessible authors manager)
+8) Fixed a rare bug in ?q= search.
+9) Vote limiting feature related changes.
+
+--Deletions--
+1) Removed downvoted/upvoted info in admin.
+
 [0.127.0-dev-pre](2020.05.02)(compatible)
 --Additions--
 None

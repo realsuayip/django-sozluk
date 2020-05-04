@@ -25,7 +25,7 @@ class AuthorAutoCompleteQuery(ObjectType):
     @staticmethod
     @autocompleter
     def resolve_authors(_parent, _info, lookup, limit):
-        return Author.objects.filter(username__istartswith=lookup, is_private=False, is_active=True)[:limit]
+        return Author.objects_accessible.filter(username__istartswith=lookup)[:limit]
 
 
 class TopicAutoCompleteQuery(ObjectType):
