@@ -216,15 +216,14 @@ class Author(AbstractUser):
         if against:
             upvoted_against = upvoted.filter(entry__author=against).count()
             downvoted_against = downvoted.filter(entry__author=against).count()
-
-            daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
-            daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
-
             total_votes_against = upvoted_against + downvoted_against
-            daily_votes_against = daily_upvoted_against + daily_downvoted_against
 
             if total_votes_against >= TOTAL_VOTE_LIMIT_PER_USER:
                 return True, "olmaz. bu kullanıcıyla yeterince haşır neşir oldunuz."
+
+            daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
+            daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
+            daily_votes_against = daily_upvoted_against + daily_downvoted_against
 
             if daily_votes_against >= DAILY_VOTE_LIMIT_PER_USER:
                 return True, "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara baksanız?"
