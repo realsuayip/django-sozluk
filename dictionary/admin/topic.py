@@ -12,6 +12,22 @@ class TopicAdmin(admin.ModelAdmin):
         (None, {"fields": ("title", "category", "mirrors")}),
         ("Erişilebilirlik seçenekleri", {"fields": ("is_pinned", "is_banned", "is_censored")}),
         ("Üstveri", {"fields": ("created_by", "date_created")}),
+        (
+            "Medya",
+            {
+                "classes": ("collapse",),
+                "fields": ("media",),
+                "description": "<br>Sosyal medya sitelerindeki içerikleri başlığa gömebilirsiniz."
+                " Gömmek istediğiniz içeriğin adreslerini satır satır girmelisiniz."
+                " Mevcut seçenekler ve örnek adresler:<br><br>"
+                "<b>YouTube videosu: </b>(https://www.youtube.com/embed/qXN15uh4DLU)<br>"
+                "<b>Instagram gönderisi: </b>(https://www.instagram.com/p/B4nfnuRg0sp/)<br>"
+                "<b>Spotify şarkısı: </b>(https://open.spotify.com/embed/track/1idpc4Pr94WH9GYU5umNfz)<br>"
+                "<b>Spotify albümü: </b>(https://open.spotify.com/embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br>"
+                "<b>Spotify çalma listesi: </b>"
+                "(https://open.spotify.com/embed/user/spotify/playlist/37i9dQZF1DX1tz6EDao8it)<br>",
+            },
+        ),
     )
 
     list_display = ("title", "created_by", "is_censored", "is_banned", "date_created")

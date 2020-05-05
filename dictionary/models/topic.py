@@ -56,6 +56,8 @@ class Topic(models.Model):
         " haricindeki başlıkları tekrar toplu halde eklemek üzere not etmelisiniz.</p>",
     )
 
+    media = models.TextField(blank=True, null=True, verbose_name="Medya bağlantıları")
+
     is_banned = models.BooleanField(
         default=False,
         verbose_name="Yasaklı",

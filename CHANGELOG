@@ -1,3 +1,17 @@
+[0.129.0-dev-pre](2020.05.05)(incompatible)
+--Additions--
+1) Add media feature for Topic. This feature is
+**incompatible** run makemigrations+migrate for dictionary.
+
+-- Changes --
+1) Author usernames can now include numbers. Also limited
+the minimum length of usernames to 3.
+2) In mobile, links in topic channels now work.
+3) Reused pagination.html for entry_list.html
+
+--Deletions--
+None
+
 [0.128.0-dev-pre](2020.05.04)(incompatible)
 --Additions--
 1) New manager for Author: AuthorManagerAccessible,

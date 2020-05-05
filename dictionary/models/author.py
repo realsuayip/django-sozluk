@@ -6,6 +6,7 @@ from django.apps import apps
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import BooleanField, Case, F, Max, Q, When
 from django.shortcuts import reverse
@@ -34,7 +35,7 @@ from .managers.author import AccountTerminationQueueManager, AuthorManagerAccess
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
-    regex = r"^[a-z\ ]+$"
+    regex = r"^[a-z0-9]+(\ [a-z0-9]+)*$"
     message = "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir"
 
 
@@ -82,8 +83,9 @@ class Author(AbstractUser):
         "nick",
         max_length=35,
         unique=True,
-        help_text="şart. en fazla 35 karakter uzunluğunda, boşluk içerebilir özel ve türkçe karakter içeremez",
-        validators=[AuthorNickValidator()],
+        help_text="sözlükte sizi temsil edecek rumuz. 3-35 karakter uzunluğunda,"
+        " boşluk içerebilir özel ve türkçe karakter içeremez.",
+        validators=[AuthorNickValidator(), MinLengthValidator(3, "bu nick çok minnoş")],
         error_messages={"unique": "bu nick kapılmış"},
     )
 

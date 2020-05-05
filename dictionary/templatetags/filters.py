@@ -43,14 +43,14 @@ def formatted(raw_entry):
     replacements = (
         (r"\(bkz: #([1-9]\d{0,10})\)", r'(bkz: <a href="/entry/\1">#\1</a>)'),
         (r"\(bkz: (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
-        (r"\(bkz: @(?!\s)([a-z\ ]+)(?<!\s)\)", r'(bkz: <a href="/biri/\1/">@\1</a>)'),
+        (r"\(bkz: @(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)\)", r'(bkz: <a href="/biri/\1/">@\1</a>)'),
         (
             r"`:(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`",
             r'<a data-sup="(bkz: \1)" href="/topic/?q=\1" title="(bkz: \1)">*</a>',
         ),
         (r"`#([1-9]\d{0,10})`", r'<a href="/entry/\1">#\1</a>'),
         (r"`(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`", r'<a href="/topic/?q=\1">\1</a>'),
-        (r"`@(?!\s)([a-z\ ]+)(?<!\s)`", r'<a href="/biri/\1/">@\1</a>'),
+        (r"`@(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)`", r'<a href="/biri/\1/">@\1</a>'),
         (
             r"\(ara: (?!\s)(@?[a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)",
             r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
@@ -88,3 +88,37 @@ def wished_by(topic, author):
     if not topic.exists:
         return False
     return topic.wishes.filter(author=author).exists()
+
+
+@register.filter
+def mediastamp(media_urls, mode):
+    if mode not in ("regular", "today", "popular"):
+        return ""
+
+    has_instagram = False
+    media_set = tuple(dict.fromkeys(media_urls.split()))
+    html = ""
+
+    youtube = '<iframe class="border-0" width="100%" height="400" src="{}" \
+     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+    instagram = '<blockquote class="instagram-media w-100" data-instgrm-captioned data-instgrm-permalink="{}" \
+     data-instgrm-version="12"></blockquote>'
+    spotify = '<iframe class="border-0" src="{}" width="100%" height="{}" allowtransparency="true" \
+     allow="encrypted-media"></iframe>'
+
+    for url in map(escape, media_set):
+        if "youtube.com/embed/" in url:
+            html += youtube.format(url)
+        elif "instagram.com/p/" in url:
+            html += instagram.format(url)
+            has_instagram = True
+        elif "open.spotify.com/embed/" in url:
+            if "/track/" in url:
+                html += spotify.format(url, 80)
+            else:
+                html += spotify.format(url, 400)
+
+    if has_instagram:
+        html = '<script async src="//www.instagram.com/embed.js"></script>' + html
+
+    return mark_safe(f'<section class="topic-media-area mt-2">{html}</section>')

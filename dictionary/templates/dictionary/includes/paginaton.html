@@ -4,7 +4,7 @@
         {% if hr == "yes" %}
             <hr>
         {% endif %}
-        <div class="lf_pagination{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
+        <div class="{{ classlist|default:"lf_pagination" }}{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
             {% if page_obj.has_previous %}
                 <a title="önceki sayfa" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
             {% endif %}

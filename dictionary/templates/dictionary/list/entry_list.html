@@ -45,8 +45,6 @@
                 {% if populated %}
                     <div class="lower">
                     <div class="title_sub">
-
-
                     <span class="mr-3 nice-filter">şükela:&nbsp;&nbsp;<a title="tüm zamanların en çok beğenilenleri" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>tümü</a>
                         <span>&nbsp;|&nbsp;</span>
                         <a title="bugün en çok beğenilenler" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a>
@@ -81,32 +79,11 @@
                         {% endif %}
                     </div>
                 {% endif %}
-
-
-            {% if page_obj.paginator.num_pages > 1 %}
-                <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a title="önceki sayfa"
-                           href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
-                    {% endif %}
-                    <select class="page-selector" aria-label="Sayfa seçici">
-                        {% for page in page_obj.paginator.page_range %}
-                            {% if page == page_obj.number %}
-                                <option selected>{{ page }}</option>
-                            {% else %}
-                                <option>{{ page }}</option>
-                            {% endif %}
-
-                        {% endfor %}
-                    </select>
-                    <span style="color:#444">&nbsp;/&nbsp;</span>
-                    <a title="son sayfa" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
-                    {% if page_obj.has_next %}
-                        <a title="sonraki sayfa" href="?{% url_replace request 'page' page_obj.next_page_number %}" style="margin-left:4px;">»</a>
-                    {% endif %}
+                    {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="pagination" %}
                 </div>
-                </div>
-            {% endif %}
+
+                {% if topic.media and page_obj.number == 1 %}{{ topic.media|mediastamp:mode }}{% endif %}
+
                 </header>
 
                 {% if populated %}

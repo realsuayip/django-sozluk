@@ -431,6 +431,11 @@ $("ul#category_view li a, div#category_view_in a:not(.regular), section.topic-ca
 
 $("body").on("click", "[data-lf-slug]", function () {
     // Regular, slug-only
+
+    if (userIsMobile) {
+        window.location = ($(this).attr("href"));
+    }
+
     const slug = $(this).attr("data-lf-slug");
 
     if ($(this)[0].hasAttribute("data-tab")) {
