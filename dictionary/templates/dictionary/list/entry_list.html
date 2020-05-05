@@ -14,10 +14,8 @@
 
     {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}
     <section class="user_entries">
-        <header class="entry_header">
-
-
             {% if topic.exists %}
+                <header class="entry_header">
                 <h1 class="topic-title">
                     <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                     {% if mode == "search" %}<small style="font-size: 1rem;" class="ml-2">[arama terimi: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
@@ -78,9 +76,9 @@
                             <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip etme{% else %}takip et{% endif %}</a>
                         {% endif %}
                     </div>
-                {% endif %}
                     {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="pagination" %}
                 </div>
+                {% endif %}
 
                 {% if topic.media and page_obj.number == 1 %}{{ topic.media|mediastamp:mode }}{% endif %}
 
@@ -140,8 +138,10 @@
 
             {% else %}
                 {# Topic does not exist #}
-                <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a>
-                </h1>
+                <header class="entry_header">
+                    <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
+                </header>
+
                 <p>böyle bir şey yok.</p>
                 {% if not valid %}
                     <p>lanet olsun böyle başlığa zaten</p>
