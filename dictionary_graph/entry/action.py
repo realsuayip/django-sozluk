@@ -74,10 +74,10 @@ class FavoriteEntry(Action, Mutation):
 
         if info.context.user.favorite_entries.filter(pk=pk).exists():
             info.context.user.favorite_entries.remove(entry)
-            return FavoriteEntry(feedback="favorilerden çıkarıldı", count=entry.favorited_by.count())
+            return FavoriteEntry(feedback="favorilerden çıkarıldı", count=entry.get_favorite_count(info.context.user))
 
         info.context.user.favorite_entries.add(entry)
-        return FavoriteEntry(feedback="favorilendi", count=entry.favorited_by.count())
+        return FavoriteEntry(feedback="favorilendi", count=entry.get_favorite_count(info.context.user))
 
 
 def voteaction(mutator):

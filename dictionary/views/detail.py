@@ -150,7 +150,7 @@ class UserProfile(IntegratedFormMixin, ListView):
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
             .exclude(pk=self.profile.pk)
-            .only("username")
+            .only("username", "slug")
             .order_by("-frequency")[:10]
         )
 

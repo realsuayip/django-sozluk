@@ -24,7 +24,7 @@
 
     <hr class="mt-0">
 
-    {% with messages=conversation.messages.all %}
+    {% with messages=conversation.collection %}
         {% if messages|length > 4 %}
             <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
         {% endif %}

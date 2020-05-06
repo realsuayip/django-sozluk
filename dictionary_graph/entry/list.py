@@ -11,5 +11,9 @@ class EntryFavoritesQuery(ObjectType):
 
     @staticmethod
     @login_required
-    def resolve_favoriters(_parent, _info, pk):
-        return Entry.objects_published.get(pk=pk).favorited_by.all()
+    def resolve_favoriters(_parent, info, pk):
+        return (
+            Entry.objects_published.get(pk=pk)
+            .favorited_by(manager="objects_accessible")
+            .exclude(pk__in=info.context.user.blocked.all())
+        )

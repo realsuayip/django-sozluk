@@ -6,8 +6,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.db.models.query import QuerySet
+from django.db.models import Prefetch, Q
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -346,11 +345,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             return context
 
         entries = context.get("object_list")
-
-        if isinstance(entries, QuerySet):
-            queryset_size = entries.count()
-        else:
-            queryset_size = len(entries)
+        queryset_size = context.get("paginator").count
 
         if queryset_size > 0:
             # Find subsequent and previous entries
@@ -513,6 +508,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """
 
         novice_view_modes = ("novices", "entry_permalink")  # modes in which novice entries are visible
+        is_authenticated, blocked = self.request.user.is_authenticated, None
 
         if self.view_mode == "recent" and self.request.user.is_novice:
             # 'son' doesn't include novice entries for authors, but does for novices.
@@ -523,7 +519,19 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if self.view_mode not in novice_view_modes:
             qs = qs.exclude(author__is_novice=True)
 
-        if self.request.user.is_authenticated:
-            qs = qs.exclude(author__in=self.request.user.blocked.all())
+        if is_authenticated:
+            blocked = self.request.user.blocked.all()
+            qs = qs.exclude(author__in=blocked)
 
-        return qs.select_related("author", "topic").prefetch_related("favorited_by") if prefecth else qs
+        if prefecth:
+            # todo: when starting database access optimization patches, defer unused fields. using .only()
+            # todo: also optimize entry_permalink
+            base = qs.select_related("author", "topic")
+
+            if is_authenticated:
+                return base.prefetch_related(
+                    Prefetch("favorited_by", queryset=Author.objects_accessible.only("pk").exclude(pk__in=blocked))
+                )
+
+            return base
+        return qs

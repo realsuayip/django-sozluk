@@ -1,3 +1,21 @@
+[0.130.0-dev-pre](2020.05.06)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Made Entry regex validator more readable.
+2) When novice users get accepted to novice
+list they will get a informative message.
+3) Entry favorites now exclude blocked users
+and inaccessible users.
+4) All other changes were made to optimize
+database access. (Currently, there are a lot of
+unoptimized queries. They will be adressed after
+the feature adding period)
+
+--Deletions--
+None
+
 [0.129.0-dev-pre](2020.05.05)(incompatible)
 --Additions--
 1) Add media feature for Topic. This feature is

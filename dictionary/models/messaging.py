@@ -41,3 +41,7 @@ class Conversation(models.Model):
     @property
     def last_message(self):
         return self.messages.latest("sent_at")
+
+    @property
+    def collection(self):
+        return self.messages.select_related("sender")

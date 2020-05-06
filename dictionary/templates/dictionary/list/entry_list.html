@@ -99,7 +99,7 @@
                                 {% include "dictionary/includes/entry.html" with permalink="yes" %}
                             {% endfor %}
                         {% else %}
-                            {% if entries %}
+                            {% if page_obj.paginator.count %}
                                 {% for entry in entries %}
                                     {% include "dictionary/includes/entry.html" %}
                                 {% endfor %}
