@@ -18,7 +18,14 @@
                 <header class="entry_header">
                 <h1 class="topic-title">
                     <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
-                    {% if mode == "search" %}<small style="font-size: 1rem;" class="ml-2">[arama terimi: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
+
+                    {% if mode == "search" %}<small>[arama terimi: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
+                    {% if mode == "links" %}<small><strong>[linkler]</strong></small>{% endif %}
+                    {% if mode == "history" %}<small><strong>[tarihte bugün: </strong>{{ request.GET.year.strip }}]</small>{% endif %}
+                    {% if mode == "novices" %}<small><strong>[çaylaklar]</strong></small>{% endif %}
+                    {% if mode == "following" %}<small><strong>[olan biten]</strong></small>{% endif %}
+                    {% if mode == "recent" %}<small><strong>[son]</strong></small>{% endif %}
+
                     {% if topic.is_pinned %}
                         <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <use href="#pin"></use>
@@ -52,7 +59,7 @@
 
                         <div class="dropdown-menu topic-dropdown">
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">bugün</a>
-                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=http://">linkler</a>
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=links">linkler</a>
 
                             {% if user.is_authenticated %}
                                 <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">benimkiler</a>

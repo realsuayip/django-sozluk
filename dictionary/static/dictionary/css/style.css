@@ -1141,6 +1141,15 @@ a.search-closer:active {
     word-wrap: break-word;
 }
 
+.topic-title small {
+    font-size: 1rem;
+    margin-left: .5em;
+}
+
+.topic-title small strong {
+    font-weight: 600;
+}
+
 .form-group label strong {
     font-weight: 600;
 }

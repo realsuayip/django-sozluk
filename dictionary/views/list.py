@@ -155,7 +155,19 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     """This will be set to (entry_id) if user requests a single entry. It's similar to view_mode, but it needs some
        other metadata and seperated from view_mode as they use different urls."""
 
-    modes = ("regular", "today", "popular", "history", "nice", "nicetoday", "search", "following", "novices", "recent")
+    modes = (
+        "regular",
+        "today",
+        "popular",
+        "history",
+        "nice",
+        "nicetoday",
+        "search",
+        "following",
+        "novices",
+        "recent",
+        "links",
+    )
     """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
        parameter 'a'. For example ?a=today returns only today's entries."""
 
@@ -247,12 +259,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def history(self):
         year = self.request.GET.get("year", "")
 
-        with suppress(ValueError, OverflowError):
-            if int(year) in YEAR_RANGE:
-                now = timezone.now()
-                diff = now.year - int(year)
-                delta = now - relativedelta(years=diff)
-                return self.topic.entries.filter(date_created__date=delta.date())
+        if year.isdigit() and int(year) in YEAR_RANGE:
+            now = timezone.now()
+            diff = now.year - int(year)
+            delta = now - relativedelta(years=diff)
+            return self.topic.entries.filter(date_created__date=delta.date())
 
         return None
 
@@ -276,6 +287,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 return self.topic.entries.filter(content__icontains=keywords)
 
         return None
+
+    def links(self):
+        """Shows the entries with links."""
+        link_re = (
+            r"(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|"
+            r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,})"
+        )
+        return self.topic.entries.filter(content__regex=link_re)
 
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""
@@ -359,7 +378,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # view_mode specific settings
             if self.view_mode in ("popular", "today", "following", "novices"):
                 show_previous = True
-            elif self.view_mode in ("history", "entry_permalink", "search", "nicetoday", "recent"):
+            elif self.view_mode in ("history", "entry_permalink", "search", "nicetoday", "recent", "links"):
                 show_previous = True
                 show_subsequent = True
 

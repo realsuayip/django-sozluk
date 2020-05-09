@@ -106,7 +106,7 @@ def mediastamp(media_urls, mode):
     spotify = '<iframe class="border-0" src="{}" width="100%" height="{}" allowtransparency="true" \
      allow="encrypted-media"></iframe>'
 
-    for url in map(escape, media_set):
+    for url in filter(lambda u: not u.startswith("#"), map(escape, media_set)):
         if "youtube.com/embed/" in url:
             html += youtube.format(url)
         elif "instagram.com/p/" in url:

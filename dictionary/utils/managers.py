@@ -264,7 +264,7 @@ class TopicQueryHandler:
             orderding = "newer"
 
         # Provide a default search term if none present
-        if not keywords and not author_nick and not favorites_only:
+        if not keywords and not author_nick and not (favorites_only and user.is_authenticated):
             keywords = "akıl fikir"
 
         filters = {}

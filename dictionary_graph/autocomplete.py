@@ -24,8 +24,14 @@ class AuthorAutoCompleteQuery(ObjectType):
 
     @staticmethod
     @autocompleter
-    def resolve_authors(_parent, _info, lookup, limit):
-        return Author.objects_accessible.filter(username__istartswith=lookup)[:limit]
+    def resolve_authors(_parent, info, lookup, limit):
+        queryset = Author.objects_accessible.filter(username__istartswith=lookup)
+
+        if info.context.user.is_authenticated:
+            blocked = info.context.user.blocked.all()
+            return queryset.exclude(pk__in=blocked)[:limit]
+
+        return queryset[:limit]
 
 
 class TopicAutoCompleteQuery(ObjectType):

@@ -1,3 +1,22 @@
+[0.131.0-dev-pre](2020.05.10)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Move jquery.autocomplete.min.js to vendor folder.
+2) Some modes in TopicEntryList now have indicator
+near the topic title.
+3) Fixed a minor bug in TopicEntryList where unauthenticated
+users got wrong results when searching with is_in_favorites.
+4) Added the new 'links' mode to TopicEntryList. This mode now
+properly looks for links. Also optimized history mode's code.
+5) Autocomplete for authors now excludes blocked users.
+6) Adding '#' (without spaces) before a link in topic
+media will skip that link.
+
+--Deletions--
+None
+
 [0.130.0-dev-pre](2020.05.06)(compatible)
 --Additions--
 None
