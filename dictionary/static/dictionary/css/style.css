@@ -489,7 +489,7 @@ footer.entry-footer > .feedback > .favorites > .favorites-list a {
 }
 
 section.user_entries ul li.entry-full.owner footer.entry-footer > .feedback,
-section.user_entries ul li.entry-full.unauthenticated footer.entry-footer > .feedback {
+body#ua section.user_entries ul li.entry-full footer.entry-footer > .feedback {
     grid-template-columns: repeat(2, 50px);
 }
 
@@ -1492,7 +1492,7 @@ ul.exlusion-choices > li > a.active {
     }
 
     section.user_entries ul li.entry-full.owner footer.entry-footer > .feedback,
-    section.user_entries ul li.entry-full.unauthenticated footer.entry-footer > .feedback {
+    body#ua section.user_entries ul li.entry-full footer.entry-footer > .feedback {
         grid-template-columns: 50px auto;
     }
 
@@ -1523,7 +1523,7 @@ ul.exlusion-choices > li > a.active {
 }
 
 @media (max-width: 300px) {
-    form.header-search-form.logged-in {
+    body#au form.header-search-form {
         display: none;
     }
 

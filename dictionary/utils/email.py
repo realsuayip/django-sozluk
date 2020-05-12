@@ -9,11 +9,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from ..models import UserVerification
-
-
-DOMAIN = "127.0.0.1:8000"
-PROTOCOL = "http"
-FROM_EMAIL = "noreply@yourdomaindjsz.org"
+from .settings import DOMAIN, FROM_EMAIL, PROTOCOL
 
 
 class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):

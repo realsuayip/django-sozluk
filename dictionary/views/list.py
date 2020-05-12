@@ -19,7 +19,7 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
-from ..utils import proceed_or_404, time_threshold, turkish_lower
+from ..utils import proceed_or_404, time_threshold, turkish_lower, RE_WEBURL
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
@@ -290,11 +290,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def links(self):
         """Shows the entries with links."""
-        link_re = (
-            r"(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|"
-            r"https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,})"
-        )
-        return self.topic.entries.filter(content__regex=link_re)
+        return self.topic.entries.filter(content__regex=RE_WEBURL)
 
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""

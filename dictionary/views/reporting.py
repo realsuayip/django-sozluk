@@ -9,7 +9,7 @@ from django.views.generic import CreateView, View
 
 from ..models import GeneralReport
 from ..utils import time_threshold
-from ..utils.email import DOMAIN, FROM_EMAIL, PROTOCOL
+from ..utils.settings import DOMAIN, FROM_EMAIL, PROTOCOL
 
 
 class GeneralReportView(CreateView):

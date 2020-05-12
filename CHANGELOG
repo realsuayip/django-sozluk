@@ -1,3 +1,26 @@
+[0.132.0-dev-pre](2020.05.13)(incompatible)
+--Additions--
+1) Entry editor now linkifies links.
+(A good amount of time was wasted
+on this to make it work as intended.)
+
+-- Changes --
+1) Upgrades:
+    a) Upgrade Python from 3.7.6 to 3.8.2. **incompatible**
+       This project now only supports Python 3.8.2+
+    b) Upgrade graphene-django from 2.9.0 to 2.10.0.
+    c) Upgrade jQuery from 3.4.1 to 3.5.1.
+2) URL catching regex is optimized.
+3) Authentication check in frontend is now
+made by using body id tag.
+4) Fixed a bug introduced in 0.128.0-dev-pre,
+which messed up the entries' social links position.
+5) Moved email settings from utils.email to utils.settings
+6) Entries now do not allow turkish lira character.
+
+--Deletions--
+None
+
 [0.131.0-dev-pre](2020.05.10)(compatible)
 --Additions--
 None

@@ -5,6 +5,9 @@ from django.template import defaultfilters
 from django.utils import timezone
 from django.utils.html import escape, mark_safe
 
+from ..utils import RE_WEBURL
+from ..utils.settings import DOMAIN
+
 
 register = template.Library()
 
@@ -36,9 +39,32 @@ def formatted(raw_entry):
     7) Input: `@username` Output: @username -- A link that points to the user profile
     8) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
     in topics and appends to the left frame (redirects to the advanced search page on mobile). Same rules of (2)
-    9) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
+    9) Input http://www.djangoproject.com  Output: http://www.djangoproject.com  -- Linkification. (protocol required)
+    10) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
     a new tab. Protocol name (http/https only) required. Rules for text is the same as (2)
     """
+
+    def linkify(weburl_match):
+        """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
+        domain, path = weburl_match.group(1), weburl_match.group(2) or ""
+
+        if domain.endswith(DOMAIN) and len(path) > 7:
+            # Internal links (entries and topics)
+
+            if (permalink := re.match(r"^/entry/([0-9]+)/?$", path)) is not None:
+                return f'(bkz: <a href="{path}">#{permalink.group(1)}</a>)'
+
+            if (topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path)) is not None:
+                # todo: When topic auto-redirect feature gets implemented, add redirect flag to this url.
+                slug = topic.group(1)
+                guess = slug.replace("-", " ").strip()
+                return f'(bkz: <a href="{path}">{guess}</a>)'
+
+        path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
+        url = domain + path
+
+        return f'<a rel="nofollow noopener" target="_blank" title="{url}" href="{url}">{domain}{path_repr}</a>'
+
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         (r"\(bkz: #([1-9]\d{0,10})\)", r'(bkz: <a href="/entry/\1">#\1</a>)'),
@@ -55,11 +81,15 @@ def formatted(raw_entry):
             r"\(ara: (?!\s)(@?[a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)",
             r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
+        # Order matters. In order to hinder clash between labelled and linkified:
+        # Find links with label, then encapsulate them in anchor tag, which adds " character before the
+        # link. Then we find all other links which don't have " at the start.
+        # Users can't send " character, they send the escaped version: &quot;
         (
-            r"\[(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}"
-            r"|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}) (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\]",
-            r'<a rel="nofollow noopener" target="_blank" href="\1">\2</a>',
+            fr"\[{RE_WEBURL} (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\]",
+            r'<a rel="nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
+        (fr"(?<!\"){RE_WEBURL}", linkify,),
     )
 
     for tag in replacements:

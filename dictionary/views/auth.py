@@ -14,9 +14,9 @@ from django.views.generic.edit import FormView
 from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
 from ..models import AccountTerminationQueue, Author, PairedSession, UserVerification
 from ..utils import time_threshold
-from ..utils.email import FROM_EMAIL, send_email_confirmation
+from ..utils.email import send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
-from ..utils.settings import PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
+from ..utils.settings import FROM_EMAIL, PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
 
 
 class Login(LoginView):

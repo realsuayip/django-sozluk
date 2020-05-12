@@ -8,8 +8,7 @@ from django.views.generic import ListView
 from ...models import Author, Entry, Message
 from ...utils import get_generic_superuser, time_threshold
 from ...utils.admin import log_admin
-from ...utils.email import FROM_EMAIL
-from ...utils.settings import NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE
+from ...utils.settings import FROM_EMAIL, NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE
 
 
 def novice_list(limit=None):

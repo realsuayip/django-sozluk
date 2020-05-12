@@ -14,7 +14,7 @@ from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPubli
 
 
 class EntryValidator(RegexValidator):
-    regex = r"""^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#₺&@()_+=':%/",.!?*~`\[\]{}<>^;\\|-]+$"""
+    regex = r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$"
     message = "bu entry geçersiz karakterler içeriyor"
     flags = re.MULTILINE
 

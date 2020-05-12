@@ -49,6 +49,7 @@ const dictToParameters = function (dict) {
     return str.join("&");
 };
 
+const userIsAuthenticated = $("body").is("#au");
 let userIsMobile = false;
 let lastScrollTop = 0;
 
@@ -1014,11 +1015,10 @@ $(".entry-full a.action[role='button']").on("click", function () {
     const entryID = entry.attr("data-id");
     const topicTitle = entry.attr("data-topic");
     const actions = $(this).siblings(".entry-actions");
-    const authenticated = $("meta[name=authentication]").attr("content") === "1";
 
     actions.empty();
 
-    if (authenticated) {
+    if (userIsAuthenticated) {
         if (entry.hasClass("owner")) {
             actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">profilime sabitle</a>`);
             actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">sil</a>`);

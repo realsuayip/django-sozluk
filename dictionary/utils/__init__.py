@@ -9,8 +9,15 @@ from dateutil.parser import parse
 
 from .settings import GENERIC_PRIVATEUSER_USERNAME, GENERIC_SUPERUSER_USERNAME
 
-
 # General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
+
+RE_WEBURL = (
+    r"((?:(?:(?:https?):)\/\/)(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-"
+    r"9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:["
+    r"1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9][a-z0-9_-]{0,62})?[a-z0-9]\.)+(?:[a-z]{2,}\.?))(?::\d{2,5})?)((?:["
+    r"/?#](?:(?![\s\"<>{}|\\^~\[\]`])(?!&lt;|&gt;|&quot;|&#x27;).)*))?"
+)
+"""This is a modified version of Diego Perini's weburl regex. (https://gist.github.com/dperini/729294)"""
 
 
 class proceed_or_404(suppress):

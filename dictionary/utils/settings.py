@@ -1,5 +1,9 @@
 from decimal import Decimal
 
+DOMAIN = "xyzsozluk.com"
+PROTOCOL = "http"
+FROM_EMAIL = "noreply@xyzsozluk.org"
+
 # Default options for content object counts
 TOPICS_PER_PAGE_DEFAULT = 50  # For guests only
 ENTRIES_PER_PAGE_DEFAULT = 10  # For guests only
