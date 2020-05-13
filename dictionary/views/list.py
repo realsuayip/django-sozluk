@@ -44,7 +44,6 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
     """
 
     model = Conversation
-    allow_empty = True
     paginate_by = 10
     template_name = "dictionary/conversation/inbox.html"
     context_object_name = "conversations"
@@ -68,7 +67,8 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
                 notifications.error(self.request, error)
 
         notifications.error(self.request, "mesajınızı göndermedik")
-        return redirect(reverse("messages"))
+        self.object_list = self.get_queryset()  # pylint: disable=attribute-defined-outside-init
+        return super().form_invalid(form)
 
     def get_queryset(self):
         query_term = turkish_lower(self.request.GET.get("search_term", "")).strip() or None
@@ -167,11 +167,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         "novices",
         "recent",
         "links",
+        "acquaintances",
     )
     """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
        parameter 'a'. For example ?a=today returns only today's entries."""
 
-    login_required_modes = ("novices", "following", "recent")
+    login_required_modes = ("novices", "following", "recent", "acquaintances")
     """These filtering modes require user authenticatation. (they need to be present in modes)"""
 
     redirect = False
@@ -292,6 +293,10 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """Shows the entries with links."""
         return self.topic.entries.filter(content__regex=RE_WEBURL)
 
+    def acquaintances(self):
+        """Shows the entries of followed users."""
+        return self.topic.entries.filter(author__in=self.request.user.following.all())
+
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""
         queryset = None
@@ -374,7 +379,15 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # view_mode specific settings
             if self.view_mode in ("popular", "today", "following", "novices"):
                 show_previous = True
-            elif self.view_mode in ("history", "entry_permalink", "search", "nicetoday", "recent", "links"):
+            elif self.view_mode in (
+                "history",
+                "entry_permalink",
+                "search",
+                "nicetoday",
+                "recent",
+                "links",
+                "acquaintances",
+            ):
                 show_previous = True
                 show_subsequent = True
 

@@ -1,6 +1,6 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -144,12 +144,11 @@ class UserProfile(IntegratedFormMixin, ListView):
         )
 
     def authors(self):
-        favorites = self.profile.favorite_entries.all()
         return (
-            Author.objects_accessible.filter(entry__in=favorites)
+            Author.objects_accessible.filter(entry__in=self.profile.favorite_entries.all())
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
-            .exclude(pk=self.profile.pk)
+            .exclude(Q(pk=self.profile.pk) | Q(blocked__in=[self.profile.pk]) | Q(pk__in=self.profile.blocked.all()))
             .only("username", "slug")
             .order_by("-frequency")[:10]
         )

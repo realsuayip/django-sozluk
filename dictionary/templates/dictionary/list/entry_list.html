@@ -25,6 +25,7 @@
                     {% if mode == "novices" %}<small><strong>[çaylaklar]</strong></small>{% endif %}
                     {% if mode == "following" %}<small><strong>[olan biten]</strong></small>{% endif %}
                     {% if mode == "recent" %}<small><strong>[son]</strong></small>{% endif %}
+                    {% if mode == "acquaintances" %}<small><strong>[takip ettiklerim]</strong></small>{% endif %}
 
                     {% if topic.is_pinned %}
                         <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
@@ -63,6 +64,7 @@
 
                             {% if user.is_authenticated %}
                                 <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">benimkiler</a>
+                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=acquaintances">takip ettiklerim</a>
                             {% endif %}
 
                             <a class="dropdown-item pb-2">

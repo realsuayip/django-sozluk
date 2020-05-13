@@ -92,7 +92,7 @@ class UnsuspendUser(IntermediateActionView):
 
             for user in user_list_raw:
                 user.suspended_until = None
-                log_list.append(logentry_instance(f"Removed suspension", request.user, Author, user))
+                log_list.append(logentry_instance("Removed suspension", request.user, Author, user))
 
             Author.objects.bulk_update(user_list_raw, ['suspended_until'])
             logentry_bulk_create(log_list)

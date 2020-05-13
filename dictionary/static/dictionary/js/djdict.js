@@ -426,24 +426,25 @@ class LeftFrame {
 
 /* Start of LefFrame related triggers */
 
-$("ul#category_view li a, div#category_view_in a:not(.regular), section.topic-categories-list ul li a").on("click", function (e) {
-    e.preventDefault();
-});
-
-$("body").on("click", "[data-lf-slug]", function () {
+$("body").on("click", "[data-lf-slug]", function (event) {
     // Regular, slug-only
 
-    if (userIsMobile) {
+    if (userIsMobile && $(this).is("a")) {
         window.location = ($(this).attr("href"));
     }
 
-    const slug = $(this).attr("data-lf-slug");
+    if (!userIsMobile) {
+        const slug = $(this).attr("data-lf-slug");
+        const tab = $(this).attr("data-tab") || null;
 
-    if ($(this)[0].hasAttribute("data-tab")) {
-        // Check for the requested tab.
-        LeftFrame.populate(slug, 1, null, null, false, $(this).attr("data-tab"));
-    } else {
-        LeftFrame.populate(slug);
+        LeftFrame.populate(slug, 1, null, null, false, tab);
+
+        if ($(this).hasClass("dropdown-item")) {
+            // Prevents dropdown collapsing, good for accessibility.
+            return false;
+        } else {
+            event.preventDefault();
+        }
     }
 });
 

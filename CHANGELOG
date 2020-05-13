@@ -1,3 +1,24 @@
+[0.133.0-dev-pre](2020.05.13)(compatible)
+--Additions--
+1) TopicEntryList now has the 'acquaintances' mode
+which only shows entries from followed users.
+
+-- Changes --
+1) Fixed known remaining problems with the left-frame
+populating/opening behaviour for desktop and mobile.
+Category dropdown menu now doesn't diseapper in desktop to
+increase accessibility. Clicking categories in category list
+page now behaves correctly for desktop.
+2) Adjusted front-end in category list and presumably optimized
+the query.
+3) In profile page, favorite authors section now consider
+blocking status.
+4) Sending an invalid message in conversation list now do not
+flush the form data.
+
+--Deletions--
+1) Removed check_category_follow_status template tag.
+
 [0.132.0-dev-pre](2020.05.13)(incompatible)
 --Additions--
 1) Entry editor now linkifies links.

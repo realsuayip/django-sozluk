@@ -30,11 +30,6 @@ def check_follow_status(user, topic):
 
 
 @register.simple_tag
-def check_category_follow_status(user, category):
-    return category in user.following_categories.all()
-
-
-@register.simple_tag
 def url_flat(name):
     try:
         return Entry.objects.get(pk=FLATPAGE_URLS[name]).get_absolute_url()
