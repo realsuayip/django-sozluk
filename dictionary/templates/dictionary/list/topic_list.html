@@ -5,7 +5,7 @@
 
     <div class="left-frame-in">
         <div>
-            <h2>
+            <h1>
                 {% if request.GET.ordering and slug == "hayvan-ara" %}
                     <a class="expand" type="button" data-toggle="collapse" data-target="#search_form_extended_mobile" aria-expanded="false">
                         {{ safename }}
@@ -15,13 +15,13 @@
                 {% endif %}
 
             {% if slug == "gundem" %}
-                <span role="button" style="display: inline-block; vertical-align: baseline;" class="exclusion-button">
+                <span role="button" title="gündem filtresi" style="display: inline-block; vertical-align: baseline;" class="exclusion-button">
                     <svg tabindex="0" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <use href="#cog"></use>
                     </svg>
                </span>
             {% endif %}
-            </h2>
+            </h1>
         </div>
 
         {% if tabs %}

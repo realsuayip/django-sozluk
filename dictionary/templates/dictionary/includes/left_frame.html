@@ -10,7 +10,7 @@
 
             {# GUNDEM FILTER TOGGLER BUTTON #}
             <span {% if lf.slug != "gundem" %}class="dj-hidden"{% endif %} id="gundem_excluder">
-                <svg class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#cog"></use>
                     <title>gündem filtresi</title>
                 </svg>
@@ -65,7 +65,7 @@
 
 
     {#  REFRESH BUTTON  #}
-    <div class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun" title="akıt gelsin">yenile <span id="new_content_count">({{ lf.refresh_count }})</span></div>
+    <div role="button" tabindex="0" class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun" title="akıt gelsin">yenile <span id="new_content_count">({{ lf.refresh_count }})</span></div>
     {#  REFRESH BUTTON  #}
 
     {# PAGINATION START #}

@@ -1,20 +1,20 @@
 {% extends "dictionary/base.html" %}
 {% block title %}kanallar{% endblock %}
 {% block content %}
-    <h4><strong>kanallar</strong></h4>
+    <h1 class="h4"><strong>kanallar</strong></h1>
     <hr>
     <ul class="category-list-all m0 p-0">
         {% with logged_in=user.is_authenticated following=user.following_categories.all %}
             {% for category in categories %}
                 <li class="row">
                     <div class="col-{{ logged_in|yesno:"9,12" }}">
-                        <h5><a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a></h5>
+                        <h2 class="h5"><a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a></h2>
                         <p>{{ category.description }}</p>
                     </div>
 
                     {% if logged_in %}
                         <div class="col-3">
-                            <button type="button" class="btn btn-django-link float-right{% if category in following %} faded{% endif %}" id="follow-category-trigger" data-category-id="{{ category.pk }}">{% if category in following %}bırak ya{% else %}takip et{% endif %}</button>
+                            <button type="button" class="btn btn-django-link float-right follow-category-trigger{% if category in following %} faded{% endif %}" data-category-id="{{ category.pk }}">{% if category in following %}bırak ya{% else %}takip et{% endif %}</button>
                         </div>
                     {% endif %}
                 </li>

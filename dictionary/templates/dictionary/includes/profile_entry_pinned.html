@@ -1,7 +1,7 @@
 {% load filters %}
 <div class="blackquote-container">
     <blockquote class="user-pin m-0">
-        <h5><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic }}</a></h5>
+        <h2 class="h5"><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic }}</a></h2>
         <span class="entry-content">{{ entry.content|formatted|linebreaksbr }}</span>
         <div class="entry-permalink">
             <a href="{{ entry.get_absolute_url }}">{{ entry.date_created|entrydate:entry.date_edited }}</a>

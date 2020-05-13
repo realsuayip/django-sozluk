@@ -2,8 +2,8 @@
 {% block title %}mesajlar{% endblock %}
 {% block content %}
     {% load humanize %}
-    <h4><strong><a href="{% url 'messages' %}">mesajlar</a></strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}
-        {% if request.GET.search_term.strip %}[arama terimi: <strong>{{ request.GET.search_term.strip }}</strong>]{% endif %}</h4>
+    <h1 class="h4"><strong><a href="{% url 'messages' %}">mesajlar</a></strong> {% if unread_messages_count %}(<span>{{ unread_messages_count }} okunmamış</span>){% endif %}
+        {% if request.GET.search_term.strip %}[arama terimi: <strong>{{ request.GET.search_term.strip }}</strong>]{% endif %}</h1>
     <hr>
 
     {% if conversations %}
@@ -15,11 +15,10 @@
                     {% with sender=lastmsg.sender recipient=lastmsg.recipient %}
                         {% if sender == user %}
                             <a href="{% url 'conversation' slug=recipient.slug %}">
-                            <h5>{{ recipient.username }}</h5>
-
+                            <h2 class="h5">{{ recipient.username }}</h2>
                         {% else %}
                             <a href="{% url 'conversation' slug=sender.slug %}">
-                            <h5>{{ sender.username }}</h5>
+                            <h2 class="h5">{{ sender.username }}</h2>
                         {% endif %}
                     {% endwith %}
                     <p>{{ lastmsg.body }}</p>
@@ -41,7 +40,7 @@
 {% block rightframe %}
 
     <form action="{% url 'messages' %}" method="get">
-        <label for="messages_search_term"><h5><strong>mesajlarda ara</strong></h5></label>
+        <label for="messages_search_term"><h2 class="h5"><strong>mesajlarda ara</strong></h2></label>
         <div class="input-group">
             <input name="search_term" id="messages_search_term" type="text" class="form-control"
                    placeholder="arama terimi" value="{{ request.GET.search_term }}" required>
@@ -56,7 +55,7 @@
     {% load widget_tweaks %}
 
     <form method="post">
-        <label for="recipient_name"><h5><strong>yeni mesaj</strong></h5></label>
+        <h2 class="h5"><strong>yeni mesaj</strong></h2>
 
         <div class="form-group">
             <label for="recipient_name" class="col-form-label">{{ form.recipient.label }}:</label>

@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 {% block title %}parola neydi{% endblock %}
 {% block content %}
-    <h4 class="mb-3"><strong><a href="{% url 'login' %}">giriş</a> &raquo; parola neydi</strong></h4>
+    <h1 class="h4 mb-3"><strong><a href="{% url 'login' %}">giriş</a> &raquo; parola neydi</strong></h1>
     <form method="post">
         {% csrf_token %}
 

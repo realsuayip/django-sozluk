@@ -6,14 +6,14 @@
 {% block content %}
     {% load humanize %}
     <section class="user-info">
-        <h4>
+        <h1 class="h4">
             <a href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a>
             {% with gen=profile.generation %}
                 {% if gen %}
                     <small class="ml-2" style="font-size: .5em; vertical-align: middle">{{ gen|ordinal }} nesil {{ profile.is_novice|yesno:"çaylak,yazar" }}</small>
                 {% endif %}
             {% endwith %}
-        </h4>
+        </h1>
 
         {% if user.is_authenticated and user != profile %}
             {% include "dictionary/includes/send_message_modal.html" %}
@@ -106,7 +106,7 @@
             </div>
         </section>
 
-        <h5 class="mt-3"><strong><a href="{{ author.get_absolute_url }}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a></strong></h5>
+        <h2 class="h5 mt-3"><strong><a href="{{ author.get_absolute_url }}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a></strong></h2>
 
         {% if object_count > 0 %}
 
@@ -145,7 +145,7 @@
 {% block rightframe %}
     {% if user.is_authenticated %}
 
-        <label for="memento"><h5><strong>notlar</strong></h5></label>
+        <label for="memento"><h2 class="h5"><strong>notlar</strong></h2></label>
 
         <form method="post" class="memento">
             {% load widget_tweaks %}

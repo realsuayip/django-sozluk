@@ -3,9 +3,9 @@
 {% block title %}takip/engellenmişler{% endblock %}
 
 {% block content %}
-    <h4><strong>takip ettiğin ve engellenmiş insanlar</strong></h4>
+    <h1 class="h4"><strong>takip ettiğin ve engellenmiş insanlar</strong></h1>
     <hr>
-    <h6>takip ettiklerin: </h6>
+    <h2 class="h6"><u>takip ettiklerin:</u></h2>
     {% with following=user.following.all %}
         {% if following %}
             {{ following.count }} kişi
@@ -21,7 +21,7 @@
         {% endif %}
     {% endwith %}
 
-    <h6>engellediklerin:</h6>
+    <h2 class="h6"><u>engellediklerin:</u></h2>
     {% with blocked=user.blocked.all %}
         {% if blocked %}
             {{ blocked.count }} kişi, engeli kaldırmak için üstüne tıkla

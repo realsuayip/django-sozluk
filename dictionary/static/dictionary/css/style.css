@@ -252,13 +252,13 @@ nav.sub-nav ul .more_tags_dropdown,
 
 .left-frame h2 {
     font-size: 1.4em;
-    color: #888;
+    color: #757575;
     max-width: 240px;
 }
 
-.left-frame-in h2 {
+.left-frame-in h1:not(.description) {
     font-size: 1.4em;
-    color: #888;
+    color: #757575;
 }
 
 ul.topic-list li {
@@ -298,7 +298,7 @@ ul.topic-list li a {
 }
 
 ul.topic-list li small.total_entries {
-    color: #888;
+    color: #737373;
     font-size: inherit;
     text-align: center;
 }
@@ -367,7 +367,7 @@ section.user_entries ul {
     margin: 0;
 }
 
-section.user_entries ul li h5 {
+section.user_entries ul li h2 {
     font-size: 1.3em;
     font-weight: 700;
     padding: 0;
@@ -591,10 +591,6 @@ ul.user-navigation > li > .user-dropdown a.dropdown-item {
     padding: .3em 1.5em;
 }
 
-a[role=button] {
-    cursor: pointer;
-}
-
 body a,
 body a[role="button"]:not(.dropdown-item) {
     color: #16784f;
@@ -745,7 +741,7 @@ a.more-entries-button:hover {
     display: none;
 }
 
-section.user-info h4 {
+section.user-info h1 {
     font-weight: 700;
 }
 
@@ -1017,7 +1013,7 @@ ul.category-list-all li:hover {
     background: #eee;
 }
 
-ul.category-list-all li h5 {
+ul.category-list-all li h2 {
     font-weight: 700;
 }
 
@@ -1085,7 +1081,6 @@ select.mobile-topic-list {
     border: 1px solid #ccc;
     padding: .3em;
     text-align: center;
-    cursor: pointer;
     margin-bottom: .75em;
 }
 
@@ -1100,7 +1095,6 @@ form.memento textarea {
 }
 
 div.read_more {
-    cursor: pointer;
     color: #16784f;
     font-size: 1rem;
     display: inline-block;
@@ -1126,11 +1120,6 @@ div.read_more:hover {
     border: 1px solid #ccc;
     padding: .25em 0;
     margin-bottom: 1em;
-}
-
-a.search-closer {
-    text-align: center;
-    cursor: pointer;
 }
 
 a.search-closer:active {
@@ -1220,7 +1209,6 @@ footer.body-footer > ul {
 .exclusion-button {
     vertical-align: sub;
     margin-left: 3px;
-    cursor: pointer;
 }
 
 .exclusion-settings {

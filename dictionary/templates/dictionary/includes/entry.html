@@ -1,9 +1,10 @@
 {% load filters %}{% load functions %}
 <li data-topic="{{ entry.topic.title }}" data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% endif %}">
+    <section>
     {% with time=entry.date_created|entrydate:entry.date_edited %}
         <header class="entry-individual">
             {% if show_title == "yes" %}
-                <h5><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></h5>
+                <h2><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></h2>
             {% endif %}
 
             <div class="mobile">
@@ -95,4 +96,5 @@
             </div>
         </footer>
     {% endwith %}
+    </section>
 </li>

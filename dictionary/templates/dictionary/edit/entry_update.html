@@ -3,9 +3,7 @@
 {% block content %}
     {% load filters %}
     {% load widget_tweaks %}
-    <h4 style="font-weight: 700;"><a
-            href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a>
-        <small><strong>#{{ entry.pk }}</strong></small></h4>
+    <h1 class="h4"><strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong><small><strong>#{{ entry.pk }}</strong></small></h1>
     <hr>
 
     <section class="user-comments">
@@ -20,9 +18,8 @@
 
         <form method="post">
             {% csrf_token %}
-
             {% with entry.topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
-                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label="Entry yazı alanı" %}
             {% endwith %}
 
             <div class="row entry-editor-footer">

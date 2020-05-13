@@ -428,11 +428,6 @@ class LeftFrame {
 
 $("body").on("click", "[data-lf-slug]", function (event) {
     // Regular, slug-only
-
-    if (userIsMobile && $(this).is("a")) {
-        window.location = ($(this).attr("href"));
-    }
-
     if (!userIsMobile) {
         const slug = $(this).attr("data-lf-slug");
         const tab = $(this).attr("data-tab") || null;
@@ -971,7 +966,7 @@ $("#send_message_btn").on("click", function () {
     textarea.val("");
 });
 
-$("button#follow-category-trigger").on("click", function () {
+$("button.follow-category-trigger").on("click", function () {
     categoryAction("follow", $(this).data("category-id"));
     $(this).toggleText("bırak ya", "takip et");
     $(this).toggleClass("faded");

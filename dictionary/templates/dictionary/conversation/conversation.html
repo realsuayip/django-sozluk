@@ -4,9 +4,7 @@
     {% load humanize %}
     {% load filters %}
     {% include "dictionary/includes/block_user_modal.html" %}
-    <h4 style="font-weight: 600;"><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet
-        muhabbet
-    </h4>
+    <h1 class="h4"><strong><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet muhabbet</strong></h1>
 
     <span class="chat-quick-links">
         <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
@@ -72,7 +70,7 @@
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
         <label for="message-body">
-            <h5>cevap yaz <small style="font-size: 10px">(entry biçimlendirme seçenekleri kullanılabilir)</small></h5>
+            <h2 class="h4">cevap yaz <small style="font-size: 55%">(entry biçimlendirme seçenekleri kullanılabilir)</small></h2>
         </label>
         <section class="chat-reply mb-3">
             {% load widget_tweaks %}
