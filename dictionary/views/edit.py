@@ -33,13 +33,14 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
     context_object_name = "entry"
 
     def get_success_url(self):
-        if self.get_object().is_draft:
+        if self.object.is_draft:
             notifications.info(self.request, "yazdım bir kenara")
-            return reverse("entry_update", kwargs={"pk": self.get_object().pk})
-        return reverse("entry-permalink", kwargs={"entry_id": self.get_object().pk})
+            return reverse("entry_update", kwargs={"pk": self.object.pk})
+
+        return reverse("entry-permalink", kwargs={"entry_id": self.object.pk})
 
     def form_valid(self, form):
-        entry_is_draft_initial = self.get_object().is_draft  # returns True is the object is draft
+        entry_is_draft_initial = self.object.is_draft  # returns True is the object is draft
         entry = form.save(commit=False)
 
         if entry_is_draft_initial:
@@ -54,8 +55,13 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
             entry.is_draft = False
             entry.date_edited = timezone.now()
 
-        entry.save()
-        return redirect(self.get_success_url())
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        for error in form.errors["content"]:
+            notifications.error(self.request, error)
+
+        return super().form_invalid(form)
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)

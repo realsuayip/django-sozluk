@@ -2,7 +2,6 @@ import math
 from contextlib import suppress
 from decimal import Decimal
 
-from django.apps import apps
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
@@ -168,11 +167,6 @@ class Author(AbstractUser):
         if created:
             self.following_categories.add(*Category.objects.all())
 
-    def delete(self, *args, **kwargs):
-        # Delete related conversations before deleting messages (via self.delete())
-        apps.get_model("dictionary", "Conversation").objects.filter(participants__in=[self]).delete()
-        super().delete(*args, **kwargs)
-
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"slug": self.slug})
 
@@ -312,7 +306,7 @@ class Author(AbstractUser):
 
     @cached_property
     def has_unread_messages(self):
-        return apps.get_model("dictionary", "Message").objects.filter(recipient=self, read_at__isnull=True).exists()
+        return self.conversations.filter(messages__recipient=self, messages__read_at__isnull=True).exists()
 
     @cached_property
     def has_unread_topics(self):

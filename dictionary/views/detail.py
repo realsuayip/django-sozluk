@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
@@ -25,26 +26,28 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
     def form_valid(self, form):
         recipient = self.get_recipient()
         msg = Message.objects.compose(self.request.user, recipient, form.cleaned_data["body"])
+
         if not msg:
-            notifications.error(self.request, "mesajınızı gönderemedik ne yazık ki")
+            return self.form_invalid(form)
+
         return redirect(reverse("conversation", kwargs={"slug": self.kwargs.get("slug")}))
 
     def form_invalid(self, form):
-        if form.non_field_errors():
-            for msg in form.non_field_errors():
-                notifications.error(self.request, msg)
+        notifications.error(self.request, "mesajınızı gönderemedik ne yazık ki")
 
-        return redirect(reverse("conversation", kwargs={"slug": self.kwargs.get("slug")}))
+        for err in form.non_field_errors() + form.errors.get("body", []):
+            notifications.error(self.request, err)
+
+        self.object = self.get_object()  # pylint: disable=attribute-defined-outside-init
+        return super().form_invalid(form)
 
     def get_object(self, queryset=None):
         recipient = self.get_recipient()
         chat = self.model.objects.with_user(self.request.user, recipient)
-        if chat:
-            unread_messages = chat.messages.filter(sender=recipient, read_at__isnull=True)
-            if unread_messages:
-                for msg in unread_messages:
-                    msg.mark_read()
 
+        if chat is not None:
+            # Mark read
+            chat.messages.filter(sender=recipient, read_at__isnull=True).update(read_at=timezone.now())
             return chat
 
         raise Http404  # users haven't messsaged each other yet

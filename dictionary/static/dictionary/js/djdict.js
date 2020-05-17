@@ -954,9 +954,14 @@ $("#send_message_btn").on("click", function () {
     const msgModal = $("#sendMessageModal");
     const body = textarea.val();
 
+    if (!/^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join())) {
+        notify("bu mesaj geçersiz karakterler içeriyor", "error");
+        return;
+    }
+
     if (body.length < 3) {
         // not strictly needed but written so as to reduce api calls.
-        notify("az bir şeyler yaz yeğenim");
+        notify("düzgün bir şeyler yazsan çeşke", "error");
         return;
     }
 

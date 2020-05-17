@@ -1,3 +1,22 @@
+[0.135.0-dev-pre](2020.05.18)(**incompatible**)
+--Additions--
+1) Add feature to delete orphan messages automatically. (signals)
+2) Add validators module in utils.
+
+-- Changes --
+1) Refactored Conversation. (and related code) This is rather
+**incompatible** You will need to delete all Conversation objects
+from the database, (which means the deletion of the all Message
+objects as well) unless you write a script which will migrate the data.
+2) Optimized Conversation related views.
+3) Conversations are now not mutual.
+4) Fixed a critical bug where users could send invalid characters
+in entries. Also added this character delimiter for messages.
+5) Optimized EntryUpdate view and it shows the error message now.
+
+--Deletions--
+None
+
 [0.134.0-dev-pre](2020.05.14)(compatible)
 --Additions--
 None

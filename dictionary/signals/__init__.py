@@ -4,4 +4,4 @@ from .m2m import (
     update_vote_rate_downvote,
     update_topic_disambiguation,
 )
-from .messaging import create_conversation
+from .messaging import deliver_message

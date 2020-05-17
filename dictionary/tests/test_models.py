@@ -380,37 +380,45 @@ class ConversationModelTests(TestCase):
         some_msg = Message.objects.compose(self.author_1, self.author_2, "gelmiyorsun artık günah çıkarmaya?")
 
         conversation_count = Conversation.objects.all().count()
-        self.assertEqual(conversation_count, 1)
+        self.assertEqual(conversation_count, 2)
 
         # Get that conversation and check if the previous message is in it
-        current_conversation = Conversation.objects.get(pk=1)
-        self.assertIn(some_msg, current_conversation.messages.all())
+        current_conversation_1_2 = Conversation.objects.get(holder=self.author_1, target=self.author_2)
+        current_conversation_2_1 = Conversation.objects.get(holder=self.author_2, target=self.author_1)
+        self.assertIn(some_msg, current_conversation_1_2.messages.all())
+        self.assertIn(some_msg, current_conversation_2_1.messages.all())
 
         # Reply message, check also if that message in conversation and check no extra conversation is created
         # for it (it should append to newly created conversation)
 
         some_other_msg = Message.objects.compose(self.author_2, self.author_1, "işlemiyorum ki, evdeyim hep.")
         conversation_count = Conversation.objects.all().count()
-        self.assertEqual(conversation_count, 1)
-        self.assertIn(some_other_msg, current_conversation.messages.all())
+        self.assertEqual(conversation_count, 2)
+        self.assertIn(some_other_msg, current_conversation_1_2.messages.all())
+        self.assertIn(some_other_msg, current_conversation_2_1.messages.all())
 
         # Check participants
-        self.assertIn(self.author_1, current_conversation.participants.all())
-        self.assertIn(self.author_2, current_conversation.participants.all())
+        self.assertEqual(self.author_1, current_conversation_1_2.holder)
+        self.assertEqual(self.author_1, current_conversation_2_1.target)
+        self.assertEqual(self.author_2, current_conversation_2_1.holder)
+        self.assertEqual(self.author_2, current_conversation_1_2.target)
 
     def test_last_message(self):
         some_msg = Message.objects.compose(self.author_1, self.author_2, "baapoçun çen?!!")
-        current_conversation = Conversation.objects.get(pk=1)
-        self.assertEqual(some_msg, current_conversation.last_message)
+        current_conversation_1_2 = Conversation.objects.get(holder=self.author_1, target=self.author_2)
+        current_conversation_2_1 = Conversation.objects.get(holder=self.author_2, target=self.author_1)
+        self.assertEqual(some_msg, current_conversation_1_2.last_message)
+        self.assertEqual(some_msg, current_conversation_2_1.last_message)
 
         time.sleep(0.01)  # apparently auto_now_add fields will be exactly the same in the same block.
         some_other_msg = Message.objects.compose(self.author_1, self.author_2, "ya bi sktr git allah allah")
-        self.assertEqual(some_other_msg, current_conversation.last_message)
+        self.assertEqual(some_other_msg, current_conversation_1_2.last_message)
+        self.assertEqual(some_other_msg, current_conversation_2_1.last_message)
 
     def test_str(self):
         Message.objects.compose(self.author_1, self.author_2, "baapoçun çen?!!")
-        current_conversation = Conversation.objects.get(pk=1)
-        self.assertEqual(str(current_conversation), "1<QuerySet ['user1', 'user2']>")
+        current_conversation = Conversation.objects.get(holder=self.author_1, target=self.author_2)
+        self.assertEqual(str(current_conversation), "<Conversation> holder-> user1, target-> user2")
 
 
 class GeneralReportModelTest(TestCase):

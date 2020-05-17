@@ -1,5 +1,7 @@
+from contextlib import suppress
+
 from django.db import models
-from django.db.models import Count, Max, Q
+from django.db.models import Max, Q
 
 from ...models import Author
 from ...utils import get_generic_superuser
@@ -30,23 +32,19 @@ class MessageManager(models.Manager):
 class ConversationManager(models.Manager):
     def list_for_user(self, user, search_term=None):
         # List conversation list for user, provide search_term to search in messages
+
         if search_term:
             base = self.filter(
-                Q(messages__body__icontains=search_term) | Q(messages__recipient__username__icontains=search_term),
-                participants__in=[user],
+                Q(holder=user)
+                & (Q(messages__body__icontains=search_term) | Q(messages__recipient__username__icontains=search_term)),
             )
         else:
-            base = self.filter(participants__in=[user])
+            base = self.filter(holder=user)
 
         return base.annotate(message_sent_last=Max("messages__sent_at")).order_by("-message_sent_last")
 
     def with_user(self, sender, recipient):
-        # returns None if no conversation exists between users
-        if sender == recipient:
-            return None  # Self-messaging is not allowed
+        with suppress(self.model.DoesNotExist):
+            return sender.conversations.get(target=recipient)
 
-        users = [sender, recipient]
-        conversation = self.annotate(count=Count("participants")).filter(count=2)
-        for user in users:
-            conversation = conversation.filter(participants__pk=user.pk)
-        return conversation.first()
+        return None

@@ -62,9 +62,8 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
         return redirect(reverse("conversation", kwargs={"slug": recipient.slug})) if sent else self.form_invalid(form)
 
     def form_invalid(self, form):
-        if form.non_field_errors():
-            for error in form.non_field_errors():
-                notifications.error(self.request, error)
+        for error in form.non_field_errors() + form.errors.get("body", []):
+            notifications.error(self.request, error)
 
         notifications.error(self.request, "mesajınızı göndermedik")
         self.object_list = self.get_queryset()  # pylint: disable=attribute-defined-outside-init
@@ -76,7 +75,9 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
-        unread_messages_count = Message.objects.filter(recipient=self.request.user, read_at__isnull=True).count()
+        unread_messages_count = self.request.user.conversations.filter(
+            messages__recipient=self.request.user, messages__read_at__isnull=True
+        ).count()
         context["unread_messages_count"] = unread_messages_count
         return context
 

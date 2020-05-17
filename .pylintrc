@@ -149,9 +149,12 @@ disable=parameter-unpacking,
         unused-argument,
         no-member,
         too-few-public-methods,
+        signature-differs,
 
 # Notice: I disabled E0401 (seems like it is problematic to set things up to make it work properly),
 # make sure your IDE checks for imports. (mine does)
+# Disabled signature-differs as this rule doesn't go well with django's model and views method,
+# e.g. (constant there is need to use *args, **kwargs)
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

@@ -1,28 +1,21 @@
-import re
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import F
 from django.shortcuts import reverse
 from django.utils import timezone
 
 from ..models.messaging import Message
-from ..utils import turkish_lower, get_generic_superuser
+from ..utils import get_generic_superuser, turkish_lower
+from ..utils.validators import validate_user_text
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
-
-
-class EntryValidator(RegexValidator):
-    regex = r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$"
-    message = "bu entry geçersiz karakterler içeriyor"
-    flags = re.MULTILINE
 
 
 class Entry(models.Model):
     topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries")
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
-    content = models.TextField(validators=[EntryValidator()])
+    content = models.TextField(validators=[validate_user_text])
     date_created = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(blank=True, null=True, default=None)
     vote_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal(0))
