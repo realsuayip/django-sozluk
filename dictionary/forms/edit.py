@@ -20,15 +20,12 @@ class PreferencesForm(UserChangeForm):
 
 
 class EntryForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["content"].error_messages[
-            "required"
-        ] = "bebeğim, alt tarafı bi entry gireceksin, ne kadar zor olabilir ki?"
-
     class Meta:
         model = Entry
         fields = ("content", "is_draft")
+        error_messages = {
+            "content": {"required": "bebeğim, alt tarafı bir entry gireceksin, ne kadar zor olabilir ki?"}
+        }
 
 
 class SendMessageForm(forms.ModelForm):
