@@ -1,3 +1,14 @@
+[0.136.0-dev-pre](2020.05.19)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Dried GraphQL calls in djdict.js.
+2) Fixed incorrect entry favorite count in profile page.
+
+--Deletions--
+None
+
 [0.135.0-dev-pre](2020.05.18)(**incompatible**)
 --Additions--
 1) Add feature to delete orphan messages automatically. (signals)

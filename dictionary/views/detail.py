@@ -1,6 +1,6 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q
+from django.db.models import Count, Prefetch, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -111,7 +111,17 @@ class UserProfile(IntegratedFormMixin, ListView):
         tab_obj_type = self.tabs.get(self.tab)["type"]
 
         if tab_obj_type == "entry":
-            return qs.select_related("author", "topic").prefetch_related("favorited_by")
+            base = qs.select_related("author", "topic")
+
+            if self.request.user.is_authenticated:
+                return base.prefetch_related(
+                    Prefetch(
+                        "favorited_by",
+                        queryset=Author.objects_accessible.only("pk").exclude(pk__in=self.request.user.blocked.all()),
+                    )
+                )
+
+            return base
 
         if tab_obj_type == "author":
             return qs

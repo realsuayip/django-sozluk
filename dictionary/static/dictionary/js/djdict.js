@@ -37,6 +37,15 @@ const notify = (message, level = "default", initialDelay = 2000, persistent = fa
     });
 };
 
+const gqlc = function (data, failSilently = false, failMessage = "bir şeyler yanlış gitti") {
+    // GraphQL call, data -> { query, variables }
+    return $.post("/graphql/", JSON.stringify(data)).fail(function () {
+        if (!failSilently) {
+            notify(failMessage, "error");
+        }
+    });
+};
+
 const dictToParameters = function (dict) {
     const str = [];
     for (const key in dict) {
@@ -165,14 +174,11 @@ $("#header_search").autocomplete({
 
     lookup (lookup, done) {
         if (lookup.startsWith("@") && lookup.substr(1)) {
-            const query = `{ autocomplete { authors(lookup: "${lookup.substr(1)}") { username } } }`;
-            $.post("/graphql/", JSON.stringify({ query }), function (response) {
+            gqlc({ query: `{autocomplete{authors(lookup:"${lookup.substr(1)}"){username}}}` }).then(function (response) {
                 done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
             });
         } else {
-            const query = `{ autocomplete { authors(lookup: "${lookup}", limit: 3) { username } 
-                                                topics(lookup: "${lookup}", limit: 7) { title } } }`;
-            $.post("/graphql/", JSON.stringify({ query }), function (response) {
+            gqlc({ query: `{autocomplete{authors(lookup:"${lookup}",limit:3){username} topics(lookup:"${lookup}",limit:7){title}}}` }).then(function (response) {
                 const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
                 const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
                 done({ suggestions: topicSuggestions.concat(authorSuggestions) });
@@ -187,8 +193,7 @@ $("#header_search").autocomplete({
 
 $(".author-search").autocomplete({
     lookup (lookup, done) {
-        const query = `{ autocomplete { authors(lookup: "${lookup}") { username } } }`;
-        $.post("/graphql/", JSON.stringify({ query }), function (response) {
+        gqlc({ query: `{autocomplete{authors(lookup:"${lookup}"){username}}}` }).then(function (response) {
             done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
         });
     },
@@ -279,15 +284,14 @@ class LeftFrame {
 
         const self = this;
 
-        $.post("/graphql/", JSON.stringify({ query, variables }), function (response) {
+        gqlc({ query, variables }).then(function (response) {
             if (response.errors) {
                 self.loadIndicator.css("display", "none");
                 notify("bir şeyler yanlış gitti", "error");
             } else {
                 self.render(response.data.topics);
             }
-        }).fail(function () {
-            notify("bir şeyler yanlış gitti", "error");
+        }, function () {
             self.loadIndicator.css("display", "none");
         });
     }
@@ -658,24 +662,21 @@ $("button#insert_link").on("click", function () {
 });
 
 $("a.favorite[role='button']").on("click", function () {
-    const self = this;
+    const self = $(this);
     const pk = $(self).parents(".entry-full").attr("data-id");
-    const query = `mutation { entry { favorite(pk: "${pk}") { feedback count } } }`;
 
-    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+    gqlc({ query: `mutation{entry{favorite(pk:"${pk}"){feedback count}}}` }).then(function (response) {
         const count = response.data.entry.favorite.count;
-        const countHolder = $(self).next();
+        const countHolder = self.next();
 
-        $(self).toggleClass("active");
+        self.toggleClass("active");
         countHolder.text(count);
 
         if (count === 0) {
             countHolder.text("");
         }
 
-        $(self).siblings("span.favorites-list").attr("data-loaded", "false");
-    }).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
+        self.siblings("span.favorites-list").attr("data-loaded", "false");
     });
 });
 
@@ -684,18 +685,16 @@ $(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-
 });
 
 $("a.fav-count[role='button']").on("click", function () {
-    const self = this;
-    const favoritesList = $(self).next();
+    const self = $(this);
+    const favoritesList = self.next();
 
     if (favoritesList.attr("data-loaded") === "true") {
         return;
     }
 
-    const pk = $(self).closest(".entry-full").attr("data-id");
+    const pk = self.closest(".entry-full").attr("data-id");
 
-    const query = `{ entry{ favoriters(pk:${pk}){ username slug isNovice } } } `;
-
-    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+    gqlc({ query: `{entry{favoriters(pk:${pk}){username slug isNovice}}}` }).then(function (response) {
         const allUsers = response.data.entry.favoriters;
         const authors = allUsers.filter(user => user.isNovice === false);
         const novices = allUsers.filter(user => user.isNovice === true);
@@ -721,8 +720,6 @@ $("a.fav-count[role='button']").on("click", function () {
         }
 
         favoritesList.attr("data-loaded", "true");
-    }).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
     });
 });
 
@@ -732,16 +729,13 @@ $("a#message_history_show").on("click", function () {
 });
 
 const userAction = function (type, recipient) {
-    const query = `mutation { user { ${type}(username: "${recipient}") { feedback redirect } } }`;
-    $.post("/graphql/", JSON.stringify({ query }), function (response) {
+    gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
         const info = response.data.user[type];
         if (info.redirect) {
             window.location.replace(info.redirect);
         } else {
             notify(info.feedback);
         }
-    }).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
     });
 };
 
@@ -784,10 +778,7 @@ $(".follow-user-trigger").on("click", function () {
 });
 
 const entryAction = function (type, pk, redirect = false) {
-    const query = `mutation { entry { ${type}(pk: "${pk}") { feedback ${redirect ? "redirect" : ""}} } }`;
-    return $.post("/graphql/", JSON.stringify({ query })).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
-    });
+    return gqlc({ query: `mutation{entry{${type}(pk:"${pk}"){feedback ${redirect ? "redirect" : ""}}}}` });
 };
 
 $("a.upvote[role='button']").on("click", function () {
@@ -851,12 +842,8 @@ $(".entry-actions").on("click", ".pin-entry", function () {
 });
 
 const topicAction = function (type, pk) {
-    const query = `mutation { topic { ${type}(pk: "${pk}") { feedback } } }`;
-    $.post("/graphql/", JSON.stringify({ query }), function (response) {
-        const info = response.data.topic[type];
-        notify(info.feedback);
-    }).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
+    return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(function (response) {
+        notify(response.data.topic[type].feedback);
     });
 };
 
@@ -927,19 +914,14 @@ $("button#perform_advanced_search").on("click", function () {
 });
 
 const categoryAction = function (type, pk) {
-    const query = `mutation { category { ${type}(pk: "${pk}") { feedback } } }`;
-    $.post("/graphql/", JSON.stringify({ query })).fail(function () {
-        notify("bir şeyler yanlış gitti", "error");
-    });
+    return gqlc({ query: `mutation{category{${type}(pk:"${pk}"){feedback}}}` });
 };
 
 const composeMessage = function (recipient, body) {
     const variables = { recipient, body };
-    const query = `mutation compose($body: String!, $recipient: String!) { message { compose(body: $body, recipient: $recipient) { feedback } } }`;
-    $.post("/graphql/", JSON.stringify({ query, variables }), function (response) {
+    const query = `mutation compose($body:String!,$recipient:String!){message{compose(body:$body,recipient:$recipient){feedback}}}`;
+    return gqlc({ query, variables }).then(function (response) {
         notify(response.data.message.compose.feedback);
-    }).fail(function () {
-        notify("o mesaj gitmedi yalnız", "error");
     });
 };
 
@@ -950,6 +932,8 @@ $(".entry-actions").on("click", ".send-message-trigger", function () {
 });
 
 $("#send_message_btn").on("click", function () {
+    const self = $(this);
+    self.prop("disabled", true);
     const textarea = $("#sendMessageModal textarea");
     const msgModal = $("#sendMessageModal");
     const body = textarea.val();
@@ -965,16 +949,20 @@ $("#send_message_btn").on("click", function () {
         return;
     }
 
-    const recipient = msgModal.attr("data-for");
-    msgModal.modal("hide");
-    composeMessage(recipient, body);
-    textarea.val("");
+    composeMessage(msgModal.attr("data-for"), body).then(function () {
+        msgModal.modal("hide");
+        textarea.val("");
+    }).always(function () {
+        self.prop("disabled", false);
+    });
 });
 
 $("button.follow-category-trigger").on("click", function () {
-    categoryAction("follow", $(this).data("category-id"));
-    $(this).toggleText("bırak ya", "takip et");
-    $(this).toggleClass("faded");
+    const self = $(this);
+    categoryAction("follow", $(this).data("category-id")).then(function () {
+        self.toggleText("bırak ya", "takip et");
+        self.toggleClass("faded");
+    });
 });
 
 $("form.search_mobile, form.reporting-form").submit(function () {
@@ -1051,12 +1039,10 @@ $(".block-user-trigger").on("click", function () {
 });
 
 const wishTopic = function (title, hint = null) {
-    const query = `mutation wish($title: String!, $hint: String){topic{wish(title: $title, hint: $hint){feedback hint}}}`;
+    const query = `mutation wish($title:String!,$hint:String){topic{wish(title:$title,hint:$hint){feedback hint}}}`;
     const variables = { title, hint };
-    return $.post("/graphql/", JSON.stringify({ query, variables })).done(function (response) {
+    return gqlc({ query, variables }).done(function (response) {
         notify(response.data.topic.wish.feedback);
-    }).fail(function () {
-        notify("bu işlemi şimdi gerçekleştiremiyoruz", "error");
     });
 };
 
