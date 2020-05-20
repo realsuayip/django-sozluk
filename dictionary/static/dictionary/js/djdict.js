@@ -147,26 +147,6 @@ $(function () {
     }
 });
 
-$("input.with-datepicker-dropdown").datepicker(
-    {
-        container: "#dropdown_detailed_search",
-        todayHighlight: true,
-        language: "tr",
-        autoclose: true,
-        orientation: "auto bottom"
-    }
-).attr("placeholder", "gg.aa.yyyy");
-
-$("input.with-datepicker-mobile").datepicker(
-    {
-        container: ".row",
-        todayHighlight: true,
-        language: "tr",
-        autoclose: true,
-        orientation: "auto left"
-    }
-).attr("placeholder", "gg.aa.yyyy");
-
 $("#header_search").autocomplete({
     triggerSelectOnValidInput: false,
     showNoSuggestionNotice: true,
@@ -680,8 +660,12 @@ $("a.favorite[role='button']").on("click", function () {
     });
 });
 
-$(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, #dropdown_detailed_search :not(#close_search_dropdown), .autocomplete-suggestions", e => {
+$(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, .dropdown-advanced-search, .autocomplete-suggestions", e => {
     e.stopPropagation();
+});
+
+$(".dropdown-advanced-search > div > a.search-closer").on("click", function () {
+    $(".dropdown-advanced-search").removeClass("show");
 });
 
 $("a.fav-count[role='button']").on("click", function () {
@@ -933,7 +917,6 @@ $(".entry-actions").on("click", ".send-message-trigger", function () {
 
 $("#send_message_btn").on("click", function () {
     const self = $(this);
-    self.prop("disabled", true);
     const textarea = $("#sendMessageModal textarea");
     const msgModal = $("#sendMessageModal");
     const body = textarea.val();
@@ -949,6 +932,7 @@ $("#send_message_btn").on("click", function () {
         return;
     }
 
+    self.prop("disabled", true);
     composeMessage(msgModal.attr("data-for"), body).then(function () {
         msgModal.modal("hide");
         textarea.val("");

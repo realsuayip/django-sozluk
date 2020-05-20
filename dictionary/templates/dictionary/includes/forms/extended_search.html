@@ -1,7 +1,7 @@
 {#source = mobile or dropdown (used to seperate id's for javascript/html selectors and button events) #}
 <div class="form-group">
     <label for="keywords_{{ source }}">kelimeler</label>
-    <input form="search_form_extended_{{ source }}" name="keywords" type="text" class="form-control" id="keywords_{{ source }}" value="{{ request.GET.keywords }}">
+    <input form="search_form_extended_{{ source }}" name="keywords" type="text" class="form-control mb-2" id="keywords_{{ source }}" value="{{ request.GET.keywords }}">
 
     <label for="author_nick_{{ source }}">yazar</label>
     <input form="search_form_extended_{{ source }}" name="author_nick" type="text" class="form-control author-search" id="author_nick_{{ source }}" value="{{ request.GET.author_nick }}">
@@ -25,11 +25,11 @@
     <div class="row">
         <div class="col-lg-6">
             <label for="date_from_{{ source }}">şu tarihten:</label>
-            <input form="search_form_extended_{{ source }}" name="from_date" type="text" class="form-control with-datepicker-{{ source }}" id="date_from_{{ source }}" value="{{ request.GET.from_date }}">
+            <input form="search_form_extended_{{ source }}" name="from_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_from_{{ source }}" value="{{ request.GET.from_date }}">
         </div>
         <div class="col-lg-6">
             <label for="date_to_{{ source }}">bu tarihe kadar:</label>
-            <input form="search_form_extended_{{ source }}" name="to_date" type="text" class="form-control with-datepicker-{{ source }}" id="date_to_{{ source }}" value="{{ request.GET.to_date }}">
+            <input form="search_form_extended_{{ source }}" name="to_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_to_{{ source }}" value="{{ request.GET.to_date }}">
         </div>
     </div>
 </div>

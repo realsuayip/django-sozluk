@@ -7,11 +7,9 @@
         <div>
             <h1>
                 {% if request.GET.ordering and slug == "hayvan-ara" %}
-                    <a class="expand" type="button" data-toggle="collapse" data-target="#search_form_extended_mobile" aria-expanded="false">
-                        {{ safename }}
-                    </a>
+                    <a class="expand" role="button"  tabindex="0" data-toggle="collapse" data-target="#search_form_extended_mobile" aria-expanded="false">{{ safename }}</a>
                 {% else %}
-                    {{ safename }}
+                    <span>{{ safename }}</span>
                 {% endif %}
 
             {% if slug == "gundem" %}
@@ -66,14 +64,11 @@
 
         {% if slug == "hayvan-ara" %}
             {# render search form, if request.GET.ordering has value, it means there is a search #}
-
-            <hr>
-            <form method="get" action="{% url 'topic_list' slug='hayvan-ara' %}"
-                  class="search_mobile{% if request.GET.ordering %} collapse{% endif %}"
-                  id="search_form_extended_mobile">
+            <form method="get" action="{% url 'topic_list' slug='hayvan-ara' %}" class="search_mobile{% if request.GET.ordering %} collapse{% endif %}" id="search_form_extended_mobile">
                 {% include "dictionary/includes/forms/extended_search.html" with source="mobile" %}
                 <button type="submit" class="btn btn-django stretch">çok güzel ara</button>
             </form>
+            <hr>
         {% endif %}
 
 

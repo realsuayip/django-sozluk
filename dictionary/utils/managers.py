@@ -257,8 +257,8 @@ class TopicQueryHandler:
         orderding = search_keys.get("ordering")
 
         # Input validation
-        from_date = parse_date_or_none(from_date)
-        to_date = parse_date_or_none(to_date)
+        from_date = parse_date_or_none(from_date, dayfirst=False)
+        to_date = parse_date_or_none(to_date, dayfirst=False)
 
         if orderding not in ("alpha", "newer", "popular"):
             orderding = "newer"
