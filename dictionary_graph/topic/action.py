@@ -1,7 +1,9 @@
+from django.core.validators import ValidationError
 from django.shortcuts import get_object_or_404
 from graphene import ID, Mutation, String
 
 from dictionary.models import Topic, Wish
+from dictionary.templatetags.filters import formatted
 from dictionary.utils import turkish_lower
 
 from ..utils import login_required
@@ -45,6 +47,13 @@ class WishTopic(Mutation):
         if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
             raise ValueError("öyle olmaz ki")
 
+        wish = Wish(author=sender, hint=hint)
+
+        try:
+            wish.full_clean()
+        except ValidationError as error:
+            raise ValueError(", ".join(error.messages))
+
         if not topic.exists:
             topic = Topic.objects.create_topic(title=title)
         else:
@@ -53,6 +62,6 @@ class WishTopic(Mutation):
                 previous_wish.delete()
                 return WishTopic(feedback="ukte silindi.")
 
-        wish = Wish.objects.create(author=sender, hint=hint)
+        wish.save()
         topic.wishes.add(wish)
-        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.", hint=hint)
+        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.", hint=formatted(hint))

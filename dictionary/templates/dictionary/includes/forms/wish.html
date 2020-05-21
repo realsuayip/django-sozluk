@@ -6,7 +6,7 @@
         {% for wish in wishes %}
             <li class="list-group-item{% if user == wish.author %} owner{% endif %}">{{ wish.date_created|naturaltime }} verilen
                 <a href="{{ wish.author.get_absolute_url }}">{{ wish.author.username }}</a> uktesi bu.
-                {% if wish.hint %}notu da şöyle: <p class="m-0 p-0"><i>{{ wish.hint|linebreaksbr }}</i></p>{% endif %}
+                {% if wish.hint %}notu da şöyle: <p class="m-0 p-0"><i>{{ wish.hint|formatted|linebreaksbr }}</i></p>{% endif %}
             </li>
         {% endfor %}
     </ul>

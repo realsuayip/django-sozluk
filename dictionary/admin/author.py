@@ -34,6 +34,7 @@ class AuthorAdmin(UserAdmin):
                     "is_frozen",
                     "is_private",
                     "karma",
+                    "badges",
                 )
             },
         ),

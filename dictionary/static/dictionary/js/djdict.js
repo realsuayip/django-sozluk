@@ -10,6 +10,10 @@ $.ajaxSetup({
     }
 });
 
+const isValidText = function (body) {
+    return /^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join());
+};
+
 let toastQueue = 0;
 
 const notify = (message, level = "default", initialDelay = 2000, persistent = false) => {
@@ -765,6 +769,12 @@ const entryAction = function (type, pk, redirect = false) {
     return gqlc({ query: `mutation{entry{${type}(pk:"${pk}"){feedback ${redirect ? "redirect" : ""}}}}` });
 };
 
+$("a.twitter[role='button'], a.facebook[role='button']").on("click", function () {
+    const base = $(this).hasClass("twitter") ? "https://twitter.com/intent/tweet?text=" : "https://www.facebook.com/sharer/sharer.php?u=";
+    const entry = $(this).closest(".feedback").siblings(".meta").children("a.permalink").attr("href");
+    window.open(`${base}${window.location.origin}${entry}`, "_blank", "noopener");
+});
+
 $("a.upvote[role='button']").on("click", function () {
     const entryId = $(this).parents(".entry-full").attr("data-id");
     const self = $(this);
@@ -921,8 +931,8 @@ $("#send_message_btn").on("click", function () {
     const msgModal = $("#sendMessageModal");
     const body = textarea.val();
 
-    if (!/^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join())) {
-        notify("bu mesaj geçersiz karakterler içeriyor", "error");
+    if (!isValidText(body)) {
+        notify("bu içerik geçersiz karakterler içeriyor", "error");
         return;
     }
 
@@ -986,7 +996,7 @@ $(".entry-full a.action[role='button']").on("click", function () {
 
     const entry = $(this).parents(".entry-full");
     const entryID = entry.attr("data-id");
-    const topicTitle = entry.attr("data-topic");
+    const topicTitle = entry.closest("[data-topic]").attr("data-topic");
     const actions = $(this).siblings(".entry-actions");
 
     actions.empty();
@@ -1025,9 +1035,7 @@ $(".block-user-trigger").on("click", function () {
 const wishTopic = function (title, hint = null) {
     const query = `mutation wish($title:String!,$hint:String){topic{wish(title:$title,hint:$hint){feedback hint}}}`;
     const variables = { title, hint };
-    return gqlc({ query, variables }).done(function (response) {
-        notify(response.data.topic.wish.feedback);
-    });
+    return gqlc({ query, variables });
 };
 
 $("a.wish-prepare[role=button]").on("click", function () {
@@ -1038,26 +1046,40 @@ $("a.wish-prepare[role=button]").on("click", function () {
 $("a.wish-send[role=button]").on("click", function () {
     const self = $(this);
     const textarea = self.siblings("textarea");
-    const title = self.parent().attr("data-topic");
     const hint = textarea.val();
+
+    if (hint && !isValidText(hint)) {
+        notify("bu içerik geçersiz karakterler içeriyor", "error");
+        return;
+    }
+
+    const title = self.parents("section").attr("data-topic");
     wishTopic(title, hint).then(function (response) {
+        if (response.errors) {
+            for (const error of response.errors) {
+                notify(error.message, "error");
+            }
+            return;
+        }
         textarea.val("");
         self.toggle();
         self.siblings().toggle();
         const hintFormatted = response.data.topic.wish.hint;
         $("ul#wish-list").show().prepend(`<li class="list-group-item owner">bu başlığa az önce ukte verdiniz. ${hintFormatted ? `notunuz: <p class="m-0"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
         $(window).scrollTop(0);
+        notify(response.data.topic.wish.feedback);
     });
 });
 
 $("a.wish-purge[role=button]").on("click", function () {
     const self = $(this);
-    const title = self.parent().attr("data-topic");
+    const title = self.parents("section").attr("data-topic");
     if (confirm("harbiden silinsin mi?")) {
-        wishTopic(title).then(function () {
+        wishTopic(title).then(function (response) {
             self.toggle();
             self.siblings(".wish-prepare").text("biri bu başlığı doldursun").toggle();
             $("ul#wish-list").children("li.owner").hide();
+            notify(response.data.topic.wish.feedback);
         });
     }
 });

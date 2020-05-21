@@ -13,7 +13,7 @@
     {% load filters %}
 
     {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}
-    <section class="user_entries">
+    <section class="user_entries" data-topic="{{ topic.title }}">
             {% if topic.exists %}
                 <header class="entry_header">
                 <h1 class="topic-title">

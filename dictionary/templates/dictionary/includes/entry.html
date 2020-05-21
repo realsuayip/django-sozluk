@@ -1,5 +1,5 @@
 {% load filters %}{% load functions %}
-<li data-topic="{{ entry.topic.title }}" data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% endif %}">
+<li data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% endif %}"{% if show_title == "yes" %} data-topic="{{ entry.topic.title }}"{% endif %}>
     <section>
     {% with time=entry.date_created|entrydate:entry.date_edited %}
         <header class="entry-individual">
@@ -34,12 +34,12 @@
         <footer class="entry-footer">
             <div class="feedback">
                 <div class="social">
-                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={% entry_full_url req=request entry_id=entry.id %}" title="facebook'ta paylaş" class="facebook" rel="noopener">
+                    <a role="button" tabindex="0" title="facebook'ta paylaş" class="facebook">
                         <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#facebook"></use>
                         </svg>
                     </a>
-                    <a target="_blank" href="https://twitter.com/intent/tweet?text={{ entry.topic.title }}: {% entry_full_url req=request entry_id=entry.id %}" title="twitter'da tweetle" class="twitter" rel="noopener">
+                    <a role="button" tabindex="0" title="twitter'da tweetle" class="twitter">
                         <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#twitter"></use>
                         </svg>

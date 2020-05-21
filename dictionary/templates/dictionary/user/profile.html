@@ -62,6 +62,10 @@
                     <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string="lanetli" %}" title="{{ profile.suspended_until|naturaltime }} boyunca">lanetli</a>
                 {% endif %}
 
+                {% for badge in profile.badges.all %}
+                    <a title="{{ badge.description }}" class="badge-item" {% if badge.url %}href="{{ badge.url }}" target="_blank"{% else %}href="{% url 'topic-unicode-url' unicode_string=badge.name %}{% endif %}">{{ badge.name }}</a>
+                {% endfor %}
+
                 {% if profile.karma_flair %}
                     <span>{{ profile.karma_flair }}</span>
                 {% endif %}

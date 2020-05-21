@@ -44,6 +44,9 @@ def formatted(raw_entry):
     a new tab. Protocol name (http/https only) required. Rules for text is the same as (2)
     """
 
+    if not raw_entry:
+        return ""
+
     def linkify(weburl_match):
         """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
         domain, path = weburl_match.group(1), weburl_match.group(2) or ""

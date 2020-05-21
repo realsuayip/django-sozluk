@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
-from ..models import AccountTerminationQueue, Conversation, Memento, Message, TopicFollowing, UserVerification
+from ..models import AccountTerminationQueue, Badge, Conversation, Memento, Message, TopicFollowing, UserVerification
 from .author import AuthorAdmin
 from .category import CategoryAdmin
 from .entry import EntryAdmin
@@ -20,3 +20,4 @@ admin.site.register(TopicFollowing)
 admin.site.register(Memento)
 admin.site.register(UserVerification)
 admin.site.register(AccountTerminationQueue)
+admin.site.register(Badge)

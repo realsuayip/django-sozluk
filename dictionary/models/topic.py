@@ -7,6 +7,7 @@ from django.shortcuts import reverse
 from uuslug import uuslug
 
 from ..utils import get_generic_superuser, turkish_lower
+from ..utils.validators import validate_user_text
 from .author import Author
 from .category import Category
 from .m2m import TopicFollowing
@@ -154,7 +155,7 @@ class Topic(models.Model):
 
 class Wish(models.Model):
     author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="wishes")
-    hint = models.TextField(null=True, blank=True)
+    hint = models.TextField(validators=[validate_user_text], null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

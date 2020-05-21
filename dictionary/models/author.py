@@ -142,6 +142,7 @@ class Author(AbstractUser):
 
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)
+    badges = models.ManyToManyField("Badge", blank=True)
 
     # https://docs.djangoproject.com/en/3.0/topics/db/managers/#django.db.models.Model._default_manager
     objects = UserManager()
@@ -368,3 +369,21 @@ class AccountTerminationQueue(models.Model):
         self.author.is_frozen = False
         self.author.save()
         super().delete(*args, **kwargs)
+
+
+class Badge(models.Model):
+    name = models.CharField(max_length=36, verbose_name="İsim")
+    description = models.TextField(null=True, blank=True, verbose_name="Açıklama")
+    url = models.URLField(
+        null=True,
+        blank=True,
+        verbose_name="Bağlantı",
+        help_text="Rozete tıklayınca gidilecek bağlantı. Eğer boş bırakırsanız ilgili başlığa yönlendirecek.",
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "rozet"
+        verbose_name_plural = "rozetler"

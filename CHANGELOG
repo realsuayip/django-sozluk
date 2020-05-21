@@ -1,3 +1,21 @@
+[0.138.0-dev-pre](2020.05.21)(incompatible)
+--Additions--
+1) Add badge system. You can now associate users
+with custom badges. **incompatible**
+run makemigrations+migrate for dictionary app.
+2) Add isValidText function in djdict to check
+for user content. (validate_user_text equivalent)
+
+-- Changes --
+1) Fixed the XSS vulnerability in wish sending form.
+2) Wish content now allows entry formatting options,
+it is also now validated via validate_user_text.
+3) Twitter and Facebook share links are removed from
+templates, instead they are generated using javascript.
+
+--Deletions--
+None
+
 [0.137.0-dev-pre](2020.05.20)(compatible)
 --Additions--
 None
