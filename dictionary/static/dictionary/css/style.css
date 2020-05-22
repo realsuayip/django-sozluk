@@ -1260,6 +1260,40 @@ ul.exlusion-choices > li > a.active {
     border-left: 4px solid #0d2f18;
 }
 
+#main,
+#left-frame-nav,
+#right-frame {
+    scroll-margin-top: 100px;
+}
+
+.content-skipper {
+    left: 0;
+    right: 0;
+    margin: auto;
+    position: absolute;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    text-align: center;
+    transform: translateY(-200%);
+    z-index: 10;
+    padding: .5em;
+    max-width: 300px;
+    background: #fff;
+    border: 2px solid #16784f;
+    transition: .3s ease-in-out;
+}
+
+.content-skipper::after {
+    content: "bu menü caps lock tuşuyla açılır";
+    font-size: 12px;
+    display: block;
+}
+
+.content-skipper:focus {
+    transform: translateY(0%);
+}
+
 /** MEDIA QUERIES **/
 
 /** CONTAINER WIDTHS **/

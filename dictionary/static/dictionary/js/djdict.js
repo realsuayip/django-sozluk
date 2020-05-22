@@ -1083,3 +1083,13 @@ $("a.wish-purge[role=button]").on("click", function () {
         });
     }
 });
+
+$(".content-skipper").on("click", function () {
+    notify(`seçici <strong>${$(this).attr("data-text-identifier")}</strong> kısımına odaklandı.`);
+});
+
+$(document).keydown(function (e) {
+    if (e.which === 20) {
+        $("#skipper-main-menu").focus();
+    }
+});

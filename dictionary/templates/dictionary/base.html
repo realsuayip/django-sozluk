@@ -33,6 +33,10 @@
 
         <div class="top-bar">
 
+            <a class="content-skipper" data-text-identifier="ana içerik" href="#main" id="skipper-main-menu">Ana içeriğe git</a>
+            <a class="content-skipper" data-text-identifier="başlık listesi" href="#left-frame-nav">Başlık listesine git</a>
+            <a class="content-skipper" data-text-identifier="ek içerik" href="#right-frame">Ek içeriğe git</a>
+
             {# <!--- logo --> #}
             <div class="logo">
                 <a aria-label="Sözlük ana sayfası" href="{% url 'home' %}"></a>
@@ -233,12 +237,12 @@
 
 
     {# page content #}
-    <div role="main" class="content-frame">
+    <div role="main" class="content-frame" id="main">
         {% block content %}{% endblock %}
     </div>
 
 
-    <div role="complementary" class="right-frame">
+    <div role="complementary" class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
         {% load cache %}
         {% cache None footer %}

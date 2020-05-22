@@ -1,3 +1,15 @@
+[0.139.0-dev-pre](2020.05.22)(compatible)
+--Additions--
+1) Added content skipper menu for users using
+tab navigation, this should improve accessibility
+a lot.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.138.0-dev-pre](2020.05.21)(incompatible)
 --Additions--
 1) Add badge system. You can now associate users
