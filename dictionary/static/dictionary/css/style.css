@@ -1284,8 +1284,7 @@ ul.exlusion-choices > li > a.active {
     transition: .3s ease-in-out;
 }
 
-.content-skipper::after {
-    content: "bu menü caps lock tuşuyla açılır";
+.content-skipper small {
     font-size: 12px;
     display: block;
 }

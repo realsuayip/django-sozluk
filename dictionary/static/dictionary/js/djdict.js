@@ -19,13 +19,11 @@ let toastQueue = 0;
 const notify = (message, level = "default", initialDelay = 2000, persistent = false) => {
     const toastHolder = $(".toast-holder");
     const toastTemplate = `
-    <div ${level === "error" ? `role="alert" aria-live="assertive"` : `role="status" aria-live="polite"`} aria-atomic="true" class="toast shadow-sm" data-autohide="${!persistent}">
+    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast shadow-sm" data-autohide="${!persistent}">
         <div class="toast-body ${level}">
             <div class="toast-content">
                 <span>${message}</span>
-                <button type="button" class="ml-2 close" data-dismiss="toast" aria-label="Kapat">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                ${persistent ? `<button type="button" class="ml-2 close" data-dismiss="toast" aria-label="Kapat"><span aria-hidden="true">&times;</span></button>` : ""}
             </div>
         </div>
     </div>`;
@@ -967,9 +965,9 @@ $("form.search_mobile, form.reporting-form").submit(function () {
     return true;
 });
 
-$("body").on("keypress", "[role=button]", function (event) {
-    if (event.which === 13 || event.which === 32) { // space or enter
-        $(this).trigger("click");
+$("body").on("keypress", "[role=button]", function (e) {
+    if (e.which === 13 || e.which === 32) { // space or enter
+        $(this).click();
     }
 });
 
@@ -1085,6 +1083,7 @@ $("a.wish-purge[role=button]").on("click", function () {
 });
 
 $(".content-skipper").on("click", function () {
+    location.replace($(this).attr("data-href"));
     notify(`seçici <strong>${$(this).attr("data-text-identifier")}</strong> kısımına odaklandı.`);
 });
 

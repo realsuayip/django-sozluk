@@ -12,21 +12,17 @@
             {% for chat in conversations %}
                 {% with lastmsg=chat.last_message %}
                 <li {% if lastmsg.recipient == user and not lastmsg.read_at %}class="unread"{% endif %}>
-                    {% with sender=lastmsg.sender recipient=lastmsg.recipient %}
-                        {% if sender == user %}
-                            <a href="{% url 'conversation' slug=recipient.slug %}">
-                            <h2 class="h5">{{ recipient.username }}</h2>
+                    <a href="{{ chat.get_absolute_url }}">
+                        <h2 class="h5">{{ chat.target.username }}</h2>
+                        {% if lastmsg %}
+                            <p>{{ lastmsg.body }}</p>
+                            <time>{{ lastmsg.sent_at|naturaltime }}</time>
                         {% else %}
-                            <a href="{% url 'conversation' slug=sender.slug %}">
-                            <h2 class="h5">{{ sender.username }}</h2>
+                            <p><em>mesaj yok</em></p>
                         {% endif %}
-                    {% endwith %}
-                    <p>{{ lastmsg.body }}</p>
-                    {{ lastmsg.sent_at|naturaltime }}
                     </a>
                 </li>
                 {% endwith %}
-
             {% endfor %}
         </ul>
 

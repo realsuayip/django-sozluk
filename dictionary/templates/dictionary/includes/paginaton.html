@@ -1,9 +1,8 @@
-{% load functions %}
 {% with paginator as page_obj %}
     {% if page_obj.paginator.num_pages > 1 %}
-        {% if hr == "yes" %}
-            <hr>
-        {% endif %}
+        {% load functions %}
+        {% if hr == "yes" %}<hr>{% endif %}
+
         <div class="{{ classlist|default:"lf_pagination" }}{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
             {% if page_obj.has_previous %}
                 <a title="önceki sayfa" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>

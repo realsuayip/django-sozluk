@@ -1,3 +1,15 @@
+[0.140.0-dev-pre](2020.05.24)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Improved accessibility.
+2) Fixed a bug in conversation view where
+conversations with no message raised 500.
+
+--Deletions--
+None
+
 [0.139.0-dev-pre](2020.05.22)(compatible)
 --Additions--
 1) Added content skipper menu for users using

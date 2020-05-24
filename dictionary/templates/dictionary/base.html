@@ -33,9 +33,9 @@
 
         <div class="top-bar">
 
-            <a class="content-skipper" data-text-identifier="ana içerik" href="#main" id="skipper-main-menu">Ana içeriğe git</a>
-            <a class="content-skipper" data-text-identifier="başlık listesi" href="#left-frame-nav">Başlık listesine git</a>
-            <a class="content-skipper" data-text-identifier="ek içerik" href="#right-frame">Ek içeriğe git</a>
+            <button class="content-skipper" data-text-identifier="ana içerik" data-href="#main" id="skipper-main-menu">Ana içeriğe git.<small>bu menü caps lock tuşuyla açılır.</small></button>
+            <button class="content-skipper" data-text-identifier="başlık listesi" data-href="#left-frame-nav">Başlık listesine git.<small>bu menü caps lock tuşuyla açılır.</small></button>
+            <button class="content-skipper" data-text-identifier="ek içerik" data-href="#right-frame">Ek içeriğe git.<small>bu menü caps lock tuşuyla açılır.</small></button>
 
             {# <!--- logo --> #}
             <div class="logo">
@@ -49,7 +49,7 @@
                     <div class="input-group-append">
 
                         <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="sr-only">hayvan ara</span>
+                            <span class="sr-only">gelişmiş arama diyaloğunu aç</span>
                         </button>
 
                         <button class="btn searchbtn" type="submit" id="button-addon2" title="arama yap">
@@ -269,7 +269,7 @@
         <li data-message="{{ message }}" data-level="{% get_message_level message.level %}" data-extra="{{ message.extra_tags }}"></li>
     {% endfor %}
 </ul>
-<div class="toast-holder"></div>
+<div class="toast-holder" aria-live="polite"></div>
 
 </body>
 </html>

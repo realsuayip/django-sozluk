@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.utils import timezone
+from django.urls import reverse
 
 from ..utils import turkish_lower
 from ..utils.validators import validate_user_text
@@ -44,6 +45,9 @@ class Conversation(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=["holder", "target"], name="unique_conversation")]
+
+    def get_absolute_url(self):
+        return reverse("conversation", kwargs={"slug": self.target.slug})
 
     @property
     def last_message(self):
