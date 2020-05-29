@@ -100,10 +100,12 @@
 
                         <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
                             <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
+                            <a class="dropdown-item" href="?t=recentlyvoted">son oylananları</a>
                             <a class="dropdown-item" href="?t=liked">en beğenilenleri</a>
                             <a class="dropdown-item" href="?t=weeklygoods">bu hafta dikkat çekenleri</a>
                             <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
                             <a class="dropdown-item" href="?t=authors">favori yazarları</a>
+                            <a class="dropdown-item" href="?t=wishes">ukteleri</a>
                         </div>
                     </li>
                 </ul>
@@ -125,11 +127,17 @@
             {% endif %}
 
             {% if tab.type == "author" %}
-                <ul class="list-group">
+                <ul class="list-group list-group-flush">
                     {% for author in object_list %}
-                        <li class="list-group-item" data-username="{{ author.username }}">
-                            <a href="{{ author.get_absolute_url }}"><strong>{{ author.username }}</strong></a>
-                        </li>
+                        <a class="list-group-item list-group-item-action" href="{{ author.get_absolute_url }}">{{ author.username }}</a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if tab.type == "topic" %}
+                <ul class="list-group list-group-flush">
+                    {% for topic in object_list %}
+                        <a class="list-group-item list-group-item-action" href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                     {% endfor %}
                 </ul>
             {% endif %}

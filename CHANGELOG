@@ -1,3 +1,13 @@
+[0.143.0-dev-pre](2020.05.29)(compatible)
+--Additions--
+1) Add 2 new tabs for profile page statistics.
+
+-- Changes --
+1) Autocomplete suggestions now have min-width of 250px.
+
+--Deletions--
+None
+
 [0.142.0-dev-pre](2020.05.29)(incompatible)
 --Additions--
 1) Add clear cache button to admin panel.

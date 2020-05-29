@@ -705,6 +705,7 @@ a.more-entries-button:hover {
     -moz-border-radius: 3px;
     border-radius: 3px;
     margin-top: .1em;
+    min-width: 250px;
 }
 
 .autocomplete-suggestion {

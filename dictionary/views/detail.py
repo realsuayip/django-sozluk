@@ -1,6 +1,9 @@
+from contextlib import suppress
+
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery
+from django.db.models.functions import Coalesce, Greatest
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -8,7 +11,7 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
-from ..models import Author, Conversation, Entry, Memento, Message
+from ..models import Author, Conversation, DownvotedEntries, Entry, Memento, Message, Topic, UpvotedEntries
 from ..utils import time_threshold
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
@@ -75,6 +78,8 @@ class UserProfile(IntegratedFormMixin, ListView):
         "weeklygoods": {"label": "bu hafta dikkat çekenleri", "type": "entry"},
         "beloved": {"label": "el emeği göz nuru", "type": "entry"},
         "authors": {"label": "favori yazarları", "type": "author"},
+        "recentlyvoted": {"label": "son oylananları", "type": "entry"},
+        "wishes": {"label": "ukteleri", "type": "topic"},
     }
 
     def form_valid(self, form):
@@ -123,7 +128,7 @@ class UserProfile(IntegratedFormMixin, ListView):
 
             return base
 
-        if tab_obj_type == "author":
+        if tab_obj_type in ("author", "topic"):
             return qs
 
         raise Http404
@@ -154,6 +159,28 @@ class UserProfile(IntegratedFormMixin, ListView):
             self.profile.entry_set(manager="objects_published")
             .filter(favorited_by__in=[self.profile])
             .order_by("-date_created")
+        )
+
+    def recentlyvoted(self):
+        upvotes = UpvotedEntries.objects.filter(entry=OuterRef("pk")).order_by("-date_created")
+        downvotes = DownvotedEntries.objects.filter(entry=OuterRef("pk")).order_by("-date_created")
+
+        up = Subquery(upvotes.values("date_created")[:1])
+        down = Subquery(downvotes.values("date_created")[:1])
+
+        return (
+            self.profile.entry_set(manager="objects_published")
+            .annotate(last_voted=Coalesce(Greatest(up, down), up, down))
+            .filter(last_voted__isnull=False)
+            .order_by("-last_voted")
+        )
+
+    def wishes(self):
+        return (
+            Topic.objects.filter(wishes__author=self.profile)
+            .annotate(latest=Max("wishes__date_created"))
+            .only("title", "slug")
+            .order_by("-latest")
         )
 
     def authors(self):
@@ -200,8 +227,7 @@ class UserProfile(IntegratedFormMixin, ListView):
 
     def get_memento(self):
         if self.request.user.is_authenticated:
-            try:
+            with suppress(Memento.DoesNotExist):
                 return Memento.objects.get(holder=self.request.user, patient=self.profile)
-            except Memento.DoesNotExist:
-                return None
+
         return None

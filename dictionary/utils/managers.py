@@ -144,8 +144,8 @@ class TopicQueryHandler:
 
     def ukteler_owned(self, user):
         return (
-            Topic.objects.annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
-            .filter(wishes__author=user)
+            Topic.objects.filter(wishes__author=user)
+            .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
             .order_by("-latest")
         ).values(*self.values)
 
