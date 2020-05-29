@@ -1,3 +1,23 @@
+[0.141.0-dev-pre](2020.05.29)(incompatible)
+--Additions--
+1) order_by filter to order querysets in templates.
+2) get_external_urls tag to get external urls in templates.
+
+-- Changes --
+1) Flat pages and external urls are now handled
+at database level. (notice: right frame is cached)
+    -Add ExternalURL model
+    -Use django's Site and Flatpage apps.
+    **incompatible** run makemigrations+migrate
+2) Flat pages are now flat (they are no longer entry instances).
+3) Use Site model to change site name in title.
+4) Improved accessibility in left-frame.
+5) Improved signup page template logic.
+
+--Deletions--
+1) FLATPAGE_URLS, SOCIAL_URLS settings and
+url_social, url_flat tags.
+
 [0.140.0-dev-pre](2020.05.24)(compatible)
 --Additions--
 None

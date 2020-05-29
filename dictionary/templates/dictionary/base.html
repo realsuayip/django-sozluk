@@ -21,7 +21,7 @@
     <script defer src="{% static 'dictionary/js/vendor/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
 
-    <title>{% block title %}{% endblock %} - django sözlük</title>
+    <title>{% block title %}{% endblock %} - {{ request.site.name }}</title>
 </head>
 <body {% block bodyattr %}class="default topic-entry-view"{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
 {% include "dictionary/includes/icons.svg" %}
@@ -244,27 +244,36 @@
 
     <div role="complementary" class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
+
         {% load cache %}
-        {% cache None footer %}
+
+        {% cache None footer user.is_authenticated %}
+            {% load filters %}
+            {% load flatpages %}
+            {% get_flatpages for user as flatpages %}
+            {% get_external_urls as external_urls %}
+
             <footer class="body-footer">
-                <h2 style="font-size: 1.3em;">django sözlük</h2>
+                <h2 class="h5">{{ request.site.name }}</h2>
                 <ul>
                     <li><a href="{% url 'general-report' %}">iletişim formu</a></li>
-                    <li><a href="{% url_flat "terms-of-use" %}">kullanım koşulları</a></li>
-                    <li><a href="{% url_flat "privacy-policy" %}">gizlilik politikası</a></li>
-                    <li><a href="{% url_flat "faq" %}">sıkça sorulanlar</a></li>
-                    <li><a href="{% url_social "instagram" %}" target="_blank" rel="noopener">instagram</a></li>
-                    <li><a href="{% url_social "facebook" %}" target="_blank" rel="noopener">facebook</a></li>
-                    <li><a href="{% url_social "twitter" %}" target="_blank" rel="noopener">twitter</a></li>
+                    {% for page in flatpages|order_by:"-metaflatpage__weight url" %}
+                        <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
+
+                    {% for external in external_urls %}
+                        <li><a href="{{ external.url }}" target="_blank" rel="noopener">{{ external.name }}</a></li>
+                    {% endfor %}
                 </ul>
             </footer>
         {% endcache %}
+
         {% include "dictionary/includes/devinfo.html" %}
     </div>
 
 </div>
 
-<ul style="display: none;" id="request-messages" data-has-messages="{{ messages|yesno:'true,false' }}">
+<ul class="d-none" id="request-messages" data-has-messages="{{ messages|yesno:'true,false' }}">
     {% for message in messages %}
         <li data-message="{{ message }}" data-level="{% get_message_level message.level %}" data-extra="{{ message.extra_tags }}"></li>
     {% endfor %}

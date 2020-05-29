@@ -1,69 +1,64 @@
 {% extends "dictionary/base.html" %}
 {% load widget_tweaks %}
+{% load functions %}
+
 {% block title %}Kayıt ol{% endblock %}
 {% block content %}
     <h1 class="h4"><strong>kayıt olalım</strong></h1>
     <hr>
     <form method="post" id="signup">
+        {% csrf_token %}
+
         {% if form.errors %}
-
-            <div class="alert alert-danger">
-                <strong>lütfen aşağıdaki hataları kontrol edip tekrar deneyin.</strong>
-            </div>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    {% for field in form.errors %}
-                        {% if field == "username" %}
-                            $("#signup_usernameHelp").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.username.errors.0 }}");
-                        {% elif field == "email" %}
-                            $("#signup_emailHelp").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.email.errors.0 }}");
-                        {% elif field == "password2" %}
-                            $("#signup_password2Help").removeClass("text-muted").addClass("text-danger").html("Hata: {{ form.password2.errors.0 }}");
-                        {% endif %}
-                    {% endfor %}
-                    $("form#signup input").on("change keyup paste", function () {
-                        $(this).removeClass("is-invalid");
-                    });
-                });
-            </script>
-
+            <div class="alert alert-danger">lütfen aşağıdaki hataları kontrol edip tekrar deneyin.</div>
             {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
+                <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
-
         {% endif %}
 
-        {% csrf_token %}
         {% with WIDGET_ERROR_CLASS='is-invalid' %}
             <div class="form-group">
                 <label for="signup_username">{{ form.username.label }}</label>
                 {% render_field form.username|attr:"autofocus" class="form-control" id="signup_username" aria-describedby="signup_usernameHelp" %}
-                <small id="signup_usernameHelp" class="form-text text-muted">{{ form.username.help_text }}</small>
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <small class="form-text text-danger">{{ error }}</small>
+                    {% endfor %}
+                {% else %}
+                    <small id="signup_usernameHelp" class="form-text text-muted">{{ form.username.help_text }}</small>
+                {% endif %}
             </div>
-
-
 
             <div class="form-group">
                 <label for="signup_email">{{ form.email.label }}</label>
                 {% render_field form.email class="form-control" id="signup_email" aria-describedby="signup_emailHelp" %}
-                <small id="signup_emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <small class="form-text text-danger">{{ error }}</small>
+                    {% endfor %}
+                {% else %}
+                    <small id="signup_emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="signup_password1">{{ form.password1.label }}</label>
                 {% render_field form.password1 class="form-control" id="signup_password1" aria-describedby="signup_password1Help" %}
-                <small id="signup_password1Help"
-                       class="form-text text-muted password-help">{{ form.password1.help_text }}</small>
+                <small id="signup_password1Help" class="form-text text-muted password-help">{{ form.password1.help_text }}</small>
             </div>
 
             <div class="form-group">
                 <label for="signup_password2">{{ form.password2.label }}</label>
                 {% render_field form.password2 class="form-control" id="signup_password2" aria-describedby="signup_password2Help" %}
-                <small id="signup_password2Help" class="form-text text-muted">{{ form.password2.help_text }}</small>
+                {% if form.password2.errors %}
+                    {% for error in form.password2.errors %}
+                        <small class="form-text text-danger">{{ error }}</small>
+                    {% endfor %}
+                {% else %}
+                    <small id="signup_password2Help" class="form-text text-muted">{{ form.password2.help_text }}</small>
+                {% endif %}
             </div>
+
             <div class="row">
                 <div class="col-xl-7 col-lg-6">
                     <div class="form-group">
@@ -73,20 +68,18 @@
                 </div>
                 <div class="col-xl-5 col-lg-6">
                     <div class="form-group">
-                        <label style="display: block;" for="id_birth_date_day">{{ form.birth_date.label }}</label>
+                        <label class="d-block" for="id_birth_date_day">{{ form.birth_date.label }}</label>
                         {% render_field form.birth_date class="datepicker form-control" %}
                     </div>
                 </div>
             </div>
-            {% load functions %}
+
             <div class="custom-control custom-checkbox">
                 {% render_field form.terms_conditions class="custom-control-input" id="terms_conditions" %}
-                <label class="custom-control-label" for="terms_conditions">
-                    <a target="_blank" href="{% url_flat "terms-of-use" %}">kullanıcı sözleşmesini</a> okudum ve kabul ediyorum
-                </label>
+                <label class="custom-control-label" for="terms_conditions"><a target="_blank" href="/terms-of-use/">kullanıcı sözleşmesini</a> okudum ve kabul ediyorum</label>
             </div>
-            <hr>
         {% endwith %}
-        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django mb-5" style="width: 100%;">kayıt ol</button>
+
+        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django stretch my-3">kayıt ol</button>
     </form>
 {% endblock %}

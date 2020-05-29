@@ -119,23 +119,22 @@ const mobileView = function () {
     });
 };
 
-// Safari doesn't support mql.addEventListener yet, so we have
-// to use deprecated addListener.
-mql.addListener(function (e) {
-    if (e.matches) {
-        mobileView();
-    } else {
-        desktopView();
-    }
-});
-
-$(function () {
-    // DOM ready.
+const mqlsw = function (mql) {
+    // check mql & switch
     if (mql.matches) {
         mobileView();
     } else {
         desktopView();
     }
+};
+
+// Safari doesn't support mql.addEventListener yet, so we have
+// to use deprecated addListener.
+mql.addListener(mqlsw);
+
+$(function () {
+    // DOM ready.
+    mqlsw(mql);
 
     // Handles notifications passed by django's message framework.
     const requestMessages = $("#request-messages");
@@ -1091,4 +1090,8 @@ $(document).keydown(function (e) {
     if (e.which === 20) {
         $("#skipper-main-menu").focus();
     }
+});
+
+$("form#signup input").on("change keyup paste", function () {
+    $(this).removeClass("is-invalid");
 });

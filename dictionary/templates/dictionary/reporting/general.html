@@ -1,27 +1,20 @@
 {% extends "dictionary/base.html" %}
 {% block title %}şikayet{% endblock %}
-
-
+{% load functions %}
+{% load widget_tweaks %}
 
 {% block content %}
     <h1 class="h4"><strong>iletişim</strong></h1>
     <hr>
-    {% load functions %}
-    <ol>
-        <li>iletişime geçmeden önce lütfen <a href="{% url_flat "faq" %}">sıkça sorulan sorular</a> kısmını ziyaret
-            edin.
-        </li>
-        <li>lütfen istek ve şikayetinizi anlaşılır bir şekilde dile getirin</li>
-        <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem
-            anonim olarak yapılmaktadır.
-        </li>
-        <li>gerekli bulunursa geri dönüş yapılacağından, lütfen geçerli bir mail adresi girin.</li>
 
+    <ol>
+        <li>iletişime geçmeden önce lütfen <a href="/faq/">sıkça sorulan sorular</a> kısmını ziyaret edin.</li>
+        <li>lütfen istek ve şikayetinizi anlaşılır bir şekilde dile getirin</li>
+        <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem anonim olarak yapılmaktadır.</li>
+        <li>onaylama ve geriş dönüş için geçerli bir mail adresi girin.</li>
     </ol>
 
     <form method="post" class="reporting-form">
-        {% load widget_tweaks %}
-
         <div class="form-group">
             <label for="reporter_email">{{ form.reporter_email.label }}</label>
             {% render_field form.reporter_email class="form-control" id="reporter_email" %}

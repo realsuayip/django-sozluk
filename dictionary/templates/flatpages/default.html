@@ -1,0 +1,13 @@
+{% extends 'dictionary/base.html' %}
+{% block title %}{{ flatpage.title }}{% endblock %}
+{% block content %}
+    <h1 class="h4"><strong><a href="{{ flatpage.url }}">{{ flatpage.title }}</a></strong></h1>
+    <article>
+        {% if flatpage.metaflatpage.html_only %}
+            <p>{{ flatpage.content|linebreaksbr }}</p>
+        {% else %}
+            {% load filters %}
+            <p>{{ flatpage.content|formatted|linebreaksbr }}</p>
+        {% endif %}
+    </article>
+{% endblock %}

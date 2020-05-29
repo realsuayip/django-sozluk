@@ -34,6 +34,8 @@ GRAPHENE = {
     'SCHEMA': 'dictionary_graph.schema.schema'
 }
 
+SITE_ID = 1
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Django built-in
+    'django.contrib.humanize',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+
     # Main apps
     'dictionary',
     'dictionary_graph',
@@ -51,21 +58,20 @@ INSTALLED_APPS = [
     # Third Party
     'graphene_django',
     'widget_tweaks',
-
-    # Django built-in
-    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # Using custom csrf middleware here. Check the module to see the rationale.
+    'dictionary.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Using custom csrf middleware here. Check the module to see the rationale.
-    'dictionary.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'dictionary.middleware.users.NoviceActivityMiddleware',
     'dictionary.middleware.frontend.MobileDetectionMiddleware'
 ]

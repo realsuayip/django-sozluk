@@ -106,19 +106,6 @@ FIRST_GENERATION_DATE = "09.08.2019"
 GENERATION_GAP_DAYS = 180
 """Set the interval for seperating generations."""
 
-# Give entry id's for flat pages.
-FLATPAGE_URLS = {
-    "terms-of-use": 37631,
-    "privacy-policy": 37630,
-    "faq": 37451,
-}
-
-SOCIAL_URLS = {
-    "facebook": "https://www.facebook.com/",
-    "instagram": "https://www.instagram.com/",
-    "twitter": "https://twitter.com/",
-}
-
 
 DISABLE_ANONYMOUS_VOTING = False
 """

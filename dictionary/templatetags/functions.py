@@ -1,8 +1,9 @@
 from django import template
 from django.urls import reverse
 
-from ..models import Entry
-from ..utils.settings import FLATPAGE_URLS, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META, SOCIAL_URLS
+from ..models import ExternalURL
+from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
+
 
 register = template.Library()
 
@@ -30,16 +31,8 @@ def check_follow_status(user, topic):
 
 
 @register.simple_tag
-def url_flat(name):
-    try:
-        return Entry.objects.get(pk=FLATPAGE_URLS[name]).get_absolute_url()
-    except Entry.DoesNotExist:
-        return "/entry/1/"
-
-
-@register.simple_tag
-def url_social(name):
-    return SOCIAL_URLS[name]
+def get_external_urls():
+    return ExternalURL.objects.all()
 
 
 @register.simple_tag

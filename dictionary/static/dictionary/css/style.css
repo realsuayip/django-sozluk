@@ -1030,7 +1030,7 @@ ul.category-list-all li h2 {
     width: 48px;
     display: inline-block;
     text-align: center;
-    height: 29px;
+    height: 30px;
     line-height: 25px;
 }
 
@@ -1090,7 +1090,7 @@ select.mobile-topic-list {
 
 form.memento textarea {
     height: auto;
-    padding: .2em;
+    padding: .4em .6em;
     width: 100%;
 }
 

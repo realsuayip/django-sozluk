@@ -70,7 +70,7 @@
 
     {# PAGINATION START #}
     <div id="lf_pagination_wrapper" class="lf_pagination index{% if lf.page.number == 1 or not lf.page.has_other_pages %} dj-hidden{% endif %}">
-        <a id="lf_navigate_before" role="button" tabindex="0">«</a>
+        <a title="önceki sayfa" id="lf_navigate_before" role="button" tabindex="0">«</a>
 
         <select id="left_frame_paginator" aria-label="Sayfa seçici">
             {% for page in lf.page.paginator.page_range %}
@@ -79,8 +79,8 @@
         </select>
 
         <span style="color:#444">&nbsp;/&nbsp;</span>
-        <a id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
-        <a class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
+        <a title="son sayfa" id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
+        <a title="sonraki sayfa" class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
     </div>
     {# PAGINATION END #}
 

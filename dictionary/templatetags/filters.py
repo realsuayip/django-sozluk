@@ -155,3 +155,8 @@ def mediastamp(media_urls, mode):
         html = '<script async src="//www.instagram.com/embed.js"></script>' + html
 
     return mark_safe(f'<section class="topic-media-area mt-2">{html}</section>')
+
+
+@register.filter
+def order_by(queryset, fields):
+    return queryset.order_by(*fields.split())
