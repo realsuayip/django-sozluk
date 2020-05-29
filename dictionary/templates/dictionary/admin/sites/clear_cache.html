@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Giriş</a>
+        {% block crumbs %}
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div>
+    <p style="background: #79aec8; padding: 1em; color: #efefef; margin: 0;">
+        Zaman aşımına uğramış nesneleri önbellekten temizlemek için bunu kullanabilirsiniz. Belirli
+        bir nesneyi silmek için önbellek anahtarı belirtin. Eğer önbellek anahtarı belirtmezseniz
+        <strong>TÜM</strong> önbellek temizlenecek. Eğer site yüksek trafiğe
+        sahip ise tüm önbelleği bir anda temizlemek istek sayısını yükseltecektir.
+    </p>
+
+    <form method="post">
+        <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
+            <div class="form-row">
+                <input type="text" name="cache_key" placeholder="önbellek anahtarı" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <br>
+            <div class="submit-row">
+                <input onclick="return confirm('Emin misiniz?')" type="submit" id="submit-btn" value="Önbelleği temizle" class="default" style="background: #ba2121; float: left;">
+            </div>
+            <div style="clear: both"></div>
+        </div>
+        {% csrf_token %}
+    </form>
+    </div>
+{% endblock %}

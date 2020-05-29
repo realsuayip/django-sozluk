@@ -10,9 +10,10 @@
             <caption>diğer aksiyonlar</caption>
             <tbody>
             {% if perms.dictionary.can_activate_user %}
-                <tr>
-                    <th><a href="{% url 'admin:novice_list' %}">Çaylak onay listesi</a></th>
-                </tr>
+                <tr><th><a href="{% url 'admin:novice_list' %}">Çaylak onay listesi</a></th></tr>
+            {% endif %}
+            {% if perms.dictionary.can_clear_cache %}
+                <tr><th><a href="{% url 'admin:clear-cache' %}">Önbelleği temizle</a></th></tr>
             {% endif %}
             </tbody>
         </table>

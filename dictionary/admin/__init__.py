@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
@@ -19,6 +20,7 @@ from .category import CategoryAdmin
 from .entry import EntryAdmin
 from .flatpages import FlatPageAdmin
 from .general_report import GeneralReportAdmin
+from .sites import SiteAdmin
 from .topic import TopicAdmin
 
 
@@ -37,3 +39,6 @@ admin.site.register(Badge)
 admin.site.unregister(FlatPage)
 admin.site.register(MetaFlatPage, FlatPageAdmin)
 admin.site.register(ExternalURL)
+
+admin.site.unregister(Site)
+admin.site.register(Site, SiteAdmin)

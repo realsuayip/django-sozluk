@@ -1,3 +1,14 @@
+[0.142.0-dev-pre](2020.05.29)(incompatible)
+--Additions--
+1) Add clear cache button to admin panel.
+**incompatible** run makemigrations+migrate.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.141.0-dev-pre](2020.05.29)(incompatible)
 --Additions--
 1) order_by filter to order querysets in templates.

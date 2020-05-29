@@ -152,8 +152,11 @@ class Author(AbstractUser):
         return f"{self.username}:{self.id}"
 
     class Meta:
-        # Superusers need to have can_activate_user permission to accept a novice as an author.
-        permissions = (("can_activate_user", "çaylak lisesine erişim"), ("suspend_user", "kullanıcıyı askıya alma"))
+        permissions = (
+            ("can_activate_user", "çaylak lisesine erişim"),
+            ("suspend_user", "kullanıcıyı askıya alma"),
+            ("can_clear_cache", "önbelleği temizleme"),
+        )
         verbose_name = "yazar"
         verbose_name_plural = "yazarlar"
 
