@@ -296,11 +296,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             epoch = self.request.GET.get("d")
 
             try:
-                last_read = timezone.make_aware(datetime.datetime.fromtimestamp(int(epoch)))
+                last_read = datetime.datetime.fromtimestamp(int(epoch))
             except (ValueError, TypeError, OSError):
                 last_read = None
 
-            if last_read:
+            if last_read and last_read.date() == following.read_at.date():
                 queryset = self._qs_filter(
                     self.topic.entries.filter(date_created__gt=last_read).exclude(Q(author=self.request.user))
                 )  # Note: we need to apply _qs_filter because we use queryset results in here.

@@ -9,7 +9,7 @@
     <span class="chat-quick-links">
         <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
            <span>
-            <svg fill="currentColor" width="24px" height="16px" viewBox="0 0 16 16"
+            <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16"
                  xmlns="http://www.w3.org/2000/svg">
                 <use href="#arrow-left"></use>
             </svg>
@@ -36,13 +36,13 @@
                             <time>{{ message.sent_at|naturaltime }}</time>
                             {% if message.read_at %}
                                 <span title="görüldü, {{ message.read_at|timesince }} önce">
-                                    <svg width="2em" height="1em" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                         <use href="#msgread"></use>
                                     </svg>
                                 </span>
                             {% else %}
                                 <span title="gönderildi">
-                                    <svg width="2em" height="1em" viewBox="0 0 16 16"
+                                    <svg width="28" height="14" viewBox="0 0 16 16"
                                          xmlns="http://www.w3.org/2000/svg">
                                         <use href="#msgsent"></use>
                                     </svg>

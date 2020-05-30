@@ -168,7 +168,7 @@ $("#header_search").autocomplete({
     },
 
     onSelect (suggestion) {
-        window.location.replace("/topic/?q=" + suggestion.value);
+        window.location = "/topic/?q=" + suggestion.value;
     }
 });
 
@@ -441,7 +441,7 @@ $("select#left_frame_paginator").on("change", function () {
 
 $("#lf_total_pages").on("click", function () {
     // Navigated to last page
-    $("select#left_frame_paginator").val($(this).html()).trigger("change");
+    $("select#left_frame_paginator").val($(this).text()).trigger("change");
 });
 
 $("#lf_navigate_before").on("click", function () {
@@ -717,7 +717,7 @@ const userAction = function (type, recipient) {
     gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
         const info = response.data.user[type];
         if (info.redirect) {
-            window.location.replace(info.redirect);
+            window.location = info.redirect;
         } else {
             notify(info.feedback);
         }
@@ -809,7 +809,7 @@ $(".entry-actions").on("click", ".delete-entry", function () {
         entryAction("delete", entry.attr("data-id"), redirect).then(function (response) {
             const data = response.data.entry.delete;
             if (redirect) {
-                window.location.replace(data.redirect);
+                window.location = data.redirect;
             } else {
                 entry.remove();
                 notify(data.feedback);
@@ -821,7 +821,7 @@ $(".entry-actions").on("click", ".delete-entry", function () {
 $(".delete-entry-redirect").on("click", function () {
     if (confirm("harbiden silinsin mi?")) {
         entryAction("delete", $(this).attr("data-target-entry"), true).then(function (response) {
-            window.location.replace(response.data.entry.delete.redirect);
+            window.location = response.data.entry.delete.redirect;
         });
     }
 });
@@ -878,7 +878,7 @@ const populateSearchResults = searchParameters => {
     const slug = "hayvan-ara";
 
     if (userIsMobile) {
-        window.location.replace(`/threads/${slug}/?${searchParameters}`);
+        window.location = `/threads/${slug}/?${searchParameters}`;
     }
     LeftFrame.populate(slug, 1, null, searchParameters);
 };
@@ -1092,6 +1092,14 @@ $(document).keydown(function (e) {
     }
 });
 
-$("form#signup input").on("change keyup paste", function () {
+$("form#signup input").on("input", function () {
     $(this).removeClass("is-invalid");
+});
+
+$("textarea#user_content_edit, textarea#message-body").on("input", function () {
+    window.onbeforeunload = () => this.value || null;
+});
+
+$("form").submit(function () {
+    window.onbeforeunload = null;
 });

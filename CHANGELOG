@@ -1,3 +1,14 @@
+[0.146.0-dev-pre](2020.05.30)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Small optimizations for frontend.
+2) Fixed a bug in TopicEntryList's following method.
+
+--Deletions--
+None
+
 [0.145.0-dev-pre](2020.05.30)(compatible)
 --Additions--
 1) Add channels tab for author profile.

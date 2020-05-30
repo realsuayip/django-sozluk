@@ -48,16 +48,16 @@
                     <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="Arama terimi">
                     <div class="input-group-append">
 
-                        <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">gelişmiş arama diyaloğunu aç</span>
                         </button>
 
-                        <button class="btn searchbtn" type="submit" id="button-addon2" title="arama yap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="24px" viewBox="0 0 16 16">
+                        <button class="btn searchbtn" type="submit" title="arama yap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 16 16">
                                 <use href="#search"></use>
                             </svg>
-
                         </button>
+
                         <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search p-0">
                             <div class="px-3 py-2">
                                 {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
@@ -80,7 +80,7 @@
                 <ul class="user-navigation">
                     <li>
                         <a class="nav-quicklink" href="{{ user.get_absolute_url }}" aria-label="profilim">
-                            <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#person"></use>
                             </svg>
                             <span>ben</span>
@@ -90,7 +90,7 @@
 
                     <li {% if user.has_unread_messages %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="mesajlar">
-                            <svg fill="currentColor" width="22px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <svg fill="currentColor" width="22" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#chat"></use>
                             </svg>
                             <span class="ml-2">mesaj</span></a>
@@ -98,7 +98,7 @@
 
                     <li {% if user.has_unread_topics %}class="new"{% endif %}>
                         <a class="nav-quicklink" aria-label="takip ettiğim başlıklar" href="{% url 'activity' %}">
-                        <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <use href="#bell"></use>
                         </svg>
                         <span>olay</span></a>
@@ -107,7 +107,7 @@
 
                     <li class="desktop-only">
                         <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="Hesap Menüsü">
-                            <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#more"></use>
                             </svg>
 
@@ -128,15 +128,10 @@
             {% else %}
                 <nav class="usermenu" aria-label="Kullanıcı menüsü">
                     <ul>
-                        <li>
-                            <a href="{% url 'login' %}">giriş yap</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'register' %}">kayıt ol</a>
-                        </li>
+                        <li><a href="{% url 'login' %}">giriş yap</a></li>
+                        <li><a href="{% url 'register' %}">kayıt ol</a></li>
                     </ul>
                 </nav>
-
             {% endif %}
 
         </div>
@@ -152,7 +147,7 @@
 
                 {% if user.is_authenticated %}
                     <li id="usermenu_mobile" data-toggle="dropdown">
-                        <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#more"></use>
                         </svg>
                     </li>
@@ -199,7 +194,7 @@
                 {% endfor %}
 
                 <li role="button" id="more_tags_button" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="Diğer Kanallar">
-                    <svg width="16px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>
                 </li>
