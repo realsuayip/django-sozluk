@@ -1,3 +1,15 @@
+[0.144.0-dev-pre](2020.05.30)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed active category visual bug.
+2) Optimized e-mail confirmation backend.
+3) All base urls are now in English.
+
+--Deletions--
+None
+
 [0.143.0-dev-pre](2020.05.29)(compatible)
 --Additions--
 1) Add 2 new tabs for profile page statistics.

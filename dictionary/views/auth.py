@@ -1,13 +1,13 @@
+import hashlib
+
 from contextlib import suppress
 from smtplib import SMTPException
 
 from django.contrib import messages as notifications
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.utils.http import urlsafe_base64_decode
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
@@ -72,28 +72,26 @@ class ConfirmEmail(View):
     success = False
     template_name = "dictionary/registration/email/confirmation_result.html"
 
-    def get(self, request, uidb64, token):
+    def get(self, request, token):
         try:
-            user_id = urlsafe_base64_decode(uidb64).decode()
+            token_hashed = hashlib.blake2b(token.bytes).hexdigest()
             verification_object = UserVerification.objects.get(
-                author_id=user_id, expiration_date__gte=time_threshold(hours=24)
+                verification_token=token_hashed, expiration_date__gte=time_threshold(hours=24)
             )
-        except (ValueError, UnicodeDecodeError, UserVerification.DoesNotExist):
+        except UserVerification.DoesNotExist:
             return self.render_to_response()
 
-        if check_password(token, verification_object.verification_token):
-            author = Author.objects.get(id=user_id)
+        author = verification_object.author
 
-            if not author.is_active:
-                author.is_active = True
-                author.save()
-            else:
-                author.email = verification_object.new_email
-                author.save()
+        if not author.is_active:
+            author.is_active = True
+            author.save()
+        else:
+            author.email = verification_object.new_email
+            author.save()
 
-            self.success = True
-            UserVerification.objects.filter(author=author).delete()
-
+        self.success = True
+        UserVerification.objects.filter(author=author).delete()
         return self.render_to_response()
 
     def render_to_response(self):

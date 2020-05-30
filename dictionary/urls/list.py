@@ -5,8 +5,8 @@ from ..views.list import CategoryList, TopicList, TopicEntryList, index
 urlpatterns_list = [
     # Generic list
     path('', index, name="home"),
-    path('basliklar/<slug:slug>/', TopicList.as_view(), name="topic_list"),
-    path("kanallar/", CategoryList.as_view(), name="category_list"),
+    path('threads/<slug:slug>/', TopicList.as_view(), name="topic_list"),
+    path("channels/", CategoryList.as_view(), name="category_list"),
     # Topic entry list
     path("topic/", TopicEntryList.as_view(), name="topic-search"),
     path("topic/<slug:slug>/", TopicEntryList.as_view(), name="topic"),

@@ -515,10 +515,10 @@ $("#exclusion-settings-mobile").on("click", "ul li a", function () {
 
 /* End of LefFrame related triggers */
 
-$("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.regular)").on("click", function () {
+$("[data-lf-slug]").on("click", function () {
     // Visual guidance for active category
-    $("ul#category_view li[data-lf-slug], div#category_view_in a[data-lf-slug]:not(.regular)").removeClass("active");
-    $(this).addClass("active");
+    $("[data-lf-slug]").removeClass("active");
+    $(`[data-lf-slug=${$(this).attr("data-lf-slug")}]`).addClass("active");
 });
 
 // https://stackoverflow.com/questions/5999118/how-can-i-add-or-update-a-query-string-parameter
@@ -688,7 +688,7 @@ $("a.fav-count[role='button']").on("click", function () {
 
         if (authors.length > 0) {
             for (const author of authors) {
-                favoritesList.append(`<a class="author" href="/biri/${author.slug}/">@${author.username}</a>`);
+                favoritesList.append(`<a class="author" href="/author/${author.slug}/">@${author.username}</a>`);
             }
         }
 
@@ -700,7 +700,7 @@ $("a.fav-count[role='button']").on("click", function () {
             });
 
             for (const novice of novices) {
-                $("#favorites_list_novices").append(`<a class="novice" href="/biri/${novice.slug}/">@${novice.username}</a>`);
+                $("#favorites_list_novices").append(`<a class="novice" href="/author/${novice.slug}/">@${novice.username}</a>`);
             }
         }
 
@@ -878,7 +878,7 @@ const populateSearchResults = searchParameters => {
     const slug = "hayvan-ara";
 
     if (userIsMobile) {
-        window.location.replace(`/basliklar/${slug}/?${searchParameters}`);
+        window.location.replace(`/threads/${slug}/?${searchParameters}`);
     }
     LeftFrame.populate(slug, 1, null, searchParameters);
 };
@@ -1011,7 +1011,7 @@ $(".entry-full a.action[role='button']").on("click", function () {
         }
     }
 
-    actions.append(`<a class="dropdown-item" href="/iletisim/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
+    actions.append(`<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
     $(this).addClass("loaded");
 });
 

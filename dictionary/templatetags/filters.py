@@ -72,14 +72,14 @@ def formatted(raw_entry):
     replacements = (
         (r"\(bkz: #([1-9]\d{0,10})\)", r'(bkz: <a href="/entry/\1">#\1</a>)'),
         (r"\(bkz: (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
-        (r"\(bkz: @(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)\)", r'(bkz: <a href="/biri/\1/">@\1</a>)'),
+        (r"\(bkz: @(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)\)", r'(bkz: <a href="/author/\1/">@\1</a>)'),
         (
             r"`:(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`",
             r'<a data-sup="(bkz: \1)" href="/topic/?q=\1" title="(bkz: \1)">*</a>',
         ),
         (r"`#([1-9]\d{0,10})`", r'<a href="/entry/\1">#\1</a>'),
         (r"`(?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)`", r'<a href="/topic/?q=\1">\1</a>'),
-        (r"`@(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)`", r'<a href="/biri/\1/">@\1</a>'),
+        (r"`@(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)`", r'<a href="/author/\1/">@\1</a>'),
         (
             r"\(ara: (?!\s)(@?[a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\)",
             r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
