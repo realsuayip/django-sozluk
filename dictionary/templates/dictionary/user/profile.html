@@ -63,7 +63,7 @@
                 {% endif %}
 
                 {% for badge in profile.badges.all %}
-                    <a title="{{ badge.description }}" class="badge-item" {% if badge.url %}href="{{ badge.url }}" target="_blank"{% else %}href="{% url 'topic-unicode-url' unicode_string=badge.name %}{% endif %}">{{ badge.name }}</a>
+                    <a title="{{ badge.description }}" class="badge-item" {% if badge.url %} href="{{ badge.url }}" target="_blank" {% else %}href="{% url 'topic-unicode-url' unicode_string=badge.name %}"{% endif %}>{{ badge.name }}</a>
                 {% endfor %}
 
                 {% if profile.karma_flair %}
@@ -106,6 +106,7 @@
                             <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
                             <a class="dropdown-item" href="?t=authors">favori yazarları</a>
                             <a class="dropdown-item" href="?t=wishes">ukteleri</a>
+                            <a class="dropdown-item" href="?t=channels">katkıda bulunduğu kanallar</a>
                         </div>
                     </li>
                 </ul>
@@ -138,6 +139,17 @@
                 <ul class="list-group list-group-flush">
                     {% for topic in object_list %}
                         <a class="list-group-item list-group-item-action" href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if tab.type == "category" %}
+                <ul class="list-group list-group-flush">
+                    {% for category in object_list %}
+                        <li class="list-group-item d-flex justify-content-between">
+                        <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                        <span>{{ category.count }}</span>
+                      </li>
                     {% endfor %}
                 </ul>
             {% endif %}

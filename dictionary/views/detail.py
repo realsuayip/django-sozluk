@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
-from ..models import Author, Conversation, DownvotedEntries, Entry, Memento, Message, Topic, UpvotedEntries
+from ..models import Author, Category, Conversation, DownvotedEntries, Entry, Memento, Message, Topic, UpvotedEntries
 from ..utils import time_threshold
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
@@ -41,7 +41,6 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
         for err in form.non_field_errors() + form.errors.get("body", []):
             notifications.error(self.request, err)
 
-        self.object = self.get_object()  # pylint: disable=attribute-defined-outside-init
         return super().form_invalid(form)
 
     def get_object(self, queryset=None):
@@ -80,6 +79,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         "authors": {"label": "favori yazarları", "type": "author"},
         "recentlyvoted": {"label": "son oylananları", "type": "entry"},
         "wishes": {"label": "ukteleri", "type": "topic"},
+        "channels": {"label": "katkıda bulunduğu kanallar", "type": "category"},
     }
 
     def form_valid(self, form):
@@ -128,7 +128,7 @@ class UserProfile(IntegratedFormMixin, ListView):
 
             return base
 
-        if tab_obj_type in ("author", "topic"):
+        if tab_obj_type in ("author", "topic", "category"):
             return qs
 
         raise Http404
@@ -181,6 +181,17 @@ class UserProfile(IntegratedFormMixin, ListView):
             .annotate(latest=Max("wishes__date_created"))
             .only("title", "slug")
             .order_by("-latest")
+        )
+
+    def channels(self):
+        return (
+            Category.objects.annotate(
+                count=Count(
+                    "topic__entries", filter=Q(topic__entries__author=self.profile, topic__entries__is_draft=False)
+                )
+            )
+            .filter(count__gte=1)
+            .order_by("-count")
         )
 
     def authors(self):

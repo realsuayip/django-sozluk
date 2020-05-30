@@ -3,6 +3,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
 from . import InputNotInDesiredRangeError
@@ -41,6 +42,26 @@ class IntegratedFormMixin(FormMixin):
             return self.form_valid(form)
         return self.form_invalid(form)
 
+    def form_invalid(self, form):
+        # Normally form views don't have get_queryset method,
+        # so when you call super().form_invalid(form) it doesn't work because ListView's
+        # get_context_data() interferes, and says: "Hey, if this view wants the context
+        # now, then it must have defined self.object_list so I can use that to paginate it!"
+        # But there is no such attribute because the view first proceeded to resolve the form.
+        # So we add that attribute here in order that the view can actually process the objects.
+        # We could also redirect the user, but it doesn't preserve form data.
+
+        if isinstance(self, ListView):
+            self.object_list = self.get_queryset()
+        elif isinstance(self, DetailView):
+            self.object = self.get_object()
+        else:
+            raise TypeError(
+                "IntegratedFormMixin only works when the view is subclass of either DetailView or ListView."
+            )
+
+        return super().form_invalid(form)
+
 
 class IntermediateActionMixin:
     model = None
@@ -58,8 +79,11 @@ class IntermediateActionMixin:
             notifications.error(request, f"Uygun kaynak {self.model._meta.verbose_name_plural} bulunamadı.")
             return redirect(self.get_changelist_url())
         except InputNotInDesiredRangeError:
-            notifications.error(request, f"Bir anda en fazla {self.max_input} {self.model._meta.verbose_name} "
-                                         f"üzerinde işlem yapabilirsiniz.")
+            notifications.error(
+                request,
+                f"Bir anda en fazla {self.max_input} {self.model._meta.verbose_name}"
+                f" üzerinde işlem yapabilirsiniz.",
+            )
             return redirect(self.get_changelist_url())
 
         return render(request, self.template_name, context)

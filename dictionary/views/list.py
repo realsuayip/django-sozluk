@@ -66,7 +66,6 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
             notifications.error(self.request, error)
 
         notifications.error(self.request, "mesajınızı göndermedik")
-        self.object_list = self.get_queryset()  # pylint: disable=attribute-defined-outside-init
         return super().form_invalid(form)
 
     def get_queryset(self):
@@ -237,16 +236,6 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if form.errors:
             for err in form.errors["content"]:
                 notifications.error(self.request, err, extra_tags="persistent")
-
-        # This part is a bit tricky: Normally form views don't have get_queryset method,
-        # so when you call super().form_invalid(form) it doesn't work because ListView's
-        # get_context_data() interferes, and says: "Hey, if this view wants the context
-        # now, then it must have defined self.object_list so I can use that to paginate it!"
-        # But there is no such attribute because the view first proceeded to resolve the form.
-        # So we add that attribute here in order that the view can actually process the objects.
-        # We could also redirect the user (form_valid does this), but it doesn't preserve form data.
-
-        self.object_list = self.get_queryset()  # pylint: disable=attribute-defined-outside-init
         return super().form_invalid(form)
 
     def regular(self):

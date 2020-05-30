@@ -1,3 +1,13 @@
+[0.145.0-dev-pre](2020.05.30)(compatible)
+--Additions--
+1) Add channels tab for author profile.
+
+-- Changes --
+1) Optimized IntegratedFormMixin logic.
+
+--Deletions--
+None
+
 [0.144.0-dev-pre](2020.05.30)(compatible)
 --Additions--
 None
