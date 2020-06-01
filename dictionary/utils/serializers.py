@@ -1,6 +1,7 @@
 from contextlib import suppress
 
 from django.core.paginator import Paginator
+from django.core.serializers.json import Serializer
 from django.utils.functional import cached_property
 
 from ..models import Category
@@ -13,6 +14,39 @@ from .settings import (
     TOPICS_PER_PAGE_DEFAULT,
     YEAR_RANGE,
 )
+
+
+JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)
+
+
+class ArchiveSerializer(Serializer):
+    """
+    Serializer that follows foreignkey relationships and removes model metadata.
+    Credit: Arnab Kumar Shil https://ruddra.com/about/
+    """
+
+    def end_object(self, obj):
+        for field in self.selected_fields:
+            if field == "pk":
+                continue
+
+            if field in self._current.keys():
+                continue
+
+            with suppress(AttributeError):
+                if "__" in field:
+                    fields = field.split("__")
+                    value = obj
+                    for item in fields:
+                        value = getattr(value, item)
+                    if value != obj and isinstance(value, JSON_ALLOWED_OBJECTS) or value is None:
+                        self._current[field] = value
+
+        super().end_object(obj)
+
+    def get_dump_object(self, obj):
+        # Removes metadata
+        return self._current
 
 
 class PlainSerializer:

@@ -1,0 +1,90 @@
+{% extends "dictionary/base.html" %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1 class="h4">
+        <strong><a href="{% url 'messages' %}">mesajlar</a></strong>
+        <small>
+            {% if unread_messages_count %}
+                <span class="ml-2">({{ unread_messages_count }} okunmamış)</span>
+            {% endif %}
+            {% block titlemeta %}{% endblock %}
+        </small>
+    </h1>
+
+    {% url 'messages' as messages %}
+    {% url 'messages-archive' as archive %}
+
+    <div class="d-flex justify-content-between nav-tabs my-3">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link{% if request.path == messages %} active{% endif %}" href="{% url 'messages' %}">gelen kutusu</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{% if request.path == archive %} active{% endif %}" href="{% url 'messages-archive' %}">arşiv</a>
+            </li>
+        </ul>
+        {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="lf_pagination m-0" %}
+    </div>
+
+    {% block innercontent %}{% endblock %}
+
+    {% if conversations %}
+        <div class="mb-3 border rounded-sm p-3 bg-light d-flex justify-content-between">
+            <div>
+                <a role="button" tabindex="0" class="mr-3 chat-delete">
+                    <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                        <use href="#trash"></use>
+                    </svg>
+                    <span class="ml-1">sil</span>
+                </a>
+                {% if request.path == messages %}
+                    <a role="button" tabindex="0" class="chat-archive">
+                        <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                            <use href="#archive"></use>
+                        </svg>
+                        <span class="ml-1">arşivle</span>
+                    </a>
+                {% endif %}
+            </div>
+            <a role="button" tabindex="0" class="chat-reverse">
+                <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                    <use href="#layers"></use>
+                </svg>
+                <span class="ml-1">çevir</span>
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block rightframe %}
+    <form action="{% url 'messages' %}" method="get">
+        <label for="messages_search_term"><h2 class="h5"><strong>mesajlarda ara</strong></h2></label>
+        <div class="input-group">
+            <input name="search_term" id="messages_search_term" type="text" class="form-control" placeholder="arama terimi" value="{{ request.GET.search_term }}" required>
+            <div class="input-group-append">
+                <button class="btn btn-django-link" type="submit">ara</button>
+            </div>
+        </div>
+    </form>
+
+    <hr>
+
+    <form method="post">
+        <h2 class="h5"><strong>yeni mesaj</strong></h2>
+
+        <div class="form-group">
+            <label for="recipient_name" class="col-form-label">{{ form.recipient.label }}:</label>
+            {% render_field form.recipient class="form-control author-search" id="recipient_name" %}
+        </div>
+
+        <div class="form-group">
+            <label for="message-body">{{ form.body.label }}:</label>
+            {% render_field form.body rows="5" class="form-control" id="message-body" %}
+        </div>
+
+        {% csrf_token %}
+        <button type="submit" class="btn btn-django">yolla</button>
+    </form>
+{% endblock %}

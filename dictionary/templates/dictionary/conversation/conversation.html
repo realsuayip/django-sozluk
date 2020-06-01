@@ -1,66 +1,94 @@
 {% extends "dictionary/base.html" %}
 {% block title %}@{{ recipient.username }} ile sohbet muhabbet{% endblock %}
+
 {% block content %}
     {% load humanize %}
     {% load filters %}
     {% include "dictionary/includes/block_user_modal.html" %}
-    <h1 class="h4"><strong><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet muhabbet</strong></h1>
 
-    <span class="chat-quick-links">
-        <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
-           <span>
-            <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16"
-                 xmlns="http://www.w3.org/2000/svg">
-                <use href="#arrow-left"></use>
-            </svg>
-        </span>mesajlara dön</a>
-        {% if recipient not in user.blocked.all %}
-            <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
-        {% endif %}
-
-    </span>
-
-    <hr class="mt-0">
+    <h1 class="h4">
+        <strong><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet muhabbet</strong>
+    </h1>
 
     {% with messages=conversation.collection %}
+        <div class="chat-quick-links d-flex justify-content-between">
+            <div>
+                <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
+                    <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#arrow-left"></use>
+                    </svg>
+                    <span>mesajlara dön</span>
+                </a>
+
+                {% if recipient not in user.blocked.all %}
+                    <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
+                {% endif %}
+            </div>
+
+            <div data-mode="present" data-id="{{ conversation.pk }}">
+                <a role="button" tabindex="0" class="mr-3 chat-delete-individual">
+                    <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                        <use href="#trash"></use>
+                        <title>sil</title>
+                    </svg>
+                    <span class="ml-1 d-none d-sm-inline-block">sil</span>
+                </a>
+                {% if messages|length > 0 %}
+                    <a role="button" tabindex="0" class="chat-archive-individual">
+                        <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                            <use href="#archive"></use>
+                            <title>arşivle</title>
+                        </svg>
+                        <span class="ml-1 d-none d-sm-inline-block">arşivle</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr class="mt-1">
+
+
         {% if messages|length > 4 %}
             <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
         {% endif %}
 
-        <ul id="message_list" class="chat">
-            {% for message in messages %}
-                {% if message.sender == user %}
-                    <li class="bubble sent">
-                        <p>{{ message.body|formatted|linebreaksbr }}</p>
-                        <span class="date-info">
+        {% if messages %}
+            <ul id="message_list" class="chat">
+                {% for message in messages %}
+                    {% if message.sender == user %}
+                        <li class="bubble sent">
+                            <p>{{ message.body|formatted|linebreaksbr }}</p>
+                            <span class="date-info">
                             <time>{{ message.sent_at|naturaltime }}</time>
-                            {% if message.read_at %}
-                                <span title="görüldü, {{ message.read_at|timesince }} önce">
-                                    <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                        <use href="#msgread"></use>
-                                    </svg>
-                                </span>
-                            {% else %}
-                                <span title="gönderildi">
-                                    <svg width="28" height="14" viewBox="0 0 16 16"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <use href="#msgsent"></use>
-                                    </svg>
-                                </span>
-                            {% endif %}
-                        </span>
-                    </li>
-                {% else %}
-                    <li class="bubble recieved">
-                        <p>{{ message.body|formatted|linebreaksbr }}</p>
-                        <time>{{ message.sent_at|naturaltime }}</time>
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+                                {% if message.read_at %}
+                                    <span title="görüldü, {{ message.read_at|timesince }} önce">
+                                        <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                            <use href="#msgread"></use>
+                                        </svg>
+                                    </span>
+                                {% else %}
+                                    <span title="gönderildi">
+                                        <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                            <use href="#msgsent"></use>
+                                        </svg>
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% else %}
+                        <li class="bubble recieved">
+                            <p>{{ message.body|formatted|linebreaksbr }}</p>
+                            <time>{{ message.sent_at|naturaltime }}</time>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <hr>
+        {% else %}
+            <div class="border rounded-sm p-3 bg-light my-3">hiç mesaj kalmamış burda 🤷</div>
+        {% endif %}
     {% endwith %}
 
-    <hr>
 
     {% if recipient.message_preference == "DS" or user == recipient or user in recipient.blocked.all or recipient in user.blocked.all %}
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
@@ -70,7 +98,10 @@
         <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
         <label for="message-body">
-            <h2 class="h4">cevap yaz <small style="font-size: 55%">(entry biçimlendirme seçenekleri kullanılabilir)</small></h2>
+            <h2 class="h4">
+                <span class="mr-2">mesaj yaz</span>
+                <small style="font-size: 55%">(entry biçimlendirme seçenekleri kullanılabilir)</small>
+            </h2>
         </label>
         <section class="chat-reply mb-3">
             {% load widget_tweaks %}

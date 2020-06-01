@@ -18,7 +18,7 @@ from dateutil.relativedelta import relativedelta
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
-from ..models import Author, Category, Conversation, Entry, Message, Topic, TopicFollowing
+from ..models import Author, Category, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
 from ..utils import proceed_or_404, time_threshold, turkish_lower, RE_WEBURL
 from ..utils.managers import TopicListManager
 from ..utils.mixins import IntegratedFormMixin
@@ -74,11 +74,18 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data()
-        unread_messages_count = self.request.user.conversations.filter(
+        context["unread_messages_count"] = self.request.user.conversations.filter(
             messages__recipient=self.request.user, messages__read_at__isnull=True
         ).count()
-        context["unread_messages_count"] = unread_messages_count
         return context
+
+
+class ConversationArchiveList(ConversationList):
+    model = ConversationArchive
+    template_name = "dictionary/conversation/inbox_archive.html"
+
+    def get_queryset(self):
+        return ConversationArchive.objects.filter(holder=self.request.user)
 
 
 class ActivityList(LoginRequiredMixin, ListView):

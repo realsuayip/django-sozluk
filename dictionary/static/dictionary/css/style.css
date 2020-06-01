@@ -463,6 +463,10 @@ footer.entry-footer > .feedback > .votes > a.upvote.active svg {
 }
 
 @media (hover) {
+    ul.threads li:hover {
+        background: #e9e9e9;
+    }
+
     footer.entry-footer > .feedback > .votes > a.upvote svg:hover,
     footer.entry-footer > .feedback > .favorites > a.favorite svg:hover {
         fill: #16784f;
@@ -832,13 +836,14 @@ ul.threads {
 }
 
 ul.threads li {
-    padding: .3em;
+    padding: .3em .3em .3em .6em;
     list-style-type: none;
     border-bottom: 2px solid #dadada;
     margin-bottom: 1em;
+    transition: border-bottom-color .3s ease-in-out;
 }
 
-ul.threads li a {
+ul.threads li > a {
     color: #212529;
     text-decoration: none;
     display: block;
@@ -846,11 +851,12 @@ ul.threads li a {
 
 ul.threads li.unread {
     border-left: 3px solid #092e20;
-    padding-left: 1em;
+    padding-left: .75em;
 }
 
-ul.threads li:hover {
-    background: #dadada;
+ul.threads li.selected {
+    background: #dbdbdb;
+    border-color: #16784f;
 }
 
 ul.chat {

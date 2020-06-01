@@ -5,6 +5,8 @@ from django.template import defaultfilters
 from django.utils import timezone
 from django.utils.html import escape, mark_safe
 
+from dateutil.parser import parse
+
 from ..utils import RE_WEBURL
 from ..utils.settings import DOMAIN
 
@@ -160,3 +162,8 @@ def mediastamp(media_urls, mode):
 @register.filter
 def order_by(queryset, fields):
     return queryset.order_by(*fields.split())
+
+
+@register.filter
+def strdate(date_str):
+    return parse(date_str)

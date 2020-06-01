@@ -1,0 +1,43 @@
+{% extends "dictionary/base.html" %}
+{% block title %}@{{ object.target }} ile arşivlenmiş sohbet{% endblock %}
+
+{% block content %}
+    {% load filters %}
+    {% load humanize %}
+    <h1 class="h4"><strong>@{{ object.target }} ile arşivlenmiş sohbet</strong></h1>
+
+    <div class="chat-quick-links d-flex justify-content-between">
+        <a href="{% url 'messages-archive' %}" class="mr-2" title="çok oyalandım burda">
+            <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <use href="#arrow-left"></use>
+            </svg>
+            <span>arşive dön</span>
+        </a>
+
+        <div data-mode="archived" data-id="{{ object.pk }}">
+            <a role="button" tabindex="0" class="mr-3 chat-delete-individual">
+                <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
+                    <use href="#trash"></use>
+                </svg>
+                <span class="ml-1">sil</span>
+            </a>
+        </div>
+    </div>
+
+    <hr class="mt-1">
+
+    <ul id="message_list" class="chat">
+        {% with messages=object.to_json.messages %}
+            {% if messages|length > 4 %}
+                <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
+            {% endif %}
+
+            {% for message in messages %}
+                <li class="bubble {% if message.sender__username == user.username %}sent{% else %}recieved{% endif %}">
+                    <p>{{ message.body|formatted|linebreaksbr }}</p>
+                    <span class="date-info"><time>{{ message.sent_at|strdate|date:"d.m.Y H:i" }}</time></span>
+                </li>
+            {% endfor %}
+        {% endwith %}
+    </ul>
+{% endblock %}

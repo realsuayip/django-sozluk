@@ -48,7 +48,7 @@
                     <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="Arama terimi">
                     <div class="input-group-append">
 
-                        <button class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">gelişmiş arama diyaloğunu aç</span>
                         </button>
 
@@ -90,7 +90,7 @@
 
                     <li {% if user.has_unread_messages %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="mesajlar">
-                            <svg fill="currentColor" width="22" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#chat"></use>
                             </svg>
                             <span class="ml-2">mesaj</span></a>

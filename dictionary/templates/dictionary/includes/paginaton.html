@@ -18,7 +18,7 @@
                 {% endfor %}
             </select>
 
-            <span style="color:#444;">&nbsp;/&nbsp;</span>
+            <span class="mx-1" style="line-height: 25px">&sol;</span>
             <a class="number" title="son sayfa" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
 
             {% if page_obj.has_next %}

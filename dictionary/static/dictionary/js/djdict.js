@@ -1103,3 +1103,127 @@ $("textarea#user_content_edit, textarea#message-body").on("input", function () {
 $("form").submit(function () {
     window.onbeforeunload = null;
 });
+
+// Conversation actions functionality
+
+$("input.chat-selector").on("change", function () {
+    $(this).closest("li.chat").toggleClass("selected");
+});
+
+$("a[role=button].chat-reverse").on("click", function () {
+    $("input.chat-selector").each(function () {
+        this.checked = !this.checked;
+        $(this).change();
+    });
+});
+
+const getPkSet = function (selected) {
+    const pkSet = [];
+    selected.each(function () {
+        pkSet.push($(this).attr("data-id"));
+    });
+    return pkSet;
+};
+
+const deleteConversation = function (pkSet, mode) {
+    const query = `mutation($pkSet:[ID!]!, $mode:String){message{deleteConversation(pkSet:$pkSet,mode:$mode){redirect}}}`;
+    const variables = { pkSet, mode };
+    return gqlc({ query, variables });
+};
+
+$("a[role=button].chat-delete-individual").on("click", function () {
+    if (!confirm("harbiden silinsin mi?")) {
+        return false;
+    }
+
+    // inbox.html || conversation.html
+    let chat = $(this).closest("li.chat");
+
+    if (!chat.length) {
+        chat = $(this).parent();
+    }
+
+    const mode = $("ul.threads").attr("data-mode") || chat.attr("data-mode");
+
+    deleteConversation(chat.attr("data-id"), mode).then(function (response) {
+        const data = response.data.message.deleteConversation;
+        if (data) {
+            if ($("li.chat").length > 1) {
+                chat.remove();
+                notify("silindi");
+            } else {
+                window.location = data.redirect;
+            }
+        }
+    });
+});
+
+$("a[role=button].chat-delete").on("click", function () {
+    const selected = $("li.chat.selected");
+
+    if (selected.length) {
+        if (!confirm("seçilen sohbetler harbiden silinsin mi?")) {
+            return false;
+        }
+
+        deleteConversation(getPkSet(selected), $("ul.threads").attr("data-mode")).then(function (response) {
+            const data = response.data.message.deleteConversation;
+            if (data) {
+                window.location = data.redirect;
+            }
+        });
+    } else {
+        notify("silmek için bir sohbet seçmedin ki", "error");
+    }
+});
+
+const archiveConversation = function (pkSet) {
+    const query = `mutation($pkSet:[ID!]!){message{archiveConversation(pkSet:$pkSet){redirect}}}`;
+    const variables = { pkSet };
+    return gqlc({ query, variables });
+};
+
+$("a[role=button].chat-archive").on("click", function () {
+    const selected = $("li.chat.selected");
+
+    if (selected.length) {
+        if (!confirm("seçilen sohbetler harbiden arşivlensin mi?")) {
+            return false;
+        }
+
+        archiveConversation(getPkSet(selected)).then(function (response) {
+            const data = response.data.message.archiveConversation;
+            if (data) {
+                window.location = data.redirect;
+            }
+        });
+    } else {
+        notify("arşivlemek için bir sohbet seçmedin ki", "error");
+    }
+});
+
+$("a[role=button].chat-archive-individual").on("click", function () {
+    if (!confirm("harbiden arşivlensin mi?")) {
+        return false;
+    }
+
+    let chat = $(this).closest("li.chat");
+
+    if (!chat.length) {
+        chat = $(this).parent();
+    }
+
+    const pk = chat.attr("data-id");
+
+    archiveConversation(pk).then(function (response) {
+        const data = response.data.message.archiveConversation;
+        if (data) {
+            if ($("li.chat").length > 1) {
+                chat.remove();
+                notify("arşivlendi");
+            } else {
+                window.location = data.redirect;
+            }
+        }
+    });
+});

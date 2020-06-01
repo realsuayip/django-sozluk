@@ -1,3 +1,22 @@
+[0.147.0-dev-pre](2020.06.01)(incompatible)
+--Additions--
+1) Add conversation archiving + deletion feature.
+**incompatible** run makemigrations+migrate for dictionary.
+2) Add ArchiveSerializer which serializes django objects
+following pk relations and removing metadata.
+3) Add strdate filter to parse str in datetime objects.
+
+-- Changes --
+1) Block user modal is no langer cached. (was unnecessary)
+2) Changed the inbox icon in top left user menu.
+3) Aligned seperator of the paginator.
+4) Fixed the header search bug introduced in the previous commit.
+(All other changes or additions are related to conversation
+archiving and deletion feature.)
+
+--Deletions--
+None
+
 [0.146.0-dev-pre](2020.05.30)(compatible)
 --Additions--
 None

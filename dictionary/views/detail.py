@@ -11,7 +11,18 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
-from ..models import Author, Category, Conversation, DownvotedEntries, Entry, Memento, Message, Topic, UpvotedEntries
+from ..models import (
+    Author,
+    Category,
+    Conversation,
+    ConversationArchive,
+    DownvotedEntries,
+    Entry,
+    Memento,
+    Message,
+    Topic,
+    UpvotedEntries,
+)
 from ..utils import time_threshold
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
@@ -58,6 +69,11 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["recipient"] = self.get_recipient()
         return context
+
+
+class ChatArchive(LoginRequiredMixin, DetailView):
+    model = ConversationArchive
+    template_name = "dictionary/conversation/conversation_archive.html"
 
 
 class UserProfile(IntegratedFormMixin, ListView):
