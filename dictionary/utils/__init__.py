@@ -84,11 +84,11 @@ def get_generic_privateuser():
 
 def get_category_parameters(slug, year):
     pairs = {
-        **dict.fromkeys(("bugun", "basiboslar", "generic"), "?a=today"),
-        "gundem": "?a=popular",
-        "tarihte-bugun": f"?a=history&year={year}",
-        "caylaklar": "?a=novices",
-        "son": "?a=recent",
+        **dict.fromkeys(("today", "uncategorized", "generic"), "?a=today"),
+        "popular": "?a=popular",
+        "today-in-history": f"?a=history&year={year}",
+        "novices": "?a=novices",
+        "followups": "?a=recent",
     }
 
     return pairs.get(slug)

@@ -2,10 +2,12 @@ from django.db import models
 from django.shortcuts import reverse
 from uuslug import uuslug
 
+from ..utils.validators import validate_category_name
+
 
 class Category(models.Model):
-    name = models.CharField(max_length=24, unique=True, verbose_name="isim")
-    slug = models.SlugField(max_length=64, unique=False, blank=True)
+    name = models.CharField(max_length=24, unique=True, verbose_name="isim", validators=[validate_category_name])
+    slug = models.SlugField(editable=False)
     description = models.TextField(null=True, blank=True, verbose_name="açıklama")
     weight = models.SmallIntegerField(default=0, verbose_name="sıra")
 

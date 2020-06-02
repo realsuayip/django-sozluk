@@ -23,70 +23,82 @@ This anonymous user is used to hold the entries of deleted accounts.
 
 #  <-----> START OF CATEGORY RELATED SETTINGS <----->  #
 
-# Category related settings, don't change the current keys of NON_DB_CATEGORIES_META, they are hard-coded.
-# Structure: {key: (safename, description, ({"tab_slug": "tab_safename", ...}, "default_tab_slug"))...}
-# dict{str:tuple(str, str, tuple(dict{str:str}, str))}
+
 NON_DB_CATEGORIES_META = {
-    "bugun": ("bugün", "en son girilenler"),
-    "gundem": ("gündem", "neler olup bitiyor"),
-    "basiboslar": ("başıboşlar", "kanalsız başlıklar"),
-    "takip": (
+    "today": ("bugün", "en son girilenler"),
+    "popular": ("gündem", "neler olup bitiyor"),
+    "uncategorized": ("başıboşlar", "kanalsız başlıklar"),
+    "acquaintances": (
         "takip",
         "takip ettiğim yazarlar ne yapmış?",
         ({"entries": "yazdıkları", "favorites": "favoriledikleri"}, "entries"),
     ),
-    "ukteler": (
+    "wishes": (
         "ukteler",
         "diğer yazarların entry girilmesini istediği başlıklar",
         ({"all": "hepsi", "owned": "benimkiler"}, "all"),
     ),
-    "tarihte-bugun": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
-    "kenar": ("kenar", "kenara attığım entry'ler"),
-    "son": ("son", "benden sonra neler girilmiş?"),
-    "caylaklar": ("çaylaklar", "çömezlerin girdikleri"),
-    "debe": ("dünün en beğenilen entry'leri", "dünün en beğenilen entry'leri"),
-    "hayvan-ara": ("arama sonuçları", "hayvan ara"),
+    "today-in-history": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
+    "drafts": ("kenar", "kenara attığım entry'ler"),
+    "followups": ("son", "benden sonra neler girilmiş?"),
+    "novices": ("çaylaklar", "çömezlerin girdikleri"),
+    "top": ("dünün en beğenilen entry'leri", "debe"),
+    "search": ("arama sonuçları", "hayvan ara"),
 }
+"""
+Category related settings. Notice: The current keys of NON_DB_CATEGORIES_META are hard-coded.
+Structure: dict{str:tuple(str, str, tuple(dict{str:str}, str))}
 
+{key: (safename, description, ({"tab_slug": "tab_safename", ...}, "default_tab_slug"))...}
+"""
 
 NON_DB_CATEGORIES = NON_DB_CATEGORIES_META.keys()
+"""Don't touch. For internal use only."""
 
-# These categories have tabs. Make sure you configure metadata correctly.
-TABBED_CATEGORIES = ("takip", "ukteler")
+TABBED_CATEGORIES = ("acquaintances", "wishes")
+"""These categories have tabs. Make sure you configure metadata correctly."""
 
-# These categories are not open to visitors
-LOGIN_REQUIRED_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "caylaklar", "son")
+USER_EXCLUSIVE_CATEGORIES = ("today", "drafts", "acquaintances", "wishes", "followups")
+"""Cache (if enabled) these categories PER USER (The list of objects in those categories varies on user)."""
 
-# Cache (if enabled) these categories PER USER. (The list of objects in those categories varies on user.)
-USER_EXCLUSIVE_CATEGORIES = ("bugun", "kenar", "takip", "ukteler", "son")
+LOGIN_REQUIRED_CATEGORIES = USER_EXCLUSIVE_CATEGORIES + ("novices",)
+"""These categories are not open to visitors."""
 
 EXCLUDABLE_CATEGORIES = ("spor", "siyaset", "anket", "yetiskin")
-"""List of category slugs (database categories) that users can opt out to see in gundem."""
+"""List of category slugs (database categories) that users can opt out to see in popular."""
 
-# Default category to be shown when the user requests for the first time.
-# Should NOT be in LOGIN_REQUIRED_CATEGORIES
-DEFAULT_CATEGORY = "gundem"
+DEFAULT_CATEGORY = "popular"
+"""
+Default category to be shown when the user requests for the first time.
+Should NOT be in LOGIN_REQUIRED_CATEGORIES.
+"""
 
 DEFAULT_CACHE_TIMEOUT = 90
-"""Advanced: Set default timeout for category caching."""
+"""ADVANCED: Set default timeout for category caching."""
 
-EXCLUSIVE_TIMEOUTS = {"debe": 86400, "tarihte-bugun": 86400, "bugun": 300, "gundem": 30}
-"""Advanced: Set exclusive timeouts (seconds) for categories if you don't want them to use the default."""
+EXCLUSIVE_TIMEOUTS = {"top": 86400, "today-in-history": 86400, "today": 300, "popular": 30}
+"""ADVANCED: Set exclusive timeouts (seconds) for categories if you don't want them to use the default."""
 
-# Don't cache these categories.
-# (To disable a tab of a category, you can insert "categoryname_tabname", "categoryname" will affect both tabs)
-UNCACHED_CATEGORIES = ("kenar", "ukteler_owned", "son")
 
-# Set this to True to disable caching of all categories. The site will
-# be more responsive & dynamic but much slower. If the website is low
-# in demand, you may set this to true so that existing user base
-# can interact more quickly. Consider using UNCACHED_CATEGORIES if
-# you don't want to disable ALL categories.
-# You may also (better) use this for debugging purposes.
+UNCACHED_CATEGORIES = ("drafts", "wishes_owned", "followups")
+"""
+Don't cache these categories.
+To disable a tab of a category, you can insert "categoryname_tabname", "categoryname" will affect all tabs.
+"""
+
 DISABLE_CATEGORY_CACHING = False
+"""
+Set this to True to disable caching of all categories. The site will
+be more responsive & dynamic but much slower. If the website is low
+in demand, you may set this to true so that existing user base
+can interact more quickly. Consider using UNCACHED_CATEGORIES if
+you don't want to disable ALL categories.
+You may also (better) use this for debugging purposes.
+"""
 
-# Years available for tarihte-bugun
+
 YEAR_RANGE = (2020, 2019, 2018)
+"""Years available for today-in-history"""
 
 #  <-----> END OF CATEGORY RELATED SETTINGS <----->  #
 

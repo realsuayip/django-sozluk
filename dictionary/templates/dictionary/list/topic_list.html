@@ -6,13 +6,13 @@
     <div class="left-frame-in">
         <div>
             <h1>
-                {% if request.GET.ordering and slug == "hayvan-ara" %}
+                {% if request.GET.ordering and slug == "search" %}
                     <a class="expand" role="button"  tabindex="0" data-toggle="collapse" data-target="#search_form_extended_mobile" aria-expanded="false">{{ safename }}</a>
                 {% else %}
                     <span>{{ safename }}</span>
                 {% endif %}
 
-            {% if slug == "gundem" %}
+            {% if slug == "popular" %}
                 <span role="button" title="gündem filtresi" style="display: inline-block; vertical-align: baseline;" class="exclusion-button">
                     <svg tabindex="0" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <use href="#cog"></use>
@@ -32,7 +32,7 @@
             </ul>
         {% endif %}
 
-        {% if slug == "bugun" %}
+        {% if slug == "today" %}
             {% if refresh_count %}
                 <form method="post">
                     {% csrf_token %}
@@ -41,7 +41,7 @@
             {% endif %}
         {% endif %}
 
-        {% if slug == "gundem" %}
+        {% if slug == "popular" %}
             <div class="exclusion-settings {% if not exclusions.active %}dj-hidden{% endif %}" id="exclusion-settings-mobile">
                 <small>gündeminizi kişiselleştirin:</small>
                 <ul class="exlusion-choices">
@@ -52,7 +52,7 @@
             </div>
         {% endif %}
 
-        {% if slug == "tarihte-bugun" %}
+        {% if slug == "today-in-history" %}
             <select class="mobile-topic-list form-control" id="mobile_year_changer" aria-label="Yıl seçici">
                 {% for y in year_range %}
                     <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
@@ -62,9 +62,9 @@
         {% endif %}
 
 
-        {% if slug == "hayvan-ara" %}
+        {% if slug == "search" %}
             {# render search form, if request.GET.ordering has value, it means there is a search #}
-            <form method="get" action="{% url 'topic_list' slug='hayvan-ara' %}" class="search_mobile{% if request.GET.ordering %} collapse{% endif %}" id="search_form_extended_mobile">
+            <form method="get" action="{% url 'topic_list' slug='search' %}" class="search_mobile{% if request.GET.ordering %} collapse{% endif %}" id="search_form_extended_mobile">
                 {% include "dictionary/includes/forms/extended_search.html" with source="mobile" %}
                 <button type="submit" class="btn btn-django stretch">çok güzel ara</button>
             </form>

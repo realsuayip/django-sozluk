@@ -139,11 +139,11 @@
         {# <!--- categories and mobile navigation --> #}
         <nav class="sub-nav">
             <ul class="mobile-only">
-                {% render_header_link "bugun" %}
-                {% render_header_link "gundem" %}
-                {% render_header_link "debe" %}
-                {% render_header_link "tarihte-bugun" %}
-                {% render_header_link "takip" %}
+                {% render_header_link "today" %}
+                {% render_header_link "popular" %}
+                {% render_header_link "top" %}
+                {% render_header_link "today-in-history" %}
+                {% render_header_link "acquaintances" %}
 
                 {% if user.is_authenticated %}
                     <li id="usermenu_mobile" data-toggle="dropdown">
@@ -154,11 +154,11 @@
 
                     <div class="usermenu-dropdown dropdown-menu dropdown-menu-right" aria-labelledby="usermenu_mobile">
                         <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
-                        <a href="{% url "topic_list" slug="kenar" %}" class="dropdown-item">kenar</a>
-                        <a href="{% url "topic_list" slug="ukteler" %}" class="dropdown-item">ukteler</a>
-                        <a href="{% url "topic_list" slug="son" %}" class="dropdown-item">son</a>
-                        <a href="{% url "topic_list" slug="caylaklar" %}" class="dropdown-item">çaylaklar</a>
-                        <a href="{% url "topic_list" slug="hayvan-ara" %}" class="dropdown-item">hayvan ara</a>
+                        <a href="{% url "topic_list" slug="drafts" %}" class="dropdown-item">kenar</a>
+                        <a href="{% url "topic_list" slug="wishes" %}" class="dropdown-item">ukteler</a>
+                        <a href="{% url "topic_list" slug="followups" %}" class="dropdown-item">son</a>
+                        <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">çaylaklar</a>
+                        <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">hayvan ara</a>
                         <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
                         <a href="{% url "people" %}" class="dropdown-item">takip/engellenmiş</a>
                         <div class="dropdown-divider"></div>
@@ -177,15 +177,15 @@
 
             <ul class="desktop-only" id="category_view">
 
-                {% render_header_link 'bugun' %}
-                {% render_header_link 'gundem' %}
-                {% render_header_link 'debe' %}
-                {% render_header_link 'takip' %}
-                {% render_header_link 'kenar' %}
-                {% render_header_link 'son' %}
-                {% render_header_link 'ukteler' %}
-                {% render_header_link 'caylaklar' %}
-                {% render_header_link 'tarihte-bugun' %}
+                {% render_header_link 'today' %}
+                {% render_header_link 'popular' %}
+                {% render_header_link 'top' %}
+                {% render_header_link 'acquaintances' %}
+                {% render_header_link 'drafts' %}
+                {% render_header_link 'followups' %}
+                {% render_header_link 'wishes' %}
+                {% render_header_link 'novices' %}
+                {% render_header_link 'today-in-history' %}
 
                 {% for category in nav_categories|slice:":4" %}
                     <li {% if active_category == category.slug %}class="active"{% endif %} data-lf-slug="{{ category.slug }}">
@@ -206,7 +206,7 @@
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if active_category == "basiboslar" %} active{% endif %}" data-lf-slug="basiboslar" href="{% url 'topic_list' slug='basiboslar' %}">başıboşlar</a>
+                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if active_category == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">başıboşlar</a>
                     <a href="{% url 'category_list' %}" class="dropdown-item regular">tüm kanallar</a>
                 </div>
             </ul>

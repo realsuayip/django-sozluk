@@ -110,7 +110,7 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def year_range(self):
-        return YEAR_RANGE if self.slug == "tarihte-bugun" else None
+        return YEAR_RANGE if self.slug == "today-in-history" else None
 
     @cached_property
     def year(self):
@@ -159,7 +159,7 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def exclusions(self):
-        if self.slug == "gundem":
+        if self.slug == "popular":
             active = self._manager.exclusions
             available = self._get_available_exclusions()
             return {"active": active, "available": available}

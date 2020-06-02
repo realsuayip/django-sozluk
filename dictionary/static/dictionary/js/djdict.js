@@ -208,21 +208,21 @@ class LeftFrame {
             this.tab = Cookies.get("active_tab") || null;
         }
 
-        if (this.slug === "tarihte-bugun") {
+        if (this.slug === "today-in-history") {
             const cookieYear = Cookies.get("selected_year");
             if (!this.year) {
                 this.year = cookieYear || null;
             } else {
                 Cookies.set("selected_year", this.year);
             }
-        } else if (this.slug === "hayvan-ara") {
+        } else if (this.slug === "search") {
             const cookieSearchKeys = Cookies.get("search_parameters");
             if (!this.searchKeys) {
                 this.searchKeys = cookieSearchKeys || null;
             } else {
                 Cookies.set("search_parameters", this.searchKeys);
             }
-        } else if (this.slug === "gundem") {
+        } else if (this.slug === "popular") {
             const cookieExclusions = JSON.parse(Cookies.get("exclusions") || "[]");
             if (this.exclusions) {
                 if (cookieExclusions) {
@@ -348,7 +348,7 @@ class LeftFrame {
         const yearSelect = $("#year_select");
         yearSelect.html("");
 
-        if (this.slug === "tarihte-bugun") {
+        if (this.slug === "today-in-history") {
             yearSelect.css("display", "block");
             for (const year of yearRange) {
                 yearSelect.append(`<option ${year === currentYear ? "selected" : ""} id="${year}">${year}</option>`);
@@ -405,7 +405,7 @@ class LeftFrame {
     }
 
     static refreshPopulate () {
-        LeftFrame.populate("bugun", 1, null, null, true);
+        LeftFrame.populate("today", 1, null, null, true);
     }
 }
 
@@ -431,7 +431,7 @@ $("body").on("click", "[data-lf-slug]", function (event) {
 $("#year_select").on("change", function () {
     // Year is changed
     const selectedYear = this.value;
-    LeftFrame.populate("tarihte-bugun", 1, selectedYear);
+    LeftFrame.populate("today-in-history", 1, selectedYear);
 });
 
 $("select#left_frame_paginator").on("change", function () {
@@ -484,7 +484,7 @@ $(".exclusion-button").on("click", function () {
 
 $("#exlusion-choices").on("click", "ul li a", function () {
     $(this).toggleClass("active");
-    LeftFrame.populate("gundem", 1, null, null, null, null, [$(this).attr("data-slug")]);
+    LeftFrame.populate("popular", 1, null, null, null, null, [$(this).attr("data-slug")]);
 });
 
 $("#exclusion-settings-mobile").on("click", "ul li a", function () {
@@ -875,7 +875,7 @@ const populateSearchResults = searchParameters => {
         return;
     }
 
-    const slug = "hayvan-ara";
+    const slug = "search";
 
     if (userIsMobile) {
         window.location = `/threads/${slug}/?${searchParameters}`;
@@ -1125,6 +1125,15 @@ const getPkSet = function (selected) {
     return pkSet;
 };
 
+const selectChat = function (init) {
+    // inbox.html || conversation.html
+    let chat = init.closest("li.chat");
+    if (!chat.length) {
+        chat = init.parent();
+    }
+    return chat;
+};
+
 const deleteConversation = function (pkSet, mode) {
     const query = `mutation($pkSet:[ID!]!, $mode:String){message{deleteConversation(pkSet:$pkSet,mode:$mode){redirect}}}`;
     const variables = { pkSet, mode };
@@ -1136,13 +1145,7 @@ $("a[role=button].chat-delete-individual").on("click", function () {
         return false;
     }
 
-    // inbox.html || conversation.html
-    let chat = $(this).closest("li.chat");
-
-    if (!chat.length) {
-        chat = $(this).parent();
-    }
-
+    const chat = selectChat($(this));
     const mode = $("ul.threads").attr("data-mode") || chat.attr("data-mode");
 
     deleteConversation(chat.attr("data-id"), mode).then(function (response) {
@@ -1207,15 +1210,9 @@ $("a[role=button].chat-archive-individual").on("click", function () {
         return false;
     }
 
-    let chat = $(this).closest("li.chat");
+    const chat = selectChat($(this));
 
-    if (!chat.length) {
-        chat = $(this).parent();
-    }
-
-    const pk = chat.attr("data-id");
-
-    archiveConversation(pk).then(function (response) {
+    archiveConversation(chat.attr("data-id")).then(function (response) {
         const data = response.data.message.archiveConversation;
         if (data) {
             if ($("li.chat").length > 1) {

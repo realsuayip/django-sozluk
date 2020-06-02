@@ -50,7 +50,7 @@ class TopicQueryHandler:
     values = ("title", "slug", "count")
     values_entry = values[:2]  # values with count excluded (used for entry listing)
 
-    def bugun(self, user):
+    def today(self, user):
         return (
             Topic.objects.filter(
                 Q(category__in=user.following_categories.all()) | Q(category=None),
@@ -63,7 +63,7 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def tarihte_bugun(self, year):
+    def today_in_history(self, year):
         now = timezone.now()
         diff = now.year - year
         delta = now - relativedelta(years=diff)
@@ -74,7 +74,7 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def gundem(self, exclusions):
+    def popular(self, exclusions):
         def counter(hours):
             return Count("entries", filter=Q(entries__date_created__gte=time_threshold(hours=hours)))
 
@@ -88,17 +88,15 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def debe(self):
-        boundary = time_threshold(hours=24)
-        debe = (
-            Entry.objects.filter(date_created__date=boundary.date(), topic__is_censored=False)
+    def top(self):
+        return (
+            Entry.objects.filter(date_created__date=time_threshold(hours=24).date(), topic__is_censored=False)
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
             .values(*self.values_entry)
-        )
-        return debe[:TOPICS_PER_PAGE_DEFAULT]
+        )[:TOPICS_PER_PAGE_DEFAULT]
 
-    def kenar(self, user):
+    def drafts(self, user):
         return (
             Entry.objects_all.filter(author=user, is_draft=True)
             .order_by("-date_created")
@@ -106,10 +104,10 @@ class TopicQueryHandler:
             .values(*self.values_entry)
         )
 
-    def takip(self, user, tab):
-        return getattr(self, f"takip_{tab}")(user)
+    def acquaintances(self, user, tab):
+        return getattr(self, f"acquaintances_{tab}")(user)
 
-    def takip_entries(self, user):
+    def acquaintances_entries(self, user):
         return (
             Entry.objects.filter(date_created__gte=time_threshold(hours=24), author__in=user.following.all())
             .order_by("-date_created")
@@ -117,7 +115,7 @@ class TopicQueryHandler:
             .values(*self.values_entry)
         )
 
-    def takip_favorites(self, user):
+    def acquaintances_favorites(self, user):
         return (
             Entry.objects.filter(
                 favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24)
@@ -131,10 +129,10 @@ class TopicQueryHandler:
             .values(*self.values_entry)
         )
 
-    def ukteler(self, user, tab):
-        return getattr(self, f"ukteler_{tab}")(user)
+    def wishes(self, user, tab):
+        return getattr(self, f"wishes_{tab}")(user)
 
-    def ukteler_all(self, user):
+    def wishes_all(self, user):
         return (
             Topic.objects.exclude(wishes__author__in=user.blocked.all())
             .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
@@ -142,14 +140,14 @@ class TopicQueryHandler:
             .order_by("-count", "-latest")
         ).values(*self.values)
 
-    def ukteler_owned(self, user):
+    def wishes_owned(self, user):
         return (
             Topic.objects.filter(wishes__author=user)
             .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
             .order_by("-latest")
         ).values(*self.values)
 
-    def son(self, user):
+    def followups(self, user):
         """
         Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
 
@@ -232,7 +230,7 @@ class TopicQueryHandler:
             columns = [col[0] for col in cursor.description]
             return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-    def caylaklar(self):
+    def novices(self):
         caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
         return (
             Topic.objects.filter(**self.day_filter, **caylak_filter)
@@ -241,7 +239,7 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def hayvan_ara(self, user, search_keys):
+    def search(self, user, search_keys):
         """
         The logic of advanced search feature.
         Notice: If you are including a new field, and it requires an annotation, you will need to use SubQuery.
@@ -304,7 +302,7 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def basiboslar(self):
+    def uncategorized(self):
         return (
             Topic.objects.filter(**self.base_filter, **self.day_filter, category=None)
             .order_by("-latest")
@@ -335,10 +333,10 @@ class TopicListHandler:
         """
         :param user: User requesting the list. Used for topics per page and checking login requirements.
         :param slug: Slug of the category.
-        :param year: Required for tarihte-bugun.
-        :param search_keys: Search keys for "hayvan-ara" (advanced search).
+        :param year: Required for today-in-history.
+        :param search_keys: Search keys for "search" (advanced search).
         :param tab: Tab name for tabbed categories.
-        :param exclusions: List of category slugs to be excluded in gundem.
+        :param exclusions: List of category slugs to be excluded in popular.
         """
 
         if not user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
@@ -350,7 +348,7 @@ class TopicListHandler:
         self.year = self._validate_year(year)
         self.tab = self._validate_tab(tab)
         self.exclusions = self._validate_exclusions(exclusions)
-        self.search_keys = search_keys if self.slug == "hayvan-ara" else {}
+        self.search_keys = search_keys if self.slug == "search" else {}
 
         # Check cache
         if self._caching_allowed:
@@ -361,15 +359,15 @@ class TopicListHandler:
 
         # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
-            **dict.fromkeys(("bugun", "kenar", "son"), [self.user]),
-            **dict.fromkeys(("takip", "ukteler"), [self.user, self.tab]),
-            "tarihte_bugun": [self.year],
+            **dict.fromkeys(("today", "drafts", "followups"), [self.user]),
+            **dict.fromkeys(("acquaintances", "wishes"), [self.user, self.tab]),
+            "today_in_history": [self.year],
             "generic_category": [self.slug],
-            "hayvan_ara": [self.user, self.search_keys],
-            "gundem": [self.exclusions],
+            "search": [self.user, self.search_keys],
+            "popular": [self.exclusions],
         }
 
-        # Convert tarihte-bugun => tarihte_bugun, hayvan-ara => hayvan_ara (for getattr convenience)
+        # Convert today-in-history => today_in_history
         slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
 
         # Get the method from TopicQueryHandler.
@@ -378,7 +376,7 @@ class TopicListHandler:
     def _validate_exclusions(self, exclusions):
         return (
             tuple(slug for slug in exclusions if slug in EXCLUDABLE_CATEGORIES)
-            if self.slug == "gundem" and exclusions is not None
+            if self.slug == "popular" and exclusions is not None
             else ()
         )
 
@@ -391,7 +389,7 @@ class TopicListHandler:
 
     def _validate_year(self, year):
         """Validates and sets the year."""
-        if self.slug == "tarihte-bugun":
+        if self.slug == "today-in-history":
             default = 2020
             if year is not None:
 
@@ -433,7 +431,7 @@ class TopicListHandler:
         search_keys = ""
         exclusions = "_".join(sorted(self.exclusions)) if self.exclusions else ""
 
-        if self.slug == "hayvan-ara":
+        if self.slug == "search":
             # Create special hashed suffix for search parameters
             available_search_params = (
                 "keywords",
@@ -459,8 +457,8 @@ class TopicListHandler:
         cached_data = cache.get(self.cache_key)
 
         if cached_data is not None:
-            if self.slug in ("debe", "tarihte-bugun"):
-                # check if the day has changed or not for debe or tarihte-bugun
+            if self.slug in ("top", "today-in-history"):
+                # check if the day has changed or not for top or today-in-history
                 if cached_data.get("set_at").day == timezone.now().day:
                     self.cache_exists = True
             else:
@@ -500,17 +498,17 @@ class TopicListHandler:
 
     @property
     def slug_identifier(self):
-        if self.slug in ("takip", "debe"):
+        if self.slug in ("acquaintances", "top"):
             return "/entry/"
 
-        if self.slug == "kenar":
+        if self.slug == "drafts":
             return "/entry/update/"
 
         return "/topic/"
 
     @property
     def refresh_count(self):  # (yenile count)
-        if self.cache_exists and self.slug == "bugun":
+        if self.cache_exists and self.slug == "today":
             set_at = cache.get(self.cache_key).get("set_at")
             return Entry.objects.filter(date_created__gte=set_at).count()
 

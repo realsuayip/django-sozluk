@@ -27,9 +27,6 @@ from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES
 
 
 def index(request):
-    """
-    # todo conversation archiving
-    """
     return render(request, "dictionary/index.html")
 
 
@@ -130,9 +127,9 @@ class TopicList(TemplateView):
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):
-        """Resets bugun's cache (refresh button mobile click event)"""
-        if self.kwargs.get("slug") == "bugun":
-            manager = TopicListManager("bugun", self.request.user)
+        """Resets today's cache (refresh button mobile click event)"""
+        if self.kwargs.get("slug") == "today":
+            manager = TopicListManager("today", self.request.user)
             manager.delete_cache(flush=True)
             return redirect(self.request.path)
         return HttpResponseBadRequest()
@@ -303,11 +300,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             epoch = self.request.GET.get("d")
 
             try:
-                last_read = datetime.datetime.fromtimestamp(int(epoch))
+                # epoch + 1 because it does not account for the miliseconds
+                last_read = timezone.make_aware(datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc)
             except (ValueError, TypeError, OSError):
                 last_read = None
 
-            if last_read and last_read.date() == following.read_at.date():
+            if last_read and last_read > following.date_created:
                 queryset = self._qs_filter(
                     self.topic.entries.filter(date_created__gt=last_read).exclude(Q(author=self.request.user))
                 )  # Note: we need to apply _qs_filter because we use queryset results in here.
@@ -536,7 +534,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         is_authenticated, blocked = self.request.user.is_authenticated, None
 
         if self.view_mode == "recent" and self.request.user.is_novice:
-            # 'son' doesn't include novice entries for authors, but does for novices.
+            # 'followups' doesn't include novice entries for authors, but does for novices.
             novice_view_modes += ("recent",)
 
         qs = queryset.exclude(is_draft=True)

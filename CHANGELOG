@@ -1,3 +1,17 @@
+[0.148.0-dev-pre](2020.06.02)(compatible)
+--Additions--
+1) Added name validator for Category model.
+Run makemigrations+migrate for dictionary to apply it.
+
+-- Changes --
+1) Non database categories' slugs are now in English.
+With this change all urls should be in English (tell me if not).
+2) Fixed yet another bug in TopicEntryList's 'following' method.
+3) Optimized archiving-deleting indiviudal button events (djdict.js).
+
+--Deletions--
+None
+
 [0.147.0-dev-pre](2020.06.01)(incompatible)
 --Additions--
 1) Add conversation archiving + deletion feature.

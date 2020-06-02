@@ -41,7 +41,7 @@ class LeftFrameProcessor:
 
     @cached_property
     def _search_keys(self):
-        if self.slug != "hayvan-ara":
+        if self.slug != "search":
             return {}
 
         query = self.cookies.get("search_parameters")
