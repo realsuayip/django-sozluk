@@ -246,10 +246,15 @@ class UserProfile(IntegratedFormMixin, ListView):
         return super().dispatch(request)
 
     def get_novice_queue(self):
-        if self.request.user.is_authenticated:
-            if self.request.user == self.profile and self.profile.is_novice and self.profile.application_status == "PN":
-                if self.request.session.get("novice_queue"):
-                    return self.request.session["novice_queue"]
+        user = self.request.user
+        if (
+            user.is_authenticated
+            and user == self.profile
+            and user.is_novice
+            and user.application_status == "PN"
+            and (queue := self.request.session.get("novice_queue"))
+        ):
+            return queue
         return None
 
     def get_memento(self):

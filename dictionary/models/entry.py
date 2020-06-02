@@ -61,13 +61,12 @@ class Entry(models.Model):
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
-        if self.author.is_novice and self.author.application_status == "PN":
+        if self.author.is_novice and self.author.application_status == "PN" and self.author.entry_count < 10:
             # if the entry count drops less than 10, remove user from novice lookup
             # does not work if bulk deletion made on admin panel (users can only remove one entry at a time)
-            if self.author.entry_count < 10:
-                self.author.application_status = "OH"
-                self.author.application_date = None
-                self.author.save()
+            self.author.application_status = "OH"
+            self.author.application_date = None
+            self.author.save()
 
     def get_favorite_count(self, sender=AnonymousUser):
         favoriters = self.favorited_by(manager="objects_accessible")

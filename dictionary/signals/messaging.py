@@ -19,9 +19,8 @@ def deliver_message(instance, **kwargs):
 
 @receiver(m2m_changed, sender=Conversation.messages.through)
 def delete_orphan_messages_individual(action, pk_set, **kwargs):
-    if action == "post_remove":
-        if not Conversation.objects.filter(messages__in=pk_set).exists():
-            Message.objects.filter(pk__in=pk_set).delete()
+    if action == "post_remove" and not Conversation.objects.filter(messages__in=pk_set).exists():
+        Message.objects.filter(pk__in=pk_set).delete()
 
 
 @receiver(pre_delete, sender=Conversation)

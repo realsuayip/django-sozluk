@@ -56,10 +56,10 @@ def formatted(raw_entry):
         if domain.endswith(DOMAIN) and len(path) > 7:
             # Internal links (entries and topics)
 
-            if (permalink := re.match(r"^/entry/([0-9]+)/?$", path)) is not None:
+            if permalink := re.match(r"^/entry/([0-9]+)/?$", path):
                 return f'(bkz: <a href="{path}">#{permalink.group(1)}</a>)'
 
-            if (topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path)) is not None:
+            if topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path):
                 # todo: When topic auto-redirect feature gets implemented, add redirect flag to this url.
                 slug = topic.group(1)
                 guess = slug.replace("-", " ").strip()
