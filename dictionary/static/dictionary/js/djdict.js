@@ -185,7 +185,7 @@ $(".author-search").autocomplete({
 });
 
 class LeftFrame {
-    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null, exclusions = null) {
+    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null, exclusions = null, extra = null) {
         this.slug = slug;
         this.page = page;
         this.year = year;
@@ -193,6 +193,7 @@ class LeftFrame {
         this.searchKeys = searchKeys;
         this.tab = tab;
         this.exclusions = exclusions;
+        this.extra = extra;
 
         this.setCookies();
         this.loadIndicator = $("#load_indicator");
@@ -206,6 +207,12 @@ class LeftFrame {
             Cookies.set("active_tab", this.tab);
         } else {
             this.tab = Cookies.get("active_tab") || null;
+        }
+
+        if (this.extra) {
+            Cookies.set("extra", this.extra);
+        } else {
+            this.extra = Cookies.get("extra") || null;
         }
 
         if (this.slug === "today-in-history") {
@@ -251,17 +258,18 @@ class LeftFrame {
             searchKeys: this.searchKeys,
             refresh: this.refresh,
             tab: this.tab,
-            exclusions: this.exclusions
+            exclusions: this.exclusions,
+            extra: this.extra
         };
 
-        const query = `query($slug: String!, $year: Int, $page: Int, $searchKeys: String, $refresh: Boolean,
-        $tab: String, $exclusions: [String]) { topics(slug: $slug, year: $year, page: $page, searchKeys: $searchKeys,
-        refresh: $refresh, tab: $tab, exclusions: $exclusions){
+        const query = `query($slug: String!,$year:Int,$page:Int,$searchKeys:String,$refresh:Boolean,$tab:String,
+        $exclusions:[String],$extra:JSONString){topics(slug:$slug,year:$year,page:$page,searchKeys:$searchKeys,
+        refresh:$refresh,tab:$tab,exclusions:$exclusions,extra:$extra){
             safename refreshCount year yearRange slugIdentifier parameters
             page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages }
             tabs{current available{name, safename}}
-            exclusions{active, available{name, slug, description}
-        }}}`;
+            exclusions{active, available{name, slug, description}}
+        }}`;
 
         const self = this;
 
@@ -416,8 +424,8 @@ $("body").on("click", "[data-lf-slug]", function (event) {
     if (!userIsMobile) {
         const slug = $(this).attr("data-lf-slug");
         const tab = $(this).attr("data-tab") || null;
-
-        LeftFrame.populate(slug, 1, null, null, false, tab);
+        const extra = $(this).attr("data-lf-extra") || null;
+        LeftFrame.populate(slug, 1, null, null, false, tab, null, extra);
 
         if ($(this).hasClass("dropdown-item")) {
             // Prevents dropdown collapsing, good for accessibility.

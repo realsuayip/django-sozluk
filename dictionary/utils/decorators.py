@@ -49,3 +49,15 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
     if initial_func:
         return decorator(initial_func)
     return decorator
+
+
+def for_public_methods(decorator):
+    """Decorate each 'public' method of this class with given decorator."""
+
+    def decorate(cls):
+        for attr in dir(cls):
+            if not attr.startswith("_") and callable(getattr(cls, attr)):
+                setattr(cls, attr, decorator(getattr(cls, attr)))
+        return cls
+
+    return decorate

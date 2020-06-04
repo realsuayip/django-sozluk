@@ -2,8 +2,7 @@ from contextlib import suppress
 
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Max, OuterRef, Prefetch, Q, Subquery
-from django.db.models.functions import Coalesce, Greatest
+from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -11,19 +10,8 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
-from ..models import (
-    Author,
-    Category,
-    Conversation,
-    ConversationArchive,
-    DownvotedEntries,
-    Entry,
-    Memento,
-    Message,
-    Topic,
-    UpvotedEntries,
-)
-from ..utils import time_threshold
+from ..models import Author, Conversation, ConversationArchive, Entry, Memento, Message
+from ..utils.managers import UserStatsQueryHandler
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
@@ -128,7 +116,8 @@ class UserProfile(IntegratedFormMixin, ListView):
         return kwargs
 
     def get_queryset(self):
-        qs = getattr(self, self.tab)()
+        handler = UserStatsQueryHandler(self.profile, order=True)
+        qs = getattr(handler, self.tab)()
         tab_obj_type = self.tabs.get(self.tab)["type"]
 
         if tab_obj_type == "entry":
@@ -149,77 +138,6 @@ class UserProfile(IntegratedFormMixin, ListView):
 
         raise Http404
 
-    def latest(self):
-        # default tab
-        return self.profile.entry_set(manager="objects_published").order_by("-date_created")
-
-    def favorites(self):
-        return self.profile.favorite_entries.filter(author__is_novice=False).order_by("-entryfavorites__date_created")
-
-    def popular(self):
-        return (
-            self.profile.entry_set(manager="objects_published")
-            .annotate(count=Count("favorited_by"))
-            .filter(count__gte=1)
-            .order_by("-count")
-        )
-
-    def liked(self):
-        return self.profile.entry_set(manager="objects_published").filter(vote_rate__gt=0).order_by("-vote_rate")
-
-    def weeklygoods(self):
-        return self.liked().filter(date_created__gte=time_threshold(days=7))
-
-    def beloved(self):
-        return (
-            self.profile.entry_set(manager="objects_published")
-            .filter(favorited_by__in=[self.profile])
-            .order_by("-date_created")
-        )
-
-    def recentlyvoted(self):
-        upvotes = UpvotedEntries.objects.filter(entry=OuterRef("pk")).order_by("-date_created")
-        downvotes = DownvotedEntries.objects.filter(entry=OuterRef("pk")).order_by("-date_created")
-
-        up = Subquery(upvotes.values("date_created")[:1])
-        down = Subquery(downvotes.values("date_created")[:1])
-
-        return (
-            self.profile.entry_set(manager="objects_published")
-            .annotate(last_voted=Coalesce(Greatest(up, down), up, down))
-            .filter(last_voted__isnull=False)
-            .order_by("-last_voted")
-        )
-
-    def wishes(self):
-        return (
-            Topic.objects.filter(wishes__author=self.profile)
-            .annotate(latest=Max("wishes__date_created"))
-            .only("title", "slug")
-            .order_by("-latest")
-        )
-
-    def channels(self):
-        return (
-            Category.objects.annotate(
-                count=Count(
-                    "topic__entries", filter=Q(topic__entries__author=self.profile, topic__entries__is_draft=False)
-                )
-            )
-            .filter(count__gte=1)
-            .order_by("-count")
-        )
-
-    def authors(self):
-        return (
-            Author.objects_accessible.filter(entry__in=self.profile.favorite_entries.all())
-            .annotate(frequency=Count("entry"))
-            .filter(frequency__gt=1)
-            .exclude(Q(pk=self.profile.pk) | Q(blocked__in=[self.profile.pk]) | Q(pk__in=self.profile.blocked.all()))
-            .only("username", "slug")
-            .order_by("-frequency")[:10]
-        )
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["tab"] = {"name": self.tab, **self.tabs.get(self.tab)}
@@ -231,13 +149,18 @@ class UserProfile(IntegratedFormMixin, ListView):
         self.profile = get_object_or_404(Author, slug=self.kwargs.get("slug"), is_active=True)
 
         # Check accessibility
-        if self.profile.is_frozen or self.profile.is_private:
+        if (
+            self.profile.is_frozen
+            or self.profile.is_private
+            or (
+                self.request.user.is_authenticated
+                and (
+                    self.profile.blocked.filter(pk=self.request.user.pk).exists()
+                    or self.request.user.blocked.filter(pk=self.profile.pk).exists()
+                )
+            )
+        ):
             raise Http404
-
-        # Check accessibility (block status)
-        if self.request.user.is_authenticated:
-            if self.request.user in self.profile.blocked.all() or self.profile in self.request.user.blocked.all():
-                raise Http404
 
         # Set-up tab
         tab_requested = request.GET.get("t", "latest")

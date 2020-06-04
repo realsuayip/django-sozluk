@@ -51,5 +51,5 @@ def render_header_link(context, slug):
         return {"unauthorized": True}
 
     details = NON_DB_CATEGORIES_META[slug]
-    is_active = context["active_category"] == slug
+    is_active = context.get("left_frame", {}).get("slug") == slug
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}

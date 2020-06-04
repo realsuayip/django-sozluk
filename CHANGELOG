@@ -1,3 +1,28 @@
+[0.149.0-dev-pre](2020.06.04)(compatible)
+--Additions--
+1) Add decorator for_public_methods (description in docstrings)
+
+-- Changes --
+1) Left frame related bug fixes:
+    - Left frame context processor is now evaluated lazily.
+    (The data won't be fetched if the page is not using the
+    left frame, such as in mobile views)
+    - Left frame context processor now catches exceptions
+    instead of trying supressing them.
+    - Fixed a possible json decode error.
+    - Not passing a user instance caused an exception, fixed that.
+2) Left frame changes:
+    - Extended TopicListManager to be more extensible in the
+    future (parametric categories/extra).
+    - Ported user statistics into left frame. Also added new
+    channel statistics for users.
+    - drop activate_category alias
+3) Don't consider AnonymousUser in entry get_favorite_count
+4) Optimized UserProfile dispatch & TopicList get_context_data
+
+--Deletions--
+None
+
 [0.148.0-dev-pre](2020.06.02)(compatible)
 --Additions--
 1) Added name validator for Category model.

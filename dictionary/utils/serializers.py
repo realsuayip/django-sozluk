@@ -118,6 +118,9 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def safename(self):
+        if overridden := self.extra.get("safename"):
+            return overridden
+
         if self.slug in NON_DB_CATEGORIES:
             return NON_DB_CATEGORIES_META[self.slug][0]
 
@@ -147,6 +150,9 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def tabs(self):
+        if self._manager.extra.get("hidetabs") == "yes":
+            return None
+
         tab = self._manager.tab
         if tab is not None:
             available = NON_DB_CATEGORIES_META.get(self.slug)[2][0]
@@ -164,6 +170,10 @@ class LeftFrame(PlainSerializer):
             available = self._get_available_exclusions()
             return {"active": active, "available": available}
         return None
+
+    @cached_property
+    def extra(self):
+        return self._manager.extra
 
     def as_context(self):
         return self.get_serialized()

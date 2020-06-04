@@ -1,6 +1,6 @@
 from urllib.parse import parse_qsl
 
-from graphene import Boolean, Field, Int, List, ObjectType, String
+from graphene import Boolean, Field, Int, List, ObjectType, String, JSONString
 
 from dictionary.utils.managers import TopicListManager
 from dictionary.utils.serializers import LeftFrame
@@ -43,6 +43,11 @@ class Tabs(ObjectType):
     available = List(Tab)
 
 
+class Extra(ObjectType):
+    name = String()
+    value = String()
+
+
 class TopicList(ObjectType):
     page = Field(Page)
     parameters = String()
@@ -54,6 +59,7 @@ class TopicList(ObjectType):
     slug_identifier = String()
     tabs = Field(Tabs)
     exclusions = Field(Exclusions)
+    extra = List(Extra)
 
 
 class TopicListQuery(ObjectType):
@@ -66,6 +72,7 @@ class TopicListQuery(ObjectType):
         refresh=Boolean(),
         tab=String(),
         exclusions=List(String),
+        extra=JSONString(),
     )
 
     @staticmethod
@@ -73,7 +80,13 @@ class TopicListQuery(ObjectType):
         # Convert string query parameters to actual dicitonary to use it in TopicListHandler
         search_keys = dict(parse_qsl(kwargs.get("search_keys"))) if kwargs.get("search_keys") else {}
         manager = TopicListManager(
-            slug, info.context.user, kwargs.get("year"), search_keys, kwargs.get("tab"), kwargs.get("exclusions")
+            slug,
+            info.context.user,
+            kwargs.get("year"),
+            search_keys,
+            kwargs.get("tab"),
+            kwargs.get("exclusions"),
+            extra=kwargs.get("extra"),
         )
 
         if kwargs.get("refresh"):
@@ -101,6 +114,8 @@ class TopicListQuery(ObjectType):
             else None
         )
 
+        extra = [Extra(name=key, value=value) for key, value in frame.extra.items()] if frame.extra else None
+
         page_data = {
             "has_next": page.get("has_next"),
             "has_other_pages": page.get("has_other_pages"),
@@ -121,6 +136,7 @@ class TopicListQuery(ObjectType):
             "slug_identifier": frame.slug_identifier,
             "tabs": tabs,
             "exclusions": exclusions,
+            "extra": extra,
         }
 
         return TopicList(**data)

@@ -1,6 +1,5 @@
 from decimal import Decimal
 
-from django.contrib.auth.models import AnonymousUser
 from django.db import models
 from django.db.models import F
 from django.shortcuts import reverse
@@ -68,13 +67,8 @@ class Entry(models.Model):
             self.author.application_date = None
             self.author.save()
 
-    def get_favorite_count(self, sender=AnonymousUser):
-        favoriters = self.favorited_by(manager="objects_accessible")
-
-        if sender.is_authenticated:
-            return favoriters.exclude(pk__in=sender.blocked.all()).count()
-
-        return favoriters.count()
+    def get_favorite_count(self, sender):
+        return self.favorited_by(manager="objects_accessible").exclude(pk__in=sender.blocked.all()).count()
 
     def update_vote(self, rate, change=False):
         k = Decimal("2") if change else Decimal("1")

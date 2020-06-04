@@ -188,7 +188,7 @@
                 {% render_header_link 'today-in-history' %}
 
                 {% for category in nav_categories|slice:":4" %}
-                    <li {% if active_category == category.slug %}class="active"{% endif %} data-lf-slug="{{ category.slug }}">
+                    <li {% if left_frame.slug == category.slug %}class="active"{% endif %} data-lf-slug="{{ category.slug }}">
                         <a href="{{ category.get_absolute_url }}" title="{{ category.description }}">#{{ category.name }}</a>
                     </li>
                 {% endfor %}
@@ -202,11 +202,11 @@
                 <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right" aria-labelledby="more_tags_button">
 
                     {% for category in nav_categories|slice:"4:12" %}
-                        <a title="{{ category.description }}" data-lf-slug="{{ category.slug }}" class="dropdown-item{% if active_category == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                        <a title="{{ category.description }}" data-lf-slug="{{ category.slug }}" class="dropdown-item{% if left_frame.slug == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if active_category == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">başıboşlar</a>
+                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if left_frame.slug == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">başıboşlar</a>
                     <a href="{% url 'category_list' %}" class="dropdown-item regular">tüm kanallar</a>
                 </div>
             </ul>

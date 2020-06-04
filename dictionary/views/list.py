@@ -106,15 +106,18 @@ class TopicList(TemplateView):
     template_name = "dictionary/list/topic_list.html"
 
     def get_context_data(self, **kwargs):
-        slug = self.kwargs.get("slug")
-        year = self.request.GET.get("year")
-        page = self.request.GET.get("page")
-        tab = self.request.GET.get("tab")
-        exclusions = list(filter(None, self.request.GET.get("exclude", "").split(","))) or None
-        search_keys = self.request.GET
-
-        manager = TopicListManager(slug, self.request.user, year, search_keys, tab, exclusions)
-        frame = LeftFrame(manager, page)
+        params = self.request.GET
+        query = (
+            self.kwargs.get("slug"),
+            self.request.user,
+            params.get("year"),
+            params,  # search keys
+            params.get("tab"),
+            list(filter(None, params.get("exclude", "").split(","))) or None,  # exclusions
+            {"user": params.get("user"), "channel": params.get("channel")},  # extras
+        )
+        manager = TopicListManager(*query)
+        frame = LeftFrame(manager, params.get("page"))
         return frame.as_context()
 
     def dispatch(self, request, *args, **kwargs):

@@ -1,20 +1,24 @@
 import hashlib
+
 from decimal import Decimal
+from functools import wraps
 from typing import List, Union
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import CharField, Count, F, Max, Q, Value
-from django.db.models.functions import Concat
+from django.db.models import CharField, Count, F, Max, OuterRef, Q, Subquery, Value
+from django.db.models.functions import Coalesce, Concat, Greatest
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 
-from ..models import Author, Category, Entry, Topic
+from ..models import Author, Category, DownvotedEntries, Entry, Topic, UpvotedEntries
 from ..utils import parse_date_or_none, time_threshold
+from ..utils.decorators import for_public_methods
 from ..utils.settings import (
     DEFAULT_CACHE_TIMEOUT,
     DISABLE_CATEGORY_CACHING,
@@ -23,6 +27,7 @@ from ..utils.settings import (
     LOGIN_REQUIRED_CATEGORIES,
     NON_DB_CATEGORIES,
     NON_DB_CATEGORIES_META,
+    PARAMETRIC_CATEGORIES,
     TABBED_CATEGORIES,
     TOPICS_PER_PAGE_DEFAULT,
     UNCACHED_CATEGORIES,
@@ -310,6 +315,33 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
+    def userstats(self, username, channel, tab):
+        if not username:
+            raise Http404
+
+        user = get_object_or_404(Author, username=username)
+
+        if tab == "channels":
+            return self.userstats_channels(user, channel)
+
+        handler = UserStatsQueryHandler(user)
+        return (
+            getattr(handler, tab)()
+            .annotate(title=F("topic__title"), slug=F("pk"))
+            .order_by(handler.order_map.get(tab))
+            .values(*self.values_entry)
+        )
+
+    def userstats_channels(self, user, channel):
+        category = get_object_or_404(Category, name=channel)
+        return (
+            user.entry_set(manager="objects_published")
+            .filter(topic__category=category)
+            .annotate(title=F("topic__title"), slug=F("pk"))
+            .order_by("-date_created")
+            .values(*self.values_entry)
+        )
+
 
 class TopicListHandler:
     """
@@ -321,14 +353,21 @@ class TopicListHandler:
     cache_exists = False
     cache_key = None
 
+    _available_extras = ("user", "channel")
+    """Available external extras."""
+
+    _extras_cache_per = ("user", "channel")
+    """Include the value of these extras in cache key."""
+
     def __init__(
         self,
         slug: str,
-        user: Union[Author, AnonymousUser] = AnonymousUser,
+        user: Union[Author, AnonymousUser] = AnonymousUser(),
         year: Union[str, int] = None,
         search_keys: dict = None,
         tab: str = None,
         exclusions: List[str] = None,
+        extra: dict = None,
     ):
         """
         :param user: User requesting the list. Used for topics per page and checking login requirements.
@@ -337,6 +376,7 @@ class TopicListHandler:
         :param search_keys: Search keys for "search" (advanced search).
         :param tab: Tab name for tabbed categories.
         :param exclusions: List of category slugs to be excluded in popular.
+        :param extra: Any other metadata about the slug.
         """
 
         if not user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
@@ -349,6 +389,9 @@ class TopicListHandler:
         self.tab = self._validate_tab(tab)
         self.exclusions = self._validate_exclusions(exclusions)
         self.search_keys = search_keys if self.slug == "search" else {}
+        self.extra = self._validate_extra(extra)
+
+        self._set_internal_extra()
 
         # Check cache
         if self._caching_allowed:
@@ -365,6 +408,7 @@ class TopicListHandler:
             "generic_category": [self.slug],
             "search": [self.user, self.search_keys],
             "popular": [self.exclusions],
+            "userstats": [self.extra.get("user"), self.extra.get("channel"), self.tab],
         }
 
         # Convert today-in-history => today_in_history
@@ -404,6 +448,30 @@ class TopicListHandler:
             return default
         return None
 
+    def _validate_extra(self, extra):
+        return (
+            {key: value for key, value in extra.items() if key in self._available_extras and isinstance(value, str)}
+            if extra and self.slug in PARAMETRIC_CATEGORIES
+            else {}
+        )
+
+    def _set_internal_extra(self):
+        """
+        Set internal extras to change the default behaviour.
+        The slug doesn't need to be in parameteric categories.
+        """
+
+        if self.slug == "userstats":
+            fmtstr = [self.extra.get("user")]
+
+            if self.tab == "channels":
+                fmtstr.append(self.extra.get("channel"))
+            else:
+                self.extra.pop("channel", None)  # so as not to interfere with cache key
+
+            self.extra["safename"] = NON_DB_CATEGORIES_META["userstats"][2][0][self.tab].format(*fmtstr)
+            self.extra["hidetabs"] = "yes"
+
     @property
     def _caching_allowed(self):
         return not (
@@ -427,9 +495,15 @@ class TopicListHandler:
 
         scope = private if self.slug in USER_EXCLUSIVE_CATEGORIES else public
         year = self.year or ""
-        tab = self.tab or ""
+        tab = ":t:" + self.tab if self.tab else ""
         search_keys = ""
         exclusions = "_".join(sorted(self.exclusions)) if self.exclusions else ""
+        extra = (
+            ":x:"
+            + "_".join(f"{key}={value}" for key, value in sorted(self.extra.items()) if key in self._extras_cache_per)
+            if self.extra
+            else ""
+        )
 
         if self.slug == "search":
             # Create special hashed suffix for search parameters
@@ -450,7 +524,7 @@ class TopicListHandler:
 
             search_keys = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
 
-        self.cache_key = f"{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}"
+        self.cache_key = f"tlq_{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}{extra}"
 
     def _check_cache(self):
         self._create_cache_key()
@@ -498,7 +572,7 @@ class TopicListHandler:
 
     @property
     def slug_identifier(self):
-        if self.slug in ("acquaintances", "top"):
+        if self.slug in ("acquaintances", "top", "userstats"):
             return "/entry/"
 
         if self.slug == "drafts":
@@ -520,3 +594,89 @@ class TopicListManager(TopicListHandler, TopicQueryHandler):
     Responsible for topic list management at the back-end level.
     Whenever a topic list is called, this manager is behind it.
     """
+
+
+def conditional_ordering(method):
+    @wraps(method)
+    def wrapped(self, *args, **kwargs):
+        result = method(self, *args, **kwargs)
+        if self.order and method.__name__ in self.order_map:
+            return result.order_by(self.order_map.get(method.__name__))
+        return result
+
+    return wrapped
+
+
+@for_public_methods(conditional_ordering)
+class UserStatsQueryHandler:
+    """Queries for user stats on profile page."""
+
+    order_map = {
+        "latest": "-date_created",
+        "favorites": "-entryfavorites__date_created",
+        "popular": "-count",
+        "liked": "-vote_rate",
+        "weeklygoods": "-vote_rate",
+        "beloved": "-date_created",
+        "recentlyvoted": "-last_voted",
+    }
+
+    def __init__(self, user, order=False):
+        self.user = user
+        self.entries = user.entry_set(manager="objects_published")
+        self.order = order
+
+    def latest(self):
+        return self.entries.all()
+
+    def favorites(self):
+        return self.user.favorite_entries.filter(author__is_novice=False)
+
+    def popular(self):
+        return self.entries.annotate(count=Count("favorited_by")).filter(count__gte=1)
+
+    def liked(self):
+        return self.entries.filter(vote_rate__gt=0)
+
+    def weeklygoods(self):
+        return self.entries.filter(vote_rate__gt=0, date_created__gte=time_threshold(days=7))
+
+    def beloved(self):
+        return self.entries.filter(favorited_by__in=[self.user])
+
+    def recentlyvoted(self):
+        up, down = (
+            Subquery(model.objects.filter(entry=OuterRef("pk")).order_by("-date_created").values("date_created")[:1])
+            for model in (UpvotedEntries, DownvotedEntries)
+        )
+
+        return self.entries.annotate(last_voted=Coalesce(Greatest(up, down), up, down)).filter(last_voted__isnull=False)
+
+    def wishes(self):
+        return (
+            Topic.objects.filter(wishes__author=self.user)
+            .annotate(latest=Max("wishes__date_created"))
+            .only("title", "slug")
+            .order_by("-latest")
+        )
+
+    def channels(self):
+        return (
+            Category.objects.annotate(
+                count=Count(
+                    "topic__entries", filter=Q(topic__entries__author=self.user, topic__entries__is_draft=False)
+                )
+            )
+            .filter(count__gte=1)
+            .order_by("-count")
+        )
+
+    def authors(self):
+        return (
+            Author.objects_accessible.filter(entry__in=self.user.favorite_entries.all())
+            .annotate(frequency=Count("entry"))
+            .filter(frequency__gt=1)
+            .exclude(Q(pk=self.user.pk) | Q(blocked__in=[self.user.pk]) | Q(pk__in=self.user.blocked.all()))
+            .only("username", "slug")
+            .order_by("-frequency")[:10]
+        )

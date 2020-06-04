@@ -1,13 +1,18 @@
 import json
+
+from contextlib import suppress
+from json.decoder import JSONDecodeError
 from urllib.parse import parse_qsl
 
-from django.utils.functional import cached_property
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.utils.functional import SimpleLazyObject, cached_property
 
 from ..models import Category
 from .decorators import cached_context
 from .managers import TopicListManager
 from .serializers import LeftFrame
-from .settings import DEFAULT_CATEGORY, LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES
+from .settings import DEFAULT_CATEGORY
 
 
 class LeftFrameProcessor:
@@ -21,14 +26,8 @@ class LeftFrameProcessor:
 
     @cached_property
     def slug(self):
-        _slug = self.cookies.get("active_category") or DEFAULT_CATEGORY
-        unauthorized = not self.user.is_authenticated and _slug in LOGIN_REQUIRED_CATEGORIES
-        not_found = _slug not in NON_DB_CATEGORIES and not Category.objects.filter(slug=_slug).exists()
-
-        if unauthorized or not_found:
-            _slug = DEFAULT_CATEGORY
-
-        return _slug
+        _slug = self.cookies.get("active_category")
+        return _slug if _slug else DEFAULT_CATEGORY
 
     @cached_property
     def _page(self):
@@ -53,24 +52,38 @@ class LeftFrameProcessor:
 
     @cached_property
     def _exclusions(self):
-        exclusions = self.cookies.get("exclusions")
-        return [slug for slug in json.loads(exclusions) if isinstance(slug, str)] if exclusions else None
+        if exclusions := self.cookies.get("exclusions"):
+            with suppress(JSONDecodeError):
+                return json.loads(exclusions)
+        return None
 
-    def get_context(self):
-        manager = TopicListManager(self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions)
-        frame = LeftFrame(manager, page=self._page)
-        return frame.as_context()
+    @cached_property
+    def _extra(self):
+        if extra := self.cookies.get("extra"):
+            with suppress(JSONDecodeError):
+                return json.loads(extra)
+        return {}
+
+    def get_context(self, manager=None):
+        try:
+            handler = manager or TopicListManager(
+                self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions, self._extra
+            )
+
+            context = LeftFrame(handler, page=self._page).as_context()
+        except (Http404, PermissionDenied):
+            return self.get_context(manager=TopicListManager(DEFAULT_CATEGORY))
+
+        return context
 
 
 def left_frame(request):
-    processor = LeftFrameProcessor(request)
-    frame = processor.get_context()
-    active_category = processor.slug
-    return {"left_frame": frame, "active_category": active_category}
+    frame = SimpleLazyObject(LeftFrameProcessor(request).get_context) if not request.is_mobile else {}
+    return {"left_frame": frame}
 
 
 @cached_context
-def header_categories(request):
+def header_categories(_request=None):
     """
     Required for header category navigation.
     """

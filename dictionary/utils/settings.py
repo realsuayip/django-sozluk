@@ -44,6 +44,23 @@ NON_DB_CATEGORIES_META = {
     "novices": ("çaylaklar", "çömezlerin girdikleri"),
     "top": ("dünün en beğenilen entry'leri", "debe"),
     "search": ("arama sonuçları", "hayvan ara"),
+    "userstats": (
+        "kullanıcı istatistiği",
+        "kullanıcı istatistiği",
+        (
+            {
+                "latest": "@{} - entryleri",
+                "popular": "@{} - en çok favorilenenleri",
+                "favorites": "@{} - favorileri",
+                "recentlyvoted": "@{} - son oylananları",
+                "liked": "@{} - en beğenilenleri",
+                "weeklygoods": "@{} - bu hafta dikkat çekenleri",
+                "beloved": "@{} - el emeği göz nuru",
+                "channels": "@{} - #{} başlıkları",
+            },
+            "latest",
+        ),
+    ),
 }
 """
 Category related settings. Notice: The current keys of NON_DB_CATEGORIES_META are hard-coded.
@@ -55,7 +72,7 @@ Structure: dict{str:tuple(str, str, tuple(dict{str:str}, str))}
 NON_DB_CATEGORIES = NON_DB_CATEGORIES_META.keys()
 """Don't touch. For internal use only."""
 
-TABBED_CATEGORIES = ("acquaintances", "wishes")
+TABBED_CATEGORIES = ("acquaintances", "wishes", "userstats")
 """These categories have tabs. Make sure you configure metadata correctly."""
 
 USER_EXCLUSIVE_CATEGORIES = ("today", "drafts", "acquaintances", "wishes", "followups")
@@ -71,6 +88,27 @@ DEFAULT_CATEGORY = "popular"
 """
 Default category to be shown when the user requests for the first time.
 Should NOT be in LOGIN_REQUIRED_CATEGORIES.
+"""
+
+PARAMETRIC_CATEGORIES = ("userstats",)  # intended for developers
+"""
+ADVANCED: These categories use many parameters. These parameters will be dumped
+and read from TopicListManager's 'extra'. If you're extending TopicEntryList and
+want to make use of parameters, you should probably use this. You can use
+_set_internal_extra of TopicEntryList to add or modify extras for any category.
+Extras can only be of str type.
+
+Available internal extras:
+    safename (overrides safename of the category)
+    hidetabs (hides tabs for tabbed categories if set to 'yes')
+
+Available external extras:
+    user    (a username)
+    channel (a channel name)
+
+Graph takes extras using JSONString, in mobile, extras given via query params.
+You may add any number of external/internal extras, I made this so that
+adding further params wouldn't require too much change in code / break old code.
 """
 
 DEFAULT_CACHE_TIMEOUT = 90
