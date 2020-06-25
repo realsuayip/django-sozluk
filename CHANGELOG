@@ -1,3 +1,20 @@
+[0.150.0-dev-pre](2020.06.25)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed faulty userstats_channels. Instead of
+listing entries, it now lists topics with entry search for
+user.
+2) Move get_category_parameters logic into LeftFrame's
+parameters. Also create logic for tabs.
+
+~~~ I will be making more frequent updates to this project
+following July 5 ~~~
+
+--Deletions--
+1) get_category_parameters function in utils.
+
 [0.149.0-dev-pre](2020.06.04)(compatible)
 --Additions--
 1) Add decorator for_public_methods (description in docstrings)

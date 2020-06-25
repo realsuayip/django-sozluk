@@ -5,12 +5,12 @@ from django.core.serializers.json import Serializer
 from django.utils.functional import cached_property
 
 from ..models import Category
-from . import get_category_parameters
 from .decorators import cached_context
 from .settings import (
     EXCLUDABLE_CATEGORIES,
     NON_DB_CATEGORIES,
     NON_DB_CATEGORIES_META,
+    TABBED_CATEGORIES,
     TOPICS_PER_PAGE_DEFAULT,
     YEAR_RANGE,
 )
@@ -137,8 +137,26 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def parameters(self):
-        key = self.slug if self.slug in NON_DB_CATEGORIES else "generic"
-        return get_category_parameters(key, self.year)
+        pairs = {
+            **dict.fromkeys(("today", "uncategorized", "generic"), "?a=today"),
+            "popular": "?a=popular",
+            "novices": "?a=novices",
+            "followups": "?a=recent",
+            "today-in-history": f"?a=history&year={self.year}",
+            "userstats_channels": f"?a=search&keywords=@{self.extra.get('user')}",
+        }
+
+        key = (
+            (
+                param_tab
+                if self.slug in TABBED_CATEGORIES and (param_tab := f"{self.slug}_{self._manager.tab}") in pairs
+                else self.slug
+            )
+            if self.slug in NON_DB_CATEGORIES
+            else "generic"
+        )
+
+        return pairs.get(key, "")
 
     @cached_property
     def page(self):

@@ -82,17 +82,5 @@ def get_generic_privateuser():
     return get_user_model().objects.get(username=GENERIC_PRIVATEUSER_USERNAME)
 
 
-def get_category_parameters(slug, year):
-    pairs = {
-        **dict.fromkeys(("today", "uncategorized", "generic"), "?a=today"),
-        "popular": "?a=popular",
-        "today-in-history": f"?a=history&year={year}",
-        "novices": "?a=novices",
-        "followups": "?a=recent",
-    }
-
-    return pairs.get(slug)
-
-
 class InputNotInDesiredRangeError(Exception):
     pass

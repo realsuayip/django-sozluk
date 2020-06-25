@@ -335,11 +335,15 @@ class TopicQueryHandler:
     def userstats_channels(self, user, channel):
         category = get_object_or_404(Category, name=channel)
         return (
-            user.entry_set(manager="objects_published")
-            .filter(topic__category=category)
-            .annotate(title=F("topic__title"), slug=F("pk"))
-            .order_by("-date_created")
-            .values(*self.values_entry)
+            Topic.objects.filter(entries__author=user, entries__is_draft=False, category=category)
+            .annotate(
+                count=Count("entries"),
+                latest_entry=Subquery(
+                    Entry.objects.filter(topic=OuterRef("pk")).order_by("-date_created").values("date_created")[:1]
+                ),
+            )
+            .order_by("-latest_entry")
+            .values(*self.values)
         )
 
 
@@ -572,6 +576,10 @@ class TopicListHandler:
 
     @property
     def slug_identifier(self):
+        # todo: move this to LeftFrame and refactor it to be like parameters
+        if f"{self.slug}_{self.tab}" == "userstats_channels":
+            return "/topic/"
+
         if self.slug in ("acquaintances", "top", "userstats"):
             return "/entry/"
 
