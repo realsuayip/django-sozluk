@@ -93,9 +93,13 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def top(self):
+    def top(self, tab):
+        filters = {
+            "yesterday": {"date_created__date": time_threshold(hours=24).date()},
+            "week": {"date_created__lte": time_threshold(days=7), "date_created__gte": time_threshold(days=14)},
+        }
         return (
-            Entry.objects.filter(date_created__date=time_threshold(hours=24).date(), topic__is_censored=False)
+            Entry.objects.filter(**filters.get(tab), topic__is_censored=False)
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
             .values(*self.values_entry)
@@ -412,6 +416,7 @@ class TopicListHandler:
             "generic_category": [self.slug],
             "search": [self.user, self.search_keys],
             "popular": [self.exclusions],
+            "top": [self.tab],
             "userstats": [self.extra.get("user"), self.extra.get("channel"), self.tab],
         }
 

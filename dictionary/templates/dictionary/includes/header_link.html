@@ -1,6 +1,5 @@
-{# An exception for debe made to improve ux #}
 {% if not unauthorized %}
 <li {% if is_active %}class="active"{% endif %} data-lf-slug="{{ hlink_slug }}">
-    <a title="{{ hlink_description }}" href="{% url "topic_list" slug=hlink_slug %}">{% if hlink_slug == "top" %}{{ hlink_description }}{% else %}{{ hlink_safename }}{% endif %}</a>
+    <a title="{{ hlink_description }}" href="{% url "topic_list" slug=hlink_slug %}">{{ hlink_safename }}</a>
 </li>
 {% endif %}

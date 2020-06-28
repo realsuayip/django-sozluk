@@ -20,6 +20,15 @@ class GeneralReportView(CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
+
+        # User is already logged in, no verification required.
+        if self.request.user.is_authenticated:
+            instance.reporter_email = self.request.user.email
+            instance.is_verified = True
+            notifications.success(self.request, "iletişim talebiniz başarıyla iletildi.", extra_tags="persistent")
+            return super().form_valid(form)
+
+        # Prepare and send a verification email.
         key = instance.key
         link = f"{PROTOCOL}://{DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
         body = f"""<p>iletişim formunun tarafımıza ulaşması için aşağıdaki bağlantıyı takip etmeniz
@@ -49,12 +58,22 @@ class GeneralReportView(CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+
         if self.request.method not in ("POST", "PUT"):
-            referrer_entry = self.request.GET.get("referrer_entry")
-            referrer_topic = self.request.GET.get("referrer_topic")
+            data = {}
+            referrer_entry, referrer_topic = (
+                self.request.GET.get("referrer_entry"),
+                self.request.GET.get("referrer_topic"),
+            )
+
             if referrer_entry and referrer_topic:
-                template = f'"{referrer_topic}" başlığındaki #{referrer_entry} numaralı entry hakkında'
-                kwargs.update({"data": {"subject": template}})
+                data["subject"] = f'"{referrer_topic}" başlığındaki #{referrer_entry} numaralı entry hakkında'
+
+            if self.request.user.is_authenticated:
+                data["reporter_email"] = self.request.user.email
+
+            kwargs.update({"data": data})
+
         return kwargs
 
 

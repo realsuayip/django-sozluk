@@ -12,7 +12,7 @@ class GeneralReport(models.Model):
     )
 
     reporter_email = models.EmailField(verbose_name="E-posta adresi")
-    category = models.CharField(max_length=3, choices=CATEGORIES, verbose_name="Kategori")
+    category = models.CharField(max_length=3, choices=CATEGORIES, verbose_name="Kategori", blank=False, default=CONTENT)
     subject = models.CharField(max_length=160, verbose_name="Konu")
     content = models.TextField(verbose_name="İçerik")
     is_open = models.BooleanField(

@@ -1,3 +1,17 @@
+[0.151.0-dev-pre](2020.06.28)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Logged in users are not required to enter e-mail
+and verify it to send a report. It will be done
+automatically using registered e-mail.
+(For the small change in the model, run makemigrations+migrate)
+2) Extended top to include most liked entries of last week.
+
+--Deletions--
+None
+
 [0.150.0-dev-pre](2020.06.25)(compatible)
 --Additions--
 None

@@ -5,20 +5,25 @@
 
 {% block content %}
     <h1 class="h4"><strong>iletişim</strong></h1>
-    <hr>
-
-    <ol>
+    <h2 class="h5 text-muted">dikkat edilecek hususlar</h2>
+    <ol class="px-4">
         <li>iletişime geçmeden önce lütfen <a href="/faq/">sıkça sorulan sorular</a> kısmını ziyaret edin.</li>
-        <li>lütfen istek ve şikayetinizi anlaşılır bir şekilde dile getirin</li>
+        <li>lütfen istek veya şikayetinizi anlaşılır bir şekilde dile getirin.</li>
         <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem anonim olarak yapılmaktadır.</li>
-        <li>onaylama ve geriş dönüş için geçerli bir mail adresi girin.</li>
+        <li>onaylama ve geriş dönüş için geçerli bir e-posta adresi belirtin. eğer halihazırda üye iseniz kayıt olurken kullandığınız e-posta adresiniz kullanılacak.</li>
+        <li>her bir entry, başlık veya kullanıcı için ayrı şikayet oluşturmak yerine toplu halde bir şikayet oluşturmanız, dert dinleyenlerin akıl sağlığı için iyi olacaktır.</li>
     </ol>
 
     <form method="post" class="reporting-form">
-        <div class="form-group">
-            <label for="reporter_email">{{ form.reporter_email.label }}</label>
-            {% render_field form.reporter_email class="form-control" id="reporter_email" %}
-        </div>
+        {% if not user.is_authenticated %}
+            <div class="form-group">
+                <label for="reporter_email">{{ form.reporter_email.label }}</label>
+                {% render_field form.reporter_email class="form-control" id="reporter_email" %}
+            </div>
+        {% else %}
+            <input type="hidden" name="reporter_email" value="{{ user.email }}">
+        {% endif %}
+
         <div class="form-group">
             <label for="report_category">{{ form.category.label }}</label>
             {% render_field form.category class="form-control" id="report_category" %}

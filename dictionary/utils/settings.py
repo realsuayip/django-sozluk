@@ -42,7 +42,7 @@ NON_DB_CATEGORIES_META = {
     "drafts": ("kenar", "kenara attığım entry'ler"),
     "followups": ("son", "benden sonra neler girilmiş?"),
     "novices": ("çaylaklar", "çömezlerin girdikleri"),
-    "top": ("dünün en beğenilen entry'leri", "debe"),
+    "top": ("en'ler", "en beğenilen entry'ler", ({"yesterday": "dün", "week": "geçen hafta"}, "yesterday")),
     "search": ("arama sonuçları", "hayvan ara"),
     "userstats": (
         "kullanıcı istatistiği",
@@ -72,7 +72,7 @@ Structure: dict{str:tuple(str, str, tuple(dict{str:str}, str))}
 NON_DB_CATEGORIES = NON_DB_CATEGORIES_META.keys()
 """Don't touch. For internal use only."""
 
-TABBED_CATEGORIES = ("acquaintances", "wishes", "userstats")
+TABBED_CATEGORIES = ("acquaintances", "wishes", "userstats", "top")
 """These categories have tabs. Make sure you configure metadata correctly."""
 
 USER_EXCLUSIVE_CATEGORIES = ("today", "drafts", "acquaintances", "wishes", "followups")
