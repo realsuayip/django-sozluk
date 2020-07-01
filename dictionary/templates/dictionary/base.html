@@ -21,7 +21,7 @@
     <script defer src="{% static 'dictionary/js/vendor/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
 
-    <title>{% block title %}{% endblock %} - {{ request.site.name }}</title>
+    <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
 </head>
 <body {% block bodyattr %}class="default topic-entry-view"{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
 {% include "dictionary/includes/icons.svg" %}

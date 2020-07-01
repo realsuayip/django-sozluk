@@ -15,4 +15,5 @@ urlpatterns_user = [
     path("messages/<slug:slug>/", Chat.as_view(), name="conversation"),
     path("messages/archive/<slug:slug>/", ChatArchive.as_view(), name="conversation-archive"),
     path("author/<slug:slug>/", UserProfile.as_view(), name="user-profile"),
+    path("author/<slug:slug>/<slug:tab>/", UserProfile.as_view(), name="user-profile-stats"),
 ]

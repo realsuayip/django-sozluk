@@ -42,8 +42,11 @@ class DeleteEntry(Action, Mutation):
 
     @staticmethod
     @owneraction
-    def mutate(_root, _info, entry):
+    def mutate(_root, info, entry):
         entry.delete()
+        # Deduct some karma upon entry deletion.
+        info.context.user.karma = F("karma") - 2
+        info.context.user.save()
         return DeleteEntry(feedback="silindi", redirect=reverse_lazy("topic", kwargs={"slug": entry.topic.slug}))
 
 

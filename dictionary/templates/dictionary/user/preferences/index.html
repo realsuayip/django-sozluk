@@ -34,8 +34,7 @@
             </div>
             <div class="col-xl-5 col-lg-6">
                 <div class="form-group">
-                    <label style="display: block;"
-                           for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>
+                    <label class="d-block" for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>
                     {% render_field form.birth_date class="datepicker form-control" id="pref_birth_date datepicker" %}
                 </div>
             </div>
@@ -43,7 +42,7 @@
 
         {% csrf_token %}
 
-        <button type="submit" class="btn btn-django mb-5 stretch">kaydet</button>
+        <button type="submit" class="btn btn-django mb-5 stretch">tercihleri kaydet</button>
     </form>
 {% endblock %}
 

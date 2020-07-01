@@ -144,6 +144,7 @@ class LeftFrame(PlainSerializer):
             "followups": "?a=recent",
             "today-in-history": f"?a=history&year={self.year}",
             "userstats_channels": f"?a=search&keywords=@{self.extra.get('user')}",
+            "acquaintances_entries": "?a=acquaintances&recent",
         }
 
         key = (

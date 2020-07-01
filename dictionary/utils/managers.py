@@ -118,10 +118,15 @@ class TopicQueryHandler:
 
     def acquaintances_entries(self, user):
         return (
-            Entry.objects.filter(date_created__gte=time_threshold(hours=24), author__in=user.following.all())
-            .order_by("-date_created")
-            .annotate(title=Concat(F("topic__title"), Value(" (@"), F("author__username"), Value(")")), slug=F("pk"))
-            .values(*self.values_entry)
+            Topic.objects.filter(entries__author__in=user.following.all(), date_created__gte=time_threshold(hours=120))
+            .annotate(
+                latest_entry=Subquery(
+                    Entry.objects.filter(topic=OuterRef("pk")).order_by("-date_created").values("date_created")[:1]
+                ),
+                count=Count("entries"),
+            )
+            .order_by("-latest_entry")
+            .values(*self.values)
         )
 
     def acquaintances_favorites(self, user):
@@ -145,7 +150,7 @@ class TopicQueryHandler:
         return (
             Topic.objects.exclude(wishes__author__in=user.blocked.all())
             .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
-            .filter(count__gte=1)
+            .filter(is_censored=False, count__gte=1)
             .order_by("-count", "-latest")
         ).values(*self.values)
 
@@ -582,7 +587,7 @@ class TopicListHandler:
     @property
     def slug_identifier(self):
         # todo: move this to LeftFrame and refactor it to be like parameters
-        if f"{self.slug}_{self.tab}" == "userstats_channels":
+        if f"{self.slug}_{self.tab}" in ("userstats_channels", "acquaintances_entries"):
             return "/topic/"
 
         if self.slug in ("acquaintances", "top", "userstats"):

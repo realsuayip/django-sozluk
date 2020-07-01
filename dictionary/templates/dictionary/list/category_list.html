@@ -2,7 +2,9 @@
 {% block title %}kanallar{% endblock %}
 {% block content %}
     <h1 class="h4"><strong>kanallar</strong></h1>
-    <hr>
+
+    <p>sözlükteki başlıkları konularına göre sınıflandıran kanalların tam listesi. <a href="{% url 'topic_list' "today" %}">bugün</a>'de sadece takip ettiğiniz kanalların başlıkları ve<a data-lf-slug="uncategorized" href="{% url 'topic_list' "uncategorized" %}"> sınıflandırılmamış başlıklar</a> listelenir.</p>
+
     <ul class="category-list-all m0 p-0">
         {% with logged_in=user.is_authenticated following=user.following_categories.all %}
             {% for category in categories %}

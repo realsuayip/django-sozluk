@@ -1100,7 +1100,7 @@ $(document).keydown(function (e) {
     }
 });
 
-$("form#signup input").on("input", function () {
+$("input.is-invalid").on("input", function () {
     $(this).removeClass("is-invalid");
 });
 

@@ -1,3 +1,23 @@
+[0.152.0-dev-pre](2020.07.01)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Some minor semantical changes to frontend and other
+minor optimizations.
+2) Use supertitle block to override the page title completely.
+3) Profile page statistic page urls now use
+path instead of query parameters.
+4) PasswordResetView now uses correct from e-mail.
+5) Fixed faulty acquaintances_entries, it now behaves
+correctly (just like userstats_channels).
+6) Add missing censorship check for wishes_all.
+7) Optimized notification behaviours in message sending forms.
+8) Deleting an entry will now deduct 2 karma points from user.
+
+--Deletions--
+1) Removed unused entry_full_url template tag.
+
 [0.151.0-dev-pre](2020.06.28)(compatible)
 --Additions--
 None

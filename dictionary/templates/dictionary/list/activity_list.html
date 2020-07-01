@@ -6,10 +6,10 @@
 {% block content %}
 
     <div class="left-frame-in">
-        <h1 class="h4 description"><strong>takip</strong></h1>
+        <h1 class="h4 description"><strong>olay</strong></h1>
 
         {% if topics.exists %}
-            <small>{{ topics|length }} başlık</small>
+            <small>{{ topics|length }} başlık takipte</small>
             <ul id="topic-list-standalone" class="list-group topic-list">
                 {% for topic in topics %}
                     <li class="list-group-item{% if not topic.is_read %} active{% endif %}">

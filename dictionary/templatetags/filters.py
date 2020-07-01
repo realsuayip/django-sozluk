@@ -68,7 +68,7 @@ def formatted(raw_entry):
         path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
         url = domain + path
 
-        return f'<a rel="nofollow noopener" target="_blank" title="{url}" href="{url}">{domain}{path_repr}</a>'
+        return f'<a rel="ugc nofollow noopener" target="_blank" title="{url}" href="{url}">{domain}{path_repr}</a>'
 
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
@@ -92,7 +92,7 @@ def formatted(raw_entry):
         # Users can't send " character, they send the escaped version: &quot;
         (
             fr"\[{RE_WEBURL} (?!\s)([a-zA-Z0-9 ğüşöçıİĞÜŞÖÇ]+)(?<!\s)\]",
-            r'<a rel="nofollow noopener" target="_blank" href="\1\2">\3</a>',
+            r'<a rel="ugc nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
         (fr"(?<!\"){RE_WEBURL}", linkify,),
     )

@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% block title %}kullanıcı: {{ profile.username }}{% endblock %}
+{% block title %}kullanıcı: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% endblock %}
 {% block bodyattr %}class="default topic-entry-view has-entries"{% endblock %}
 
 {% block content %}
@@ -89,29 +89,27 @@
 
     {% with object_count=page_obj.paginator.count %}
 
-        <section class="user-info-detail">
-            <div class="detail-nav" id="detail_nav">
+            <nav class="user-stats-nav">
                 <ul>
                     <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
-                    <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="?t=favorites">favorileri</a></li>
+                    <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">favorileri</a></li>
 
                     <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
                         <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">istatistikler</a>
 
                         <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
-                            <a class="dropdown-item" href="?t=popular">en çok favorilenenleri</a>
-                            <a class="dropdown-item" href="?t=recentlyvoted">son oylananları</a>
-                            <a class="dropdown-item" href="?t=liked">en beğenilenleri</a>
-                            <a class="dropdown-item" href="?t=weeklygoods">bu hafta dikkat çekenleri</a>
-                            <a class="dropdown-item" href="?t=beloved">el emeği göz nuru</a>
-                            <a class="dropdown-item" href="?t=authors">favori yazarları</a>
-                            <a class="dropdown-item" href="?t=wishes">ukteleri</a>
-                            <a class="dropdown-item" href="?t=channels">katkıda bulunduğu kanallar</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">en çok favorilenenleri</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">son oylananları</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">en beğenilenleri</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "weeklygoods" %}">bu hafta dikkat çekenleri</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "beloved" %}">el emeği göz nuru</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "authors" %}">favori yazarları</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "wishes" %}">ukteleri</a>
+                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "channels" %}">katkıda bulunduğu kanallar</a>
                         </div>
                     </li>
                 </ul>
-            </div>
-        </section>
+            </nav>
 
         <h2 class="h5 mt-3">
             <strong>

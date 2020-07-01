@@ -30,13 +30,12 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
         msg = Message.objects.compose(self.request.user, recipient, form.cleaned_data["body"])
 
         if not msg:
+            notifications.error(self.request, "mesajınızı gönderemedik")
             return self.form_invalid(form)
 
         return redirect(reverse("conversation", kwargs={"slug": self.kwargs.get("slug")}))
 
     def form_invalid(self, form):
-        notifications.error(self.request, "mesajınızı gönderemedik ne yazık ki")
-
         for err in form.non_field_errors() + form.errors.get("body", []):
             notifications.error(self.request, err)
 
@@ -162,10 +161,12 @@ class UserProfile(IntegratedFormMixin, ListView):
         ):
             raise Http404
 
-        # Set-up tab
-        tab_requested = request.GET.get("t", "latest")
-        self.tab = tab_requested if tab_requested in self.tabs.keys() else "latest"
+        tab = kwargs.get("tab")
 
+        if tab is not None and tab not in self.tabs.keys():
+            raise Http404
+
+        self.tab = tab or "latest"
         return super().dispatch(request)
 
     def get_novice_queue(self):

@@ -56,13 +56,17 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
         body = form.cleaned_data.get("body")
         sent = Message.objects.compose(self.request.user, recipient, body)
-        return redirect(reverse("conversation", kwargs={"slug": recipient.slug})) if sent else self.form_invalid(form)
+
+        if not sent:
+            notifications.error(self.request, "mesajınızı göndermedik")
+            return self.form_invalid(form)
+
+        return redirect(reverse("conversation", kwargs={"slug": recipient.slug}))
 
     def form_invalid(self, form):
         for error in form.non_field_errors() + form.errors.get("body", []):
             notifications.error(self.request, error)
 
-        notifications.error(self.request, "mesajınızı göndermedik")
         return super().form_invalid(form)
 
     def get_queryset(self):
@@ -292,7 +296,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def acquaintances(self):
         """Shows the entries of followed users."""
-        return self.topic.entries.filter(author__in=self.request.user.following.all())
+        filters = {"author__in": self.request.user.following.all()}
+
+        # 120 hours defined in TopicQueryHandler's acquaintances_entries
+        if self.request.GET.get("recent") is not None:
+            filters["date_created__gte"] = time_threshold(hours=120)
+
+        return self.topic.entries.filter(**filters)
 
     def following(self):
         """User is redirected here from (olay) link in header (view -> activity_list)"""

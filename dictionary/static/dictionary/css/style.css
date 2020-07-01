@@ -783,18 +783,18 @@ section.user-info ul.user-links li {
     margin-right: .8em;
 }
 
-section.user-info-detail .detail-nav {
+.user-stats-nav {
     border-top: 1px solid #888;
     border-bottom: 1px solid #888;
     padding: .4em 0;
 }
 
-section.user-info-detail .detail-nav ul {
+.user-stats-nav ul {
     padding: 0;
     margin: 0;
 }
 
-section.user-info-detail .detail-nav ul li {
+.user-stats-nav ul li {
     list-style-type: none;
     display: inline;
     margin-right: 1em;
@@ -803,11 +803,11 @@ section.user-info-detail .detail-nav ul li {
     font-weight: 600;
 }
 
-section.user-info-detail .detail-nav ul li.active {
+.user-stats-nav ul li.active {
     border-bottom: 3px solid #16784f;
 }
 
-section.user-info-detail .detail-nav ul li a {
+.user-stats-nav ul li a {
     padding: 0 .4em;
 }
 

@@ -8,10 +8,9 @@
     {% url 'user_preferences_email' as email %}
     {% url 'user_preferences_terminate' as terminate %}
 
-    <ul class="nav nav-tabs mb-2">
+    <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link {% if request.path == preferences %}active{% endif %}"
-               href="{{ preferences }}">tercihler</a>
+            <a class="nav-link {% if request.path == preferences %}active{% endif %}" href="{{ preferences }}">tercihler</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if request.path == password %}active{% endif %}" href="{{ password }}">parola</a>
@@ -21,8 +20,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link {% if request.path == terminate %}active{% endif %}"
-               href="{{ terminate }}">hesabı kapat</a>
+            <a class="nav-link {% if request.path == terminate %}active{% endif %}" href="{{ terminate }}">hesabı kapat</a>
         </li>
 
     </ul>
