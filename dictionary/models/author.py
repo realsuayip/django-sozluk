@@ -15,7 +15,7 @@ from django.utils.functional import cached_property
 from uuslug import uuslug
 
 from ..models.m2m import DownvotedEntries, UpvotedEntries
-from ..utils import parse_date_or_none, time_threshold
+from ..utils import get_generic_superuser, parse_date_or_none, time_threshold
 from ..utils.settings import (
     DAILY_VOTE_LIMIT,
     DAILY_VOTE_LIMIT_PER_USER,
@@ -229,6 +229,27 @@ class Author(AbstractUser):
                 return True, "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara baksanız?"
 
         return False, None
+
+    def can_send_message(self, recipient=None):
+        if self == recipient:
+            return False
+
+        if self == get_generic_superuser():
+            return True
+
+        if (
+            (recipient.is_frozen or recipient.is_private or (not recipient.is_active))
+            or (recipient.message_preference == Author.DISABLED)
+            or (self.is_novice and recipient.message_preference == Author.AUTHOR_ONLY)
+            or (
+                recipient.message_preference == Author.FOLLOWING_ONLY
+                and not recipient.following.filter(pk=self.pk).exists()
+            )
+            or (recipient.blocked.filter(pk=self.pk).exists() or self.blocked.filter(pk=recipient.pk).exists())
+        ):
+            return False
+
+        return True
 
     @property
     def generation(self):

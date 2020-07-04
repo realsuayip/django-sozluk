@@ -721,11 +721,11 @@ $("a#message_history_show").on("click", function () {
     $(this).toggle();
 });
 
-const userAction = function (type, recipient) {
+const userAction = function (type, recipient, loc) {
     gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
         const info = response.data.user[type];
-        if (info.redirect) {
-            window.location = info.redirect;
+        if (info.redirect || loc) {
+            window.location = info.redirect || loc;
         } else {
             notify(info.feedback);
         }
@@ -759,7 +759,11 @@ $("#block_user").on("click", function () {
 
 $(".unblock-user-trigger").on("click", function () {
     if (confirm("engel kalksın mı?")) {
-        userAction("block", $(this).attr("data-username"));
+        let loc;
+        if ($(this).hasClass("sync")) {
+            loc = location;
+        }
+        userAction("block", $(this).attr("data-username"), loc);
         $(this).hide();
     }
 });

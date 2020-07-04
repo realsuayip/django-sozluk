@@ -27,9 +27,9 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
     def form_valid(self, form):
         recipient = self.get_recipient()
-        msg = Message.objects.compose(self.request.user, recipient, form.cleaned_data["body"])
+        message = Message.objects.compose(self.request.user, recipient, form.cleaned_data["body"])
 
-        if not msg:
+        if not message:
             notifications.error(self.request, "mesajınızı gönderemedik")
             return self.form_invalid(form)
 
@@ -54,7 +54,9 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["recipient"] = self.get_recipient()
+        context["recipient"] = self.object.target
+        context["can_send_message"] = self.request.user.can_send_message(self.object.target)
+        context["is_blocked"] = self.request.user.blocked.filter(pk=self.object.target.pk).exists()
         return context
 
 

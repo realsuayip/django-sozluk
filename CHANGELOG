@@ -1,3 +1,15 @@
+[0.153.0-dev-pre](2020.07.04)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Moved can_send_message logic to user model.
+2) Optimized Chat view (queries and templating),
+also added unblock button.
+
+--Deletions--
+None
+
 [0.152.0-dev-pre](2020.07.01)(compatible)
 --Additions--
 None

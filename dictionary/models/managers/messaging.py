@@ -3,27 +3,11 @@ from contextlib import suppress
 from django.db import models
 from django.db.models import Max, Q
 
-from ...models import Author
-from ...utils import get_generic_superuser
-
 
 class MessageManager(models.Manager):
     def compose(self, sender, recipient, body):
-        # Can message be sent? | (For readibility purposes) -> pylint: disable=too-many-return-statements
-        if sender == recipient:
+        if not sender.can_send_message(recipient):
             return False
-
-        if sender != get_generic_superuser():
-            if recipient.is_frozen or recipient.is_private or (not recipient.is_active):
-                return False
-            if recipient.message_preference == Author.DISABLED:
-                return False
-            if sender in recipient.blocked.all() or recipient in sender.blocked.all():
-                return False
-            if sender.is_novice and recipient.message_preference == Author.AUTHOR_ONLY:
-                return False
-            if sender not in recipient.following.all() and recipient.message_preference == Author.FOLLOWING_ONLY:
-                return False
 
         message = self.create(sender=sender, recipient=recipient, body=body)
         return message

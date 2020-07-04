@@ -20,9 +20,9 @@
                     <span>mesajlara dön</span>
                 </a>
 
-                {% if recipient not in user.blocked.all %}
-                    <a role="button" tabindex="0" title="terbiyesiz" class="block-user-trigger" data-username="{{ recipient.username }}">bu herifi engelle</a>
-                {% endif %}
+
+                <a role="button" tabindex="0" class="{{ is_blocked|yesno:"unblock-user-trigger sync,block-user-trigger" }}" data-username="{{ recipient.username }}">{{ is_blocked|yesno:"engeli kaldır,bu herifi engelle" }}</a>
+
             </div>
 
             <div data-mode="present" data-id="{{ conversation.pk }}">
@@ -90,12 +90,8 @@
     {% endwith %}
 
 
-    {% if recipient.message_preference == "DS" or user == recipient or user in recipient.blocked.all or recipient in user.blocked.all %}
-        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
-    {% elif user.is_novice and recipient.message_preference == "AO" %}
-        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
-    {% elif user not in recipient.following.all and recipient.message_preference == "FO" %}
-        <p style="text-align: center;">bu kullanıcıya mesaj gönderemesiniz.</p>
+    {% if not can_send_message %}
+        <p class="text-center">bu kullanıcıya mesaj gönderemesiniz.</p>
     {% else %}
         <label for="message-body">
             <h2 class="h4">
