@@ -44,16 +44,18 @@ class TopicQueryHandler:
     """
 
     # Queryset filters
-    day_filter = {"entries__date_created__gte": time_threshold(hours=24)}
+    @property
+    def day_filter(self):
+        return {"entries__date_created__gte": time_threshold(hours=24)}
+
     base_filter = {"entries__is_draft": False, "entries__author__is_novice": False, "is_censored": False}
 
     # Queryset annotations
-    base_annotation = {"latest": Max("entries__date_created")}  # to order_by("-latest")
-    base_count = {"count": Count("entries", filter=Q(**day_filter))}
+    latest = {"latest": Max("entries__date_created")}  # to order_by("-latest")
 
     # Queryset values
     values = ("title", "slug", "count")
-    values_entry = values[:2]  # values with count excluded (used for entry listing)
+    values_entry = ("title", "slug")  # values with count excluded (used for entry listing)
 
     def today(self, user):
         return (
@@ -63,7 +65,7 @@ class TopicQueryHandler:
                 **self.day_filter,
             )
             .order_by("-latest")
-            .annotate(**self.base_annotation, **self.base_count)
+            .annotate(**self.latest, count=Count("entries", distinct=True))
             .exclude(created_by__in=user.blocked.all())
             .values(*self.values)
         )
@@ -85,10 +87,10 @@ class TopicQueryHandler:
 
         return (
             Topic.objects.filter(**self.base_filter)
-            .annotate(**self.base_count)
+            .annotate(count=Count("entries", filter=Q(**self.day_filter)))
             .filter(Q(count__gte=10) | Q(is_pinned=True))
             .exclude(category__slug__in=exclusions)
-            .annotate(q1=counter(3), q2=counter(6), q3=counter(12), **self.base_annotation)
+            .annotate(q1=counter(3), q2=counter(6), q3=counter(12), **self.latest)
             .order_by("-is_pinned", "-q1", "-q2", "-q3", "-count", "-latest")
             .values(*self.values)
         )
@@ -245,11 +247,12 @@ class TopicQueryHandler:
             return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
     def novices(self):
-        caylak_filter = {"entries__author__is_novice": True, "entries__is_draft": False, "is_censored": False}
         return (
-            Topic.objects.filter(**self.day_filter, **caylak_filter)
+            Topic.objects.filter(
+                **self.day_filter, entries__author__is_novice=True, entries__is_draft=False, is_censored=False
+            )
             .order_by("-latest")
-            .annotate(**self.base_annotation, **self.base_count)
+            .annotate(**self.latest, count=Count("entries"))
             .values(*self.values)
         )
 
@@ -312,7 +315,7 @@ class TopicQueryHandler:
         return (
             Topic.objects.filter(**self.base_filter, **self.day_filter, category=category)
             .order_by("-latest")
-            .annotate(**self.base_annotation, **self.base_count)
+            .annotate(**self.latest, count=Count("entries"))
             .values(*self.values)
         )
 
@@ -320,7 +323,7 @@ class TopicQueryHandler:
         return (
             Topic.objects.filter(**self.base_filter, **self.day_filter, category=None)
             .order_by("-latest")
-            .annotate(**self.base_annotation, **self.base_count)
+            .annotate(**self.latest, count=Count("entries"))
             .values(*self.values)
         )
 

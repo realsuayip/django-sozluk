@@ -375,6 +375,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         entries = context.get("object_list")
         queryset_size = context.get("paginator").count
 
+        if self.request.user.is_authenticated:
+            context["drafts"] = Entry.objects_all.filter(is_draft=True, topic=self.topic, author=self.request.user)
+
         if queryset_size > 0:
             # Find subsequent and previous entries
             # Get current page's first and last entry, and find the number of entries before and after by date.

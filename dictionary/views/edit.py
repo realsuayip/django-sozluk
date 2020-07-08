@@ -1,7 +1,6 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -40,16 +39,21 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         return reverse("entry-permalink", kwargs={"entry_id": self.object.pk})
 
     def form_valid(self, form):
-        entry_is_draft_initial = self.object.is_draft  # returns True is the object is draft
+        is_draft_initial = Entry.objects_all.get(pk=self.kwargs["pk"]).is_draft
         entry = form.save(commit=False)
 
-        if entry_is_draft_initial:
-            # Updating never-published entry (draft)
-            if not entry.is_draft:  # Entry is being published by user
-                # Suspended users can't publish their drafts
+        if is_draft_initial:
+            # Updating never-published (draft), entry = submitted form data
+            if not entry.is_draft:
+                # Entry is being published by user (suspended users can't publish their drafts)
                 if self.request.user.is_suspended:
                     entry.is_draft = True
-                entry.date_created = timezone.now()
+                    entry.date_edited = timezone.now()
+                else:
+                    entry.date_created = timezone.now()
+                    entry.date_edited = None
+            else:
+                entry.date_edited = timezone.now()
         else:
             # Updating published entry
             entry.is_draft = False
@@ -64,9 +68,4 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         return super().form_invalid(form)
 
     def get_object(self, queryset=None):
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        obj = get_object_or_404(Entry.objects_all, pk=pk)
-
-        if obj.author != self.request.user:
-            raise Http404
-        return obj
+        return get_object_or_404(Entry.objects_all, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)

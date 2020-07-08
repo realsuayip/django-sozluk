@@ -1,3 +1,19 @@
+[0.154.0-dev-pre](2020.07.08)(compatible)
+--Additions--
+1) Added indicator for drafts in TopicEntryList. Creating
+and editing times of draft entries are also tracked.
+
+-- Changes --
+1) TopicQueryHandler breaking bugs: (Thanks to Aras Diler):
+    a) Entry counts for today are now correct.
+    b) Fixed categories with 24-hour filter, they were suffering
+    from the same programming error described in 0.84.0-dev-pre.
+2) Fixed a bug in entry updating view where updating drafts caused
+them to have faulty timestamps when published.
+
+--Deletions--
+None
+
 [0.153.0-dev-pre](2020.07.04)(compatible)
 --Additions--
 None
