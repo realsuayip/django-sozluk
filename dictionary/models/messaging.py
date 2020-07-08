@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from uuslug import slugify
+
 from ..utils import turkish_lower
 from ..utils.serializers import ArchiveSerializer
 from ..utils.validators import validate_user_text
@@ -59,7 +61,7 @@ class ConversationArchive(models.Model):
         super().save(*args, **kwargs)
 
         if created:
-            self.slug = f"{self.target}-{self.pk}"
+            self.slug = slugify(self.target)
             self.save()
 
     def get_absolute_url(self):
