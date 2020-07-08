@@ -6,8 +6,8 @@
     <h1 class="h4">
         <strong>mesajlar</strong>
         <small>
-            {% if unread_messages_count %}
-                <span class="ml-2">({{ unread_messages_count }} okunmamış)</span>
+            {% if user.unread_message_count > 0 %}
+                <span class="ml-2">({{ user.unread_message_count }} okunmamış)</span>
             {% endif %}
             {% block titlemeta %}{% endblock %}
         </small>

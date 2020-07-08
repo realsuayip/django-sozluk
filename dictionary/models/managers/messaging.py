@@ -1,7 +1,7 @@
 from contextlib import suppress
 
 from django.db import models
-from django.db.models import Max, Q
+from django.db.models import Count, Max, Q
 
 
 class MessageManager(models.Manager):
@@ -25,7 +25,10 @@ class ConversationManager(models.Manager):
         else:
             base = self.filter(holder=user)
 
-        return base.annotate(message_sent_last=Max("messages__sent_at")).order_by("-message_sent_last")
+        return base.annotate(
+            message_sent_last=Max("messages__sent_at"),
+            unread_count=Count("messages", filter=Q(messages__recipient=user, messages__read_at__isnull=True)),
+        ).order_by("-message_sent_last")
 
     def with_user(self, sender, recipient):
         with suppress(self.model.DoesNotExist):

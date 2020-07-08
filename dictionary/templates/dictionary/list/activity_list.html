@@ -9,11 +9,11 @@
         <h1 class="h4 description"><strong>olay</strong></h1>
 
         {% if topics.exists %}
-            <small>{{ topics|length }} başlık takipte</small>
+            <small class="mb-2 d-inline-block">{{ topics|length }} başlık takipte</small>
             <ul id="topic-list-standalone" class="list-group topic-list">
                 {% for topic in topics %}
                     <li class="list-group-item{% if not topic.is_read %} active{% endif %}">
-                        <a href="{{ topic.get_absolute_url }}?a=following&d={{ topic.last_read_at|date:"U" }}">{{ topic.title }}</a>
+                        <a href="{{ topic.get_absolute_url }}?a=following&d={{ topic.last_read_at|date:"U" }}">{{ topic.title }}{% if not topic.is_read %}<small class="total_entries">{{ topic.count }}</small>{% endif %}</a>
                     </li>
                 {% endfor %}
             </ul>

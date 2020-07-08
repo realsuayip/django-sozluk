@@ -26,3 +26,8 @@ def validate_category_name(value):
                 f"</strong><br>{f'<br>'.join(NON_DB_CATEGORIES)}"
             )
         )
+
+
+def validate_username_partial(value):
+    if slugify(value) == "archive":
+        raise ValidationError("bu nicki patron rezerve etmiş")

@@ -38,8 +38,8 @@ class Message(models.Model):
 
 class ConversationArchive(models.Model):
     holder = models.ForeignKey("Author", on_delete=models.CASCADE)
-    target = models.CharField(max_length=35, unique=True)
-    slug = models.SlugField(unique=True)  # slug of target user
+    target = models.CharField(max_length=35)
+    slug = models.SlugField()
 
     messages = models.TextField()  # json text
     date_created = models.DateTimeField(auto_now=True)
@@ -48,7 +48,19 @@ class ConversationArchive(models.Model):
         return f"{self.__class__.__name__} holder -> {self.holder.username} target -> {self.target}"
 
     class Meta:
+        constraints = [
+            UniqueConstraint(fields=["holder", "slug"], name="unique_conversationarchive_a"),
+            UniqueConstraint(fields=["holder", "target"], name="unique_conversationarchive_b"),
+        ]
         ordering = ("-date_created",)
+
+    def save(self, *args, **kwargs):
+        created = self.pk is None
+        super().save(*args, **kwargs)
+
+        if created:
+            self.slug = f"{self.target}-{self.pk}"
+            self.save()
 
     def get_absolute_url(self):
         return reverse("conversation-archive", kwargs={"slug": self.slug})
@@ -87,12 +99,17 @@ class Conversation(models.Model):
             _messages, fields=("body", "sender__username", "recipient__username", "sent_at"),
         )
 
-        return (
-            ConversationArchive.objects.update_or_create(
-                holder=self.holder, target=self.target.username, slug=self.target.slug, defaults={"messages": messages}
-            ),
-            self.delete(),
-        )
+        try:
+            # Extend existing archive
+            existant = ConversationArchive.objects.get(holder=self.holder, target=self.target.username)
+            previous_messages = existant.to_json["messages"]
+            previous_messages.extend(json.loads(messages))
+            existant.messages = json.dumps(previous_messages)
+            existant.save()
+        except ConversationArchive.DoesNotExist:
+            ConversationArchive.objects.create(holder=self.holder, target=self.target.username, messages=messages)
+
+        return self.delete()
 
     @property
     def last_message(self):

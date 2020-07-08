@@ -303,6 +303,11 @@ ul.topic-list li small.total_entries {
     text-align: center;
 }
 
+ul.topic-list li.active small.total_entries {
+    color: white;
+    font-weight: 600;
+}
+
 header.entry_header h1 {
     font-size: 1.5em;
     font-weight: 700;
@@ -571,6 +576,14 @@ ul.user-navigation li.new {
 ul.user-navigation li.new a {
     color: #fff;
     font-weight: 600;
+}
+
+ul.user-navigation li .user-badge {
+    z-index: 10;
+    position: relative;
+    left: 0;
+    top: 4px;
+    margin-right: -14px;
 }
 
 ul.user-navigation li:not(:nth-child(n+4)) {
@@ -1509,14 +1522,20 @@ ul.exlusion-choices > li > a.active {
 
     footer.entry-footer > .feedback {
         display: grid;
-        grid-template-columns: repeat(2, 50px) auto;
+        grid-template-columns: 75px 50px auto;
         height: 21px;
+        grid-gap: 25px;
     }
 
     footer.entry-footer > .feedback > .social {
         grid-template-columns: repeat(2, 25px);
         justify-content: end;
         order: 3;
+        grid-gap: 25px;
+    }
+
+    footer.entry-footer > .feedback > .votes {
+        grid-gap: 25px;
     }
 
     section.user_entries ul li.entry-full.owner footer.entry-footer > .feedback,
@@ -1534,7 +1553,7 @@ ul.exlusion-choices > li > a.active {
     }
 
     ul.user-navigation li:not(:nth-child(n+3)) {
-        margin-right: 0;
+        margin-right: 3px;
     }
 }
 

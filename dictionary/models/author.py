@@ -7,7 +7,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import BooleanField, Case, F, Max, Q, When
+from django.db.models import BooleanField, Case, Count, F, Sum, Q, When
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -29,6 +29,7 @@ from ..utils.settings import (
     TOTAL_VOTE_LIMIT_PER_USER,
     UNDERWHELMING_KARMA_EXPRESSION,
 )
+from ..utils.validators import validate_username_partial
 from .category import Category
 from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible
 
@@ -84,7 +85,7 @@ class Author(AbstractUser):
         unique=True,
         help_text="sözlükte sizi temsil edecek rumuz. 3-35 karakter uzunluğunda,"
         " boşluk içerebilir özel ve türkçe karakter içeremez.",
-        validators=[AuthorNickValidator(), MinLengthValidator(3, "bu nick çok minnoş")],
+        validators=[validate_username_partial, AuthorNickValidator(), MinLengthValidator(3, "bu nick çok minnoş")],
         error_messages={"unique": "bu nick kapılmış"},
     )
 
@@ -177,19 +178,22 @@ class Author(AbstractUser):
     def get_following_topics_with_receipt(self):
         """Get user's following topics with read receipts."""
         return self.following_topics.annotate(
-            latest=Max(
-                "entries__date_created",
-                filter=~(
-                    Q(entries__author=self)
-                    | Q(entries__author__in=self.blocked.all())
-                    | Q(entries__author__is_novice=True)
-                    | Q(entries__is_draft=True)
-                ),
+            count=(
+                Count(
+                    "entries",
+                    filter=(
+                        Q(entries__date_created__gte=F("topicfollowing__read_at"))
+                        & ~(
+                            Q(entries__author=self)
+                            | Q(entries__author__in=self.blocked.all())
+                            | Q(entries__author__is_novice=True)
+                            | Q(entries__is_draft=True)
+                        )
+                    ),
+                )
             ),
             last_read_at=F("topicfollowing__read_at"),
-            is_read=Case(
-                When(Q(latest__gt=F("topicfollowing__read_at")), then=False), default=True, output_field=BooleanField()
-            ),
+            is_read=Case(When(Q(count__gt=0), then=False), default=True, output_field=BooleanField()),
         )
 
     def get_entry_count_by_threshold(self, **timedelta_kwargs):
@@ -330,12 +334,14 @@ class Author(AbstractUser):
         return self.suspended_until is not None and self.suspended_until > timezone.now()
 
     @cached_property
-    def has_unread_messages(self):
-        return self.conversations.filter(messages__recipient=self, messages__read_at__isnull=True).exists()
+    def unread_message_count(self):
+        return self.conversations.aggregate(
+            count=Count("messages", filter=Q(messages__recipient=self, messages__read_at__isnull=True))
+        )["count"]
 
     @cached_property
-    def has_unread_topics(self):
-        return self.get_following_topics_with_receipt().filter(is_read=False).exists()
+    def unread_topic_count(self):
+        return self.get_following_topics_with_receipt().aggregate(Sum("count"))["count__sum"]
 
 
 class Memento(models.Model):

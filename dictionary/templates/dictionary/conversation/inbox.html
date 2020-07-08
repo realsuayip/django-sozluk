@@ -17,7 +17,7 @@
                     <li class="chat{% if lastmsg.recipient == user and not lastmsg.read_at %} unread{% endif %}" data-id="{{ chat.pk }}">
                         <a href="{{ chat.get_absolute_url }}">
                             <header class="d-flex justify-content-between">
-                                <h2 class="h5">{{ chat.target.username }}</h2>
+                                <h2 class="h5">{{ chat.target.username }} {% if chat.unread_count > 0 %}({{ chat.unread_count }}){% endif %}</h2>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="chat-selector custom-control-input" id="_cvs{{ chat.pk }}">
                                     <label class="text-hide custom-control-label" for="_cvs{{ chat.pk }}">seç</label>

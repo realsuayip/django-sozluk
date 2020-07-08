@@ -1,3 +1,28 @@
+[0.155.0-dev-pre](2020.07.09)(incompatible)
+--Additions--
+1) In chat list, it is now possible to see unread message count
+for each individual chat.
+2) In activity list it is now possible to see unread entry count
+for each individual topic.
+3) In header user menu, it is now possible to see the total number
+of unread messages/topics.
+4) Usernames now have a 3rd validator which looks for some special cases.
+
+-- Changes --
+1) Fix archiving feature:
+    a) Users couldn't archive a chat if the target user
+    was already archived by another user. Fixed that.
+    b) Users could access other user's archives. Fixed that.
+    c) Archiving now extends existing archive instead of
+    truncating all the previous content.
+    **incompatible** run makemigrations+migrate for dictionary,
+    also delete all former archive objects if possible,
+    to preserve data integrity.
+2) Adjusted spacing of entry buttons in mobile.
+
+--Deletions--
+None
+
 [0.154.0-dev-pre](2020.07.08)(compatible)
 --Additions--
 1) Added indicator for drafts in TopicEntryList. Creating

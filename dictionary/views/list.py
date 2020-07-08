@@ -73,13 +73,6 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
         query_term = turkish_lower(self.request.GET.get("search_term", "")).strip() or None
         return Conversation.objects.list_for_user(self.request.user, query_term)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data()
-        context["unread_messages_count"] = self.request.user.conversations.filter(
-            messages__recipient=self.request.user, messages__read_at__isnull=True
-        ).count()
-        return context
-
 
 class ConversationArchiveList(ConversationList):
     model = ConversationArchive

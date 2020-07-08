@@ -61,8 +61,10 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
 
 class ChatArchive(LoginRequiredMixin, DetailView):
-    model = ConversationArchive
     template_name = "dictionary/conversation/conversation_archive.html"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(ConversationArchive, holder=self.request.user, slug=self.kwargs["slug"])
 
 
 class UserProfile(IntegratedFormMixin, ListView):

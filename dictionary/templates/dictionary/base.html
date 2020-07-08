@@ -88,20 +88,28 @@
                     </li>
 
 
-                    <li {% if user.has_unread_messages %}class="new"{% endif %}>
+                    <li {% if user.unread_message_count > 0 %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="mesajlar">
+                            {% if user.unread_message_count > 0 %}
+                                <div class="badge badge-light user-badge">{{ user.unread_message_count }}</div>
+                            {% endif %}
                             <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#chat"></use>
                             </svg>
-                            <span class="ml-2">mesaj</span></a>
+                            <span class="ml-2">mesaj</span>
+                        </a>
                     </li>
 
-                    <li {% if user.has_unread_topics %}class="new"{% endif %}>
+                    <li {% if user.unread_topic_count > 0 %}class="new"{% endif %}>
                         <a class="nav-quicklink" aria-label="takip ettiğim başlıklar" href="{% url 'activity' %}">
-                        <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                            <use href="#bell"></use>
-                        </svg>
-                        <span>olay</span></a>
+                            {% if user.unread_topic_count > 0 %}
+                                <div class="badge badge-light user-badge">{{ user.unread_topic_count }}</div>
+                            {% endif %}
+                            <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#bell"></use>
+                            </svg>
+                            <span>olay</span>
+                        </a>
                     </li>
 
 
