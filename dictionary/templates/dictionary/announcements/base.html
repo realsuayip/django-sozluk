@@ -1,0 +1,40 @@
+{% extends "dictionary/base.html" %}
+
+{% block title %}duyurular{% endblock %}
+
+{% load humanize %}
+{% load filters %}
+
+{% block content %}
+    <h1 class="h4">
+        <strong><a href="{% url 'announcements-index' %}">sözlük duyuruları</a></strong>
+        {% block crumb %}{% endblock %}
+    </h1>
+
+    {% block innercontent %}
+        {% if latest.exists %}
+            {% for post in latest %}
+                {% include "dictionary/announcements/post.html" %}
+            {% endfor %}
+            {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" %}
+        {% else %}
+            <div class="border rounded-sm p-3 bg-light mb-3">henüz bir duyuru yapılmamış.</div>
+        {% endif %}
+        <br>
+    {% endblock %}
+{% endblock %}
+
+{% block rightframe %}
+    {% if date_list.exists %}
+        <nav class="topic-categories-list">
+            <h2>duyuru geçmişi</h2>
+            <ul class="list-unstyled">
+                {% for date in date_list %}
+                    <li>
+                        <a href="{% url 'announcements-month' year=date.year month=date.month %}">{{ date|date:"F Y" }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

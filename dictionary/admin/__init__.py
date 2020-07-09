@@ -15,6 +15,7 @@ from ..models import (
     TopicFollowing,
     UserVerification,
 )
+from .announcements import AnnouncementAdmin
 from .author import AuthorAdmin
 from .category import CategoryAdmin
 from .entry import EntryAdmin

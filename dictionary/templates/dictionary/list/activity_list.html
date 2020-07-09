@@ -1,24 +1,47 @@
 {% extends "dictionary/base.html" %}
 {% block bodyattr %}class="topic-list-view"{% endblock %}
-{% block title %}takip{% endblock %}
+{% block title %}olan biten{% endblock %}
+
 {% load filters %}
 {% load functions %}
+
 {% block content %}
 
     <div class="left-frame-in">
-        <h1 class="h4 description"><strong>olay</strong></h1>
+        <h1 class="h4 description"><strong>olan biten</strong></h1>
+
+        <ul class="list-group topic-list">
+            <li class="list-group-item{% if user.unread_topic_count.announcements > 0 %} active{% endif %}">
+                <a href="{% url 'announcements-index' %}">
+                    <div class="d-flex align-items-center">
+                        <svg class="mr-2" fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#pin"></use>
+                        </svg>
+                        <span>sözlük duyuruları</span>
+                    </div>
+                    {% if user.unread_topic_count.announcements > 0 %}
+                        <small class="total_entries">{{ user.unread_topic_count.announcements }}</small>
+                    {% endif %}
+                </a>
+            </li>
+        </ul>
+
+        <hr class="mt-0">
 
         {% if topics.exists %}
             <small class="mb-2 d-inline-block">{{ topics|length }} başlık takipte</small>
             <ul id="topic-list-standalone" class="list-group topic-list">
                 {% for topic in topics %}
                     <li class="list-group-item{% if not topic.is_read %} active{% endif %}">
-                        <a href="{{ topic.get_absolute_url }}?a=following&d={{ topic.last_read_at|date:"U" }}">{{ topic.title }}{% if not topic.is_read %}<small class="total_entries">{{ topic.count }}</small>{% endif %}</a>
+                        <a href="{{ topic.get_absolute_url }}?a=following&d={{ topic.last_read_at|date:"U" }}">
+                            <span>{{ topic.title }}</span>
+                            {% if not topic.is_read %}
+                                <small class="total_entries">{{ topic.count }}</small>
+                            {% endif %}
+                        </a>
                     </li>
                 {% endfor %}
             </ul>
-        {% else %}
-            <small>yok ki</small>
         {% endif %}
 
         {% include "dictionary/includes/paginaton.html" with paginator=page_obj stretch="yes" hr="yes" %}

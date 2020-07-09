@@ -2,12 +2,14 @@ import math
 from contextlib import suppress
 from decimal import Decimal
 
+from django.apps import apps
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import BooleanField, Case, Count, F, Sum, Q, When
+from django.db.models import BooleanField, Case, Count, F, Q, Sum, When
+from django.db.models.functions import Coalesce
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -144,6 +146,8 @@ class Author(AbstractUser):
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)
     badges = models.ManyToManyField("Badge", blank=True)
+
+    announcement_read = models.DateTimeField(auto_now_add=True)
 
     # https://docs.djangoproject.com/en/3.0/topics/db/managers/#django.db.models.Model._default_manager
     objects = UserManager()
@@ -341,7 +345,14 @@ class Author(AbstractUser):
 
     @cached_property
     def unread_topic_count(self):
-        return self.get_following_topics_with_receipt().aggregate(Sum("count"))["count__sum"]
+        """Find counts for unread topics and announcements. Return {sum, unread_announcements}"""
+        unread_announcements = (
+            apps.get_model("dictionary.Announcement")
+            .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=self.announcement_read)
+            .count()
+        )
+        unread_topics = self.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
+        return {"sum": unread_announcements + unread_topics, "announcements": unread_announcements}
 
 
 class Memento(models.Model):
@@ -412,7 +423,7 @@ class Badge(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         verbose_name = "rozet"

@@ -1,0 +1,20 @@
+{% load filters %}
+
+<article class="post">
+    {% if not notitle %}
+        <header>
+            <h2 class="h5 mb-1"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        </header>
+    {% endif %}
+
+    <p class="m-0">{% if post.html_only %}{{ post.content|safe|linebreaksbr }}{% else %}{{ post.content|formatted|linebreaksbr }}{% endif %}</p>
+
+    <footer class="d-flex justify-content-between mt-2 my-3">
+        {% if post.discussion %}
+            <a href="{{ post.discussion.get_absolute_url }}">{{ post.discussion.title }} ({{ post.discussion.entry_count }})</a>
+        {% endif %}
+        <time datetime="{{ post.date_created|date:"c" }}" class="ml-auto">
+            <a href="{{ post.get_absolute_url }}">{{ post.date_created|entrydate:post.date_edited }}</a>
+        </time>
+    </footer>
+</article>

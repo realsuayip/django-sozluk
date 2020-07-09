@@ -1,3 +1,4 @@
+from .announcements import Announcement
 from .author import AccountTerminationQueue, Author, Badge, Memento, UserVerification
 from .category import Category
 from .entry import Entry

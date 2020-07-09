@@ -149,6 +149,10 @@ class Topic(models.Model):
         return True
 
     @property
+    def entry_count(self):
+        return self.entries(manager="objects_published").count()
+
+    @property
     def has_entries(self):
         return self.entries.exclude(is_draft=True).exists()
 

@@ -100,10 +100,10 @@
                         </a>
                     </li>
 
-                    <li {% if user.unread_topic_count > 0 %}class="new"{% endif %}>
+                    <li {% if user.unread_topic_count.sum > 0 %}class="new"{% endif %}>
                         <a class="nav-quicklink" aria-label="takip ettiğim başlıklar" href="{% url 'activity' %}">
-                            {% if user.unread_topic_count > 0 %}
-                                <div class="badge badge-light user-badge">{{ user.unread_topic_count }}</div>
+                            {% if user.unread_topic_count.sum > 0 %}
+                                <div class="badge badge-light user-badge">{{ user.unread_topic_count.sum }}</div>
                             {% endif %}
                             <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#bell"></use>
@@ -260,6 +260,7 @@
                 <h2 class="h5">{{ request.site.name }}</h2>
                 <ul>
                     <li><a href="{% url 'general-report' %}">iletişim formu</a></li>
+                    <li><a href="{% url 'announcements-index' %}">sözlük duyuruları</a></li>
                     {% for page in flatpages|order_by:"-metaflatpage__weight url" %}
                         <li><a href="{{ page.url }}">{{ page.title }}</a></li>
                     {% endfor %}

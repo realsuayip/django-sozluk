@@ -1,3 +1,19 @@
+[0.156.0-dev-pre](2020.07.10)(incompatible)
+--Additions--
+1) Add in-site announcement feature. **incompatible**
+run makemigrations+migrate for dictionary.
+2) Add entry_count property to Topic, which gives the
+total number of published entries for the topic.
+
+-- Changes --
+1) When users had no following topics, unread_topic_count method
+would crash the site, fixed that.
+2) Updated Django to 2.2.14 from 2.2.13
+3) Updated graphene-django to 2.11.1 from 2.10.1
+
+--Deletions--
+None
+
 [0.155.0-dev-pre](2020.07.09)(incompatible)
 --Additions--
 1) In chat list, it is now possible to see unread message count

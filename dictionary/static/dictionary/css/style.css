@@ -668,7 +668,7 @@ section.user-comments .entry-editor-footer {
     align-items: center;
 }
 
-section.topic-categories-list {
+.topic-categories-list {
     background: #ddd;
     padding: 1em;
     -webkit-border-radius: 4px;
@@ -676,7 +676,7 @@ section.topic-categories-list {
     border-radius: 4px;
 }
 
-section.topic-categories-list ul {
+.topic-categories-list ul {
     margin: 0;
     padding: 0;
 }
@@ -690,7 +690,7 @@ section.topic-categories-list ul li:not(:last-child) a {
     margin-right: 1em;
 }
 
-section.topic-categories-list h2 {
+.topic-categories-list h2 {
     font-size: 1.3em;
 }
 
@@ -759,7 +759,8 @@ a.more-entries-button:hover {
     display: none;
 }
 
-section.user-info h1 {
+section.user-info h1,
+article.post h2 {
     font-weight: 700;
 }
 
@@ -1358,7 +1359,7 @@ ul.exlusion-choices > li > a.active {
     }
 
     footer.body-footer > ul {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 

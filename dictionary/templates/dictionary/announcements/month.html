@@ -1,0 +1,8 @@
+{% extends "dictionary/announcements/base.html" %}
+
+{% block title %}{{ month|date:"F Y"|lower }} duyuruları{% endblock %}
+
+{% block crumb %}
+    <span class="mx-1">&raquo;</span>
+    <span style="font-size: 90%">{{ month|date:"F Y"|lower }} duyuruları</span>
+{% endblock %}
