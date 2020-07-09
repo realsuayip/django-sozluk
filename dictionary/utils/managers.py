@@ -73,7 +73,9 @@ class TopicQueryHandler:
     def today_in_history(self, year):
         now = timezone.now()
         diff = now.year - year
-        delta = now - relativedelta(years=diff)
+        # If we don't use localtime, date() may shift a day because of the hour difference.
+        delta = timezone.localtime(now - relativedelta(years=diff))
+
         return (
             Topic.objects.filter(**self.base_filter, entries__date_created__date=delta.date())
             .annotate(count=Count("entries"))
@@ -97,7 +99,7 @@ class TopicQueryHandler:
 
     def top(self, tab):
         filters = {
-            "yesterday": {"date_created__date": time_threshold(hours=24).date()},
+            "yesterday": {"date_created__date": timezone.localtime(time_threshold(hours=24)).date()},
             "week": {"date_created__lte": time_threshold(days=7), "date_created__gte": time_threshold(days=14)},
         }
         return (

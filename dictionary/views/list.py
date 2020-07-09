@@ -257,7 +257,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if year.isdigit() and int(year) in YEAR_RANGE:
             now = timezone.now()
             diff = now.year - int(year)
-            delta = now - relativedelta(years=diff)
+            delta = timezone.localtime(now - relativedelta(years=diff))
             return self.topic.entries.filter(date_created__date=delta.date())
 
         return None
