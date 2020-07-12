@@ -90,7 +90,7 @@ class TopicListQuery(ObjectType):
         )
 
         if kwargs.get("refresh"):
-            manager.delete_cache()
+            manager.delete_cache(delimiter=True)
 
         frame = LeftFrame(manager, kwargs.get("page"))
         page = frame.page  # May raise PermissionDenied or Http404

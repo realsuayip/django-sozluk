@@ -121,6 +121,12 @@ DEFAULT_CACHE_TIMEOUT = 90
 EXCLUSIVE_TIMEOUTS = {"top": 86400, "today-in-history": 86400, "today": 300, "popular": 30}
 """ADVANCED: Set exclusive timeouts (seconds) for categories if you don't want them to use the default."""
 
+REFRESH_TIMEOUT = 0.1337  # Intentionally set low because of development purposes! 30 should be fine for production.
+"""
+ADVANCED: For 'today', set the timeout for refresh interval. (This also sets
+the delimiter for manual cache deleting when delimiter is set to True.)
+Can be type of int or float.
+"""
 
 UNCACHED_CATEGORIES = ("drafts", "wishes_owned", "followups")
 """

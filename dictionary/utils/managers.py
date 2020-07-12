@@ -28,6 +28,7 @@ from ..utils.settings import (
     NON_DB_CATEGORIES,
     NON_DB_CATEGORIES_META,
     PARAMETRIC_CATEGORIES,
+    REFRESH_TIMEOUT,
     TABBED_CATEGORIES,
     TOPICS_PER_PAGE_DEFAULT,
     UNCACHED_CATEGORIES,
@@ -567,13 +568,21 @@ class TopicListHandler:
             else:
                 self.cache_exists = True
 
-    def delete_cache(self, flush=False):
+    def delete_cache(self, flush=False, delimiter=False):
         """
         Deletes cached data and initiates new data using _get_data.
         Call this before serialized to get new results.
         :param flush: Set this to true if you don't need new data.
+        :param delimiter: Set this to True to limit the time to delete cache.
         """
+
         if self.cache_exists:
+            if (
+                delimiter
+                and (timezone.now() - cache.get(self.cache_key).get("set_at")).total_seconds() < REFRESH_TIMEOUT
+            ):
+                return False
+
             cache.delete(self.cache_key)
             self.cache_exists = False
 
@@ -617,6 +626,11 @@ class TopicListHandler:
     def refresh_count(self):  # (yenile count)
         if self.cache_exists and self.slug == "today":
             set_at = cache.get(self.cache_key).get("set_at")
+
+            if (timezone.now() - set_at).total_seconds() < REFRESH_TIMEOUT:
+                # Too soon, check out delete_cache delimiter.
+                return 0
+
             return Entry.objects.filter(date_created__gte=set_at).count()
 
         return 0

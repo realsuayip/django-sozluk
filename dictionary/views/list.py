@@ -130,7 +130,7 @@ class TopicList(TemplateView):
         """Resets today's cache (refresh button mobile click event)"""
         if self.kwargs.get("slug") == "today":
             manager = TopicListManager("today", self.request.user)
-            manager.delete_cache(flush=True)
+            manager.delete_cache(flush=True, delimiter=True)
             return redirect(self.request.path)
         return HttpResponseBadRequest()
 
