@@ -721,19 +721,19 @@ $("a#message_history_show").on("click", function () {
     $(this).toggle();
 });
 
-const userAction = function (type, recipient, loc) {
+const userAction = function (type, recipient, loc = null, re = true) {
     gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
         const info = response.data.user[type];
-        if (info.redirect || loc) {
-            window.location = info.redirect || loc;
+        if (re && (loc || info.redirect)) {
+            window.location = loc || info.redirect;
         } else {
             notify(info.feedback);
         }
     });
 };
 
-const showBlockDialog = function (recipient) {
-    $("#block_user").attr("data-username", recipient);
+const showBlockDialog = function (recipient, redirect = true) {
+    $("#block_user").attr("data-username", recipient).attr("data-re", redirect);
     $("#username-holder").text(recipient);
     $("#blockUserModal").modal("show");
 };
@@ -747,24 +747,35 @@ const showMessageDialog = function (recipient, extraContent) {
 };
 
 $(".entry-actions").on("click", ".block-user-trigger", function () {
-    const recipient = $(this).parent().siblings(".username").text();
-    showBlockDialog(recipient);
+    const target = $(this).parent().siblings(".username").text();
+    const re = $(".profile-username").text() === target;
+    showBlockDialog(target, re);
 });
 
 $("#block_user").on("click", function () {
+    // Modal button click event
     const targetUser = $(this).attr("data-username");
-    userAction("block", targetUser);
+    const re = $(this).attr("data-re") === "true";
+    if (!re) {
+        $(".entry-full").each(function () {
+            if ($(this).find(".meta .username").text() === targetUser) {
+                $(this).remove();
+            }
+        });
+    }
+    userAction("block", targetUser, null, re);
     $("#blockUserModal").modal("hide");
 });
 
 $(".unblock-user-trigger").on("click", function () {
-    if (confirm("engel kalksın mı?")) {
+    if (confirm("emin misiniz?")) {
         let loc;
         if ($(this).hasClass("sync")) {
             loc = location;
+        } else {
+            $(this).hide();
         }
         userAction("block", $(this).attr("data-username"), loc);
-        $(this).hide();
     }
 });
 

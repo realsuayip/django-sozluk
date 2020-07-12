@@ -21,7 +21,7 @@
                 </a>
 
 
-                <a role="button" tabindex="0" class="{{ is_blocked|yesno:"unblock-user-trigger sync,block-user-trigger" }}" data-username="{{ recipient.username }}">{{ is_blocked|yesno:"engeli kaldır,bu herifi engelle" }}</a>
+                <a role="button" tabindex="0" class="unblock-user-trigger sync" data-username="{{ recipient.username }}">{{ is_blocked|yesno:"engeli kaldır,bu herifi engelle" }}</a>
 
             </div>
 

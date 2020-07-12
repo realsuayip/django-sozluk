@@ -119,7 +119,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         return kwargs
 
     def get_queryset(self):
-        handler = UserStatsQueryHandler(self.profile, order=True)
+        handler = UserStatsQueryHandler(self.profile, requester=self.request.user, order=True)
         qs = getattr(handler, self.tab)()
         tab_obj_type = self.tabs.get(self.tab)["type"]
 

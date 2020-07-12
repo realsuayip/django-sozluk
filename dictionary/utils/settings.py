@@ -102,13 +102,17 @@ Available internal extras:
     safename (overrides safename of the category)
     hidetabs (hides tabs for tabbed categories if set to 'yes')
 
-Available external extras:
-    user    (a username)
-    channel (a channel name)
+Available external extras (cacheable):
+    user    (slug)
+    channel (slug)
 
 Graph takes extras using JSONString, in mobile, extras given via query params.
 You may add any number of external/internal extras, I made this so that
 adding further params wouldn't require too much change in code / break old code.
+
+Don't verify external extras' values that have space in it, values are used in
+cache keys and space char is forbidden in memcached. Best would be taking slug
+and making queries to get the actual object in _set_internal_extra.
 """
 
 DEFAULT_CACHE_TIMEOUT = 90

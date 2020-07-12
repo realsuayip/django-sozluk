@@ -1,3 +1,28 @@
+[0.158.0-dev-pre](2020.07.12)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Editing an announcement before its publish date won't
+record its editing date.
+2) Adjusted some spacing in front end.
+3) Blocking an user won't redirect to homepage unless
+it is blocked in their profile page.
+4) It was not possible to open modals in self profile
+page, fixed that.
+5) There is now a seperate button for sticking user stats
+to left frame.
+6) Fixed a breaking bug in left-frame userstats, which
+crashed the site with memcached backend.
+7) It was possible to see entries of blocked users in profile
+favorites page, fixed that.
+8) Some user stats had inconsistent ordering, fixed that.
+9) Blocking an user will remove of favorited entry records
+of that user.
+
+--Deletions--
+None
+
 [0.157.0-dev-pre](2020.07.10)(compatible)
 --Additions--
 None

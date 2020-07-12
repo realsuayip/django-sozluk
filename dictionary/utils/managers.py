@@ -329,27 +329,21 @@ class TopicQueryHandler:
             .values(*self.values)
         )
 
-    def userstats(self, username, channel, tab):
-        if not username:
-            raise Http404
-
-        user = get_object_or_404(Author, username=username)
-
+    def userstats(self, requester, user, channel, tab):
         if tab == "channels":
             return self.userstats_channels(user, channel)
 
-        handler = UserStatsQueryHandler(user)
+        handler = UserStatsQueryHandler(user, requester)
         return (
             getattr(handler, tab)()
             .annotate(title=F("topic__title"), slug=F("pk"))
-            .order_by(handler.order_map.get(tab))
+            .order_by(*handler.order_map.get(tab))
             .values(*self.values_entry)
         )
 
     def userstats_channels(self, user, channel):
-        category = get_object_or_404(Category, name=channel)
         return (
-            Topic.objects.filter(entries__author=user, entries__is_draft=False, category=category)
+            Topic.objects.filter(entries__author=user, entries__is_draft=False, category=channel)
             .annotate(
                 count=Count("entries"),
                 latest_entry=Subquery(
@@ -427,7 +421,7 @@ class TopicListHandler:
             "search": [self.user, self.search_keys],
             "popular": [self.exclusions],
             "top": [self.tab],
-            "userstats": [self.extra.get("user"), self.extra.get("channel"), self.tab],
+            "userstats": [self.user, self.extra.get("user_object"), self.extra.get("channel_object"), self.tab],
         }
 
         # Convert today-in-history => today_in_history
@@ -477,14 +471,30 @@ class TopicListHandler:
     def _set_internal_extra(self):
         """
         Set internal extras to change the default behaviour.
-        The slug doesn't need to be in parameteric categories.
+        The slug (category) doesn't need to be in parameteric categories.
         """
 
         if self.slug == "userstats":
-            fmtstr = [self.extra.get("user")]
+            # Parse userstats related extras, set the safename of the frame and add hidetabs.
+            user_slug = self.extra.get("user")
+
+            if not user_slug:
+                raise Http404
+
+            # Converting slug to actual Author object to use it later on in query. (same with the channel)
+            user = get_object_or_404(Author, slug=user_slug)
+            self.extra["user_object"] = user
+            fmtstr = [user.username]
 
             if self.tab == "channels":
-                fmtstr.append(self.extra.get("channel"))
+                category_slug = self.extra.get("channel")
+
+                if not category_slug:
+                    raise Http404
+
+                channel = get_object_or_404(Category, slug=category_slug)
+                self.extra["channel_object"] = channel
+                fmtstr.append(channel.name)
             else:
                 self.extra.pop("channel", None)  # so as not to interfere with cache key
 
@@ -508,7 +518,7 @@ class TopicListHandler:
             )
         return data
 
-    def _create_cache_key(self):
+    def _set_cache_key(self):
         private = f"private_uid_{self.user.id}"
         public = "public"
 
@@ -546,7 +556,7 @@ class TopicListHandler:
         self.cache_key = f"tlq_{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}{extra}"
 
     def _check_cache(self):
-        self._create_cache_key()
+        self._set_cache_key()
         cached_data = cache.get(self.cache_key)
 
         if cached_data is not None:
@@ -624,7 +634,7 @@ def conditional_ordering(method):
     def wrapped(self, *args, **kwargs):
         result = method(self, *args, **kwargs)
         if self.order and method.__name__ in self.order_map:
-            return result.order_by(self.order_map.get(method.__name__))
+            return result.order_by(*self.order_map.get(method.__name__))
         return result
 
     return wrapped
@@ -635,17 +645,24 @@ class UserStatsQueryHandler:
     """Queries for user stats on profile page."""
 
     order_map = {
-        "latest": "-date_created",
-        "favorites": "-entryfavorites__date_created",
-        "popular": "-count",
-        "liked": "-vote_rate",
-        "weeklygoods": "-vote_rate",
-        "beloved": "-date_created",
-        "recentlyvoted": "-last_voted",
+        "latest": ("-date_created",),
+        "favorites": ("-entryfavorites__date_created",),
+        "popular": ("-count", "-date_created"),
+        "liked": ("-vote_rate", "-date_created"),
+        "weeklygoods": ("-vote_rate", "-date_created"),
+        "beloved": ("-date_created",),
+        "recentlyvoted": ("-last_voted",),
     }
 
-    def __init__(self, user, order=False):
+    def __init__(self, user, requester, order=False):
+        """
+        :param user: An instance of author whose stats to be listed.
+        :param requester: An instance of author who request the stats.
+        :param order: Set true to get objects ordered (by order_map).
+        """
+
         self.user = user
+        self.requester = requester
         self.entries = user.entry_set(manager="objects_published")
         self.order = order
 
@@ -653,7 +670,12 @@ class UserStatsQueryHandler:
         return self.entries.all()
 
     def favorites(self):
-        return self.user.favorite_entries.filter(author__is_novice=False)
+        base = self.user.favorite_entries.filter(author__is_novice=False)
+
+        if self.requester.is_authenticated:
+            return base.exclude(author__in=self.requester.blocked.all())
+
+        return base
 
     def popular(self):
         return self.entries.annotate(count=Count("favorited_by")).filter(count__gte=1)

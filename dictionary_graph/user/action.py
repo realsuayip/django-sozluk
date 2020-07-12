@@ -43,6 +43,7 @@ class Block(Action, Mutation):
         sender.following.remove(subject)
         subject.following.remove(sender)
         sender.blocked.add(subject)
+        sender.favorite_entries.remove(*sender.favorite_entries.filter(author__in=[subject]))
         return Block(feedback="engelledim gitti", redirect=info.context.build_absolute_uri(reverse("home")))
 
 

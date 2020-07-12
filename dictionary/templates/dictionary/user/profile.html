@@ -7,7 +7,7 @@
     {% load humanize %}
     <section class="user-info">
         <h1 class="h4">
-            <a href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a>
+            <a class="profile-username" href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a>
             {% with gen=profile.generation %}
                 {% if gen %}
                     <small class="ml-2" style="font-size: .5em; vertical-align: middle">{{ gen|ordinal }} nesil {{ profile.is_novice|yesno:"çaylak,yazar" }}</small>
@@ -16,9 +16,6 @@
         </h1>
 
         {% if user.is_authenticated and user != profile %}
-            {% include "dictionary/includes/send_message_modal.html" %}
-            {% include "dictionary/includes/block_user_modal.html" %}
-
             <ul class="user-links" data-username="{{ profile.username }}">
                 <li class="follow-user-trigger">
                     <a role="button" tabindex="0">{% if profile in user.following.all %}takip etme{% else %}takip et{% endif %}</a>
@@ -112,12 +109,16 @@
             </nav>
 
         <h2 class="h5 mt-3">
-            <strong>
-            {% if tab.type == "entry" %}
-                <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.username }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.username }}"}'>{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a>
-            {% else %}
-                <span>{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</span>
-            {% endif %}
+            <strong class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'user-profile-stats' profile.slug tab.name %}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a>
+                {% if tab.type == "entry" %}
+                    <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
+                        <svg fill="currentColor" viewBox="0 0 16 16" width="24" height="24">
+                            <use href="#lshift"></use>
+                            <title>başlık listesine taşı</title>
+                        </svg>
+                    </a>
+                {% endif %}
             </strong>
         </h2>
 
@@ -153,7 +154,7 @@
                 <ul class="list-group list-group-flush">
                     {% for category in object_list %}
                         <li class="list-group-item d-flex justify-content-between">
-                        <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.username }}&tab=channels&channel={{ category.name }}" data-lf-slug="userstats" data-tab="channels" data-lf-extra='{"user": "{{ profile.username }}", "channel": "{{ category.name }}"}' title="{{ category.description }}">#{{ category.name }}</a>
+                        <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab=channels&channel={{ category.slug }}" data-lf-slug="userstats" data-tab="channels" data-lf-extra='{"user": "{{ profile.slug }}", "channel": "{{ category.slug }}"}' title="{{ category.description }}">#{{ category.name }}</a>
                         <span>{{ category.count }}</span>
                       </li>
                     {% endfor %}
@@ -168,7 +169,10 @@
 
     {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" stretch="yes" index="yes" %}
     <br>
-
+    {% if user.is_authenticated %}
+        {% include "dictionary/includes/send_message_modal.html" %}
+        {% include "dictionary/includes/block_user_modal.html" %}
+    {% endif %}
 {% endblock %}
 
 

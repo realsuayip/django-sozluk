@@ -244,9 +244,13 @@ nav.sub-nav ul .more_tags_dropdown,
     width: 250px;
 }
 
+.right-frame > * + footer {
+    margin-top: 1em;
+}
+
 .content-frame {
     width: calc(100% - 500px);
-    padding: .5em 1em 0 1em;
+    padding: 0 1em;
     margin-left: 250px;
 }
 
@@ -1201,7 +1205,6 @@ li.profile-stat-expand .dropdown-menu .dropdown-item:active {
 footer.body-footer {
     background: #ddd;
     padding: 1em;
-    margin-top: 1em;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -1403,6 +1406,7 @@ ul.exlusion-choices > li > a.active {
 
     .content {
         margin-top: 90px;
+        padding-top: .75em;
     }
 
     nav.sub-nav ul.desktop-only {

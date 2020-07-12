@@ -47,8 +47,8 @@ class Announcement(models.Model):
 
         if created:
             self.slug = uuslug(self.title, instance=self)
-        else:
-            # Pre-save content check
+        elif self.date_created < timezone.now():
+            # Pre-save content check for published announcement
             previous = Announcement.objects.get(pk=self.pk)
 
             if previous.content != self.content or previous.title != self.title:
