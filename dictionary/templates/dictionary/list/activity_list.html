@@ -29,7 +29,16 @@
         <hr class="mt-0">
 
         {% if topics.exists %}
-            <small class="mb-2 d-inline-block">{{ topics|length }} başlık takipte</small>
+            <small class="mb-2 d-flex justify-content-between align-items-center">
+                <span>{{ topics|length }} başlık takipte</span>
+                {% if user.unread_topic_count.topics > 0 %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline">başlıkları okundu olarak işaretle</button>
+                    </form>
+                {% endif %}
+            </small>
+
             <ul id="topic-list-standalone" class="list-group topic-list">
                 {% for topic in topics %}
                     <li class="list-group-item{% if not topic.is_read %} active{% endif %}">

@@ -33,6 +33,14 @@ def index(request):
 class PeopleList(LoginRequiredMixin, TemplateView):
     template_name = "dictionary/list/people_list.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["following"], context["blocked"] = (
+            tuple(self.request.user.following(manager="objects_accessible").all()),
+            tuple(self.request.user.blocked(manager="objects_accessible").all()),
+        )
+        return context
+
 
 class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
     """
@@ -89,6 +97,16 @@ class ActivityList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return self.request.user.get_following_topics_with_receipt().order_by("is_read", "-topicfollowing__read_at")
+
+    def post(self, *args, **kwargs):
+        """Bulk read unread topics."""
+        TopicFollowing.objects.filter(
+            author=self.request.user,
+            topic__in=self.request.user.get_following_topics_with_receipt().filter(is_read=False),
+        ).update(read_at=timezone.now())
+
+        notifications.info(self.request, "başlıklar okundu olarak işaretlendi")
+        return redirect(self.request.path)
 
 
 class CategoryList(ListView):

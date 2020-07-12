@@ -75,7 +75,7 @@ class ConversationArchive(models.Model):
 
 class Conversation(models.Model):
     holder = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="conversations")
-    target = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="+")
+    target = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="targeted_conversations")
 
     messages = models.ManyToManyField(Message)
 

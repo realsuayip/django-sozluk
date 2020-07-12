@@ -179,6 +179,13 @@ class Author(AbstractUser):
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"slug": self.slug})
 
+    def delete(self, *args, **kwargs):
+        # Archive conversations of target users.
+        for conversation in self.targeted_conversations.all():
+            conversation.archive()
+
+        return super().delete(*args, **kwargs)
+
     def get_following_topics_with_receipt(self):
         """Get user's following topics with read receipts."""
         return self.following_topics.annotate(
@@ -345,14 +352,18 @@ class Author(AbstractUser):
 
     @cached_property
     def unread_topic_count(self):
-        """Find counts for unread topics and announcements. Return {sum, unread_announcements}"""
+        """Find counts for unread topics and announcements."""
         unread_announcements = (
             apps.get_model("dictionary.Announcement")
             .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=self.announcement_read)
             .count()
         )
         unread_topics = self.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
-        return {"sum": unread_announcements + unread_topics, "announcements": unread_announcements}
+        return {
+            "sum": unread_announcements + unread_topics,
+            "announcements": unread_announcements,
+            "topics": unread_topics,
+        }
 
 
 class Memento(models.Model):

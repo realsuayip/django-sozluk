@@ -1,3 +1,17 @@
+[0.160.0-dev-pre](2020.07.13)(compatible)
+--Additions--
+1) Add 'mark all topics read' button in activity list.
+
+-- Changes --
+1) When a user deletes their account, the target
+conversations will now be archived instead of vanishing.
+(run makemigrations+migrate for dictionary)
+2) Optimized PeopleList a little, it now also considers
+accessibility (e.g frozen, banned etc. users won't show up)
+
+--Deletions--
+None
+
 [0.159.0-dev-pre](2020.07.12)(compatible)
 --Additions--
 1) Add delimiter for today's refresh, and related

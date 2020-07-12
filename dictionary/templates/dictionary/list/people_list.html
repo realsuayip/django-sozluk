@@ -6,36 +6,30 @@
     <h1 class="h4"><strong>takip ettiğin ve engellenmiş insanlar</strong></h1>
     <hr>
     <h2 class="h6"><u>takip ettiklerin:</u></h2>
-    {% with following=user.following.all %}
-        {% if following %}
-            {{ following.count }} kişi
-            <ul class="people-list">
-                {% for author in following %}
 
-                    <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
-
-                {% endfor %}
-            </ul>
-        {% else %}
-            <small>yok ki</small>
-        {% endif %}
-    {% endwith %}
+    {% if following %}
+        {{ following|length }} kişi
+        <ul class="people-list">
+            {% for author in following %}
+                <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <small>yok ki</small>
+    {% endif %}
 
     <h2 class="h6"><u>engellediklerin:</u></h2>
-    {% with blocked=user.blocked.all %}
-        {% if blocked %}
-            {{ blocked.count }} kişi, engeli kaldırmak için üstüne tıkla
-            <ul class="people-list">
-                {% for author in blocked %}
 
-                    <li><a role="button" tabindex="0" class="unblock-user-trigger"
-                           data-username="{{ author.username }}">{{ author.username }}</a></li>
-
-                {% endfor %}
-            </ul>
-        {% else %}
-            <small>yok ki</small>
-        {% endif %}
-    {% endwith %}
-
+    {% if blocked %}
+        {{ blocked|length }} kişi, engeli kaldırmak için üstüne tıkla
+        <ul class="people-list">
+            {% for author in blocked %}
+                <li>
+                    <a role="button" tabindex="0" class="unblock-user-trigger" data-username="{{ author.username }}">{{ author.username }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <small>yok ki</small>
+    {% endif %}
 {% endblock %}
