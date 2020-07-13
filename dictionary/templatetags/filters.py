@@ -167,3 +167,12 @@ def order_by(queryset, fields):
 @register.filter
 def strdate(date_str):
     return parse(date_str)
+
+
+@register.filter
+def humanize_count(value):
+    if not isinstance(value, int):
+        return value
+
+    k = "b"  # Short letter for "thousand", e.g. 1000 = 1.0k
+    return f"{value / 1000:.1f}{k}" if value > 999 else str(value)

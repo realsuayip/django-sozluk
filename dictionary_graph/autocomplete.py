@@ -29,7 +29,8 @@ class AuthorAutoCompleteQuery(ObjectType):
 
         if info.context.user.is_authenticated:
             blocked = info.context.user.blocked.all()
-            return queryset.exclude(pk__in=blocked)[:limit]
+            blocked_by = info.context.user.blocked_by.all()
+            return queryset.exclude(Q(pk__in=blocked) | Q(pk__in=blocked_by))[:limit]
 
         return queryset[:limit]
 

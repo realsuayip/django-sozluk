@@ -375,7 +375,7 @@ class LeftFrame {
             const params = parameters || "";
 
             for (const topic of objectList) {
-                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count ? topic.count : ""}</small></a></li>`);
+                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count !== "0" ? topic.count : ""}</small></a></li>`);
             }
         }
     }
@@ -693,6 +693,12 @@ $("a.fav-count[role='button']").on("click", function () {
         const novices = allUsers.filter(user => user.isNovice === true);
 
         favoritesList.html("");
+        favoritesList.attr("data-loaded", "true");
+
+        if (!allUsers.length) {
+            favoritesList.html("<span class='p-2'>hiç yok aslında</span>");
+            return;
+        }
 
         if (authors.length > 0) {
             for (const author of authors) {
@@ -711,8 +717,6 @@ $("a.fav-count[role='button']").on("click", function () {
                 $("#favorites_list_novices").append(`<a class="novice" href="/author/${novice.slug}/">@${novice.username}</a>`);
             }
         }
-
-        favoritesList.attr("data-loaded", "true");
     });
 });
 

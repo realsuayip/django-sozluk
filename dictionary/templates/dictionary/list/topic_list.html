@@ -3,6 +3,8 @@
 {% block bodyattr %}class="topic-list-view"{% endblock %}
 {% block content %}
 
+{% load filters %}
+
     <div class="left-frame-in">
         <div>
             <h1>
@@ -76,7 +78,7 @@
             {% if page.object_list %}
                 {% for topic in page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small></a>
+                        <a href="{{ slug_identifier }}{{ topic.slug }}/{{ parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count|humanize_count }}{% endif %}</small></a>
                     </li>
                 {% endfor %}
             {% else %}

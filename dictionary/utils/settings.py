@@ -21,6 +21,12 @@ Create an anonymous user with is_private=True and is_novice=False.
 This anonymous user is used to hold the entries of deleted accounts.
 """
 
+DISABLE_NOVICE_QUEUE = False
+"""
+When set to True, users registered via 'registration form' will be authors immediately,
+skipping the necessity of writing 10 entries and waiting for the approval of mods/admins.
+"""
+
 #  <-----> START OF CATEGORY RELATED SETTINGS <----->  #
 
 
@@ -49,7 +55,7 @@ NON_DB_CATEGORIES_META = {
         "kullanıcı istatistiği",
         (
             {
-                "latest": "@{} - entryleri",
+                "latest": "@{} - entry'leri",
                 "popular": "@{} - en çok favorilenenleri",
                 "favorites": "@{} - favorileri",
                 "recentlyvoted": "@{} - son oylananları",

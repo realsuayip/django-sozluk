@@ -16,7 +16,7 @@ from ..models import AccountTerminationQueue, Author, PairedSession, UserVerific
 from ..utils import time_threshold
 from ..utils.email import send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
-from ..utils.settings import FROM_EMAIL, PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
+from ..utils.settings import DISABLE_NOVICE_QUEUE, FROM_EMAIL, PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
 
 
 class Login(LoginView):
@@ -57,6 +57,12 @@ class SignUp(FormView):
         user.username = form.cleaned_data.get("username").lower()
         user.birth_date = form.cleaned_data.get("birth_date")
         user.gender = form.cleaned_data.get("gender")
+
+        if DISABLE_NOVICE_QUEUE:
+            # Make the user an actual author
+            user.application_status = Author.APPROVED
+            user.is_novice = False
+
         user.save()
         send_email_confirmation(user, user.email)
         notifications.info(

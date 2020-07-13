@@ -1,3 +1,5 @@
+{% load filters %}
+
 {% with left_frame as lf %}
     {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
     <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
@@ -89,7 +91,7 @@
             {% if lf.page.object_list %}
                 {% for topic in lf.page.object_list %}
                     <li class="list-group-item">
-                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count }}{% endif %}</small></a>
+                        <a href="{{ lf.slug_identifier }}{{ topic.slug }}/{{ lf.parameters }}">{{ topic.title }}<small class="total_entries">{% if topic.count %}{{ topic.count|humanize_count }}{% endif %}</small></a>
                     </li>
                 {% endfor %}
             {% else %}

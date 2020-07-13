@@ -1,7 +1,8 @@
 from urllib.parse import parse_qsl
 
-from graphene import Boolean, Field, Int, List, ObjectType, String, JSONString
+from graphene import Boolean, Field, Int, JSONString, List, ObjectType, String
 
+from dictionary.templatetags.filters import humanize_count
 from dictionary.utils.managers import TopicListManager
 from dictionary.utils.serializers import LeftFrame
 
@@ -11,7 +12,7 @@ from ..types import CategoryType
 class Topic(ObjectType):
     title = String()
     slug = String()
-    count = Int()
+    count = String()
 
 
 class Paginator(ObjectType):
@@ -95,7 +96,9 @@ class TopicListQuery(ObjectType):
         frame = LeftFrame(manager, kwargs.get("page"))
         page = frame.page  # May raise PermissionDenied or Http404
 
-        object_list = [Topic(title=t["title"], slug=t["slug"], count=t.get("count")) for t in page["object_list"]]
+        object_list = [
+            Topic(title=t["title"], slug=t["slug"], count=humanize_count(t.get("count"))) for t in page["object_list"]
+        ]
 
         paginator = {"num_pages": page["paginator"]["num_pages"], "page_range": page["paginator"]["page_range"]}
 

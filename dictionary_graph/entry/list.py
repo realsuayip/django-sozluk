@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from graphene import Int, List, ObjectType
 
 from dictionary.models import Entry
@@ -15,6 +17,6 @@ class EntryFavoritesQuery(ObjectType):
         return (
             Entry.objects_published.get(pk=pk)
             .favorited_by(manager="objects_accessible")
-            .exclude(pk__in=info.context.user.blocked.all())
+            .exclude(Q(pk__in=info.context.user.blocked.all()) | Q(pk__in=info.context.user.blocked_by.all()))
             .order_by("entryfavorites__date_created")
         )

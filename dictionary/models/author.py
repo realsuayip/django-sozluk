@@ -114,7 +114,7 @@ class Author(AbstractUser):
 
     # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
-    blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
+    blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="blocked_by")
 
     # User-entry relations
     favorite_entries = models.ManyToManyField(

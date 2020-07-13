@@ -1,3 +1,17 @@
+[0.161.0-dev-pre](2020.07.13)(compatible)
+--Additions--
+1) Add DISABLE_NOVICE_QUEUE setting (self-explanatory).
+
+-- Changes --
+1) Author autocompletes and favoriters list now
+mutually consider blocking status.
+(run makemigrations+migrate for dictionary)
+2) Topics with more than 1000 entries are now humanized
+such as 1.0k etc.
+
+--Deletions--
+None
+
 [0.160.0-dev-pre](2020.07.13)(compatible)
 --Additions--
 1) Add 'mark all topics read' button in activity list.
