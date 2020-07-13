@@ -375,7 +375,7 @@ class LeftFrame {
             const params = parameters || "";
 
             for (const topic of objectList) {
-                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count !== "0" ? topic.count : ""}</small></a></li>`);
+                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`);
             }
         }
     }
