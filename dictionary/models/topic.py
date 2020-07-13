@@ -28,6 +28,7 @@ class Topic(models.Model):
     title = models.CharField(
         max_length=50,
         unique=True,
+        db_index=True,
         validators=TOPIC_TITLE_VALIDATORS,
         verbose_name="Başlığın tanımı",
         help_text="Başlık oluşturulduktan sonra tanımını değiştirmek için başlık taşıma özelliğini kullanmalısınız.",

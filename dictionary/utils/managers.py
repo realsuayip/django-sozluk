@@ -300,7 +300,7 @@ class TopicQueryHandler:
             filters["entries__author__username"] = author_nick
 
         if keywords:
-            filters["title__icontains"] = keywords
+            filters["title__search" if connection.vendor == "postgresql" else "title__icontains"] = keywords
 
         if from_date:
             filters["entries__date_created__gte"] = from_date
