@@ -25,7 +25,6 @@ def addstr(arg1, arg2):
     return str(arg1) + str(arg2)
 
 
-RE_AUTHOR_CHARSET = r"(?!\s)([a-z0-9]+(\ [a-z0-9]+)*)(?<!\s)"
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
 RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
 
@@ -34,20 +33,17 @@ RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\
 def formatted(raw_entry):
     """
     Formats custom entry tags (e.g. hede, spoiler. Tag explanations given in order with replacements tuple.
-    1) Input: (bkz: unicode topic title), Output: unchanged, but 'unicode topic title' has a link that points to the
-    entry list view of that topic. No trailing whitespace allowed, only allow indicated chars.
+    1) Input: (bkz: unicode topic title or @username), Output: unchanged, but the input has a link that points to the
+    to given topic/user profile. No trailing whitespace allowed, only allow indicated chars.
     2) Input: (bkz: #90), Output: unchanged, but #90 has link to entry with the id of 90. Allow only positive integers
     after '#', up to 10 digits.
-    3) Input: (bkz: @username), Output: unchanged, but '@username' has a link that points to the that users profile.
-    Returns 404 if user does not exist. No trailing whitespace allowed, only allow indicated chars.
-    4) Input: `:swh`, Output: * (an asterisks) -- This is a link that points to the topic named 'swh'.
-    5) Input: `unicode topic title` Output: unicode topic title -- A link that points to the topic,
-    6) Input: `#90`, Output: #90 -- This is a link that points to the entry with pk 90.
-    7) Input: `@username` Output: @username -- A link that points to the user profile.
-    8) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
+    3) Input: `:swh`, Output: * (an asterisks) -- This is a link that points to the topic named 'swh'.
+    4) Input: Same as 1 but with no indicators.
+    5) Input: `#90`, Output: #90 -- This is a link that points to the entry with pk 90.
+    6) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
     in topics and appends to the left frame (redirects to the advanced search page on mobile).
-    9) Input http://www.djangoproject.com  Output: http://www.djangoproject.com  -- Linkification. (protocol required)
-    10) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
+    7) Input http://www.djangoproject.com  Output: http://www.djangoproject.com  -- Linkification. (protocol required)
+    8) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
     a new tab. Protocol name (http/https only) required. Label should be longer than one character.
     """
 
@@ -78,15 +74,13 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\(bkz: {RE_TOPIC_CHARSET}\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
+        (fr"\(bkz: (@?{RE_TOPIC_CHARSET})\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
         (fr"\(bkz: #{RE_ENTRY_CHARSET}\)", r'(bkz: <a href="/entry/\1/">#\1</a>)'),
-        (fr"\(bkz: @{RE_AUTHOR_CHARSET}\)", r'(bkz: <a href="/author/\1/">@\1</a>)'),
         # Swh
         (fr"`:{RE_TOPIC_CHARSET}`", r'<a data-sup="(bkz: \1)" href="/topic/?q=\1" title="(bkz: \1)">*</a>',),
         # Reference with no indicator
-        (fr"`{RE_TOPIC_CHARSET}`", r'<a href="/topic/?q=\1">\1</a>'),
+        (fr"`(@?{RE_TOPIC_CHARSET})`", r'<a href="/topic/?q=\1">\1</a>'),
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
-        (fr"`@{RE_AUTHOR_CHARSET}`", r'<a href="/author/\1/">@\1</a>'),
         # Search
         (
             fr"\(ara: (@?{RE_TOPIC_CHARSET})\)",
