@@ -75,12 +75,15 @@ class FavoriteEntry(Action, Mutation):
     def mutate(_root, info, pk):
         entry = Entry.objects_published.get(pk=pk)
 
+        if entry.author.blocked.filter(pk=info.context.user.pk).exists():
+            raise PermissionDenied("terbiyesiz")
+
         if info.context.user.favorite_entries.filter(pk=pk).exists():
             info.context.user.favorite_entries.remove(entry)
-            return FavoriteEntry(feedback="favorilerden çıkarıldı", count=entry.get_favorite_count(info.context.user))
+            return FavoriteEntry(feedback="favorilerden çıkarıldı", count=entry.favorited_by.count())
 
         info.context.user.favorite_entries.add(entry)
-        return FavoriteEntry(feedback="favorilendi", count=entry.get_favorite_count(info.context.user))
+        return FavoriteEntry(feedback="favorilendi", count=entry.favorited_by.count())
 
 
 def voteaction(mutator):

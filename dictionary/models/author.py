@@ -344,6 +344,10 @@ class Author(AbstractUser):
     def is_suspended(self):
         return self.suspended_until is not None and self.suspended_until > timezone.now()
 
+    @property
+    def is_accessible(self):
+        return not (self.is_frozen or (not self.is_active) or self.is_private or self.is_suspended)
+
     @cached_property
     def unread_message_count(self):
         return self.conversations.aggregate(

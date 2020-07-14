@@ -8,7 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import CharField, Count, F, Max, OuterRef, Q, Subquery, Value
+from django.db.models import CharField, Count, Exists, F, Max, OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce, Concat, Greatest
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 
-from ..models import Author, Category, DownvotedEntries, Entry, Topic, UpvotedEntries
+from ..models import Author, Category, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.decorators import for_public_methods
 from ..utils.settings import (
@@ -739,3 +739,28 @@ class UserStatsQueryHandler:
             .only("username", "slug")
             .order_by("-frequency")[:10]
         )
+
+
+def entry_prefetch(queryset, user):
+    """
+    Given an entry queryset, optimize it to be shown in templates (entry.html).
+    :param queryset: Entry queryset.
+    :param user: User who requests the queryset.
+    """
+    # todo: when starting database access optimization patches, defer unused fields. using .only()
+    base = queryset.select_related("author", "topic").annotate(fav_count=Count("favorited_by"))
+
+    if user.is_authenticated:
+        vote_states = dict(
+            zip(
+                ("is_upvoted", "is_downvoted", "is_favorited"),
+                (
+                    Exists(model.objects.filter(author=user, entry=OuterRef("pk")))
+                    for model in (UpvotedEntries, DownvotedEntries, EntryFavorites)
+                ),
+            )
+        )
+
+        return base.annotate(**vote_states).prefetch_related("favorited_by")
+
+    return base

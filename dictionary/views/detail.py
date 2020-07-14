@@ -2,7 +2,6 @@ from contextlib import suppress
 
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -11,7 +10,7 @@ from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
 from ..models import Author, Conversation, ConversationArchive, Entry, Memento, Message
-from ..utils.managers import UserStatsQueryHandler
+from ..utils.managers import UserStatsQueryHandler, entry_prefetch
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
 
@@ -124,17 +123,7 @@ class UserProfile(IntegratedFormMixin, ListView):
         tab_obj_type = self.tabs.get(self.tab)["type"]
 
         if tab_obj_type == "entry":
-            base = qs.select_related("author", "topic")
-
-            if self.request.user.is_authenticated:
-                return base.prefetch_related(
-                    Prefetch(
-                        "favorited_by",
-                        queryset=Author.objects_accessible.only("pk").exclude(pk__in=self.request.user.blocked.all()),
-                    )
-                )
-
-            return base
+            return entry_prefetch(qs, self.request.user)
 
         if tab_obj_type in ("author", "topic", "category"):
             return qs

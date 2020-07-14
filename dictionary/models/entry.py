@@ -67,9 +67,6 @@ class Entry(models.Model):
             self.author.application_date = None
             self.author.save()
 
-    def get_favorite_count(self, sender):
-        return self.favorited_by(manager="objects_accessible").exclude(pk__in=sender.blocked.all()).count()
-
     def update_vote(self, rate, change=False):
         k = Decimal("2") if change else Decimal("1")
         self.vote_rate = F("vote_rate") + rate * k

@@ -1,12 +1,13 @@
 import datetime
 import math
+
 from contextlib import suppress
 
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -19,8 +20,8 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
-from ..utils import proceed_or_404, time_threshold, i18n_lower, RE_WEBURL
-from ..utils.managers import TopicListManager
+from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
+from ..utils.managers import TopicListManager, entry_prefetch
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
 from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, YEAR_RANGE
@@ -558,7 +559,6 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """
 
         novice_view_modes = ("novices", "entry_permalink")  # modes in which novice entries are visible
-        is_authenticated, blocked = self.request.user.is_authenticated, None
 
         if self.view_mode == "recent" and self.request.user.is_novice:
             # 'followups' doesn't include novice entries for authors, but does for novices.
@@ -569,19 +569,10 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if self.view_mode not in novice_view_modes:
             qs = qs.exclude(author__is_novice=True)
 
-        if is_authenticated:
-            blocked = self.request.user.blocked.all()
-            qs = qs.exclude(author__in=blocked)
+        if self.request.user.is_authenticated:
+            qs = qs.exclude(author__in=self.request.user.blocked.all())
 
         if prefecth:
-            # todo: when starting database access optimization patches, defer unused fields. using .only()
-            # todo: also optimize entry_permalink
-            base = qs.select_related("author", "topic")
+            return entry_prefetch(qs, self.request.user)
 
-            if is_authenticated:
-                return base.prefetch_related(
-                    Prefetch("favorited_by", queryset=Author.objects_accessible.only("pk").exclude(pk__in=blocked))
-                )
-
-            return base
         return qs

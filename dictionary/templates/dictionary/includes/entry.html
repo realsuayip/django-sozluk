@@ -48,13 +48,13 @@
 
                 {% if user != entry.author %}
                     <div class="votes">
-                        <a role="button" tabindex="0" title="şükela!" class="upvote">
+                        <a role="button" tabindex="0" title="şükela!" class="upvote{{ entry.is_upvoted|yesno:" active," }}">
                             <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#up"></use>
                             </svg>
                         </a>
 
-                        <a role="button" tabindex="0" title="çok kötü" class="downvote">
+                        <a role="button" tabindex="0" title="çok kötü" class="downvote{{ entry.is_downvoted|yesno:" active," }}">
                             <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#down"></use>
                             </svg>
@@ -64,15 +64,13 @@
 
                 {% if user.is_authenticated %}
                     <div class="favorites">
-                        {% with favorites=entry.favorited_by.all %}
-                            <a role="button" tabindex="0" {% if user in favorites %}title="favorilerden çıkar" class="favorite active" {% else %}title="favorilere ekle" class="favorite"{% endif %}>
-                                <svg width="25" height="13" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <use href="#favorite"></use>
-                                </svg>
-                            </a>
-                            <a role="button" class="fav-count" tabindex="0" data-toggle="dropdown" aria-label="Favoriler" aria-haspopup="true" aria-expanded="false">{% if favorites %}{{ favorites|length }}{% endif %}</a>
-                            <span class="dropdown-menu favorites-list" data-loaded="false"></span>
-                        {% endwith %}
+                        <a role="button" tabindex="0" {% if entry.is_favorited %}title="favorilerden çıkar" class="favorite active" {% else %}title="favorilere ekle" class="favorite"{% endif %}>
+                            <svg width="25" height="13" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#favorite"></use>
+                            </svg>
+                        </a>
+                        <a role="button" class="fav-count" tabindex="0" data-toggle="dropdown" aria-label="Favoriler" aria-haspopup="true" aria-expanded="false">{% if entry.fav_count > 0 %}{{ entry.fav_count }}{% endif %}</a>
+                        <span class="dropdown-menu favorites-list" data-loaded="false"></span>
                     </div>
                 {% endif %}
             </div>

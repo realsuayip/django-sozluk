@@ -1,3 +1,25 @@
+[0.163.0-dev-pre](2020.07.14)(compatible)
+--Additions--
+1) New function in managers.py: entry_prefetch, a common
+utility for TopicEntryList and UserProfile (and Index, in
+the future).
+2) Add is_accessible property to Author (self-explanatory).
+
+-- Changes --
+1) Reverted the implemention that caused entry favorite
+counts to consider block status. It proved to be trivial.
+(Blocked users are not visible in the fav list.)
+2) Fixed a bug that allowed users to favorite entries of
+other users even if the favoriter was blocked by the target.
+3) Upvote and downvote status are now visible.
+4) Optimized the queries of fetching favorite counts
+and favorite status.
+5) Inaccessible (banned) users are now not allowed
+to create wishes.
+
+--Deletions--
+1) Removed get_favorite_count method from Entry.
+
 [0.162.0-dev-pre](2020.07.14)(compatible)
 --Additions--
 None

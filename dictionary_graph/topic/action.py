@@ -62,6 +62,9 @@ class WishTopic(Mutation):
                 previous_wish.delete()
                 return WishTopic(feedback="ukte silindi.")
 
+        if not sender.is_accessible:
+            raise ValueError("sen ukte verme lütfen")
+
         wish.save()
         topic.wishes.add(wish)
         return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.", hint=formatted(hint))
