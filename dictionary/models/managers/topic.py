@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from uuslug import slugify
 
 from ...models import Entry
-from ...utils import turkish_lower
+from ...utils import i18n_lower
 
 
 class TopicManager(models.Manager):
@@ -42,7 +42,7 @@ class TopicManager(models.Manager):
 
     @staticmethod
     def _format_title(title):
-        return turkish_lower(title).strip()
+        return i18n_lower(title).strip()
 
     def get_or_pseudo(self, slug=None, unicode_string=None, entry_id=None):
         if unicode_string:

@@ -6,7 +6,7 @@ from django.shortcuts import reverse
 from django.utils import timezone
 
 from ..models.messaging import Message
-from ..utils import get_generic_superuser, turkish_lower
+from ..utils import get_generic_superuser, i18n_lower
 from ..utils.validators import validate_user_text
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 
@@ -32,7 +32,7 @@ class Entry(models.Model):
         verbose_name_plural = "entry"
 
     def save(self, *args, **kwargs):
-        self.content = turkish_lower(self.content)
+        self.content = i18n_lower(self.content)
         super().save(*args, **kwargs)
 
         # Check if the user has written 10 entries, If so make them available for novice lookup

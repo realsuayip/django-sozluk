@@ -4,7 +4,7 @@ from graphene import ID, Mutation, String
 
 from dictionary.models import Topic, Wish
 from dictionary.templatetags.filters import formatted
-from dictionary.utils import turkish_lower
+from dictionary.utils import i18n_lower
 
 from ..utils import login_required
 
@@ -42,7 +42,7 @@ class WishTopic(Mutation):
     def mutate(_root, info, title, hint=""):
         sender = info.context.user
         topic = Topic.objects.get_or_pseudo(unicode_string=title)
-        hint = turkish_lower(hint).strip() or None
+        hint = i18n_lower(hint).strip() or None
 
         if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
             raise ValueError("öyle olmaz ki")

@@ -8,7 +8,7 @@ from django.utils.functional import cached_property
 
 from uuslug import slugify
 
-from ..utils import turkish_lower
+from ..utils import i18n_lower
 from ..utils.serializers import ArchiveSerializer
 from ..utils.validators import validate_user_text
 from .managers.messaging import ConversationManager, MessageManager
@@ -30,7 +30,7 @@ class Message(models.Model):
         return str(self.pk)
 
     def save(self, *args, **kwargs):
-        self.body = turkish_lower(self.body).strip()
+        self.body = i18n_lower(self.body).strip()
         super().save(*args, **kwargs)
 
     def mark_read(self):

@@ -6,7 +6,7 @@ from django.shortcuts import reverse
 
 from uuslug import uuslug
 
-from ..utils import get_generic_superuser, turkish_lower
+from ..utils import get_generic_superuser, i18n_lower
 from ..utils.validators import validate_user_text
 from .author import Author
 from .category import Category
@@ -101,7 +101,7 @@ class Topic(models.Model):
         return reverse("topic", kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
-        self.title = turkish_lower(self.title)
+        self.title = i18n_lower(self.title)
         self.slug = uuslug(self.title, instance=self)
         super().save(*args, **kwargs)
 

@@ -4,6 +4,7 @@ from contextlib import suppress
 from django.contrib.auth import get_user_model
 from django.http import Http404
 from django.utils import timezone
+from django.utils.translation import get_language
 
 from dateutil.parser import parse
 
@@ -30,9 +31,12 @@ class proceed_or_404(suppress):
             raise Http404
 
 
-def turkish_lower(turkish_string):
-    lower_map = {ord("I"): "ı", ord("İ"): "i"}
-    return turkish_string.translate(lower_map).lower()
+def i18n_lower(value):
+    if get_language() == "tr-tr":
+        lower_map = {ord("I"): "ı", ord("İ"): "i"}
+        return value.translate(lower_map).lower()
+
+    return value.lower()
 
 
 def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwargs):

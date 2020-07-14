@@ -1,3 +1,22 @@
+[0.162.0-dev-pre](2020.07.14)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Advanced search now searches by 'keywords'
+with PostgreSQL database backend.
+(do makemigrations+migrate for dictionary even if
+you don't use postgresql)
+2) Fixed tag regex, they include mising proper chars now.
+3) Removed @ and # chars from topic title regex.
+(if you decide to add them back, don't do so in
+tag regexs)
+4) Rename turkish_lower to i18n_lower and fix the
+behaviour for English.
+
+--Deletions--
+None
+
 [0.161.0-dev-pre](2020.07.13)(compatible)
 --Additions--
 1) Add DISABLE_NOVICE_QUEUE setting (self-explanatory).
