@@ -17,7 +17,7 @@ from .messaging import Message
 
 TOPIC_TITLE_VALIDATORS = [
     RegexValidator(
-        r"""^[a-z0-9 ğçıöşü#₺&@()_+=':%/",.!?~\[\]{}<>^;\\|-]+$""",
+        r"^[a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+$",
         message="bu başlık tanımı geçersiz karakterler içeriyor",
     ),
     MaxLengthValidator(50, message="bu başlık çok uzun"),
