@@ -87,6 +87,7 @@
     {# PAGINATION END #}
 
     {# TOPIC LIST START #}
+            <nav>
             <ul id="topic-list" class="list-group topic-list">
             {% if lf.page.object_list %}
                 {% for topic in lf.page.object_list %}
@@ -98,6 +99,7 @@
                 <small>yok ki</small>
             {% endif %}
             </ul>
+            </nav>
     {# TOPIC LIST END #}
 
     {# SHOW MORE LINK  #}

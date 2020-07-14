@@ -1,6 +1,8 @@
 from django import template
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.db import connection
 
-from ..models import ExternalURL
+from ..models import ExternalURL, Topic
 from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
 
 
@@ -47,3 +49,19 @@ def render_header_link(context, slug):
     details = NON_DB_CATEGORIES_META[slug]
     is_active = context.get("left_frame", {}).get("slug") == slug
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}
+
+
+@register.inclusion_tag("dictionary/includes/topic_suggestions.html")
+def render_topic_suggestions(title):
+    suggestions = None
+
+    if connection.vendor == "postgresql":
+        suggestions = tuple(
+            Topic.objects_published.annotate(
+                rank=SearchRank(SearchVector("title", weight="A"), SearchQuery(title), weights=[0.3, 0.4, 0.5, 0.6])
+            )
+            .filter(rank__gte=0.4)
+            .order_by("-rank")[:5]
+        )
+
+    return {"suggestions": suggestions}

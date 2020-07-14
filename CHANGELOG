@@ -1,3 +1,15 @@
+[0.164.0-dev-pre](2020.07.15)(compatible)
+--Additions--
+1) It is now possible to see some topic suggestions
+when the requested topic is not populated. Only
+available with PostgreSQL database backend.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.163.0-dev-pre](2020.07.14)(compatible)
 --Additions--
 1) New function in managers.py: entry_prefetch, a common

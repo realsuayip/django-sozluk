@@ -1,0 +1,10 @@
+{% if suggestions %}
+    <span class="ml-1" id="suggestions_label">elimizde şunlar var:</span>
+    <nav class="px-4 py-2 mb-2 border rounded" aria-labelledby="suggestions_label">
+        <ul>
+            {% for topic in suggestions %}
+                <li><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

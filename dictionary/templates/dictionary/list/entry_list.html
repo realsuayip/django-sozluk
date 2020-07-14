@@ -139,7 +139,11 @@
 
                 {% else %}
                     {# Topic does exist but has no entries #}
-                    <p>böyle bir şey yok.</p>
+                    <p>
+                        <span>böyle bir şey yok.</span>
+                        {% render_topic_suggestions topic.title %}
+                    </p>
+
                     {% if not banned %}
                         {% include "dictionary/includes/forms/wish.html" %}
                     {% endif %}
@@ -151,7 +155,11 @@
                     <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
                 </header>
 
-                <p>böyle bir şey yok.</p>
+                <p>
+                    <span>böyle bir şey yok.</span>
+                    {% render_topic_suggestions topic.title %}
+                </p>
+
                 {% if not valid %}
                     <p>lanet olsun böyle başlığa zaten</p>
                 {% else %}
