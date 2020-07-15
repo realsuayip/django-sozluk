@@ -6,7 +6,7 @@
 {% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}
-{% block bodyattr %}class="default topic-entry-view {% if not entry_permalink %}has-entries{% endif %}"{% endblock %}
+{% block bodyattr %}class="default topic-entry-view {% if not entry_permalink %}has-entries{% endif %}"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 {% block content %}
 
     {% load functions %}

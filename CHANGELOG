@@ -1,3 +1,14 @@
+[0.165.0-dev-pre](2020.07.15)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed the visual bug with the entry actions
+pin button.
+
+--Deletions--
+None
+
 [0.164.0-dev-pre](2020.07.15)(compatible)
 --Additions--
 1) It is now possible to see some topic suggestions

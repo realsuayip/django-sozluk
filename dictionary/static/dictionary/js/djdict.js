@@ -854,8 +854,16 @@ $(".delete-entry-redirect").on("click", function () {
 });
 
 $(".entry-actions").on("click", ".pin-entry", function () {
-    entryAction("pin", $(this).parents(".entry-full").attr("data-id")).then(function (response) {
+    const entryID = $(this).parents(".entry-full").attr("data-id");
+    const body = $("body");
+    entryAction("pin", entryID).then(function (response) {
         notify(response.data.entry.pin.feedback);
+        $("a.action[role='button']").removeClass("loaded");
+        if (body.attr("data-pin") === entryID) {
+            body.removeAttr("data-pin");
+        } else {
+            body.attr("data-pin", entryID);
+        }
     });
 });
 
@@ -1022,12 +1030,13 @@ $(".entry-full a.action[role='button']").on("click", function () {
     const entryID = entry.attr("data-id");
     const topicTitle = entry.closest("[data-topic]").attr("data-topic");
     const actions = $(this).siblings(".entry-actions");
+    const pinLabel = entryID === $("body").attr("data-pin") ? "profilimden kaldır" : "profilime sabitle";
 
     actions.empty();
 
     if (userIsAuthenticated) {
         if (entry.hasClass("owner")) {
-            actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">profilime sabitle</a>`);
+            actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">${pinLabel}</a>`);
             actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">sil</a>`);
             actions.append(`<a href="/entry/update/${entryID}/" class="dropdown-item">düzelt</a>`);
         } else {
