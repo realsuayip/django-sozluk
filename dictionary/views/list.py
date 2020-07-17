@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import Http404, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -170,13 +170,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     """The topic object whose entries to be shown. If url doesn't match an existing topic,
        a PseudoTopic object created via TopicManager will be used to handle creation & template rendering."""
 
+    entry = None
+    """Entry object if the user requests a single entry."""
+
     view_mode = None
     """There are several view modes which filter out entries by specific metadata. This determines which queryset will
-       be used to fetch entries. It is caught using GET parameters."""
-
-    entry_permalink = False
-    """This will be set to (entry_id) if user requests a single entry. It's similar to view_mode, but it needs some
-       other metadata and seperated from view_mode as they use different urls."""
+       be used to fetch entries. It is caught using GET parameters. (entry_permalink is handled differently)"""
 
     modes = (
         "regular",
@@ -362,8 +361,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """Filter queryset by self.view_mode"""
         queryset = None
 
-        if self.entry_permalink:
-            queryset = self.topic.entries.filter(pk=self.entry_permalink)
+        if self.entry is not None:
+            return [self.entry]
         elif self.topic.exists:
             queryset = getattr(self, self.view_mode)()
 
@@ -379,7 +378,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
         context["topic"] = self.topic
         context["mode"] = self.view_mode
-        context["entry_permalink"] = bool(self.entry_permalink)
+        context["entry_permalink"] = bool(self.entry)
 
         if not self.topic.exists:
             return context
@@ -445,7 +444,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         else:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
-            context["all_entries_count"] = self._qs_filter(self.topic.entries.all(), prefecth=False).count()
+            self.view_mode = "regular"
+            context["all_entries_count"] = self._qs_filter(self.regular(), prefecth=False).count()
 
         return context
 
@@ -500,16 +500,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         # Entry permalink handling
         elif self.kwargs.get("entry_id"):
             with proceed_or_404(ValueError, OverflowError):
-                entry_id = int(self.kwargs.get("entry_id"))
-                self.topic = Topic.objects.get_or_pseudo(entry_id=entry_id)
-
-                if self.request.user.is_authenticated:
-                    entry = self.topic.entries.get(pk=entry_id)
-
-                    if entry.author in self.request.user.blocked.all():
-                        raise Http404
-
-                self.entry_permalink = entry_id
+                # Deprecated entry_id for get_or_pseudo.
+                klass = (
+                    Entry.objects
+                    if not self.request.user.is_authenticated
+                    else Entry.objects.exclude(author__in=self.request.user.blocked.all())
+                )
+                self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")),)
+                self.topic = self.entry.topic
                 self.view_mode = "entry_permalink"
 
         # Search handling

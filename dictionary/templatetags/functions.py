@@ -37,16 +37,49 @@ def get_message_level(level):
     return level_map.get(level, "warning")
 
 
+@register.simple_tag(takes_context=True)
+def print_topic_title(context):
+    """Only for entry_list.html"""
+    queries = context["request"].GET
+    base = context["topic"].title
+
+    if context["entry_permalink"]:
+        return base + f" - #{context['entries'][0].pk}"
+
+    mode_repr = {
+        "today": "bugün girilen entry'ler",
+        "popular": "gündem",
+        "novices": "çaylaklar",
+        "nice": "şükela tümü",
+        "nicetoday": "şükela bugün",
+        "following": "olan biten",
+        "recent": "benden sonra girilenler",
+        "links": "linkler",
+        "acquaintances": "takip ettiklerim",
+        "search": f"arama: {queries.get('keywords', '')}",
+        "history": f"tarihte bugün: {queries.get('year', '')}",
+    }
+
+    if (mode := context["mode"]) in mode_repr:
+        base += f" - {mode_repr[mode]}"
+
+    if (page := context["page_obj"].number) > 1:
+        base += f" - sayfa {page}"
+
+    return base
+
+
 @register.inclusion_tag("dictionary/includes/header_link.html", takes_context=True)
 def render_header_link(context, slug):
     """
-    Renders non-database header links.
+    Renders non-database header links. (Renders nothing if the given cateogry does not exist.)
     """
 
-    if slug in LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated:
+    details = NON_DB_CATEGORIES_META.get(slug)
+
+    if (slug in LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated) or details is None:
         return {"unauthorized": True}
 
-    details = NON_DB_CATEGORIES_META[slug]
     is_active = context.get("left_frame", {}).get("slug") == slug
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}
 

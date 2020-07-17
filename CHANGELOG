@@ -1,3 +1,25 @@
+[0.166.0-dev-pre](2020.07.17)(compatible)
+--Additions--
+1) New template tag print_topic_title; properly formats
+TopicEntryList view title using mode and pagination.
+
+-- Changes --
+1) TopicEntryList chanes:
+    1) Fixed a bug in entry list which caused
+    erroneous count for show all entries button.
+    There is also exclusive message for topics
+    which has entries of novices but not of authors.
+    2) Optimized queries for entry_permalink.
+
+2) entry_prefetch had a faulty annotation, fixed
+that. Also deferred unused fields.
+3) Render header link template tag now fails silently.
+4) When a user archives a chat, all unread
+messages will be marked as read.
+
+--Deletions--
+None
+
 [0.165.0-dev-pre](2020.07.15)(compatible)
 --Additions--
 None

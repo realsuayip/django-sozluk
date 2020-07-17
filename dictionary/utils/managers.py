@@ -747,8 +747,21 @@ def entry_prefetch(queryset, user):
     :param queryset: Entry queryset.
     :param user: User who requests the queryset.
     """
-    # todo: when starting database access optimization patches, defer unused fields. using .only()
-    base = queryset.select_related("author", "topic").annotate(fav_count=Count("favorited_by"))
+    base = queryset.select_related("author", "topic").only(
+        "id",
+        "content",
+        "date_created",
+        "date_edited",
+        "topic_id",
+        "author_id",
+        "author__slug",
+        "author__username",
+        "author__is_private",
+        "author__is_novice",
+        "topic_id",
+        "topic__title",
+        "topic__slug",
+    )
 
     if user.is_authenticated:
         vote_states = dict(
@@ -761,6 +774,6 @@ def entry_prefetch(queryset, user):
             )
         )
 
-        return base.annotate(**vote_states).prefetch_related("favorited_by")
+        return base.annotate(**vote_states, fav_count=Count("favorited_by"))
 
     return base

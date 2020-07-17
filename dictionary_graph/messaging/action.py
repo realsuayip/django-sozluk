@@ -1,5 +1,6 @@
 from django.core.validators import ValidationError
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from graphene import ID, List, Mutation, String
 
@@ -43,6 +44,9 @@ class ArchiveConversation(Mutation):
     @login_required
     def mutate(_root, info, pk_set):
         for conversation in Conversation.objects.filter(holder=info.context.user, pk__in=pk_set):
+            conversation.messages.filter(recipient=info.context.user, read_at__isnull=True).update(
+                read_at=timezone.now()
+            )
             conversation.archive()
 
         return ArchiveConversation(redirect=reverse_lazy("messages-archive"))
