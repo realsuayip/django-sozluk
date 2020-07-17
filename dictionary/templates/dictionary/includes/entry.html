@@ -69,7 +69,7 @@
                                 <use href="#favorite"></use>
                             </svg>
                         </a>
-                        <a role="button" class="fav-count" tabindex="0" data-toggle="dropdown" aria-label="Favoriler" aria-haspopup="true" aria-expanded="false">{% if entry.fav_count > 0 %}{{ entry.fav_count }}{% endif %}</a>
+                        <a role="button" class="fav-count" tabindex="0" data-toggle="dropdown" aria-label="Favoriler" aria-haspopup="true" aria-expanded="false">{% firstof entry.favorited_by.count %}</a>
                         <span class="dropdown-menu favorites-list" data-loaded="false"></span>
                     </div>
                 {% endif %}

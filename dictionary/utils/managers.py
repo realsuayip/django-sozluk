@@ -8,7 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import CharField, Count, Exists, F, Max, OuterRef, Q, Subquery, Value
+from django.db.models import CharField, Count, Exists, F, Max, OuterRef, Prefetch, Q, Subquery, Value
 from django.db.models.functions import Coalesce, Concat, Greatest
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -747,20 +747,24 @@ def entry_prefetch(queryset, user):
     :param queryset: Entry queryset.
     :param user: User who requests the queryset.
     """
-    base = queryset.select_related("author", "topic").only(
-        "id",
-        "content",
-        "date_created",
-        "date_edited",
-        "topic_id",
-        "author_id",
-        "author__slug",
-        "author__username",
-        "author__is_private",
-        "author__is_novice",
-        "topic_id",
-        "topic__title",
-        "topic__slug",
+    base = (
+        queryset.select_related("author", "topic")
+        .prefetch_related(Prefetch("favorited_by", queryset=Author.objects.only("id")))
+        .only(
+            "id",
+            "content",
+            "date_created",
+            "date_edited",
+            "topic_id",
+            "author_id",
+            "author__slug",
+            "author__username",
+            "author__is_private",
+            "author__is_novice",
+            "topic_id",
+            "topic__title",
+            "topic__slug",
+        )
     )
 
     if user.is_authenticated:
@@ -774,6 +778,6 @@ def entry_prefetch(queryset, user):
             )
         )
 
-        return base.annotate(**vote_states, fav_count=Count("favorited_by"))
+        return base.annotate(**vote_states)
 
     return base
