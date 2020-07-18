@@ -9,7 +9,8 @@ class MessageManager(models.Manager):
         if not sender.can_send_message(recipient):
             return False
 
-        message = self.create(sender=sender, recipient=recipient, body=body)
+        has_receipt = sender.allow_receipts and recipient.allow_receipts
+        message = self.create(sender=sender, recipient=recipient, body=body, has_receipt=has_receipt)
         return message
 
 

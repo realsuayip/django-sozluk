@@ -144,6 +144,7 @@ class Author(AbstractUser):
     topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
     pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
+    allow_receipts = models.BooleanField(default=True)
 
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)

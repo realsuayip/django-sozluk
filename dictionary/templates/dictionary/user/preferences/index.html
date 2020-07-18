@@ -9,6 +9,11 @@
             <label class="mr-2" for="pref_messages"><strong>{{ form.message_preference.label }}</strong></label>
             <small>kimler bana mesaj gönderebilir?</small>
             {% render_field form.message_preference class="form-control" id="pref_messages" %}
+
+            <div class="custom-control custom-checkbox mt-3">
+                {% render_field form.allow_receipts class="custom-control-input" id="allow_receipts" %}
+                <label class="custom-control-label" for="allow_receipts">{{ form.allow_receipts.label }}</label>
+            </div>
         </div>
 
 
@@ -36,7 +41,7 @@
                 <div class="form-group">
                     <label class="d-block" for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>
                     <div class="datepick d-flex">
-                    {% render_field form.birth_date class="form-control" id="pref_birth_date datepicker" %}
+                        {% render_field form.birth_date class="form-control" id="pref_birth_date datepicker" %}
                     </div>
                 </div>
             </div>

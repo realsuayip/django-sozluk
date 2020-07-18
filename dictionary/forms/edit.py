@@ -13,10 +13,11 @@ class PreferencesForm(UserChangeForm):
     entries_per_page = forms.ChoiceField(choices=Author.ENTRY_COUNTS, label="sayfa başına entry")
     topics_per_page = forms.ChoiceField(choices=Author.TOPIC_COUNTS, label="sayfa başına başlık")
     message_preference = forms.ChoiceField(choices=Author.MESSAGE_PREFERENCE, label="mesaj")
+    allow_receipts = forms.BooleanField(required=False, label="okundu bilgileri gösterilsin")
 
     class Meta:
         model = Author
-        fields = ("gender", "birth_date", "entries_per_page", "topics_per_page", "message_preference")
+        fields = ("gender", "birth_date", "entries_per_page", "topics_per_page", "message_preference", "allow_receipts")
 
 
 class EntryForm(forms.ModelForm):

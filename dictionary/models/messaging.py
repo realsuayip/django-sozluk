@@ -20,6 +20,7 @@ class Message(models.Model):
     recipient = models.ForeignKey("Author", related_name="+", on_delete=models.CASCADE)
     sent_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, editable=False)
+    has_receipt = models.BooleanField(default=True)
 
     objects = MessageManager()
 

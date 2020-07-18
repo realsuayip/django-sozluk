@@ -60,7 +60,7 @@
                             <p>{{ message.body|formatted|linebreaksbr }}</p>
                             <span class="date-info">
                             <time>{{ message.sent_at|naturaltime }}</time>
-                                {% if message.read_at %}
+                                {% if message.has_receipt and message.read_at %}
                                     <span title="görüldü, {{ message.read_at|timesince }} önce">
                                         <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                             <use href="#msgread"></use>
