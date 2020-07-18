@@ -35,7 +35,9 @@
             <div class="col-xl-5 col-lg-6">
                 <div class="form-group">
                     <label class="d-block" for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>
-                    {% render_field form.birth_date class="datepicker form-control" id="pref_birth_date datepicker" %}
+                    <div class="datepick d-flex">
+                    {% render_field form.birth_date class="form-control" id="pref_birth_date datepicker" %}
+                    </div>
                 </div>
             </div>
         </div>

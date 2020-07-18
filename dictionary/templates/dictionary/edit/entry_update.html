@@ -4,9 +4,8 @@
     {% load filters %}
     {% load widget_tweaks %}
     <h1 class="h4"><strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong><small><strong>#{{ entry.pk }}</strong></small></h1>
-    <hr>
 
-    <section class="user-comments">
+    <section class="user-comments mt-3">
         <div class="editor-buttons">
             <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
             <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
@@ -19,10 +18,10 @@
         <form method="post">
             {% csrf_token %}
             {% with entry.topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
-                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label="Entry yazı alanı" %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="20" spellcheck="true" aria-label="Entry yazı alanı" %}
             {% endwith %}
 
-            <div class="row entry-editor-footer">
+            <div class="row align-items-center">
                 <div class="col-6">
                     {% if entry.is_draft and not user.is_suspended %}
                         <div class="custom-control custom-checkbox">
@@ -31,12 +30,11 @@
                         </div>
                     {% endif %}
 
-                    <a role="button" tabindex="0" data-target-entry="{{ entry.id }}"
-                       class="delete-entry-redirect">sil</a>
-
+                    <a role="button" tabindex="0" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">sil</a>
                 </div>
+
                 <div class="col-6">
-                    <button type="submit" class="btn btn-django entry_submit">yolla</button>
+                    <button type="submit" class="btn btn-django float-right">yolla</button>
                 </div>
             </div>
         </form>

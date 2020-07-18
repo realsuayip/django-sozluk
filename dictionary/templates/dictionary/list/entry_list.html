@@ -34,11 +34,11 @@
 
             {% with mirrors=topic.mirrors.all %}
                 {% if mirrors %}
-                    <div class="mirror-list">
+                    <div class="mirror-list border bg-light rounded p-3 mb-2">
                      <span>aynı isimdeki diğer başlıklar:</span>
-                        <ul>
+                        <ul class="pl-3">
                             {% for mirror in mirrors %}
-                               <li><a href="{{ mirror.get_absolute_url }}">{{ mirror.title }}</a></li>
+                               <li class="p-0"><a href="{{ mirror.get_absolute_url }}">{{ mirror.title }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -46,7 +46,7 @@
             {% endwith %}
 
                 {% if populated %}
-                    <div class="lower">
+                    <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
                     <span class="mr-3 nice-filter">şükela:&nbsp;&nbsp;<a title="tüm zamanların en çok beğenilenleri" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>tümü</a>
                         <span>&nbsp;|&nbsp;</span>
@@ -177,10 +177,8 @@
         {% include "dictionary/includes/send_message_modal.html" %}
         {% include "dictionary/includes/block_user_modal.html" %}
         {% if not banned and valid %}
-            <hr>
-
             {% if drafts.exists %}
-                <div class="border rounded-sm p-3 bg-light mb-3">
+                <div class="border rounded-sm p-3 bg-light my-3">
                     <div class="d-flex" role="alert">
                         <svg class="mr-2" width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <use href="#saved"></use>
@@ -196,7 +194,7 @@
                 </div>
             {% endif %}
 
-            <section class="user-comments">
+            <section class="user-comments mt-4">
                 <div class="editor-buttons">
                     <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
                     <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
@@ -213,7 +211,7 @@
                         {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label="Entry yazı alanı" %}
                     {% endwith %}
 
-                    <div class="row entry-editor-footer">
+                    <div class="row align-items-center">
                         <div class="col-6">
                             {% if not user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
@@ -225,7 +223,7 @@
                             {% endif %}
                         </div>
                         <div class="col-6">
-                            <button type="submit" class="btn btn-django entry_submit">yolla</button>
+                            <button type="submit" class="btn btn-django float-right">yolla</button>
                         </div>
                     </div>
                 </form>

@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 {% load widget_tweaks %}
-{% block title %}Giriş yap{% endblock %}
+{% block title %}giriş yap{% endblock %}
 {% block content %}
     <h1 class="h4 mb-3"><strong>giriş</strong></h1>
     {% if messages %}
@@ -15,29 +15,36 @@
 
     <form method="post" class="login-form">
         {% csrf_token %}
+
         <div class="form-group">
             {% for err in form.non_field_errors %}
                 <div class="alert alert-danger">{{ err }}</div>
             {% endfor %}
-            <label for="loginUser">{{ form.username.label }}</label>
+            <label for="loginUser">{{ form.username.label|lower }}</label>
             {% render_field form.username type="email" id="loginUser" class="form-control" %}
+            {% for error in form.username.errors %}
+                <p class="text-danger my-3">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <div class="form-group">
-            <label for="loginPassword">{{ form.password.label }}</label>
+            <label for="loginPassword">{{ form.password.label|lower }}</label>
             {% render_field form.password id="loginPassword" class="form-control" %}
+            {% for error in form.password.errors %}
+                <p class="text-danger my-3">{{ error }}</p>
+            {% endfor %}
         </div>
 
-        <div class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox mb-3">
             {% render_field form.remember_me class="custom-control-input" id="remember_me" %}
             <label class="custom-control-label" for="remember_me">{{ form.remember_me.label }}</label>
         </div>
 
-        <br>
-        <a href="{% url 'password_reset' %}" class="m-2">parola neydi ya</a>
-        <a href="{% url 'resend-email' %}">onaylama maili gelmedi</a>
-        <hr>
+        <div class="mb-3">
+            <a href="{% url 'password_reset' %}" class="m-2" title="parola emekti">parola neydi</a>
+            <a href="{% url 'resend-email' %}">onaylama maili gelmedi</a>
+        </div>
+
         <button type="submit" class="btn btn-django stretch">giriş yap</button>
     </form>
-
 {% endblock %}

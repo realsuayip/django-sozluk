@@ -155,11 +155,17 @@ $("#header_search").autocomplete({
 
     lookup (lookup, done) {
         if (lookup.startsWith("@") && lookup.substr(1)) {
-            gqlc({ query: `{autocomplete{authors(lookup:"${lookup.substr(1)}"){username}}}` }).then(function (response) {
+            gqlc({
+                query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
+                variables: { lookup: lookup.substr(1) }
+            }).then(function (response) {
                 done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
             });
         } else {
-            gqlc({ query: `{autocomplete{authors(lookup:"${lookup}",limit:3){username} topics(lookup:"${lookup}",limit:7){title}}}` }).then(function (response) {
+            gqlc({
+                query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
+                variables: { lookup }
+            }).then(function (response) {
                 const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
                 const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
                 done({ suggestions: topicSuggestions.concat(authorSuggestions) });
@@ -174,7 +180,10 @@ $("#header_search").autocomplete({
 
 $(".author-search").autocomplete({
     lookup (lookup, done) {
-        gqlc({ query: `{autocomplete{authors(lookup:"${lookup}"){username}}}` }).then(function (response) {
+        gqlc({
+            query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
+            variables: { lookup }
+        }).then(function (response) {
             done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
         });
     },

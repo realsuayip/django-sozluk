@@ -1,3 +1,19 @@
+[0.168.0-dev-pre](2020.07.18)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Removed unused/redundant css rules. Also
+cleaned up UI a little bit.
+2) Fixed autocomplete logic for quote (") input.
+3) In login page it is now possible to see
+field errors.
+4) Fixed a regression introduced in 0.166.0-dev-pre
+which hindered access to entry permalink of novice users.
+
+--Deletions--
+None
+
 [0.167.0-dev-pre](2020.07.18)(incompatible)
 --Additions--
 None

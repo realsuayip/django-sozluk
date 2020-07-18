@@ -503,9 +503,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             with proceed_or_404(ValueError, OverflowError):
                 # Deprecated entry_id for get_or_pseudo.
                 klass = (
-                    Entry.objects
+                    Entry.objects_published
                     if not self.request.user.is_authenticated
-                    else Entry.objects.exclude(author__in=self.request.user.blocked.all())
+                    else Entry.objects_published.exclude(author__in=self.request.user.blocked.all())
                 )
                 self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")),)
                 self.topic = self.entry.topic
