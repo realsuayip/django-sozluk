@@ -876,6 +876,13 @@ $(".entry-actions").on("click", ".pin-entry", function () {
     });
 });
 
+$(".pin-sync").on("click", function () {
+    entryAction("pin", $(this).attr("data-id")).then(function (response) {
+        notify(response.data.entry.pin.feedback);
+        window.location = location;
+    });
+});
+
 const topicAction = function (type, pk) {
     return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(function (response) {
         notify(response.data.topic[type].feedback);
