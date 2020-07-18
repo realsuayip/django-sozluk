@@ -1,48 +1,30 @@
 from django.contrib import admin
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.db.models import Case, IntegerField, Q, When
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
-from ...utils import get_generic_superuser, time_threshold
+from ...utils import get_generic_superuser
 from ...utils.admin import log_admin
 from ...utils.settings import FROM_EMAIL, NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE
 
 
-def novice_list(limit=None):
-    novice_queryset = (
-        Author.objects.filter(last_activity__isnull=False, is_novice=True, application_status="PN")
-        .annotate(
-            activity=Case(
-                When(Q(last_activity__gte=time_threshold(hours=24)), then=2),
-                When(Q(last_activity__lte=time_threshold(hours=24)), then=1),
-                output_field=IntegerField(),
-            )
-        )
-        .order_by("-activity", "application_date")
-    )
-
-    if limit is not None:
-        return novice_queryset[:limit]
-    return novice_queryset
-
-
 class NoviceList(PermissionRequiredMixin, ListView):
-    # View to list top 10 novices.
+    """View to list top 100 novices."""
+
     model = Author
     template_name = "dictionary/admin/novices.html"
     permission_required = "dictionary.can_activate_user"
 
     def get_queryset(self):
-        return novice_list(10)
+        return Author.in_novice_list.get_ordered(100)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(admin.site.each_context(self.request))
         context["title"] = "Çaylak onay listesi"
-        context["novice_count"] = novice_list().count()
+        context["novice_count"] = Author.in_novice_list.get_ordered().count()
         return context
 
 
@@ -61,12 +43,12 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.novice = get_object_or_404(Author, username=self.kwargs.get("username"))
-        novices = novice_list()
+        novices = Author.in_novice_list.get_ordered()
 
-        if self.novice not in novices:
+        if not novices.filter(pk=self.novice.pk).exists():
             notifications.error(self.request, "kullanıcı çaylak onay listesinde değil.")
             self.novice = None
-        elif self.novice not in novices[:10]:
+        elif self.novice not in novices[:100]:
             self.novice = None
             notifications.error(self.request, "kullanıcı çaylak onay listesinin başında değil")
 
@@ -76,14 +58,12 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        first_ten_entries = Entry.objects_published.filter(author=self.novice).order_by("id")[:10]
-        return first_ten_entries
+        return self.novice.entry_set(manager="objects_published").order_by("pk")[:10]
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(admin.site.each_context(self.request))
         context["title"] = f"{self.novice.username} isimli çaylağın ilk 10 entry'si"
-        context["next"] = self.get_next_username()
         return context
 
     def post(self, *args, **kwargs):
@@ -98,41 +78,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         elif operation == "decline":
             self.decline_application()
 
-        if self.request.POST.get("submit_type") == "redirect_back":
-            return redirect(reverse("admin:novice_list"))
-
-        return redirect(reverse("admin:novice_lookup", kwargs={"username": self.request.POST.get("submit_type")}))
-
-    def get_next_username(self):
-        next_novice = None
-        # Get next novice on the list and return it's username, required for 'save and continue'
-        if self.novice.last_activity >= time_threshold(hours=24):
-            next_novice = (
-                Author.objects.filter(
-                    is_novice=True,
-                    application_status="PN",
-                    last_activity__gt=time_threshold(hours=24),
-                    application_date__gt=self.novice.application_date,
-                )
-                .order_by("application_date")
-                .first()
-            )
-
-        if not next_novice:
-            # There was no user with latest activity. Check for non-active ones.
-            next_novice = (
-                Author.objects.filter(
-                    is_novice=True,
-                    application_status="PN",
-                    last_activity__lt=time_threshold(hours=24),
-                    application_date__gt=self.novice.application_date,
-                )
-                .order_by("application_date")
-                .first()
-            )
-
-        next_username = next_novice.username if next_novice else None
-        return next_username
+        return redirect(reverse("admin:novice_list"))
 
     def accept_application(self):
         # Alter the user status

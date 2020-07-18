@@ -45,7 +45,8 @@ class Entry(models.Model):
                 get_generic_superuser(),
                 self.author,
                 "10 adet entry'nizi doldurduğunuz için sizi çaylak listesine aldık."
-                " profilinizden sıranızı görebilirsiniz.",
+                " profilinizden sıranızı görebilirsiniz. entry sayınız 10'un altına düştüğü"
+                " takdirde çaylak listesinden şutlanacaksınız.",
             )
 
         # assign topic creator (includes novices)
@@ -65,6 +66,7 @@ class Entry(models.Model):
             # does not work if bulk deletion made on admin panel (users can only remove one entry at a time)
             self.author.application_status = "OH"
             self.author.application_date = None
+            self.author.queue_priority = 0
             self.author.save()
 
     def update_vote(self, rate, change=False):

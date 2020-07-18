@@ -1,4 +1,5 @@
 import math
+
 from contextlib import suppress
 from decimal import Decimal
 
@@ -33,7 +34,7 @@ from ..utils.settings import (
 )
 from ..utils.validators import validate_username_partial
 from .category import Category
-from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible
+from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
@@ -106,6 +107,7 @@ class Author(AbstractUser):
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)
+    queue_priority = models.PositiveSmallIntegerField(default=0)
 
     # Accessibility details
     suspended_until = models.DateTimeField(null=True, blank=True, default=None)
@@ -152,6 +154,7 @@ class Author(AbstractUser):
     # https://docs.djangoproject.com/en/3.0/topics/db/managers/#django.db.models.Model._default_manager
     objects = UserManager()
     objects_accessible = AuthorManagerAccessible()
+    in_novice_list = InNoviceList()
 
     def __str__(self):
         return f"{self.username}:{self.id}"
@@ -368,6 +371,33 @@ class Author(AbstractUser):
             "announcements": unread_announcements,
             "topics": unread_topics,
         }
+
+    @cached_property
+    def novice_queue(self):
+        if self.last_activity < time_threshold(hours=24):
+            # NoviceActivityMiddleware ensures that logged in novices will always
+            # pass this check. It is not possible to see the queue of users
+            # with no activity in last one day.
+            return None
+
+        def interqueue(user):
+            active_siblings = Author.in_novice_list.annotate_activity(
+                Author.in_novice_list.exclude(pk=user.pk).filter(queue_priority=user.queue_priority)
+            ).filter(is_active_today=True)
+
+            if active_siblings.exists():
+                return active_siblings.filter(application_date__lt=user.application_date).count() + 1
+            return 1
+
+        equal_and_superior = Author.in_novice_list.exclude(pk=self.pk).filter(queue_priority__gte=self.queue_priority)
+
+        if equal_and_superior.count():
+            superior = equal_and_superior.filter(queue_priority__gt=self.queue_priority)
+
+            if superior_count := superior.count():
+                return superior_count + interqueue(self)
+            return interqueue(self)
+        return 1
 
 
 class Memento(models.Model):

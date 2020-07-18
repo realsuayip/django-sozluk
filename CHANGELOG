@@ -1,3 +1,33 @@
+[0.167.0-dev-pre](2020.07.18)(incompatible)
+--Additions--
+None
+
+-- Changes --
+1) Revamped novice queue algorithm. A third parameter
+novice_priority is now considered. Each time the user
+visits the website (in 24 hour periods) this field is
+incremented by 1. This field is now the prime priority
+to get to the top of the list, meaning that users who
+hang out in the site more get more credit. If this
+field is the same for several users, the users who
+visited the site that day goes up, and among these users
+application date determines the final place.
+
+In novice list admin view, the number of novices listed
+is increased to 100 from 10. In individual novice view,
+removed the 'continue to next novice' button as it is
+difficult to implement with the new algorithm.
+
+Inaccessible novices won't be listed in the novice list
+and they won't be able to collect priority points as long
+as their inaccessibility continues.
+
+This is **incompatible**, run makemigrations+migrate
+for dictionary.
+
+--Deletions--
+None
+
 [0.166.0-dev-pre](2020.07.17)(compatible)
 --Additions--
 1) New template tag print_topic_title; properly formats

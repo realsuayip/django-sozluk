@@ -23,6 +23,7 @@ class AuthorAdmin(UserAdmin):
                     "is_novice",
                     "application_status",
                     "application_date",
+                    "queue_priority",
                     "last_activity",
                     "suspended_until",
                     "birth_date",

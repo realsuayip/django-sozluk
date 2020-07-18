@@ -10,6 +10,7 @@ from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
 from ..models import Author, Conversation, ConversationArchive, Entry, Memento, Message
+from ..utils.decorators import cached_context
 from ..utils.managers import UserStatsQueryHandler, entry_prefetch
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
@@ -163,15 +164,15 @@ class UserProfile(IntegratedFormMixin, ListView):
         return super().dispatch(request)
 
     def get_novice_queue(self):
-        user = self.request.user
+        sender = self.request.user
         if (
-            user.is_authenticated
-            and user == self.profile
-            and user.is_novice
-            and user.application_status == "PN"
-            and (queue := self.request.session.get("novice_queue"))
+            sender.is_authenticated
+            and sender == self.profile
+            and sender.is_novice
+            and sender.application_status == "PN"
         ):
-            return queue
+            queue = cached_context(prefix="nqu", vary_on_user=True, timeout=86400)(lambda user: user.novice_queue)
+            return queue(user=sender)
         return None
 
     def get_memento(self):

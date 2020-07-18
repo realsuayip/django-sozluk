@@ -11,10 +11,10 @@
 {% endblock %}
 {% block content %}
     {% for entry in entries %}
-
-        <h2>{{ forloop.counter }}. <a target="_blank"
-                                      href="{{ entry.get_absolute_url }}">{{ entry.topic.title }}
-            (#{{ entry.id }})</a></h2>
+        <h2>
+            <span>{{ forloop.counter }}.</span>
+            <a target="_blank" href="{{ entry.get_absolute_url }}">{{ entry.topic.title }}(#{{ entry.id }})</a>
+        </h2>
         <p>{{ entry.content }} <br> <span style="float:right;">{{ entry.date_created }}</span></p>
         <br>
         <hr>
@@ -29,17 +29,7 @@
             <option value="decline">yazarlık başvurusunu reddet ve tüm entrylerini sil</option>
         </select>
         <div style="float: right;">
-            {% if next %}
-                <button style="background: #79aec8; padding: 10px 15px; border: none; border-radius: 4px; color: #fff;  cursor: pointer;margin-right: 1em;"
-                        name="submit_type" type="submit" value="{{ next }}">
-                    işlemi uygula ve sıradaki çaylağa geç
-                </button>
-            {% endif %}
-
-            <button style="background: #417690; padding: 10px 15px; border: none; border-radius: 4px; color: #fff;  cursor: pointer;margin-right: 1em;"
-                    name="submit_type" type="submit" class="default" value="redirect_back">işlemi uygula ve listeye dön
-            </button>
-
+            <button style="background: #417690; padding:10px 15px;border:none;border-radius:4px;color: #fff;cursor: pointer;margin-right: 1em;" type="submit" class="default">işlemi uygula ve listeye dön</button>
         </div>
         {% csrf_token %}
     </form>

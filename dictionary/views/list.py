@@ -363,7 +363,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         if self.entry is not None:
             return [self.entry]
-        elif self.topic.exists:
+
+        if self.topic.exists:
             queryset = getattr(self, self.view_mode)()
 
         if queryset is not None:

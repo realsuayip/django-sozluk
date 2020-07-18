@@ -1,11 +1,11 @@
 import logging
 
 from django.contrib.auth.models import UserManager
-from django.db.models import Q
 from django.db import models
+from django.db.models import BooleanField, Case, Q, When
 from django.utils import timezone
 
-from ...utils import get_generic_privateuser
+from ...utils import get_generic_privateuser, time_threshold
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,30 @@ class AuthorManagerAccessible(UserManager):
             .get_queryset()
             .exclude(
                 Q(is_frozen=True) | Q(is_private=True) | Q(is_active=False) | Q(suspended_until__gt=timezone.now())
+            )
+        )
+
+
+class InNoviceList(AuthorManagerAccessible):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_novice=True, application_status="PN")
+
+    def get_ordered(self, limit=None):
+        """Return all users in novice list, ordered."""
+        qs = self.annotate_activity(self.filter(last_activity__isnull=False)).order_by(
+            "-queue_priority", "-is_active_today", "application_date"
+        )
+        if limit is not None:
+            return qs[:limit]
+        return qs
+
+    @staticmethod
+    def annotate_activity(queryset):
+        return queryset.annotate(
+            is_active_today=Case(
+                When(Q(last_activity__gte=time_threshold(hours=24)), then=True),
+                default=False,
+                output_field=BooleanField(),
             )
         )
 
