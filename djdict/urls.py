@@ -15,11 +15,23 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.contrib.sitemaps import views as sitemap_views
 from django.urls import include, path
+from django.views.decorators.gzip import gzip_page
+
+from dictionary.sitemaps import sitemaps
 
 
 urlpatterns = [
-    path('', include('dictionary.urls')),
+    path("", include("dictionary.urls")),
     path("graphql/", include("dictionary_graph.urls")),
-    path('admin/', admin.site.urls)
+    path("admin/", admin.site.urls),
+    # Sitemap
+    path("sitemap.xml", gzip_page(sitemap_views.index), {"sitemaps": sitemaps}),
+    path(
+        "sitemap-<section>.xml",
+        gzip_page(sitemap_views.sitemap),
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
 ]

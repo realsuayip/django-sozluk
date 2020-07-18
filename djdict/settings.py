@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'django.contrib.sitemaps',
 
     # Main apps
     'dictionary',
