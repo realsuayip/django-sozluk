@@ -30,7 +30,7 @@ skipping the necessity of writing 10 entries and waiting for the approval of mod
 
 INDEX_TYPE = "random_records"
 """
-What type of records do we want in index? (nice_records, random_records), 
+What type of records do we want in index? (nice_records, random_records),
 cache timeout, queryset size and nice boundary can be found in views.list.Index
 """
 
@@ -163,15 +163,15 @@ YEAR_RANGE = (2020, 2019, 2018)
 
 #  <-----> END OF CATEGORY RELATED SETTINGS <----->  #
 
+DISABLE_GENERATIONS = False
 """
+Set this to True if you do not want generations to appear in profile pages.
+
 Generations create classification for users using their
 registration date, so that users that using (or used) the site at the
 same can identify each other. This also provides feedback to users
 to see which users are newbies.
 """
-
-DISABLE_GENERATIONS = False
-"""Set this to True if you do not want generations to appear in profile pages."""
 
 FIRST_GENERATION_DATE = "09.08.2019"
 """Set this to first user's registration date."""

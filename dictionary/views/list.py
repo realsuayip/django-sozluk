@@ -43,7 +43,7 @@ class Index(ListView):
     @method_decorator(cached_context(timeout=20, prefix="index_view"))
     def get_pk_set(self):
         records = getattr(self, INDEX_TYPE)()
-        return [record for record in records]
+        return list(records)
 
     def random_records(self):
         """Author: Peter Be <peterbe.com>"""
@@ -54,7 +54,7 @@ class Index(ListView):
         ids = set()
 
         while len(ids) < self.size:
-            next_pk = random.randint(min_pk, max_pk)
+            next_pk = random.randint(min_pk, max_pk)  # nosec
             while next_pk in ids:
                 next_pk = random.randint(min_pk, max_pk)
 

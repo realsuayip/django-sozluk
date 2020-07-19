@@ -39,7 +39,7 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
             if hasattr(func, "__name__"):
                 func_name = func.__name__
             elif prefix == "default":
-                raise ValueError(f"Usage with non-wrapped decorators require an unique prefix.")
+                raise ValueError("Usage with non-wrapped decorators require an unique prefix.")
 
             key = f"{prefix}_context__{func_name}{user_prefix}"
             cached_value = cache.get(key)
