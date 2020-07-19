@@ -1,3 +1,25 @@
+[0.173.0-dev-pre](2020.07.20)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed faulty acquaintances_entries. (draft
+entries were included, also replaced subquery
+with convenient Max)
+2) acquaintances_favorites will now include
+entries of novices.
+3) Fixed userstats_channels ordering for
+novice users.
+4) It is now possible to see entries of
+novices when searched with their name
+in topic entry list (e.g. @user).
+5) It is now possible to see entries
+of novices when you browse topic entry
+list via acquaintances mode.
+
+--Deletions--
+None
+
 [0.172.0-dev-pre](2020.07.19)(compatible)
 --Additions--
 1) Implemented index page.

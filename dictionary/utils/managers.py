@@ -123,20 +123,18 @@ class TopicQueryHandler:
 
     def acquaintances_entries(self, user):
         return (
-            Topic.objects.filter(entries__author__in=user.following.all(), date_created__gte=time_threshold(hours=120))
-            .annotate(
-                latest_entry=Subquery(
-                    Entry.objects.filter(topic=OuterRef("pk")).order_by("-date_created").values("date_created")[:1]
-                ),
-                count=Count("entries"),
+            Topic.objects.filter(
+                entries__is_draft=False,
+                entries__date_created__gte=time_threshold(hours=120),
+                entries__author__in=user.following.all(),
             )
-            .order_by("-latest_entry")
-            .values(*self.values)
-        )
+            .annotate(latest=Max("entries__date_created"), count=Count("entries"))
+            .order_by("-latest")
+        ).values(*self.values)
 
     def acquaintances_favorites(self, user):
         return (
-            Entry.objects.filter(
+            Entry.objects_published.filter(
                 favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24)
             )
             .annotate(
@@ -345,13 +343,8 @@ class TopicQueryHandler:
     def userstats_channels(self, user, channel):
         return (
             Topic.objects.filter(entries__author=user, entries__is_draft=False, category=channel)
-            .annotate(
-                count=Count("entries"),
-                latest_entry=Subquery(
-                    Entry.objects.filter(topic=OuterRef("pk")).order_by("-date_created").values("date_created")[:1]
-                ),
-            )
-            .order_by("-latest_entry")
+            .annotate(latest=Max("entries__date_created"), count=Count("entries"))
+            .order_by("-latest")
             .values(*self.values)
         )
 

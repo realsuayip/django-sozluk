@@ -594,11 +594,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         :return: qs
         """
 
-        novice_view_modes = ("novices", "entry_permalink")  # modes in which novice entries are visible
+        novice_view_modes = ["novices", "entry_permalink", "acquaintances"]  # modes in which novice entries are visible
 
         if self.view_mode == "recent" and self.request.user.is_novice:
             # 'followups' doesn't include novice entries for authors, but does for novices.
-            novice_view_modes += ("recent",)
+            novice_view_modes.append("recent")
+        elif self.view_mode == "search" and self.request.GET.get("keywords", "").strip().startswith("@"):
+            novice_view_modes.append("search")
 
         qs = queryset.exclude(is_draft=True)
 
