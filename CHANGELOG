@@ -1,3 +1,15 @@
+[0.172.0-dev-pre](2020.07.19)(compatible)
+--Additions--
+1) Implemented index page.
+
+-- Changes --
+1) Updated cached_context to be compatible with
+django's method_decorator.
+2) Removed excessive spacing from entry.html.
+
+--Deletions--
+None
+
 [0.171.0-dev-pre](2020.07.19)(incompatible)
 --Additions--
 1) Added the option to disable read

@@ -1,10 +1,10 @@
 from django.urls import path
 
-from ..views.list import CategoryList, TopicList, TopicEntryList, index
+from ..views.list import CategoryList, TopicList, TopicEntryList, Index
 
 urlpatterns_list = [
     # Generic list
-    path('', index, name="home"),
+    path('', Index.as_view(), name="home"),
     path('threads/<slug:slug>/', TopicList.as_view(), name="topic_list"),
     path("channels/", CategoryList.as_view(), name="category_list"),
     # Topic entry list

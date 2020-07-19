@@ -321,6 +321,10 @@ section.user_entries ul {
     margin: 0;
 }
 
+section.user_entries ul.home li h2 {
+    font-size: 1.5em;
+}
+
 section.user_entries ul li h2 {
     font-size: 1.3em;
     font-weight: 700;
@@ -350,6 +354,7 @@ section.user_entries article.entry p {
     line-height: 1.5em;
     max-height: 15em;
     word-wrap: break-word;
+    margin-bottom: 0;
 }
 
 section.user_entries article.entry.permalink p {
@@ -982,6 +987,7 @@ div.read_more {
     color: #16784f;
     font-size: 1rem;
     display: inline-block;
+    margin-top: .5rem;
 }
 
 div.read_more:hover {

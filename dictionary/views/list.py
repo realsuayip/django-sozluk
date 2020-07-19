@@ -1,5 +1,6 @@
 import datetime
 import math
+import random
 
 from contextlib import suppress
 
@@ -7,9 +8,9 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Max, Min, Q
 from django.http import HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -21,14 +22,50 @@ from uuslug import slugify
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
 from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
+from ..utils.decorators import cached_context
 from ..utils.managers import TopicListManager, entry_prefetch
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
-from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, LOGIN_REQUIRED_CATEGORIES, YEAR_RANGE
+from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, INDEX_TYPE, LOGIN_REQUIRED_CATEGORIES, YEAR_RANGE
 
 
-def index(request):
-    return render(request, "dictionary/index.html")
+class Index(ListView):
+    template_name = "dictionary/index.html"
+    context_object_name = "entries"
+
+    size = 15
+    nice_bound = 100
+
+    def get_queryset(self):
+        queryset = Entry.objects.filter(pk__in=self.get_pk_set())
+        return entry_prefetch(queryset, self.request.user)
+
+    @method_decorator(cached_context(timeout=20, prefix="index_view"))
+    def get_pk_set(self):
+        records = getattr(self, INDEX_TYPE)()
+        return [record for record in records]
+
+    def random_records(self):
+        """Author: Peter Be <peterbe.com>"""
+        qs = Entry.objects.all()
+
+        max_pk = qs.aggregate(Max("pk"))["pk__max"]
+        min_pk = qs.aggregate(Min("pk"))["pk__min"]
+        ids = set()
+
+        while len(ids) < self.size:
+            next_pk = random.randint(min_pk, max_pk)
+            while next_pk in ids:
+                next_pk = random.randint(min_pk, max_pk)
+
+            found = qs.model.objects.filter(pk=next_pk).exists()
+            if found:
+                ids.add(next_pk)
+                yield next_pk
+
+    def nice_records(self):
+        nice_pk_set = tuple(Entry.objects.filter(vote_rate__gte=self.nice_bound).values_list("pk", flat=True))
+        return random.sample(nice_pk_set, self.size) if len(nice_pk_set) > self.size else nice_pk_set
 
 
 class PeopleList(LoginRequiredMixin, TemplateView):

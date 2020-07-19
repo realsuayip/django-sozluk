@@ -34,7 +34,14 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
 
                 user_prefix = "_anonymous" if not user.is_authenticated else f"_usr{user.pk}"
 
-            key = f"{prefix}_context__{func.__name__}{user_prefix}"
+            func_name = ""
+
+            if hasattr(func, "__name__"):
+                func_name = func.__name__
+            elif prefix == "default":
+                raise ValueError(f"Usage with non-wrapped decorators require an unique prefix.")
+
+            key = f"{prefix}_context__{func_name}{user_prefix}"
             cached_value = cache.get(key)
 
             if cached_value is not None:

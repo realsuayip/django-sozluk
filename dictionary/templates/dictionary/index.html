@@ -1,4 +1,20 @@
 {% extends 'dictionary/base.html' %}
 {% block supertitle %}{{ request.site.name }} - özgür bilgi kaynağı{% endblock %}
 {% block content %}
+    {% if entries %}
+        <section class="user_entries">
+            <ul class="home">
+                {% for entry in entries %}
+                    {% include "dictionary/includes/entry.html" with show_title="yes" gap="3" %}
+                {% endfor %}
+            </ul>
+        </section>
+    {% else %}
+        <div class="border rounded p-3 bg-light">hiç entry bulamadım 🤷</div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% include "dictionary/includes/block_user_modal.html" %}
+        {% include "dictionary/includes/send_message_modal.html" %}
+    {% endif %}
 {% endblock %}

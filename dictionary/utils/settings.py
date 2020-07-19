@@ -27,6 +27,13 @@ When set to True, users registered via 'registration form' will be authors immed
 skipping the necessity of writing 10 entries and waiting for the approval of mods/admins.
 """
 
+
+INDEX_TYPE = "random_records"
+"""
+What type of records do we want in index? (nice_records, random_records), 
+cache timeout, queryset size and nice boundary can be found in views.list.Index
+"""
+
 #  <-----> START OF CATEGORY RELATED SETTINGS <----->  #
 
 
