@@ -32,6 +32,7 @@ from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, INDEX_TYPE, LOGIN_REQUIRE
 class Index(ListView):
     template_name = "dictionary/index.html"
     context_object_name = "entries"
+    extra_context = {"index_type": INDEX_TYPE}
 
     size = 15
     nice_bound = 100
@@ -51,12 +52,16 @@ class Index(ListView):
 
         max_pk = qs.aggregate(Max("pk"))["pk__max"]
         min_pk = qs.aggregate(Min("pk"))["pk__min"]
+
+        if max_pk < self.size * 2:
+            return []
+
         ids = set()
 
         while len(ids) < self.size:
             next_pk = random.randint(min_pk, max_pk)  # nosec
             while next_pk in ids:
-                next_pk = random.randint(min_pk, max_pk)
+                next_pk = random.randint(min_pk, max_pk)  # nosec
 
             found = qs.model.objects.filter(pk=next_pk).exists()
             if found:

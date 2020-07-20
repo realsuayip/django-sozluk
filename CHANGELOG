@@ -1,3 +1,16 @@
+[0.174.0-dev-pre](2020.07.20)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed index for initial set-ups, also added
+a warning message.
+2) In pinned entry, it is now possible to
+see external link indicator.
+
+--Deletions--
+None
+
 [0.173.0-dev-pre](2020.07.20)(compatible)
 --Additions--
 None

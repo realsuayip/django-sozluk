@@ -10,7 +10,18 @@
             </ul>
         </section>
     {% else %}
-        <div class="border rounded p-3 bg-light">hiç entry bulamadım 🤷</div>
+        <div class="border rounded p-3 bg-light">
+            <span>gösterime uygun entry yok 🤷</span>
+            {% if index_type == "random_records" %}
+                <hr>
+                <p class="m-0">
+                    <b>random records:</b> anasayfa'da entry'lerin gözükmesi için
+                    varsayılan ayarlarda tüm zamanlarda en az 15×2 entry girilmiş olmalı.
+                    tüm zamanlarda 15×2 entry girilmesine rağmen <u>yazarlar tarafından yayımlanmış</u>
+                    toplam entry sayısı 15'ten az ise anasayfa yanıt vermeyecektir.
+                </p>
+            {% endif %}
+        </div>
     {% endif %}
 
     {% if user.is_authenticated %}
