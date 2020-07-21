@@ -27,6 +27,11 @@ def check_follow_status(user, topic):
 
 
 @register.simple_tag
+def check_follow_user(user, target):
+    return user.following.filter(pk=target.pk).exists()
+
+
+@register.simple_tag
 def get_external_urls():
     return ExternalURL.objects.all()
 

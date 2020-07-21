@@ -3,6 +3,9 @@
 {% block title %}kullanıcı: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% endblock %}
 {% block bodyattr %}class="default topic-entry-view has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 
+{% load filters %}
+{% load functions %}
+
 {% block content %}
     {% load humanize %}
     <section class="user-info">
@@ -17,8 +20,9 @@
 
         {% if user.is_authenticated and user != profile %}
             <ul class="user-links" data-username="{{ profile.username }}">
+                {% check_follow_user user profile as is_following %}
                 <li class="follow-user-trigger">
-                    <a role="button" tabindex="0">{% if profile in user.following.all %}takip etme{% else %}takip et{% endif %}</a>
+                    <a role="button" tabindex="0">{{ is_following|yesno:"takip etme,takip et" }}</a>
                 </li>
 
                 <li class="block-user">
@@ -86,27 +90,26 @@
 
     {% with object_count=page_obj.paginator.count %}
 
-            <nav class="user-stats-nav">
-                <ul class="m-0 p-0">
-                    <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
-                    <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">favorileri</a></li>
+        <nav class="user-stats-nav">
+            <ul class="m-0 p-0">
+                <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
+                <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">favorileri</a></li>
 
-                    <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
-                        <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">istatistikler</a>
-
-                        <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">en çok favorilenenleri</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">son oylananları</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">en beğenilenleri</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "weeklygoods" %}">bu hafta dikkat çekenleri</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "beloved" %}">el emeği göz nuru</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "authors" %}">favori yazarları</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "wishes" %}">ukteleri</a>
-                            <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "channels" %}">katkıda bulunduğu kanallar</a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+                <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
+                    <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">istatistikler</a>
+                    <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">en çok favorilenenleri</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">son oylananları</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">en beğenilenleri</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "weeklygoods" %}">bu hafta dikkat çekenleri</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "beloved" %}">el emeği göz nuru</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "authors" %}">favori yazarları</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "wishes" %}">ukteleri</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "channels" %}">katkıda bulunduğu kanallar</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
 
         <h2 class="h5 mt-3">
             <strong class="d-flex justify-content-between align-items-center">
@@ -137,7 +140,11 @@
             {% if tab.type == "author" %}
                 <ul class="list-group list-group-flush">
                     {% for author in object_list %}
-                        <a class="list-group-item list-group-item-action" href="{{ author.get_absolute_url }}">{{ author.username }}</a>
+                        {% check_follow_user user author as is_following_stat %}
+                        <li class="list-group-item d-flex justify-content-between border-0" data-username="{{ author.username }}">
+                            <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
+                            <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:"takip etme, takip et" }}</a></span>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -145,7 +152,9 @@
             {% if tab.type == "topic" %}
                 <ul class="list-group list-group-flush">
                     {% for topic in object_list %}
-                        <a class="list-group-item list-group-item-action" href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                        <li class="list-group-item d-flex justify-content-between border-0">
+                            <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -153,10 +162,10 @@
             {% if tab.type == "category" %}
                 <ul class="list-group list-group-flush">
                     {% for category in object_list %}
-                        <li class="list-group-item d-flex justify-content-between">
-                        <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab=channels&channel={{ category.slug }}" data-lf-slug="userstats" data-tab="channels" data-lf-extra='{"user": "{{ profile.slug }}", "channel": "{{ category.slug }}"}' title="{{ category.description }}">#{{ category.name }}</a>
-                        <span>{{ category.count }}</span>
-                      </li>
+                        <li class="list-group-item d-flex justify-content-between border-0">
+                            <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab=channels&channel={{ category.slug }}" data-lf-slug="userstats" data-tab="channels" data-lf-extra='{"user": "{{ profile.slug }}", "channel": "{{ category.slug }}"}' title="{{ category.description }}">#{{ category.name }}</a>
+                            <span>{{ category.count }}</span>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -184,7 +193,6 @@
 
         <form method="post" class="memento">
             {% load widget_tweaks %}
-            {% load filters %}
 
             {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
                 {% render_field form.body placeholder=text_placeholder name="memento" class="form-control" rows="10" id="memento" %}
