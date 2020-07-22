@@ -49,7 +49,7 @@ def print_topic_title(context):
     base = context["topic"].title
 
     if context["entry_permalink"]:
-        return base + f" - #{context['entries'][0].pk}"
+        return base + f" - #{context['entry_permalink'].pk}"
 
     mode_repr = {
         "today": "bugün girilen entry'ler",

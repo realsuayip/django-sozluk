@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 
 from graphene import ID, Int, Mutation, String
 
-from dictionary.models import Entry
+from dictionary.models import Entry, Comment
 from dictionary.utils.settings import DISABLE_ANONYMOUS_VOTING, KARMA_RATES
 
 from ..utils import AnonymousUserStorage, login_required
@@ -209,3 +209,40 @@ class DownvoteEntry(Action, Mutation):
             entry.author.save()
 
         return response
+
+
+class VoteComment(Mutation):
+    count = Int()
+
+    class Arguments:
+        pk = ID()
+        action = String()
+
+    @staticmethod
+    @login_required
+    def mutate(_root, info, pk, action):
+        comment, sender = Comment.objects.get(pk=pk), info.context.user
+        in_upvoted = comment.upvoted_by.filter(pk=sender.pk).exists()
+        in_downvoted = comment.downvoted_by.filter(pk=sender.pk).exists()
+
+        if action == "upvote":
+            if in_upvoted:
+                comment.upvoted_by.remove(sender)
+            elif in_downvoted:
+                comment.downvoted_by.remove(sender)
+                comment.upvoted_by.add(sender)
+            else:
+                comment.upvoted_by.add(sender)
+        elif action == "downvote":
+            if in_downvoted:
+                comment.downvoted_by.remove(sender)
+            elif in_upvoted:
+                comment.upvoted_by.remove(sender)
+                comment.downvoted_by.add(sender)
+            else:
+                comment.downvoted_by.add(sender)
+        else:
+            raise ValueError("That action is not available")
+
+        count = comment.upvoted_by.count() - comment.downvoted_by.count()
+        return VoteComment(count=count)

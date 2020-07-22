@@ -18,7 +18,7 @@ from ..models import (
 from .announcements import AnnouncementAdmin
 from .author import AuthorAdmin
 from .category import CategoryAdmin
-from .entry import EntryAdmin
+from .entry import EntryAdmin, CommentAdmin
 from .flatpages import FlatPageAdmin
 from .general_report import GeneralReportAdmin
 from .sites import SiteAdmin

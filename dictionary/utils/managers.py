@@ -16,7 +16,7 @@ from django.utils import timezone
 
 from dateutil.relativedelta import relativedelta
 
-from ..models import Author, Category, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
+from ..models import Author, Category, Comment, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.decorators import for_public_methods
 from ..utils.settings import (
@@ -734,15 +734,50 @@ class UserStatsQueryHandler:
         )
 
 
-def entry_prefetch(queryset, user):
+def entry_prefetch(queryset, user, comments=False):
     """
     Given an entry queryset, optimize it to be shown in templates (entry.html).
     :param queryset: Entry queryset.
     :param user: User who requests the queryset.
+    :param comments: Set true to also prefetch comments.
     """
+    prefetch = [Prefetch("favorited_by", queryset=Author.objects.only("id"))]
+
+    if comments:
+        comments_qs = (
+            Comment.objects.annotate(rating=Count("upvoted_by", distinct=True) - Count("downvoted_by", distinct=True))
+            .select_related("author")
+            .only(
+                "id",
+                "entry_id",
+                "content",
+                "date_created",
+                "date_edited",
+                "author_id",
+                "author__slug",
+                "author__first_name",
+                "author__last_name",
+                "author__username",
+            )
+        )
+
+        if user.is_authenticated:
+            vote_states = dict(
+                zip(
+                    ("is_upvoted", "is_downvoted"),
+                    (
+                        Exists(model.objects.filter(author=user, comment=OuterRef("pk")))
+                        for model in (Comment.upvoted_by.through, Comment.downvoted_by.through)
+                    ),
+                )
+            )
+            comments_qs = comments_qs.annotate(**vote_states)
+
+        prefetch.append(Prefetch("comments", queryset=comments_qs))
+
     base = (
         queryset.select_related("author", "topic")
-        .prefetch_related(Prefetch("favorited_by", queryset=Author.objects.only("id")))
+        .prefetch_related(*prefetch)
         .only(
             "id",
             "content",

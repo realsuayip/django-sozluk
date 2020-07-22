@@ -1,6 +1,6 @@
 from graphene import ObjectType
 
-from .action import DeleteEntry, DownvoteEntry, FavoriteEntry, PinEntry, UpvoteEntry
+from .action import DeleteEntry, DownvoteEntry, FavoriteEntry, PinEntry, UpvoteEntry, VoteComment
 from .list import EntryFavoritesQuery
 
 
@@ -10,6 +10,7 @@ class EntryMutations(ObjectType):
     pin = PinEntry.Field()
     upvote = UpvoteEntry.Field()
     downvote = DownvoteEntry.Field()
+    votecomment = VoteComment.Field()
 
 
 class EntryQueries(EntryFavoritesQuery):

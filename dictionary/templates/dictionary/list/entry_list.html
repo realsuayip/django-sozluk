@@ -102,12 +102,12 @@
                     <ul class="topic-view-entries">
                         {% if entry_permalink %}
                             {% for entry in entries %}
-                                {% include "dictionary/includes/entry.html" with permalink="yes" %}
+                                {% include "dictionary/includes/entry.html" with permalink="yes" show_comments=topic.is_ama %}
                             {% endfor %}
                         {% else %}
                             {% if page_obj.paginator.count %}
                                 {% for entry in entries %}
-                                    {% include "dictionary/includes/entry.html" %}
+                                    {% include "dictionary/includes/entry.html" with show_comments=topic.is_ama %}
                                 {% endfor %}
 
                             {% else %}

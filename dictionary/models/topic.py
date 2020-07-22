@@ -80,6 +80,13 @@ class Topic(models.Model):
         " <br>Başlığa en az 1 entry girilmiş olmalı.",
     )
 
+    is_ama = models.BooleanField(
+        default=False,
+        verbose_name="Soru cevap etkinliği",
+        help_text="Bu başlığa ait entry'lere ait yorumlar görünür hale gelecek."
+        " Yetkili kullanıcılar entry'lere cevap yazabilecekler.",
+    )
+
     date_created = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Oluşturulma tarihi",

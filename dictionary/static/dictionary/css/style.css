@@ -390,7 +390,8 @@ footer.entry-footer > .feedback {
     grid-template-columns: repeat(3, 50px);
 }
 
-footer.entry-footer > .feedback svg {
+footer.entry-footer > .feedback svg,
+section.ama-comments section.votes svg {
     display: block;
     fill: #777;
 }
@@ -409,14 +410,14 @@ footer.entry-footer > .feedback > .social > a.twitter svg:hover {
     fill: #38a1f3;
 }
 
-footer.entry-footer > .feedback > .votes > a.downvote.active svg {
+.votes > a.downvote.active svg {
     fill: darkred;
 }
 
 footer.entry-footer > .meta > a.action svg,
 header.entry-individual > .mobile > a.action svg,
 footer.entry-footer > .feedback > .favorites > a.favorite.active svg,
-footer.entry-footer > .feedback > .votes > a.upvote.active svg {
+.votes > a.upvote.active svg {
     fill: #16784f;
 }
 
@@ -425,12 +426,12 @@ footer.entry-footer > .feedback > .votes > a.upvote.active svg {
         background: #f8f9fa;
     }
 
-    footer.entry-footer > .feedback > .votes > a.upvote svg:hover,
+    .votes > a.upvote svg:hover,
     footer.entry-footer > .feedback > .favorites > a.favorite svg:hover {
         fill: #16784f;
     }
 
-    footer.entry-footer > .feedback > .votes > a.downvote svg:hover {
+    .votes > a.downvote svg:hover {
         fill: darkred;
     }
 }
@@ -456,6 +457,22 @@ body#ua section.user_entries ul li.entry-full footer.entry-footer > .feedback {
 }
 
 footer.entry-footer > .feedback > .favorites > .favorites-list a.novice {
+    color: #777;
+}
+
+section.ama-comments {
+    margin-top: 1.75em;
+    margin-left: .75em;
+    border-left: 2px solid #e3e3e3;
+}
+
+section.ama-comments .comment:not(:first-child) {
+    margin-top: 2em;
+}
+
+section.ama-comments section.votes strong {
+    margin: 1em 0;
+    font-size: 1.25rem;
     color: #777;
 }
 

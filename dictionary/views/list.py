@@ -404,7 +404,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         queryset = None
 
         if self.entry is not None:
-            return [self.entry]
+            return entry_prefetch(
+                Entry.objects_all.filter(pk=self.entry.pk), self.request.user, comments=self.topic.is_ama
+            )
 
         if self.topic.exists:
             queryset = getattr(self, self.view_mode)()
@@ -421,7 +423,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         context = super().get_context_data(*args, **kwargs)
         context["topic"] = self.topic
         context["mode"] = self.view_mode
-        context["entry_permalink"] = bool(self.entry)
+        context["entry_permalink"] = self.entry
 
         if not self.topic.exists:
             return context
@@ -457,7 +459,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 show_subsequent = True
 
             if show_subsequent or show_previous:
-                first_entry_date = entries[0].date_created
+                first_entry_date = entries[0].date_created if not self.entry else self.entry.date_created
 
                 previous_entries_count = self._qs_filter(
                     self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
@@ -470,7 +472,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
             if show_subsequent:
                 with suppress(IndexError):
-                    last_entry_date = entries[queryset_size - 1].date_created
+                    last_entry_date = (
+                        entries[queryset_size - 1].date_created if not self.entry else self.entry.date_created
+                    )
 
                     subsequent_entries_count = self._qs_filter(
                         self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False),
@@ -616,6 +620,6 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             qs = qs.exclude(author__in=self.request.user.blocked.all())
 
         if prefecth:
-            return entry_prefetch(qs, self.request.user)
+            return entry_prefetch(qs, self.request.user, comments=self.topic.is_ama)
 
         return qs

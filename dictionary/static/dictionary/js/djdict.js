@@ -808,14 +808,14 @@ $("a.twitter[role='button'], a.facebook[role='button']").on("click", function ()
     window.open(`${base}${window.location.origin}${entry}`, "_blank", "noopener");
 });
 
-$("a.upvote[role='button']").on("click", function () {
-    const entryId = $(this).parents(".entry-full").attr("data-id");
+$("#entry-vote .vote").on("click", function () {
     const self = $(this);
-    entryAction("upvote", entryId).then(function (response) {
-        const feedback = response.data.entry.upvote.feedback;
-        if (feedback === null) {
-            // success
-            self.siblings("a.downvote[role='button']").removeClass("active");
+    const type = self.hasClass("upvote") ? "upvote" : "downvote";
+    const entryId = self.parents(".entry-full").attr("data-id");
+    entryAction(type, entryId).then(function (response) {
+        const feedback = response.data.entry[type].feedback;
+        if (feedback == null) {
+            self.siblings(".vote").removeClass("active");
             self.toggleClass("active");
         } else {
             notify(feedback, "error", 4000);
@@ -823,17 +823,17 @@ $("a.upvote[role='button']").on("click", function () {
     });
 });
 
-$("a.downvote[role='button']").on("click", function () {
-    const entryId = $(this).parents(".entry-full").attr("data-id");
+$("#comment-vote .vote").on("click", function () {
     const self = $(this);
-    entryAction("downvote", entryId).then(function (response) {
-        const feedback = response.data.entry.downvote.feedback;
-        if (feedback === null) {
-            self.siblings("a.upvote[role='button']").removeClass("active");
-            self.toggleClass("active");
-        } else {
-            notify(feedback, "error", 4000);
-        }
+    const action = self.hasClass("upvote") ? "upvote" : "downvote";
+    const pk = self.parent().attr("data-id");
+    gqlc({
+        query: "mutation($pk:ID!,$action:String!){entry{votecomment(pk:$pk,action:$action){count}}}",
+        variables: { pk, action }
+    }).then(function (response) {
+        self.siblings(".vote").removeClass("active");
+        self.toggleClass("active");
+        self.siblings(".rating").text(response.data.entry.votecomment.count);
     });
 });
 

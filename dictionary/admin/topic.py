@@ -10,7 +10,7 @@ from ..utils.admin import intermediate
 class TopicAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("title", "category", "mirrors")}),
-        ("Erişilebilirlik seçenekleri", {"fields": ("is_pinned", "is_banned", "is_censored")}),
+        ("Erişilebilirlik seçenekleri", {"fields": ("is_pinned", "is_banned", "is_censored", "is_ama")}),
         ("Üstveri", {"fields": ("created_by", "date_created")}),
         (
             "Medya",
@@ -31,7 +31,7 @@ class TopicAdmin(admin.ModelAdmin):
     )
 
     list_display = ("title", "created_by", "is_censored", "is_banned", "date_created")
-    list_filter = ("category", "is_pinned", "is_censored", "is_banned")
+    list_filter = ("category", "is_pinned", "is_censored", "is_banned", "is_ama")
     search_fields = ("title",)
     autocomplete_fields = ("category", "mirrors")
     actions = ("move_topic",)

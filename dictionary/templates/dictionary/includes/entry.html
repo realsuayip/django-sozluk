@@ -47,14 +47,14 @@
                 </div>
 
                 {% if user != entry.author %}
-                    <div class="votes">
-                        <a role="button" tabindex="0" title="şükela!" class="upvote{{ entry.is_upvoted|yesno:" active," }}">
+                    <div class="votes" id="entry-vote">
+                        <a role="button" tabindex="0" title="şükela!" class="vote upvote{{ entry.is_upvoted|yesno:" active," }}">
                             <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#up"></use>
                             </svg>
                         </a>
 
-                        <a role="button" tabindex="0" title="çok kötü" class="downvote{{ entry.is_downvoted|yesno:" active," }}">
+                        <a role="button" tabindex="0" title="çok kötü" class="vote downvote{{ entry.is_downvoted|yesno:" active," }}">
                             <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#down"></use>
                             </svg>
@@ -95,4 +95,35 @@
         </footer>
     {% endwith %}
     </section>
+
+    {% if show_comments %}
+        <section class="ama-comments">
+            {% for comment in entry.comments.all %}
+                <div class="comment d-flex align-items-center" id="comment-{{ comment.pk }}">
+                    <section class="votes d-flex flex-column align-items-center px-3" id="comment-vote" data-id="{{ comment.pk }}">
+                        <a class="vote upvote{{ comment.is_upvoted|yesno:" active," }}" role="button" tabindex="0" title="şükela!">
+                            <svg width="25" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#up"></use>
+                            </svg>
+                        </a>
+                        <strong class="rating">{{ comment.rating }}</strong>
+                        <a class="vote downvote{{ comment.is_downvoted|yesno:" active," }}" role="button" tabindex="0" title="çok kötü">
+                            <svg width="25" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#down"></use>
+                            </svg>
+                        </a>
+                    </section>
+                    <article class="w-100">
+                        <p>{{ comment.content|formatted|linebreaksbr }}</p>
+                        <div class="d-flex justify-content-between">
+                            <i><a href="{{ comment.author.get_absolute_url }}">{% firstof comment.author.get_full_name comment.author.username %}</a> tarafından yanıtlandı.</i>
+                            <a href="{{ entry.get_absolute_url }}#comment-{{ comment.pk }}">
+                                <time datetime="{{ comment.date_created|date:"c" }}">{{ comment.date_created|entrydate:comment.date_edited }}</time>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            {% endfor %}
+        </section>
+    {% endif %}
 </li>

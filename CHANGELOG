@@ -1,3 +1,17 @@
+[0.176.0-dev-pre](2020.07.22)(incompatible)
+--Additions--
+1) Added base for AMA feature. (Views for
+adding/editing comments are missing and
+a related mode for TopicEntryList is to be added.)
+**incompatible** makemigrations+migrate for dictionary
+
+-- Changes --
+1) Fixed entry permalink vote/favorite indicators.
+2) Optimized javascript function for entry voting.
+
+--Deletions--
+None
+
 [0.175.0-dev-pre](2020.07.21)(compatible)
 --Additions--
 1) Added follow button in author statistics

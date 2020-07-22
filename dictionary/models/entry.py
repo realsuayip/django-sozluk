@@ -73,3 +73,22 @@ class Entry(models.Model):
         k = Decimal("2") if change else Decimal("1")
         self.vote_rate = F("vote_rate") + rate * k
         self.save()
+
+
+class Comment(models.Model):
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="+", verbose_name="Yazar")
+    content = models.TextField(validators=[validate_user_text], verbose_name="İçerik")
+
+    upvoted_by = models.ManyToManyField("Author", related_name="+")
+    downvoted_by = models.ManyToManyField("Author", related_name="+")
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_edited = models.DateTimeField(null=True, editable=False)
+
+    class Meta:
+        verbose_name = "yorum"
+        verbose_name_plural = "yorumlar"
+
+    def __str__(self):
+        return f"#{self.pk} numaralı yorum"
