@@ -1,13 +1,14 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.generic import UpdateView
+from django.views.generic import CreateView, UpdateView
 
 from ..forms.edit import EntryForm, PreferencesForm
-from ..models import Author, Entry
+from ..models import Author, Comment, Entry
 
 
 class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -69,3 +70,63 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(Entry.objects_all, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
+
+
+class CommentMixin(LoginRequiredMixin, SuccessMessageMixin):
+    model = Comment
+    fields = ("content",)
+    template_name = "dictionary/edit/comment_form.html"
+
+
+class CommentCreate(CommentMixin, CreateView):
+    success_message = "yorum başarıyla stratosfere yollandı"
+    entry = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.entry = get_object_or_404(Entry.objects_published, pk=self.kwargs.get("pk"))
+
+        if not (
+            request.user.has_perm("dictionary.can_comment") and self.entry.topic.is_ama and request.user.is_accessible
+        ):
+            raise Http404
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["entry"] = self.entry
+        return context
+
+    def form_valid(self, form):
+        comment = form.save(commit=False)
+        comment.author = self.request.user
+        comment.entry = self.entry
+        comment.save()
+        return super().form_valid(form)
+
+
+class CommentUpdate(CommentMixin, UpdateView):
+    success_message = "yorum düzenlendi"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Comment, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
+
+    def form_valid(self, form):
+        if self.request.POST.get("delete"):
+            self.object.delete()
+            notifications.success(self.request, "yorum silindi")
+            return redirect(self.object.entry.get_absolute_url())
+
+        if not self.request.user.is_accessible:
+            notifications.error(self.request, "bu yorumu düzeltme yetkin yok. sil istersen?")
+            return self.form_invalid(form)
+
+        comment = form.save(commit=False)
+        comment.date_edited = timezone.now()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["entry"] = self.object.entry
+        context["updating"] = True
+        return context

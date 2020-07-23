@@ -92,3 +92,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"#{self.pk} numaralı yorum"
+
+    def save(self, *args, **kwargs):
+        self.content = i18n_lower(self.content)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return f"{reverse('entry-permalink', kwargs={'entry_id': self.entry.pk})}#comment-{self.pk}"

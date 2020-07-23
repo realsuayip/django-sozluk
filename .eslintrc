@@ -33,13 +33,6 @@
       2,
       "always"
     ],
-    "func-style": [
-      2,
-      "expression",
-      {
-        "allowArrowFunctions": true
-      }
-    ],
     "arrow-parens": [
       2,
       "as-needed"

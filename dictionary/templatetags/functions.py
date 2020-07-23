@@ -1,6 +1,7 @@
 from django import template
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import connection
+from django.utils.html import mark_safe
 
 from ..models import ExternalURL, Topic
 from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
@@ -72,6 +73,26 @@ def print_topic_title(context):
         base += f" - sayfa {page}"
 
     return base
+
+
+@register.simple_tag(takes_context=True)
+def print_entry_class(context):
+    entry = context["entry"]
+    user = context["user"]
+    classes = ["entry-full"]
+
+    if user.is_authenticated:
+        if entry.author == user:
+            classes.append("owner")
+        if entry.author.is_private:
+            classes.append("private")
+        if context.get("show_comments") and user.has_perm("dictionary.can_comment") and user.is_accessible:
+            classes.append("commentable")
+
+    if gap := context.get("gap"):
+        classes.append(f"mb-{gap}")
+
+    return mark_safe(f"class=\"{' '.join(classes)}\"")
 
 
 @register.inclusion_tag("dictionary/includes/header_link.html", takes_context=True)

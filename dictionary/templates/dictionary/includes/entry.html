@@ -1,5 +1,5 @@
 {% load filters %}{% load functions %}
-<li data-id="{{ entry.pk }}" class="entry-full{% if user.is_authenticated %}{% if entry.author == user %} owner{% endif %}{{ entry.author.is_private|yesno:" private," }}{% endif %}{% if gap %} mb-{{ gap }}{% endif %}"{% if show_title == "yes" %} data-topic="{{ entry.topic.title }}"{% endif %}>
+<li data-id="{{ entry.pk }}" {% print_entry_class %}{% if show_title == "yes" %} data-topic="{{ entry.topic.title }}"{% endif %}>
     <section>
     {% with time=entry.date_created|entrydate:entry.date_edited %}
         <header class="entry-individual">
@@ -117,9 +117,14 @@
                         <p>{{ comment.content|formatted|linebreaksbr }}</p>
                         <div class="d-flex justify-content-between">
                             <i><a href="{{ comment.author.get_absolute_url }}">{% firstof comment.author.get_full_name comment.author.username %}</a> tarafından yanıtlandı.</i>
-                            <a href="{{ entry.get_absolute_url }}#comment-{{ comment.pk }}">
-                                <time datetime="{{ comment.date_created|date:"c" }}">{{ comment.date_created|entrydate:comment.date_edited }}</time>
-                            </a>
+                            <div>
+                                {% if user == comment.author %}
+                                    <a class="mr-2" href="{% url 'comment_update' pk=comment.pk %}">düzelt</a>
+                                {% endif %}
+                                <a href="{{ comment.get_absolute_url }}">
+                                    <time datetime="{{ comment.date_created|date:"c" }}">{{ comment.date_created|entrydate:comment.date_edited }}</time>
+                                </a>
+                            </div>
                         </div>
                     </article>
                 </div>

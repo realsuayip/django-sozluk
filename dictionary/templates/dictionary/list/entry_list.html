@@ -195,13 +195,7 @@
             {% endif %}
 
             <section class="user-comments mt-4">
-                <div class="editor-buttons">
-                    <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
-                    <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
-                    <button title="ironik bakınız" id="insert_swh" class="add-code">&#8727;</button>
-                    <button title="sürprizbozan diye de bilinir" id="insert_spoiler" class="add-code">- spoiler -</button>
-                    <button title="dış dünyaya link" id="insert_link" class="add-code">http://</button>
-                </div>
+                {% include "dictionary/includes/editor_buttons.html" %}
                 {% load widget_tweaks %}
 
                 <form method="post">

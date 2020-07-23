@@ -165,6 +165,7 @@ class Author(AbstractUser):
             ("can_activate_user", "çaylak lisesine erişim"),
             ("suspend_user", "kullanıcıyı askıya alma"),
             ("can_clear_cache", "önbelleği temizleme"),
+            ("can_comment", "entry'lere yorum yapma"),
         )
         verbose_name = "yazar"
         verbose_name_plural = "yazarlar"

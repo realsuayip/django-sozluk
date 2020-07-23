@@ -1,0 +1,46 @@
+{% extends "dictionary/base.html" %}
+
+{% load widget_tweaks %}
+{% load filters %}
+
+{% block title %}{{ entry.topic.title }}#{{ entry.pk }} {{ updating|yesno:"yorumu düzeltiliyor,yorumlanıyor" }}{% endblock %}
+
+{% block content %}
+    <h1 class="h4">
+        <strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong>
+        <small><strong><a href="{{ entry.get_absolute_url }}">#{{ entry.pk }}</a> {{ updating|yesno:"yorumu düzeltiliyor,yorumlanıyor" }}</strong></small>
+    </h1>
+    <h2 class="h6">
+        <strong><a href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a> takma isimli kullanıcı demiş ki:</strong>
+    </h2>
+
+    <span class="entry-content d-block my-3">{{ entry.content|formatted|linebreaksbr }}</span>
+
+    <div class="d-flex">
+        <a href="{{ entry.get_absolute_url }}" class="ml-auto">
+            <time class="ml-auto">{{ entry.date_created|entrydate:entry.date_edited }}</time>
+        </a>
+    </div>
+
+    <section class="user-comments my-4">
+        {% include "dictionary/includes/editor_buttons.html" %}
+        <form method="post">
+            {% csrf_token %}
+            {% with entry.topic.title|addstr:" başlığına yapılan bu entry'i yorumlayın..." as text_placeholder %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label="Yorum yazı alanı" %}
+            {% endwith %}
+
+            <div class="row align-items-center">
+                {% if updating %}
+                    <div class="col-6">
+                        <button name="delete" value="true" onclick="return confirm('Emin misiniz?');" type="submit" class="btn btn-sm btn-outline">sil</button>
+                    </div>
+                {% endif %}
+
+                <div class="{{ updating|yesno:"col-6,col-12" }}">
+                    <button type="submit" class="btn btn-django float-right">{{ updating|yesno:"yorumu düzelt,yorumla" }}</button>
+                </div>
+            </div>
+        </form>
+    </section>
+{% endblock %}

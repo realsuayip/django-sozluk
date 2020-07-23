@@ -1,3 +1,23 @@
+[0.177.0-dev-pre](2020.07.23)(incompatible)
+--Additions--
+1) Added views for adding/editing/removing
+comments.
+2) Added the permission to add comments.
+(Use admin panel to add this permission to users)
+**incompatible** run makemigrations+migrate for dictionary.
+3) Add print_entry_class template tag to reduce
+template logic complexity.
+
+-- Changes --
+1) Issued fix for a MAJOR site-wide vulnerability
+which allowed for arbitrary code execution via
+javascript (XSS).
+2) Editor buttons are now in includes, to be used
+across three editors.
+
+--Deletions--
+None
+
 [0.176.0-dev-pre](2020.07.22)(incompatible)
 --Additions--
 1) Added base for AMA feature. (Views for

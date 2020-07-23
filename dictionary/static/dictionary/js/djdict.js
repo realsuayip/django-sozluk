@@ -14,6 +14,23 @@ const isValidText = function (body) {
     return /^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join());
 };
 
+const entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+    "=": "&#x3D;"
+};
+
+function notSafe (string) {
+    return String(string).replace(/[&<>"'`=/]/g, function (s) {
+        return entityMap[s];
+    });
+}
+
 let toastQueue = 0;
 
 const notify = (message, level = "default", initialDelay = 2000, persistent = false) => {
@@ -384,7 +401,7 @@ class LeftFrame {
             const params = parameters || "";
 
             for (const topic of objectList) {
-                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${topic.title}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`);
+                topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${notSafe(topic.title)}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`);
             }
         }
     }
@@ -1038,19 +1055,23 @@ $("#left-frame-nav").scroll(function () {
 });
 
 $(".entry-full a.action[role='button']").on("click", function () {
-    if ($(this).hasClass("loaded")) {
+    const self = $(this);
+    if (self.hasClass("loaded")) {
         return;
     }
 
-    const entry = $(this).parents(".entry-full");
+    const entry = self.parents(".entry-full");
     const entryID = entry.attr("data-id");
-    const topicTitle = entry.closest("[data-topic]").attr("data-topic");
-    const actions = $(this).siblings(".entry-actions");
+    const topicTitle = encodeURIComponent(entry.closest("[data-topic]").attr("data-topic"));
+    const actions = self.siblings(".entry-actions");
     const pinLabel = entryID === $("body").attr("data-pin") ? "profilimden kaldır" : "profilime sabitle";
 
     actions.empty();
 
     if (userIsAuthenticated) {
+        if (entry.hasClass("commentable")) {
+            actions.append(`<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">yorum yap</a>`);
+        }
         if (entry.hasClass("owner")) {
             actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">${pinLabel}</a>`);
             actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">sil</a>`);
@@ -1064,7 +1085,7 @@ $(".entry-full a.action[role='button']").on("click", function () {
     }
 
     actions.append(`<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
-    $(this).addClass("loaded");
+    self.addClass("loaded");
 });
 
 $("ul.user-links").on("click", "li.block-user a", function () {
