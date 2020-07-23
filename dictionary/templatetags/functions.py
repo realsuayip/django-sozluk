@@ -64,6 +64,7 @@ def print_topic_title(context):
         "acquaintances": "takip ettiklerim",
         "search": f"arama: {queries.get('keywords', '')}",
         "history": f"tarihte bugün: {queries.get('year', '')}",
+        "answered": "yanıtlanmış entry'ler",
     }
 
     if (mode := context["mode"]) in mode_repr:

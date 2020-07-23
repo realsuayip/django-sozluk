@@ -23,6 +23,7 @@
                     {% if mode == "following" %}<small><strong>[olan biten]</strong></small>{% endif %}
                     {% if mode == "recent" %}<small><strong>[son]</strong></small>{% endif %}
                     {% if mode == "acquaintances" %}<small><strong>[takip ettiklerim]</strong></small>{% endif %}
+                    {% if mode == "answered" %}<small><strong>[yanıtlanmış]</strong></small>{% endif %}
 
                     {% if topic.is_pinned %}
                         <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
