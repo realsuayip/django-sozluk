@@ -43,6 +43,10 @@
     "dot-notation": [
       2
     ],
+    "func-style": [
+      2,
+      "declaration"
+    ],
     "quote-props": [
       2,
       "as-needed"

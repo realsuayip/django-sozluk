@@ -1,3 +1,18 @@
+[0.179.0-dev-pre](2020.07.23)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Javascript:
+    a) Autocomplete elements now append to
+    proper parents.
+    b) Use function declarations instead of
+    function expressions.
+    c) IIFE'd djdict.js.
+
+--Deletions--
+None
+
 [0.178.0-dev-pre](2020.07.23)(compatible)
 --Additions--
 1) TopicEntryList now has the mode "answered".
