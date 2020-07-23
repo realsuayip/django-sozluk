@@ -145,7 +145,7 @@
         </div>
 
         {# <!--- categories and mobile navigation --> #}
-        <nav class="sub-nav">
+        <nav class="sub-nav" aria-label="Kategori menüsü">
             <ul class="mobile-only">
                 {% render_header_link "today" %}
                 {% render_header_link "popular" %}
@@ -184,7 +184,7 @@
                 {% endif %}
             </ul>
 
-            <ul class="desktop-only" id="category_view">
+            <ul class="desktop-only">
 
                 {% render_header_link 'today' %}
                 {% render_header_link 'popular' %}
@@ -202,13 +202,13 @@
                     </li>
                 {% endfor %}
 
-                <li role="button" id="more_tags_button" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="Diğer Kanallar">
+                <li class="key-clickable" id="category-expand" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="Diğer Kanallar">
                     <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>
                 </li>
 
-                <div id="category_view_in" class="more_tags_dropdown dropdown-menu dropdown-menu-right" aria-labelledby="more_tags_button">
+                <div class="more_tags_dropdown dropdown-menu dropdown-menu-right" aria-labelledby="category-expand">
 
                     {% for category in nav_categories|slice:"4:12" %}
                         <a title="{{ category.description }}" data-lf-slug="{{ category.slug }}" class="dropdown-item{% if left_frame.slug == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
@@ -230,23 +230,23 @@
 
 <div class="container content">
 
-    <div role="complementary" aria-label="Başlık listesi" id="left-frame-nav" class="left-frame">
+    <aside class="left-frame" id="left-frame-nav" aria-label="Başlık listesi">
         {% if request.is_mobile %}
             <h2>hay aksi!</h2>
             <p>bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin</p>
         {% else %}
             {% include "dictionary/includes/left_frame.html" %}
         {% endif %}
-    </div>
+    </aside>
 
 
     {# page content #}
-    <div role="main" class="content-frame" id="main">
+    <main class="content-frame" id="main">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
 
-    <div role="complementary" class="right-frame" id="right-frame">
+    <aside class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
 
         {% load cache %}
@@ -274,7 +274,7 @@
         {% endcache %}
 
         {% include "dictionary/includes/devinfo.html" %}
-    </div>
+    </aside>
 
 </div>
 

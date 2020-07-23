@@ -47,7 +47,7 @@
                 </div>
 
                 {% if user != entry.author %}
-                    <div class="votes" id="entry-vote">
+                    <div class="votes entry-vote">
                         <a role="button" tabindex="0" title="şükela!" class="vote upvote{{ entry.is_upvoted|yesno:" active," }}">
                             <svg width="25" height="13" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#up"></use>
@@ -101,7 +101,7 @@
         <section class="ama-comments">
             {% for comment in comments %}
                 <div class="comment d-flex align-items-center" id="comment-{{ comment.pk }}">
-                    <section class="votes d-flex flex-column align-items-center px-3" id="comment-vote" data-id="{{ comment.pk }}">
+                    <section class="votes comment-vote d-flex flex-column align-items-center px-3" data-id="{{ comment.pk }}">
                         <a class="vote upvote{{ comment.is_upvoted|yesno:" active," }}" role="button" tabindex="0" title="şükela!">
                             <svg width="25" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#up"></use>

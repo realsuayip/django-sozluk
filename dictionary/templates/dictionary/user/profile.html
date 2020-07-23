@@ -90,7 +90,7 @@
 
     {% with object_count=page_obj.paginator.count %}
 
-        <nav class="user-stats-nav">
+        <nav class="user-stats-nav" aria-label="Profil gezinme menüsü">
             <ul class="m-0 p-0">
                 <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
                 <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">favorileri</a></li>

@@ -830,7 +830,7 @@
         window.open(`${base}${window.location.origin}${entry}`, "_blank", "noopener");
     });
 
-    $("#entry-vote .vote").on("click", function () {
+    $(".entry-vote .vote").on("click", function () {
         const self = $(this);
         const type = self.hasClass("upvote") ? "upvote" : "downvote";
         const entryId = self.parents(".entry-full").attr("data-id");
@@ -845,7 +845,7 @@
         });
     });
 
-    $("#comment-vote .vote").on("click", function () {
+    $(".comment-vote .vote").on("click", function () {
         const self = $(this);
         const action = self.hasClass("upvote") ? "upvote" : "downvote";
         const pk = self.parent().attr("data-id");
@@ -1043,7 +1043,7 @@
         return true;
     });
 
-    $("body").on("keypress", "[role=button]", function (e) {
+    $("body").on("keypress", "[role=button], .key-clickable", function (e) {
         if (e.which === 13 || e.which === 32) { // space or enter
             $(this).click();
         }

@@ -1,3 +1,16 @@
+[0.180.0-dev-pre](2020.07.23)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed the problems with 'read more' and
+'pin entry' buttons in index page.
+2) Optimized some html semantics, also fixed
+non-unique ID problem with voting selectors.
+
+--Deletions--
+None
+
 [0.179.0-dev-pre](2020.07.23)(compatible)
 --Additions--
 None
