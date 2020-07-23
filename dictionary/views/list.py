@@ -8,7 +8,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
-from django.db.models import Max, Min, Q
+from django.db.models import Exists, Max, Min, OuterRef, Q
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -20,7 +20,7 @@ from dateutil.relativedelta import relativedelta
 from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
-from ..models import Author, Category, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
+from ..models import Author, Category, Comment, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
 from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
 from ..utils.decorators import cached_context
 from ..utils.managers import TopicListManager, entry_prefetch
@@ -232,6 +232,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         "recent",
         "links",
         "acquaintances",
+        "answered",
     )
     """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
        parameter 'a'. For example ?a=today returns only today's entries."""
@@ -398,6 +399,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             latest = self.topic.entries.filter(author=self.request.user).latest("date_created")
             return self.topic.entries.filter(date_created__gte=latest.date_created)
         return None
+
+    def answered(self):
+        # In Django 3+ we don't need to annotate.
+        # https://docs.djangoproject.com/en/3.0/ref/models/expressions/#filtering-on-a-subquery-or-exists-expressions
+        return self.topic.entries.annotate(has_comments=Exists(Comment.objects.filter(entry=OuterRef("pk")))).filter(
+            has_comments=True
+        )
 
     def get_queryset(self):
         """Filter queryset by self.view_mode"""

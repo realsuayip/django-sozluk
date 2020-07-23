@@ -848,6 +848,12 @@ $("#comment-vote .vote").on("click", function () {
         query: "mutation($pk:ID!,$action:String!){entry{votecomment(pk:$pk,action:$action){count}}}",
         variables: { pk, action }
     }).then(function (response) {
+        if (response.errors) {
+            for (const error of response.errors) {
+                notify(error.message, "error");
+            }
+            return;
+        }
         self.siblings(".vote").removeClass("active");
         self.toggleClass("active");
         self.siblings(".rating").text(response.data.entry.votecomment.count);

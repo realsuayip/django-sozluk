@@ -57,6 +57,10 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
                 entry.date_edited = timezone.now()
         else:
             # Updating published entry
+            if self.request.user.is_suspended:
+                notifications.error(self.request, "bu entry'i düzeltme yetkin yok. sil istersen?")
+                return super().form_invalid(form)
+
             entry.is_draft = False
             entry.date_edited = timezone.now()
 
@@ -76,6 +80,11 @@ class CommentMixin(LoginRequiredMixin, SuccessMessageMixin):
     model = Comment
     fields = ("content",)
     template_name = "dictionary/edit/comment_form.html"
+
+    def form_invalid(self, form):
+        for error in form.errors["content"]:
+            notifications.error(self.request, error)
+        return super().form_invalid(form)
 
 
 class CommentCreate(CommentMixin, CreateView):

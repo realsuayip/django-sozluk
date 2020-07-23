@@ -1,3 +1,21 @@
+[0.178.0-dev-pre](2020.07.23)(compatible)
+--Additions--
+1) TopicEntryList now has the mode "answered".
+It shows entries with comments.
+
+-- Changes --
+1) Guests now get an error message when they
+try to vote a comment.
+2) Users now get an error message when they send
+invalid comments.
+3) Removed comment adding interface from admin.
+4) Uncommented entries now have proper margins.
+5) Banned users now cannot edit their published
+entries.
+
+--Deletions--
+None
+
 [0.177.0-dev-pre](2020.07.23)(incompatible)
 --Additions--
 1) Added views for adding/editing/removing

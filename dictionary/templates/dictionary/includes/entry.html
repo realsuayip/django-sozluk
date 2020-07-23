@@ -96,9 +96,10 @@
     {% endwith %}
     </section>
 
-    {% if show_comments %}
+{% with comments=entry.comments.all %}
+    {% if show_comments and comments %}
         <section class="ama-comments">
-            {% for comment in entry.comments.all %}
+            {% for comment in comments %}
                 <div class="comment d-flex align-items-center" id="comment-{{ comment.pk }}">
                     <section class="votes d-flex flex-column align-items-center px-3" id="comment-vote" data-id="{{ comment.pk }}">
                         <a class="vote upvote{{ comment.is_upvoted|yesno:" active," }}" role="button" tabindex="0" title="şükela!">
@@ -131,4 +132,5 @@
             {% endfor %}
         </section>
     {% endif %}
+{% endwith %}
 </li>
