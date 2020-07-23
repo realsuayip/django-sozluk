@@ -13,7 +13,7 @@
             {% endif %}
         </h2>
         {% with text=entry.content|formatted|linebreaksbr %}
-            <span class="entry-content">{{ text|truncatechars_html:700 }}</span>
+            <span class="entry-content text-formatted">{{ text|truncatechars_html:700 }}</span>
             <div class="d-flex justify-content-between">
                 {% if entry.author == user %}
                     <a class="mr-2" href="{% url 'entry_update' pk=entry.pk %}">düzelt</a>{% endif %}

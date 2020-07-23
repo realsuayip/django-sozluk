@@ -14,7 +14,7 @@
         <strong><a href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a> takma isimli kullanıcı demiş ki:</strong>
     </h2>
 
-    <span class="entry-content d-block my-3">{{ entry.content|formatted|linebreaksbr }}</span>
+    <span class="text-formatted d-block my-3">{{ entry.content|formatted|linebreaksbr }}</span>
 
     <div class="d-flex">
         <a href="{{ entry.get_absolute_url }}" class="ml-auto">

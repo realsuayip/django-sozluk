@@ -59,7 +59,7 @@
 {% endblock %}
 
 {% block rightframe %}
-    <form action="{% url 'messages' %}" method="get">
+    <form action="{% url 'messages' %}" method="get" class="mb-3">
         <label for="messages_search_term"><h2 class="h5"><strong>mesajlarda ara</strong></h2></label>
         <div class="input-group">
             <input name="search_term" id="messages_search_term" type="text" class="form-control" placeholder="arama terimi" value="{{ request.GET.search_term }}" required>
@@ -68,8 +68,6 @@
             </div>
         </div>
     </form>
-
-    <hr>
 
     <form method="post">
         <h2 class="h5"><strong>yeni mesaj</strong></h2>

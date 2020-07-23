@@ -3,8 +3,6 @@
 {% block content %}
     {% load widget_tweaks %}
     <h1 class="h4 mb-3"><strong><a href="{% url 'login' %}">giriş</a> &raquo; onaylama e-postasını tekrar gönder</strong></h1>
-    <hr>
-
 
     {% if form.non_field_errors %}
         {% for error in form.non_field_errors %}
@@ -14,9 +12,7 @@
         {% endfor %}
     {% endif %}
 
-
     <form method="post">
-
         <div class="form-group">
             <label for="emailForResend">{{ form.email.label }}</label>
             {% render_field form.email class="form-control" id="emailForResend" %}
@@ -27,7 +23,6 @@
 
         {% csrf_token %}
         <button class="btn btn-django stretch">yolla bakayım bir daha</button>
-
     </form>
 
 {% endblock %}

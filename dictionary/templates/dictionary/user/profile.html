@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% block title %}kullanıcı: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% endblock %}
+{% block title %}kullanıcı: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% if page_obj.number > 1 %} - sayfa {{ page_obj.number }}{% endif %}{% endblock %}
 {% block bodyattr %}class="default topic-entry-view has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 
 {% load filters %}
@@ -111,19 +111,23 @@
             </ul>
         </nav>
 
-        <h2 class="h5 mt-3">
-            <strong class="d-flex justify-content-between align-items-center">
+        <header class="d-flex justify-content-between align-items-center mt-3">
+            <h2 class="h5 font-weight-bold">
                 <a href="{% url 'user-profile-stats' profile.slug tab.name %}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a>
-                {% if tab.type == "entry" %}
-                    <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
-                        <svg fill="currentColor" viewBox="0 0 16 16" width="24" height="24">
-                            <use href="#lshift"></use>
-                            <title>başlık listesine taşı</title>
-                        </svg>
-                    </a>
+                {% if page_obj.number > 1 %}
+                    <span class="ml-2">- sayfa {{ page_obj.number }}</span>
                 {% endif %}
-            </strong>
-        </h2>
+            </h2>
+
+            {% if tab.type == "entry" %}
+                <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
+                    <svg fill="currentColor" viewBox="0 0 16 16" width="24" height="24">
+                        <use href="#lshift"></use>
+                        <title>başlık listesine taşı</title>
+                    </svg>
+                </a>
+            {% endif %}
+        </header>
 
         {% if object_count > 0 %}
 

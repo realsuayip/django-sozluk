@@ -26,7 +26,7 @@
                             <p>{{ lastmsg.body|default:"<em>mesaj yok</em>" }}</p>
                         </a>
 
-                        <footer class="d-flex justify-content-between" style="font-size: 90%">
+                        <footer class="d-flex justify-content-between fs-90">
                             <div>
                                 <a role="button" tabindex="0" class="chat-delete-individual mr-1">sil</a>
                                 {% if lastmsg %}
@@ -42,6 +42,6 @@
             {% endfor %}
         </ul>
     {% else %}
-        <div class="border rounded-sm p-3 bg-light">gelen kutunuz bomboş 🤷</div>
+        <div class="border rounded-sm p-3 bg-light">pek bir şey bulamadım açıkçası 🤷</div>
     {% endif %}
 {% endblock %}

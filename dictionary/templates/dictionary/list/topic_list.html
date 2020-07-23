@@ -55,22 +55,20 @@
         {% endif %}
 
         {% if slug == "today-in-history" %}
-            <select class="mobile-topic-list form-control" id="mobile_year_changer" aria-label="Yıl seçici">
+            <select class="mobile-topic-list form-control mb-2" id="mobile_year_changer" aria-label="Yıl seçici">
                 {% for y in year_range %}
                     <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
-            <hr>
         {% endif %}
 
 
         {% if slug == "search" %}
             {# render search form, if request.GET.ordering has value, it means there is a search #}
-            <form method="get" action="{% url 'topic_list' slug='search' %}" class="search_mobile{% if request.GET.ordering %} collapse{% endif %}" id="search_form_extended_mobile">
+            <form method="get" action="{% url 'topic_list' slug='search' %}" class="search_mobile mb-3{% if request.GET.ordering %} collapse{% endif %}" id="search_form_extended_mobile">
                 {% include "dictionary/includes/forms/extended_search.html" with source="mobile" %}
                 <button type="submit" class="btn btn-django stretch">çok güzel ara</button>
             </form>
-            <hr>
         {% endif %}
 
 
@@ -86,9 +84,7 @@
             {% endif %}
         </ul>
 
-        {% if page.has_other_pages %}
-            {% include "dictionary/includes/paginaton.html" with stretch="yes" hr="yes" paginator=page %}
-        {% endif %}
+        {% include "dictionary/includes/paginaton.html" with stretch="yes" paginator=page %}
         <br>
     </div>
 

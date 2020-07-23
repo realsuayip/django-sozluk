@@ -16,7 +16,7 @@
             {% for post in latest %}
                 {% include "dictionary/announcements/post.html" %}
             {% endfor %}
-            {% include "dictionary/includes/paginaton.html" with paginator=page_obj hr="yes" %}
+            {% include "dictionary/includes/paginaton.html" with paginator=page_obj %}
         {% else %}
             <div class="border rounded-sm p-3 bg-light mb-3">henüz bir duyuru yapılmamış.</div>
         {% endif %}

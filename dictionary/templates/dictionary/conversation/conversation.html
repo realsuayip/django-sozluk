@@ -53,11 +53,11 @@
         {% endif %}
 
         {% if messages %}
-            <ul id="message_list" class="chat">
+            <ul id="message_list" class="chat mb-4">
                 {% for message in messages %}
                     {% if message.sender == user %}
                         <li class="bubble sent">
-                            <p>{{ message.body|formatted|linebreaksbr }}</p>
+                            <p class="text-formatted">{{ message.body|formatted|linebreaksbr }}</p>
                             <span class="date-info">
                             <time>{{ message.sent_at|naturaltime }}</time>
                                 {% if message.has_receipt and message.read_at %}
@@ -77,13 +77,12 @@
                         </li>
                     {% else %}
                         <li class="bubble recieved">
-                            <p>{{ message.body|formatted|linebreaksbr }}</p>
+                            <p class="text-formatted">{{ message.body|formatted|linebreaksbr }}</p>
                             <time>{{ message.sent_at|naturaltime }}</time>
                         </li>
                     {% endif %}
                 {% endfor %}
             </ul>
-            <hr>
         {% else %}
             <div class="border rounded-sm p-3 bg-light my-3">hiç mesaj kalmamış burda 🤷</div>
         {% endif %}

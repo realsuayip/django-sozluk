@@ -9,7 +9,7 @@
 
             <div class="mobile">
                 {% if not entry.author.is_private %}
-                    <a class="username" href="{{ entry.author.get_absolute_url }}" style="font-weight: 600;">{{ entry.author.username }}</a>
+                    <a class="username fw-600" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
                 {% else %}
                     <span><i>anonim</i></span>
                 {% endif %}
@@ -101,7 +101,7 @@
         <section class="ama-comments">
             {% for comment in comments %}
                 <div class="comment d-flex align-items-center" id="comment-{{ comment.pk }}">
-                    <section class="votes comment-vote d-flex flex-column align-items-center px-3" data-id="{{ comment.pk }}">
+                    <aside class="votes comment-vote d-flex flex-column align-items-center px-3" data-id="{{ comment.pk }}">
                         <a class="vote upvote{{ comment.is_upvoted|yesno:" active," }}" role="button" tabindex="0" title="şükela!">
                             <svg width="25" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#up"></use>
@@ -113,11 +113,11 @@
                                 <use href="#down"></use>
                             </svg>
                         </a>
-                    </section>
+                    </aside>
                     <article class="w-100">
                         <p>{{ comment.content|formatted|linebreaksbr }}</p>
-                        <div class="d-flex justify-content-between">
-                            <i><a href="{{ comment.author.get_absolute_url }}">{% firstof comment.author.get_full_name comment.author.username %}</a> tarafından yanıtlandı.</i>
+                        <footer class="d-flex justify-content-between fs-90">
+                            <span><a href="{{ comment.author.get_absolute_url }}">{% firstof comment.author.get_full_name comment.author.username %}</a> tarafından yanıtlandı.</span>
                             <div>
                                 {% if user == comment.author %}
                                     <a class="mr-2" href="{% url 'comment_update' pk=comment.pk %}">düzelt</a>
@@ -126,7 +126,7 @@
                                     <time datetime="{{ comment.date_created|date:"c" }}">{{ comment.date_created|entrydate:comment.date_edited }}</time>
                                 </a>
                             </div>
-                        </div>
+                        </footer>
                     </article>
                 </div>
             {% endfor %}
