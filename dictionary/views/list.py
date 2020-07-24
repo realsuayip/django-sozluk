@@ -53,7 +53,7 @@ class Index(ListView):
         max_pk = qs.aggregate(Max("pk"))["pk__max"]
         min_pk = qs.aggregate(Min("pk"))["pk__min"]
 
-        if max_pk < self.size * 2:
+        if not max_pk or max_pk < self.size * 2:
             return []
 
         ids = set()
