@@ -35,7 +35,7 @@ Linux tabanlı sistemler için (çoğunda):
 
 Bu adımdan sonra eğer komut satırının başında `(venv)` ibaresi yer alıyor ise sanal ortama geçiş yapmışız demektir.
 Komut satırında projeyle etkileşime girerken her zaman sanal ortamda olduğunuzdan emin olun.
-####Gereksinimlerin yüklenmesi
+#### Gereksinimlerin yüklenmesi
 Sıradaki aşamada proje gereksinimlerini yüklememiz gerekiyor. Bunu yapmak için sanal ortamda ana dizindeyken:
 
     pip install -r requirements.txt
@@ -48,14 +48,14 @@ anlatıldığına dair bir fikriniz yok ise kolayca bu kütüphaneyi kurarak dev
 
     pip install psycopg2
 
-####Tabloların oluşturulması
+#### Tabloların oluşturulması
 Sırada veri tabanında tabloları oluşturmak var. Bunu yapmak için yine ana dizinde peş peşe şu komutları çalıştırıyoruz:
 
     python manage.py makemigrations
     python manage.py migrate
 
 
-####Sitenin çalıştırılması
+#### Sitenin çalıştırılması
 Artık projeyi çalıştırıp siteye girebiliriz:
        
        python manage.py runserver
@@ -63,7 +63,7 @@ Artık projeyi çalıştırıp siteye girebiliriz:
 Bu komut siteyi `127.0.0.1:8000` adresinde erişilebilir hale getirecek. Bu adrese girdiğinizde siteyi gördüğünüzden emin
 olun.
 
-####Yetkili hesabının oluşturulması
+#### Yetkili hesabının oluşturulması
 Bu adımdan sonra giriş yapıp yönetim paneline girmemiz gerekiyor, zira sitemize hiçbir şekilde müdahale edemiyoruz.
 Bunu yapmak için komut satırında <kbd>Ctrl</kbd>+<kbd>C</kbd> kombinasyonunu kullanarak yerel sunucuyu sonlandırıyoruz.
 Sanal ortamda iken şu komutu çalıştırıyoruz:
@@ -76,14 +76,14 @@ Bu bilgileri doldurduktan sonra e-posta adresiniz ve belirlediğiniz parola ile 
 herhangi bir yol yok, yönetici paneline girmek için `127.0.0.1:8000/admin/` adresine gidebilirsiniz. Burada yazar detay
 sayfanıza gidip kendinizi çaylaklıktan çıkarabilirsiniz.
 
-####Ayarların yapılması
+#### Ayarların yapılması
 Kurulumun tamamlanması için birtakım ayarların değiştirilip uygun hale getirilmesi gerekiyor. Dokümantasyonda her ayar
 için detaylı bilgi bulunuyor. Bu ayarlardan iki tanesini derhal yapmanız gerekiyor, aksi takdirde site düzgün çalışmayacaktır:
 
 [GENERIC_SUPERUSER_USERNAME](settings.md#generic_superuser_username)\
 [GENERIC_PRIVATEUSER_USERNAME](settings.md#generic_privateuser_username)
 
-####Geçici e-posta sunucusu
+#### Geçici e-posta sunucusu
 
 Son olarak, e-posta gönderen sayfalar ve fonksiyonlar (örneğin yeni kullanıcı kaydı) halihazırda bir e-posta sunucusu
 belirlenmediği için çalışmayacaktır. Fakat yerel ağda iken gönderilen e-postaları komut satırına yazdırabiliriz, bunu

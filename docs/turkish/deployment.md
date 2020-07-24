@@ -1,4 +1,4 @@
-#Sunucuya kurulum yapacaklar için notlar
+# Sunucuya kurulum yapacaklar için notlar
 
 Aksini yapmak için spesifik bir sebebiniz yok ise sunucuya kurulum yaparken şu adımları takip etmenizi öneriyoruz:
 
