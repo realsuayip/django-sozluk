@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from django.utils.translation import gettext_lazy as _
+
 DOMAIN = "xyzsozluk.com"
 PROTOCOL = "http"
 FROM_EMAIL = "noreply@xyzsozluk.org"
@@ -38,38 +40,38 @@ cache timeout, queryset size and nice boundary can be found in views.list.Index
 
 
 NON_DB_CATEGORIES_META = {
-    "today": ("bugün", "en son girilenler"),
-    "popular": ("gündem", "neler olup bitiyor"),
-    "uncategorized": ("başıboşlar", "kanalsız başlıklar"),
+    "today": (_("today"), _("most recent entries")),
+    "popular": (_("popular"), _("whats happening?")),
+    "uncategorized": (_("uncategorized"), _("topics with no channels")),
     "acquaintances": (
-        "takip",
-        "takip ettiğim yazarlar ne yapmış?",
-        ({"entries": "yazdıkları", "favorites": "favoriledikleri"}, "entries"),
+        _("acquaintances"),
+        _("what are users i follow up to?"),
+        ({"entries": _("entries"), "favorites": _("favorites")}, "entries"),
     ),
     "wishes": (
-        "ukteler",
-        "diğer yazarların entry girilmesini istediği başlıklar",
-        ({"all": "hepsi", "owned": "benimkiler"}, "all"),
+        _("wishes"),
+        _("the topics that some authors want populated"),
+        ({"all": _("all"), "owned": _("owned")}, "all"),
     ),
-    "today-in-history": ("tarihte bugün", "geçen yıllarda bu zamanlar ne denmiş?"),
-    "drafts": ("kenar", "kenara attığım entry'ler"),
-    "followups": ("son", "benden sonra neler girilmiş?"),
-    "novices": ("çaylaklar", "çömezlerin girdikleri"),
-    "top": ("en'ler", "en beğenilen entry'ler", ({"yesterday": "dün", "week": "geçen hafta"}, "yesterday")),
-    "search": ("arama sonuçları", "hayvan ara"),
+    "today-in-history": (_("today in history"), _("what has been said around this time in the past years?")),
+    "drafts": (_("drafts"), _("the entries that i've yet to publish")),
+    "followups": (_("followups"), _("what other authors wrote down after me?")),
+    "novices": (_("novices"), _("the entries of novice users")),
+    "top": (_("top"), _("most liked entries"), ({"yesterday": _("yesterday"), "week": _("last week")}, "yesterday"),),
+    "search": (_("search"), _("advanced search")),
     "userstats": (
-        "kullanıcı istatistiği",
-        "kullanıcı istatistiği",
+        _("user statistics"),
+        _("user statistics"),
         (
             {
-                "latest": "@{} - entry'leri",
-                "popular": "@{} - en çok favorilenenleri",
-                "favorites": "@{} - favorileri",
-                "recentlyvoted": "@{} - son oylananları",
-                "liked": "@{} - en beğenilenleri",
-                "weeklygoods": "@{} - bu hafta dikkat çekenleri",
-                "beloved": "@{} - el emeği göz nuru",
-                "channels": "@{} - #{} başlıkları",
+                "latest": _("@%(username)s - entries"),
+                "popular": _("@%(username)s - most favorited"),
+                "favorites": _("@%(username)s - favorites"),
+                "recentlyvoted": _("@%(username)s - recently voted"),
+                "liked": _("@%(username)s - most liked"),
+                "weeklygoods": _("@%(username)s - attracting entries of this week"),
+                "beloved": _("@%(username)s - beloved entries"),
+                "channels": _("@%(username)s - #%(channel)s topics"),
             },
             "latest",
         ),
@@ -214,37 +216,37 @@ TOTAL_VOTE_LIMIT_PER_USER = 160
 """Similar to daily vote limit per user, but considers all time votes."""
 
 KARMA_EXPRESSIONS = {
-    range(25, 50): "kaotik nötral",
-    range(50, 100): "müzmin yedek",
-    range(100, 125): "padawan",
-    range(125, 150): "çılgın",
-    range(150, 200): "kofti anarşist",
-    range(200, 250): "anarşist",
-    range(250, 300): "hırçın golcü",
-    range(300, 350): "anadolu çocuğu",
-    range(350, 370): "battal gazi",
-    range(370, 400): "çetrefilli",
-    range(400, 430): "hippi",
-    range(430, 450): "delikanlı",
-    range(450, 470): "ağır abi",
-    range(470, 500): "bıçkın",
-    range(500, 530): "mangal yürekli rişar",
-    range(530, 550): "mülayim ama sempatik",
-    range(550, 575): "aklı selim",
-    range(575, 600): "prezentabl",
-    range(600, 620): "şeker abi",
-    range(620, 630): "bal küpü",
-    range(630, 650): "baldan tatlı",
-    range(650, 665): "leziz",
-    range(665, 680): "entry uğruna ruhunu satmış",
-    range(680, 700): "şekerpare",
-    range(700, 725): "şamda kayısı",
-    range(725, 750): "her eve lazım",
-    range(750, 775): "tadına doyum olmaz",
-    range(775, 800): "energizer tavşanı",
-    range(800, 850): "gençlerin sevgilisi",
-    range(850, 900): "fevkalbeşer",
-    range(900, 1000): "rating canavarı",
+    range(25, 50): _("chaotic neutral"),
+    range(50, 100): _("chronic backup"),
+    range(100, 125): _("padawan"),
+    range(125, 150): _("lunatic"),
+    range(150, 200): _("fragile anarchist"),
+    range(200, 250): _("anarchist"),
+    range(250, 300): _("turbulent kicker"),
+    range(300, 350): _("anatolian boy"),
+    range(350, 370): _("battal gazi"),
+    range(370, 400): _("thorny"),
+    range(400, 430): _("hippy"),
+    range(430, 450): _("lad"),
+    range(450, 470): _("staid"),
+    range(470, 500): _("rowdy"),
+    range(500, 530): _("richard the blazeheart "),
+    range(530, 550): _("compliant yet sympathetic"),
+    range(550, 575): _("right minded"),
+    range(575, 600): _("presentable"),
+    range(600, 620): _("sugar"),
+    range(620, 630): _("honeypot"),
+    range(630, 650): _("yummier honey"),
+    range(650, 665): _("luscious"),
+    range(665, 680): _("addicted"),
+    range(680, 700): _("switheet"),
+    range(700, 725): _("damascus apricot"),
+    range(725, 750): _("household"),
+    range(750, 775): _("exuberant"),
+    range(775, 800): _("energizer rabbit"),
+    range(800, 850): _("courteous"),
+    range(850, 900): _("inhuman"),
+    range(900, 1000): _("rating beast"),
 }
 """
 Karma expressions for specific karma ranges. All expressions are
@@ -266,32 +268,8 @@ Also, if an user has has such karma, they won't be able to influence
 other people's karma by voting.
 """
 
-UNDERWHELMING_KARMA_EXPRESSION = "geri zekâlı"
+UNDERWHELMING_KARMA_EXPRESSION = _("imbecile")
 """Expression for too low karma points. (decided by KARMA_BOUNDARY_LOWER)"""
 
-OVERWHELMING_KARMA_EXPRESSION = "halkın şampiyonu"
+OVERWHELMING_KARMA_EXPRESSION = _("the champion")
 """Expression for too high karma points. (decided by KARMA_BOUNDARY_UPPER)"""
-
-# Messages
-
-NOVICE_ACCEPTED_MESSAGE = (
-    "sayın {}, tebrikler; yazarlık başvurunuz kabul edildi. giriş yaparak yazar olmanın"
-    " olanaklarından faydalanabilirsin."
-)
-
-NOVICE_REJECTED_MESSAGE = (
-    "sayın {}, yazarlık başvurunuz reddedildi ve tüm entryleriniz silindi. eğer 10 entry"
-    " doldurursanız tekrar çaylak onay listesine alınacaksınız."
-)
-
-PASSWORD_CHANGED_MESSAGE = (
-    "sayın {}, parolanız değiştirildi. Eğer bu işlemden haberdar iseniz sıkıntı yok."  # nosec
-    " Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle hesabınızı kurtarabilirsiniz."
-)
-
-TERMINATION_ONHOLD_MESSAGE = (
-    "sayın {}, hesabınız donduruldu. eğer silmeyi seçtiyseniz, seçiminizden 5 gün"
-    " sonra hesabınız kalıcı olarak silinecektir. bu süre dolmadan önce hesabınıza giriş"
-    " yaptığınız takdirde hesabınız tekrar aktif hale gelecektir. eğer hesabınızı sadece"
-    " dondurmayı seçtiyseniz, herhangi bir zamanda tekrar giriş yapabilirsiniz."
-)

@@ -1,3 +1,27 @@
+[0.183.0-dev-pre](2020.07.25)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) This subject is now subject to
+internalization/localization.
+This commit will include some minor
+string wrapping, there will be several
+upcoming updates as such (which I don't think of
+logging changes).
+
+Due to this support, I will be replacing all
+Turkish strings with English in all code files
+and templates, which will make the code a lot
+readable by foreign friends.
+
+This commit also includes some minor changes
+(there were some code typos, etc.). Check them
+also out.
+
+--Deletions--
+None
+
 [0.182.0-dev-pre](2020.07.24)(compatible)
 --Additions--
 1) When you search for keywords in entry

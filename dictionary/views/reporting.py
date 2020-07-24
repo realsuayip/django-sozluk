@@ -5,6 +5,7 @@ from django.core.mail import EmailMessage
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, View
 
 from ..models import GeneralReport
@@ -25,24 +26,33 @@ class GeneralReportView(CreateView):
         if self.request.user.is_authenticated:
             instance.reporter_email = self.request.user.email
             instance.is_verified = True
-            notifications.success(self.request, "iletişim talebiniz başarıyla iletildi.", extra_tags="persistent")
+            notifications.success(
+                self.request, _("your report request was successfully sent."), extra_tags="persistent"
+            )
             return super().form_valid(form)
 
         # Prepare and send a verification email.
         key = instance.key
         link = f"{PROTOCOL}://{DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
-        body = f"""<p>iletişim formunun tarafımıza ulaşması için aşağıdaki bağlantıyı takip etmeniz
-                    gerekiyor. eğer 'iletişim formu falan göndermedim ben, ne oluyor be?' diyorsanız, hiçbir
-                    şey olmamış gibi hayatınıza devam edebilirsiniz. bağlantı:</p><a href="{link}">{link}</a>"""
+
+        message = _(
+            "in order reporting form to reach us, you need to follow the link given below."
+            " if you are in mindset such as 'what the hell? i did not send such report', you"
+            "can continue with your life as if nothing ever happened. the link:"
+        )
+
+        body = f'<p>{message}</p><a href="{link}">{link}</a>'
 
         try:
-            email = EmailMessage("iletişim formu için onay", body, FROM_EMAIL, [instance.reporter_email])
+            email = EmailMessage(_("confirmation of reporting"), body, FROM_EMAIL, [instance.reporter_email])
             email.content_subtype = "html"
             email.send()
             notifications.info(
                 self.request,
-                "e-posta adresinize bir onaylama bağlantısı gönderildi."
-                " bu bağlantıya tıkladıktan sonra isteğiniz bize ulaşacak.",
+                _(
+                    "a confirmation link was sent to your e-mail address."
+                    " your report will reach us if you follow the given link."
+                ),
                 extra_tags="persistent",
             )
         except (SMTPException, ConnectionRefusedError):
@@ -52,7 +62,7 @@ class GeneralReportView(CreateView):
 
     def form_invalid(self, form):
         notifications.error(
-            self.request, "iletişim formu gönderilemedi. daha sonra tekrar deneyin.", extra_tags="persistent"
+            self.request, _("we couldn't handle your request. try again later."), extra_tags="persistent"
         )
         return super().form_invalid(form)
 
@@ -67,7 +77,9 @@ class GeneralReportView(CreateView):
             )
 
             if referrer_entry and referrer_topic:
-                data["subject"] = f'"{referrer_topic}" başlığındaki #{referrer_entry} numaralı entry hakkında'
+                data["subject"] = _(
+                    "about the entry (#%(referrer_entry)s), in the topic titled '%(referrer_topic)s'"
+                ) % {"referrer_entry": referrer_entry, "referrer_topic": referrer_topic}
 
             if self.request.user.is_authenticated:
                 data["reporter_email"] = self.request.user.email
@@ -88,13 +100,17 @@ class VerifyReport(View):
             report.is_verified = True
             report.date_verified = timezone.now()
             report.save()
-            notifications.success(self.request, "iletişim talebiniz başarıyla iletildi.", extra_tags="persistent")
+            notifications.success(
+                self.request, _("your report request was successfully sent."), extra_tags="persistent"
+            )
         else:
             notifications.error(
                 self.request,
-                "ne yazık ki iletişim talebiniz iletilemedi. onaylama bağlantısı geçersiz."
-                " lütfen bağlantı adresini kontrol edin."
-                " <strong>onaylama bağlantısı gönderimden itibaren bir gün için geçerlidir.</strong>",
+                _(
+                    "unfortunately your report request was not sent. the confirmation link is invalid;"
+                    " please check the confirmation link. <strong>confirmation link is only valid for"
+                    " 24 hours after it was sent.</strong>"
+                ),
                 extra_tags="persistent",
             )
         return redirect(reverse("home"))

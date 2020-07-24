@@ -478,7 +478,7 @@ class TopicListHandler:
             # Converting slug to actual Author object to use it later on in query. (same with the channel)
             user = get_object_or_404(Author, slug=user_slug)
             self.extra["user_object"] = user
-            fmtstr = [user.username]
+            fmtstr = {"username": user.username}
 
             if self.tab == "channels":
                 category_slug = self.extra.get("channel")
@@ -488,11 +488,11 @@ class TopicListHandler:
 
                 channel = get_object_or_404(Category, slug=category_slug)
                 self.extra["channel_object"] = channel
-                fmtstr.append(channel.name)
+                fmtstr["channel"] = channel.name
             else:
                 self.extra.pop("channel", None)  # so as not to interfere with cache key
 
-            self.extra["safename"] = NON_DB_CATEGORIES_META["userstats"][2][0][self.tab].format(*fmtstr)
+            self.extra["safename"] = NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
             self.extra["hidetabs"] = "yes"
 
     @property

@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.generic import ListView, TemplateView
 
 from dateutil.relativedelta import relativedelta
@@ -103,14 +104,14 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
             username = form.cleaned_data.get("recipient")
             recipient = Author.objects.get(username=username)
         except Author.DoesNotExist:
-            notifications.error(self.request, "öyle biri yok")
+            notifications.error(self.request, _("no such person though"))
             return self.form_invalid(form)
 
         body = form.cleaned_data.get("body")
         sent = Message.objects.compose(self.request.user, recipient, body)
 
         if not sent:
-            notifications.error(self.request, "mesajınızı göndermedik")
+            notifications.error(self.request, _("we couldn't send your message"))
             return self.form_invalid(form)
 
         return redirect(reverse("conversation", kwargs={"slug": recipient.slug}))
@@ -149,7 +150,7 @@ class ActivityList(LoginRequiredMixin, ListView):
             topic__in=self.request.user.get_following_topics_with_receipt().filter(is_read=False),
         ).update(read_at=timezone.now())
 
-        notifications.info(self.request, "başlıklar okundu olarak işaretlendi")
+        notifications.info(self.request, _("the topics were mark read"))
         return redirect(self.request.path)
 
 
@@ -182,7 +183,7 @@ class TopicList(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         """User tries to view unauthorized category."""
         if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not request.user.is_authenticated:
-            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
+            notifications.info(request, _("actually, you may benefit from this feature by logging in."))
             return redirect(reverse("login"))
 
         return super().dispatch(request)
@@ -200,7 +201,7 @@ class TopicList(TemplateView):
 class TopicEntryList(IntegratedFormMixin, ListView):
     """
     View to list entries of a topic with an entry creation form.
-    View to handle search results of header search box. (başlık, #entry ya da @yazar)
+    View to handle search results of header search box.
     View to handle entry permalinks.
     """
 
@@ -239,7 +240,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
        parameter 'a'. For example ?a=today returns only today's entries."""
 
     login_required_modes = ("novices", "following", "recent", "acquaintances")
-    """These filtering modes require user authenticatation. (they need to be present in modes)"""
+    """These filtering modes require user authentication. (they need to be present in modes)"""
 
     redirect = False
     """When handling queryset, if there are no new entries found, redirect user (if desired) to full topic view."""
@@ -253,8 +254,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         # Hinders sending entries to banned topics.
         if self.topic.exists and self.topic.is_banned:  # Cannot check is_banned before chechking its existance
-            # Not likely to occur in normal circumstances so you may include some humor here.
-            notifications.error(self.request, "olmaz ki canım... hürrüpü")
+            # Translators: Not likely to occur in normal circumstances so you may include some humor here.
+            notifications.error(self.request, _("no, no i don't think i will."))
             return self.form_invalid(form)
 
         # Entry creation handling
@@ -274,7 +275,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             try:
                 # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
                 if not slugify(self.topic.title):
-                    notifications.error(self.request, "öyle başlık mı olur hıyarağası.")
+                    notifications.error(self.request, _("that title is just too nasty."))
                     return self.form_invalid(form)
 
                 Topic(title=self.topic.title).full_clean()
@@ -288,10 +289,10 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         entry.save()
 
         if is_draft:
-            notifications.info(self.request, "kenara attık onu")
+            notifications.info(self.request, _("saved this as draft"))
             return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
 
-        notifications.info(self.request, "entry başarıyla statosfere yollandı")
+        notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
     def form_invalid(self, form):
@@ -361,7 +362,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return self.topic.entries.filter(**filters)
 
     def following(self):
-        """User is redirected here from (olay) link in header (view -> activity_list)"""
+        """User is redirected here from activity link in header (view -> activity_list)"""
         queryset = None
         following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
 
@@ -369,7 +370,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             epoch = self.request.GET.get("d")
 
             try:
-                # epoch + 1 because it does not account for the miliseconds
+                # epoch + 1 because it does not account for the milliseconds
                 last_read = timezone.make_aware(datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc)
             except (ValueError, TypeError, OSError):
                 last_read = None
@@ -382,14 +383,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if queryset is not None and queryset.exists():
             following.read_at = timezone.now()
             following.save()
-
-            page = self.request.GET.get("page", "1")
-            if page.isdigit() and int(page) == 1:
-                notifications.info(self.request, f"{queryset.count()} tane entry")
-
             return queryset
 
-        notifications.info(self.request, "pek bişey bulamadım açıkçası, buyrun hepsi")
+        notifications.info(self.request, _("honestly, there was nothing new. so i listed them all."))
         self.redirect = True
         return None
 
@@ -473,7 +469,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
                 previous_entries_count = self._qs_filter(
                     self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
-                    prefecth=False,
+                    prefetch=False,
                 ).count()
 
             if show_previous:
@@ -488,7 +484,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
                     subsequent_entries_count = self._qs_filter(
                         self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False),
-                        prefecth=False,
+                        prefetch=False,
                     ).count()
 
                     if subsequent_entries_count > 0:
@@ -502,7 +498,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         else:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user
             self.view_mode = "regular"
-            context["all_entries_count"] = self._qs_filter(self.regular(), prefecth=False).count()
+            context["all_entries_count"] = self._qs_filter(self.regular(), prefetch=False).count()
 
         return context
 
@@ -525,7 +521,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         # Check login requirements
 
         if not request.user.is_authenticated and self.view_mode in self.login_required_modes:
-            notifications.info(request, "aslında giriş yaparsan bu özellikten yararlanabilirsin.")
+            notifications.info(request, _("actually, you may benefit from this feature by logging in."))
             return redirect(reverse("login"))
 
         return super().dispatch(request)
@@ -603,12 +599,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             page_count += 1
         return page_count
 
-    def _qs_filter(self, queryset, prefecth=True):
+    def _qs_filter(self, queryset, prefetch=True):
         """
         Filter queryset to exclude drafts, blocked users etc. and select and prefetch related objects, if required.
 
         :param queryset: Queryset object of entries.
-        :param prefecth: Do you need to prefecth data? If you are going to use them, definitely use default value, else
+        :param prefetch: Do you need to prefetch data? If you are going to use them, definitely use default value, else
         set to False to escape unnecessary database overhead (e.g. You only need qs to access count).
         :return: qs
         """
@@ -629,7 +625,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if self.request.user.is_authenticated:
             qs = qs.exclude(author__in=self.request.user.blocked.all())
 
-        if prefecth:
+        if prefetch:
             return entry_prefetch(qs, self.request.user, comments=self.topic.is_ama)
 
         return qs

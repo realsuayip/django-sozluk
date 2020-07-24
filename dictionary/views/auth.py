@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
@@ -16,7 +17,7 @@ from ..models import AccountTerminationQueue, Author, PairedSession, UserVerific
 from ..utils import time_threshold
 from ..utils.email import send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
-from ..utils.settings import DISABLE_NOVICE_QUEUE, FROM_EMAIL, PASSWORD_CHANGED_MESSAGE, TERMINATION_ONHOLD_MESSAGE
+from ..utils.settings import DISABLE_NOVICE_QUEUE, FROM_EMAIL
 
 
 class Login(LoginView):
@@ -34,17 +35,16 @@ class Login(LoginView):
         # Check if the user cancels account termination.
         with suppress(AccountTerminationQueue.DoesNotExist):
             AccountTerminationQueue.objects.get(author=form.get_user()).delete()
-            notifications.info(self.request, "tekrar hoşgeldiniz. hesabınız aktif oldu.", extra_tags="persistent")
+            notifications.info(self.request, _("welcome back. your account was reactivated."), extra_tags="persistent")
 
-        notifications.info(self.request, "başarıyla giriş yaptınız efendim")
+        notifications.info(self.request, _("successfully logged in, dear"))
         return super().form_valid(form)
 
 
 class Logout(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            success_message = "başarıyla çıkış yaptınız efendim"
-            notifications.info(request, success_message)
+            notifications.info(request, _("successfully logged out, dear"))
         return super().dispatch(request)
 
 
@@ -67,9 +67,10 @@ class SignUp(FormView):
         send_email_confirmation(user, user.email)
         notifications.info(
             self.request,
-            "e-posta adresinize bir onay bağlantısı gönderildi."
-            " bu bağlantıya tıklayarak hesabınızı aktif hale getirip"
-            " giriş yapabilirsiniz.",
+            _(
+                "a confirmation link was sent your e-mail address. by following"
+                " this link you can activate and login into your account."
+            ),
         )
         return redirect("login")
 
@@ -112,7 +113,13 @@ class ResendEmailConfirmation(FormView):
         email = form.cleaned_data["email"]
         author = Author.objects.get(email=email)
         send_email_confirmation(author, email)
-        notifications.info(self.request, "onaylama bağlantısını içeren e-posta gönderildi")
+        notifications.info(
+            self.request,
+            _(
+                "a confirmation link was sent your e-mail address. by following"
+                " this link you can activate and login into your account."
+            ),
+        )
         return redirect("login")
 
 
@@ -121,16 +128,20 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
     template_name = "dictionary/user/preferences/password.html"
 
     def form_valid(self, form):
-        message = PASSWORD_CHANGED_MESSAGE.format(self.request.user.username)
+        message = _(
+            "dear %(username)s, your password was changed. If you aware of this"
+            " action, there is nothing to worry about. If you didn't do such"
+            " action, you can use your e-mail to recover your account."
+        ) % {"username": self.request.user.username}
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            self.request.user.email_user("parolanız değişti", message, FROM_EMAIL)
+            self.request.user.email_user(_("your password was changed."), message, FROM_EMAIL)
         except SMTPException:
-            notifications.error(self.request, "parolanızı değiştiremedik. daha sonra tekrar deneyin.")
+            notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return super().form_invalid(form)
 
-        notifications.info(self.request, "işlem tamam")
+        notifications.info(self.request, _("your password was changed"))
         return super().form_valid(form)
 
 
@@ -141,7 +152,9 @@ class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
 
     def form_valid(self, form):
         send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
-        notifications.info(self.request, "e-posta onayından sonra adresiniz değişecektir.", extra_tags="persistent")
+        notifications.info(
+            self.request, _("your e-mail will be changed after the confirmation."), extra_tags="persistent"
+        )
         return redirect(self.success_url)
 
 
@@ -151,18 +164,24 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        message = TERMINATION_ONHOLD_MESSAGE.format(self.request.user.username)
+        message = _(
+            "dear %(username)s, your account is now frozen. if you have chosen"
+            " to delete your account, it will be deleted permanently after 5 days."
+            " in case you log in before this time passes, your account will be"
+            " reactivated. if you only chose to freeze your account, you may"
+            " log in any time to reactivate your account."
+        ) % {"username": self.request.user.username}
 
         # Send a message to ensure security.
         try:
-            self.request.user.email_user("hesabınız donduruldu", message, FROM_EMAIL)
+            self.request.user.email_user(_("your account is now frozen"), message, FROM_EMAIL)
         except SMTPException:
-            notifications.error(self.request, "işlem gerçekleştirilemedi. daha sonra tekrar deneyin.")
+            notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return super().form_invalid(form)
 
         termination_choice = form.cleaned_data.get("state")
         AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
         # Unlike logout(), this invalidates ALL sessions across devices.
         PairedSession.objects.filter(user=self.request.user).delete()
-        notifications.info(self.request, "isteğinizi aldık. görüşmek üzere")
+        notifications.info(self.request, _("your request was taken. farewell."))
         return super().form_valid(form)

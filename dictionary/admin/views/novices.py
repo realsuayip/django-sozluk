@@ -2,12 +2,13 @@ from django.contrib import admin
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
 from ...models import Author, Entry, Message
 from ...utils import get_generic_superuser
 from ...utils.admin import log_admin
-from ...utils.settings import FROM_EMAIL, NOVICE_ACCEPTED_MESSAGE, NOVICE_REJECTED_MESSAGE
+from ...utils.settings import FROM_EMAIL
 
 
 class NoviceList(PermissionRequiredMixin, ListView):
@@ -92,7 +93,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
-        user_info_msg = NOVICE_ACCEPTED_MESSAGE.format(user.username)
+        user_info_msg = _(
+            "dear %(username)s, congratulations! your application"
+            " of authorship has been approved. you can utilize your"
+            "authorship by logging in."
+        ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
         user.email_user("yazarlık başvurunuz kabul edildi", user_info_msg, FROM_EMAIL)
 
@@ -112,7 +117,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
-        user_info_msg = NOVICE_REJECTED_MESSAGE.format(user.username)
+        user_info_msg = _(
+            "dear %(username)s, your application of authorship has been"
+            " rejected and all of your entries has been deleted. if you"
+            " fill up 10 entries, you will be admitted to novice list again."
+        ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
         user.email_user("yazarlık başvurunuz reddedildi", user_info_msg, FROM_EMAIL)
 
