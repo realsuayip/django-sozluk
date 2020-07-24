@@ -16,7 +16,7 @@
                 <h1 class="topic-title">
                     <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
 
-                    {% if mode == "search" %}<small>[arama terimi: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
+                    {% if mode == "search" %}<small>[arama terimleri: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
                     {% if mode == "links" %}<small><strong>[linkler]</strong></small>{% endif %}
                     {% if mode == "history" %}<small><strong>[tarihte bugün: </strong>{{ request.GET.year.strip }}]</small>{% endif %}
                     {% if mode == "novices" %}<small><strong>[çaylaklar]</strong></small>{% endif %}
