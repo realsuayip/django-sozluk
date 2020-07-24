@@ -28,7 +28,11 @@
         </header>
 
         <article class="entry{% if entry.author.is_novice %} by_novice{% endif %}{% if permalink == "yes" %} permalink{% endif %}">
-            <p>{{ entry.content|formatted|linebreaksbr }}</p>
+            {% if wordstomark %}
+                <p>{{ entry.content|formatted|mark:wordstomark|linebreaksbr }}</p>
+            {% else %}
+                <p>{{ entry.content|formatted|linebreaksbr }}</p>
+            {% endif %}
         </article>
 
         <footer class="entry-footer">

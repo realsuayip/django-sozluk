@@ -103,6 +103,14 @@ def formatted(raw_entry):
     return mark_safe(entry)
 
 
+@register.filter
+def mark(formatted_entry, words):
+    for word in sorted(words.split(), key=len, reverse=True):
+        tag = (fr"({escape(word)})(?!(.(?!<(a|mark)))*<\/(a|mark)>)", r"<mark>\1</mark>")
+        formatted_entry = re.sub(*tag, formatted_entry)
+    return mark_safe(formatted_entry)
+
+
 @register.filter(expects_localtime=True)
 def entrydate(created, edited):
     append = ""

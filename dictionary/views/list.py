@@ -8,6 +8,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
+from django.db import connection
 from django.db.models import Exists, Max, Min, OuterRef, Q
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
@@ -339,8 +340,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                     author = Author.objects.get(username=keywords[1:])
                     return self.topic.entries.filter(author=author)
             else:
-                # use postgresql to make searches more advanced if desired
-                return self.topic.entries.filter(content__icontains=keywords)
+                return self.topic.entries.filter(
+                    **{"content__search" if connection.vendor == "postgresql" else "content__icontains": keywords}
+                )
 
         return None
 

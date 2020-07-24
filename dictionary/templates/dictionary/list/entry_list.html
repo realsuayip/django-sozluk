@@ -6,7 +6,7 @@
 {% block title %}{% print_topic_title %}{% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}
-{% block bodyattr %}class="default topic-entry-view {% if not entry_permalink %}has-entries{% endif %}"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
+{% block bodyattr %}{% if not entry_permalink %}class="has-entries"{% endif %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 {% block content %}
 
     {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}
@@ -110,7 +110,11 @@
                         {% else %}
                             {% if page_obj.paginator.count %}
                                 {% for entry in entries %}
-                                    {% include "dictionary/includes/entry.html" with show_comments=topic.is_ama %}
+                                    {% if mode == "search" %}
+                                        {% include "dictionary/includes/entry.html" with show_comments=topic.is_ama wordstomark=request.GET.keywords.strip %}
+                                    {% else %}
+                                        {% include "dictionary/includes/entry.html" with show_comments=topic.is_ama %}
+                                    {% endif %}
                                 {% endfor %}
 
                             {% else %}

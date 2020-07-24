@@ -208,8 +208,7 @@ nav.sub-nav ul .more_tags_dropdown,
 }
 
 .left-frame-in {
-    height: 100%;
-    width: 20%;
+    font-size: 1.2rem;
 }
 
 .right-frame {
@@ -482,6 +481,12 @@ section.ama-comments aside.votes strong {
 
 .fw-600 {
     font-weight: 600;
+}
+
+mark {
+    margin: 0 .15em;
+    padding: 0;
+    background-color: yellow;
 }
 
 .datepick select:nth-child(2) {
@@ -1259,54 +1264,17 @@ ul.exlusion-choices > li > a.active {
         padding-left: 5px;
         padding-right: 5px;
     }
-
-    body.topic-list-view .content-frame {
-        width: calc(100% - 250px);
-    }
-
-    body.topic-list-view .left-frame-in {
-        font-size: 1.2em;
-        width: 100%;
-    }
-
-    body.topic-list-view .right-frame {
-        display: none;
-    }
 }
 
 /** MOBILE VERSION SWITCH **/
 @media (max-width: 810px) {
-    body.topic-list-view .left-frame,
-    body.topic-list-view .right-frame {
-        display: none;
-    }
-
-    body.topic-list-view .content-frame {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    body.topic-list-view .left-frame-in {
-        width: 100%;
-        font-size: 1.2em;
-    }
-
     .content {
         margin-top: 90px;
         padding-top: .75em;
     }
 
-    nav.sub-nav ul.desktop-only {
-        display: none;
-    }
-
     nav.sub-nav ul.mobile-only {
         display: flex;
-    }
-
-    ul.user-navigation span {
-        display: none;
     }
 
     ul.user-navigation li:nth-child(n+3) {
@@ -1317,6 +1285,10 @@ ul.exlusion-choices > li > a.active {
         padding-bottom: .5em;
     }
 
+    nav.sub-nav ul.desktop-only,
+    ul.user-navigation li.desktop-only,
+    ul.user-navigation span,
+    body .left-frame,
     nav.usermenu {
         display: none;
     }
@@ -1325,43 +1297,23 @@ ul.exlusion-choices > li > a.active {
         margin-bottom: .25em;
     }
 
-    body.default .content-frame,
-    body.topic-entry-view .left-frame {
-        display: none;
-    }
-
-    body.default .right-frame {
+    .right-frame {
         margin-top: 1em;
         width: 100%;
         margin-left: 0;
     }
 
-    .left-frame {
-        position: static;
-        width: 100%;
-        font-size: 1.2em;
-        display: block;
-    }
-
-    body.topic-entry-view .content-frame {
+    body .content-frame {
         display: block;
         margin-left: 0;
         width: 100%;
         padding: 0;
     }
 
-    body.topic-entry-view .left-frame {
-        display: none;
-    }
-
     nav.sub-nav ul li,
     nav.sub-nav ul li.active,
     nav.sub-nav ul li:hover {
         border-bottom: none;
-    }
-
-    ul.user-navigation li.desktop-only {
-        display: none;
     }
 
     .stretch-mobile {

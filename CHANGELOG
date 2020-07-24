@@ -1,3 +1,18 @@
+[0.182.0-dev-pre](2020.07.24)(compatible)
+--Additions--
+1) When you search for keywords in entry
+list, keywords will be marked in entry
+content. Also implemented PosgreSQL
+search lookup.
+
+-- Changes --
+1) Body footer is now visible in all
+pages.
+
+--Deletions--
+1) Cast old implementation of body
+classes into the fire.
+
 [0.181.0-dev-pre](2020.07.24)(compatible)
 --Additions--
 None
