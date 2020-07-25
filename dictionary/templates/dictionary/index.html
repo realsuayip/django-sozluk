@@ -1,4 +1,7 @@
 {% extends 'dictionary/base.html' %}
+
+{% load i18n %}
+
 {% block supertitle %}{{ request.site.name }} - özgür bilgi kaynağı{% endblock %}
 {% block bodyattr %}class="has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 {% block content %}
@@ -12,14 +15,16 @@
         </section>
     {% else %}
         <div class="border rounded p-3 bg-light">
-            <span>gösterime uygun entry yok 🤷</span>
+            <span>{% trans "no entries found suitable for display 🤷" %}</span>
             {% if index_type == "random_records" %}
                 <hr>
                 <p class="m-0">
-                    <b>random records:</b> anasayfa'da entry'lerin gözükmesi için
-                    varsayılan ayarlarda tüm zamanlarda en az 15×2 entry girilmiş olmalı.
-                    tüm zamanlarda 15×2 entry girilmesine rağmen <u>yazarlar tarafından yayımlanmış</u>
-                    toplam entry sayısı 15'ten az ise anasayfa yanıt vermeyecektir.
+                {% blocktrans trimmed %}
+                    <b>random records:</b> in order entries to appear in home page, there needs
+                    to be at least 15×2 entries (in default settings). if the number of
+                    entries <u>written by authors</u> is less than 15, despite the count of all
+                    time written entries being more than 15×2, the home page will not respond.
+                {% endblocktrans %}
                 </p>
             {% endif %}
         </div>

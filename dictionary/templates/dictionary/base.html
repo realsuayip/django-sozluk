@@ -8,6 +8,7 @@
 
     {% load static %}
     {% load functions %}
+    {% load i18n %}
 
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -29,30 +30,31 @@
 <header class="page_header">
 
     <div class="container">
-        <div class="small-device-alert">cihaz çok küçük!</div>
+        <div class="small-device-alert">{% trans "the device is too small!" %}</div>
 
         <div class="top-bar">
 
-            <button class="content-skipper" data-text-identifier="ana içerik" data-href="#main" id="skipper-main-menu">Ana içeriğe git.<small>bu menü caps lock tuşuyla açılır.</small></button>
-            <button class="content-skipper" data-text-identifier="başlık listesi" data-href="#left-frame-nav">Başlık listesine git.<small>bu menü caps lock tuşuyla açılır.</small></button>
-            <button class="content-skipper" data-text-identifier="ek içerik" data-href="#right-frame">Ek içeriğe git.<small>bu menü caps lock tuşuyla açılır.</small></button>
+            {% blocktrans asvar skipper_help_text %}Open this menu with caps lock.{% endblocktrans %}
+            <button class="content-skipper" data-text-identifier="{% trans "main content" %}" data-href="#main" id="skipper-main-menu">{% trans "Skip to main content." %}<small>{{ skipper_help_text }}</small></button>
+            <button class="content-skipper" data-text-identifier="{% trans "topic list" %}" data-href="#left-frame-nav">{% trans "Skip to topic list." %}<small>{{ skipper_help_text }}</small></button>
+            <button class="content-skipper" data-text-identifier="{% trans "additional content" %}" data-href="#right-frame">{% trans "Skip to additional content." %}<small>{{ skipper_help_text }}</small></button>
 
             {# <!--- logo --> #}
             <div class="logo">
-                <a aria-label="Sözlük ana sayfası" href="{% url 'home' %}"></a>
+                <a aria-label="{% trans "Dictionary home page" %}" href="{% url 'home' %}"></a>
             </div>
 
             {# HAYVAN-ARA #}
             <form method="GET" class="header-search-form" action="{% url 'topic-search' %}" id="header_search_form">
                 <div class="input-group searchbox">
-                    <input name="q" type="text" placeholder="başlık, #entry ya da @yazar" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="Arama terimi">
+                    <input name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
                     <div class="input-group-append">
 
                         <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="sr-only">gelişmiş arama diyaloğunu aç</span>
+                            <span class="sr-only">{% trans "Open advanced search menu" %}</span>
                         </button>
 
-                        <button class="btn searchbtn" type="submit" title="arama yap">
+                        <button class="btn searchbtn" type="submit" title="{% trans "Search" %}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 16 16">
                                 <use href="#search"></use>
                             </svg>
@@ -62,9 +64,9 @@
                             <div class="px-3 py-2">
                                 {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-django stretch" id="perform_advanced_search">çok güzel ara</button>
+                                    <button type="button" class="btn btn-django stretch" id="perform_advanced_search">{% trans "search fabulously" %}</button>
                                 </div>
-                                <a role="button" tabindex="0" class="dropdown-item text-center search-closer" id="close_search_dropdown">boşver</a>
+                                <a role="button" tabindex="0" class="dropdown-item text-center search-closer" id="close_search_dropdown">{% trans "nevermind" %}</a>
                             </div>
                         </div>
                     </div>
@@ -78,53 +80,53 @@
             {% if user.is_authenticated %}
                 <ul class="user-navigation d-inline-flex align-items-start pl-0 m-0">
                     <li>
-                        <a class="nav-quicklink" href="{{ user.get_absolute_url }}" aria-label="profilim">
+                        <a class="nav-quicklink" href="{{ user.get_absolute_url }}" aria-label="{% trans "my profile" %}">
                             <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#person"></use>
                             </svg>
-                            <span>ben</span>
+                            <span>{% trans "me" %}</span>
                         </a>
                     </li>
 
 
                     <li {% if user.unread_message_count > 0 %}class="new"{% endif %}>
-                        <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="mesajlar">
+                        <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="{% trans "messages" %}">
                             {% if user.unread_message_count > 0 %}
                                 <div class="badge badge-light user-badge">{{ user.unread_message_count }}</div>
                             {% endif %}
                             <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#chat"></use>
                             </svg>
-                            <span class="ml-2">mesaj</span>
+                            <span class="ml-2">{% trans "messages" %}</span>
                         </a>
                     </li>
 
                     <li {% if user.unread_topic_count.sum > 0 %}class="new"{% endif %}>
-                        <a class="nav-quicklink" aria-label="takip ettiğim başlıklar" href="{% url 'activity' %}">
+                        <a class="nav-quicklink" aria-label="{% trans "following topics" %}" href="{% url 'activity' %}">
                             {% if user.unread_topic_count.sum > 0 %}
                                 <div class="badge badge-light user-badge">{{ user.unread_topic_count.sum }}</div>
                             {% endif %}
                             <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#bell"></use>
                             </svg>
-                            <span>olay</span>
+                            <span>{% trans "activity" %}</span>
                         </a>
                     </li>
 
 
                     <li class="desktop-only">
-                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="Hesap Menüsü">
+                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}ü">
                             <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#more"></use>
                             </svg>
 
 
                             <div class="user-dropdown dropdown-menu dropdown-menu-right" aria-labelledby="user-dropdown">
-                                <a class="dropdown-item" href="{% url 'category_list' %}">kanallar</a>
-                                <a class="dropdown-item" href="{% url 'user_preferences' %}">ayarlar</a>
-                                <a class="dropdown-item" href="{% url 'people' %}">takip/engellenmiş</a>
+                                <a class="dropdown-item" href="{% url 'category_list' %}">{% trans "channels" %}</a>
+                                <a class="dropdown-item" href="{% url 'user_preferences' %}">{% trans "settings" %}</a>
+                                <a class="dropdown-item" href="{% url 'people' %}">{% trans "following/blocked" %}</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'logout' %}">terk</a>
+                                <a class="dropdown-item" href="{% url 'logout' %}">{% trans "log out" %}</a>
                             </div>
 
                     </li>
@@ -133,10 +135,10 @@
 
 
             {% else %}
-                <nav class="usermenu" aria-label="Kullanıcı menüsü">
+                <nav class="usermenu" aria-label="{% trans "Account menu" %}">
                     <ul>
-                        <li><a href="{% url 'login' %}">giriş yap</a></li>
-                        <li><a href="{% url 'register' %}">kayıt ol</a></li>
+                        <li><a href="{% url 'login' %}">{% trans "log in" %}</a></li>
+                        <li><a href="{% url 'register' %}">{% trans "register" %}</a></li>
                     </ul>
                 </nav>
             {% endif %}
@@ -144,7 +146,7 @@
         </div>
 
         {# <!--- categories and mobile navigation --> #}
-        <nav class="sub-nav" aria-label="Kategori menüsü">
+        <nav class="sub-nav" aria-label="{% trans "Category menu" %}">
             <ul class="mobile-only">
                 {% render_header_link "today" %}
                 {% render_header_link "popular" %}
@@ -156,29 +158,29 @@
                     <li id="usermenu_mobile" data-toggle="dropdown">
                         <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#more"></use>
-                            <title>Kullanıcı menüsü</title>
+                            <title>{% trans "Account Menu" %}</title>
                         </svg>
                     </li>
 
                     <div class="usermenu-dropdown dropdown-menu dropdown-menu-right" aria-labelledby="usermenu_mobile">
-                        <a href="{% url "category_list" %}" class="dropdown-item">kanallar</a>
-                        <a href="{% url "topic_list" slug="drafts" %}" class="dropdown-item">kenar</a>
-                        <a href="{% url "topic_list" slug="wishes" %}" class="dropdown-item">ukteler</a>
-                        <a href="{% url "topic_list" slug="followups" %}" class="dropdown-item">son</a>
-                        <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">çaylaklar</a>
-                        <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">hayvan ara</a>
-                        <a href="{% url "user_preferences" %}" class="dropdown-item">ayarlar</a>
-                        <a href="{% url "people" %}" class="dropdown-item">takip/engellenmiş</a>
+                        <a href="{% url "category_list" %}" class="dropdown-item">{% trans "channels" %}</a>
+                        <a href="{% url "topic_list" slug="drafts" %}" class="dropdown-item">{% trans "drafts" %}</a>
+                        <a href="{% url "topic_list" slug="wishes" %}" class="dropdown-item">{% trans "wishes" %}</a>
+                        <a href="{% url "topic_list" slug="followups" %}" class="dropdown-item">{% trans "followups" %}</a>
+                        <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">{% trans "novices" %}</a>
+                        <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">{% trans "advanced search" %}</a>
+                        <a href="{% url "user_preferences" %}" class="dropdown-item">{% trans "settings" %}</a>
+                        <a href="{% url "people" %}" class="dropdown-item">{% trans "following/blocked" %}</a>
                         <div class="dropdown-divider"></div>
-                        <a href="{% url "logout" %}" class="dropdown-item">terk</a>
+                        <a href="{% url "logout" %}" class="dropdown-item">{% trans "log out" %}</a>
                     </div>
 
                 {% else %}
                     <li>
-                        <a href="{% url 'login' %}">giriş yap</a>
+                        <a href="{% url 'login' %}">{% trans "log in" %}</a>
                     </li>
                     <li>
-                        <a href="{% url 'register' %}">kayıt ol</a>
+                        <a href="{% url 'register' %}">{% trans "register" %}</a>
                     </li>
                 {% endif %}
             </ul>
@@ -201,7 +203,7 @@
                     </li>
                 {% endfor %}
 
-                <li class="key-clickable" id="category-expand" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="Diğer Kanallar">
+                <li class="key-clickable" id="category-expand" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="{% trans "Other Channels" %}">
                     <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>
@@ -214,8 +216,8 @@
                     {% endfor %}
 
                     <div class="dropdown-divider"></div>
-                    <a title="herhangi bir kanala ait olmayan başlıklar" class="dropdown-item{% if left_frame.slug == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">başıboşlar</a>
-                    <a href="{% url 'category_list' %}" class="dropdown-item regular">tüm kanallar</a>
+                    <a title="{% trans "topics with no channels" %}" class="dropdown-item{% if left_frame.slug == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">{% trans "uncategorized" %}</a>
+                    <a href="{% url 'category_list' %}" class="dropdown-item regular">{% trans "all channels" %}</a>
                 </div>
             </ul>
         </nav>
@@ -229,10 +231,10 @@
 
 <div class="container content">
 
-    <aside class="left-frame" id="left-frame-nav" aria-label="Başlık listesi">
+    <aside class="left-frame" id="left-frame-nav" aria-label="{% trans "Topic list" %}">
         {% if request.is_mobile %}
-            <h2>hay aksi!</h2>
-            <p>bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin</p>
+            <h2>{% trans "oops!" %}</h2>
+            <p>{% trans "something went wrong. try reloading the page." %}</p>
         {% else %}
             {% include "dictionary/includes/left_frame.html" %}
         {% endif %}
@@ -259,8 +261,8 @@
             <footer class="body-footer">
                 <h2 class="h5">{{ request.site.name }}</h2>
                 <ul>
-                    <li><a href="{% url 'general-report' %}">iletişim formu</a></li>
-                    <li><a href="{% url 'announcements-index' %}">sözlük duyuruları</a></li>
+                    <li><a href="{% url 'general-report' %}">{% trans "contact" %}</a></li>
+                    <li><a href="{% url 'announcements-index' %}">{% trans "announcements" %}</a></li>
                     {% for page in flatpages|order_by:"-metaflatpage__weight url" %}
                         <li><a href="{{ page.url }}">{{ page.title }}</a></li>
                     {% endfor %}
