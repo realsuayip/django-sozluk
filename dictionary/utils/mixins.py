@@ -3,6 +3,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
@@ -17,7 +18,7 @@ class PasswordConfirmMixin:
     """
 
     password_field_name = "password_confirm"  # nosec
-    password_error_message = "parolanızı yanlış girdiniz"  # nosec
+    password_error_message = _lazy("your password was incorrect")  # nosec
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -76,13 +77,17 @@ class IntermediateActionMixin:
         try:
             context = self.get_context_data()
         except self.model.DoesNotExist:
-            notifications.error(request, f"Uygun kaynak {self.model._meta.verbose_name_plural} bulunamadı.")
+            notifications.error(
+                request,
+                _("Couldn't find any suitable %(obj_name_plural)s.")
+                % {"obj_name_plural": self.model._meta.verbose_name_plural},
+            )
             return redirect(self.get_changelist_url())
         except InputNotInDesiredRangeError:
             notifications.error(
                 request,
-                f"Bir anda en fazla {self.max_input} {self.model._meta.verbose_name}"
-                f" üzerinde işlem yapabilirsiniz.",
+                _("At most, you can only work with %(max_input)d %(obj_name_plural)s.",)
+                % {"obj_name_plural": self.model._meta.verbose_name_plural, "max_input": self.max_input},
             )
             return redirect(self.get_changelist_url())
 

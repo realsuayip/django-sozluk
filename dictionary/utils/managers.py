@@ -13,6 +13,7 @@ from django.db.models.functions import Coalesce, Concat, Greatest
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from dateutil.relativedelta import relativedelta
 
@@ -281,7 +282,8 @@ class TopicQueryHandler:
 
         # Provide a default search term if none present
         if not keywords and not author_nick and not (favorites_only and user.is_authenticated):
-            keywords = "akıl fikir"
+            # Translators: This is the default keyword to search when users search with no input.
+            keywords = _("common sense")
 
         filters = {}
 
@@ -386,7 +388,7 @@ class TopicListHandler:
         """
 
         if not user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
-            raise PermissionDenied("User not logged in")
+            raise PermissionDenied(_("actually, you may benefit from this feature by logging in."))
 
         self.slug = slug
         self.user = user
