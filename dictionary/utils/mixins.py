@@ -79,15 +79,15 @@ class IntermediateActionMixin:
         except self.model.DoesNotExist:
             notifications.error(
                 request,
-                _("Couldn't find any suitable %(obj_name_plural)s.")
-                % {"obj_name_plural": self.model._meta.verbose_name_plural},
+                _("Couldn't find any suitable %(obj_name)s objects.")
+                % {"obj_name": self.model._meta.verbose_name},
             )
             return redirect(self.get_changelist_url())
         except InputNotInDesiredRangeError:
             notifications.error(
                 request,
-                _("At most, you can only work with %(max_input)d %(obj_name_plural)s.",)
-                % {"obj_name_plural": self.model._meta.verbose_name_plural, "max_input": self.max_input},
+                _("At most, you can only work with %(max_input)d %(obj_name)s objects.",)
+                % {"obj_name": self.model._meta.verbose_name, "max_input": self.max_input},
             )
             return redirect(self.get_changelist_url())
 

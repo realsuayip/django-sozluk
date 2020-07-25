@@ -1,6 +1,7 @@
 from django.contrib import messages as notifications
 from django.db.models import Count
 from django.shortcuts import redirect
+from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext
 
 from ...models import Author, Entry, Topic
 from ...utils import get_generic_superuser, parse_date_or_none
@@ -18,12 +19,10 @@ class TopicMove(IntermediateActionView):
     permission_required = ("dictionary.move_topic", "dictionary.change_topic")
     model = Topic
     template_name = "dictionary/admin/actions/topic_move.html"
-    page_title = "Başlık taşıma"
+    page_title = _lazy("Topic transfer")
 
     def get_queryset(self):
-        queryset = self.model.objects.annotate(entry_count=Count("entries")).filter(
-            pk__in=self.get_source_ids(), entry_count__gt=0
-        )
+        queryset = self.model.objects.annotate(count=Count("entries")).filter(pk__in=self.get_source_ids(), count__gt=0)
         return queryset
 
     def post(self, request):
@@ -59,17 +58,21 @@ class TopicMove(IntermediateActionView):
 
             # Admin log
             log_admin(
-                f"bu başlığa {entries_count} entry(ler) taşındı. sources->{topic_list_raw},"
+                f"TopicMove action, count: {entries_count}. sources->{topic_list_raw},"
                 f"from->{from_date} to->{to_date}",
                 request.user,
                 Topic,
                 target_topic,
             )
 
-            notifications.success(request, f"{entries_count} tane entry güncellendi.")
+            notifications.success(
+                request,
+                ngettext("%(count)d entry was transferred", "%(count)d entries were transferred", entries_count)
+                % {"count": entries_count},
+            )
         except Topic.DoesNotExist:
-            notifications.error(request, "Hedef başlık bulunamadı.")
+            notifications.error(request, _("Couldn't find the target topic."))
         except Author.DoesNotExist:
-            notifications.error(request, "GENERIC_SUPERUSER bulunamadı?")
+            notifications.error(request, _("GENERIC_SUPERUSER is missing?"))
 
         return redirect(self.get_changelist_url())

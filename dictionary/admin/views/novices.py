@@ -24,7 +24,7 @@ class NoviceList(PermissionRequiredMixin, ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(admin.site.each_context(self.request))
-        context["title"] = "Çaylak onay listesi"
+        context["title"] = _("Novice review list")
         context["novice_count"] = Author.in_novice_list.get_ordered().count()
         return context
 
@@ -47,11 +47,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         novices = Author.in_novice_list.get_ordered()
 
         if not novices.filter(pk=self.novice.pk).exists():
-            notifications.error(self.request, "kullanıcı çaylak onay listesinde değil.")
+            notifications.error(self.request, _("The user is not on the novice list."))
             self.novice = None
         elif self.novice not in novices[:100]:
             self.novice = None
-            notifications.error(self.request, "kullanıcı çaylak onay listesinin başında değil")
+            notifications.error(self.request, _("The user is not at the top of the novice list."))
 
         if self.novice is None:
             return redirect(reverse("admin:novice_list"))
@@ -64,14 +64,14 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(admin.site.each_context(self.request))
-        context["title"] = f"{self.novice.username} isimli çaylağın ilk 10 entry'si"
+        context["title"] = _("First ten entries of: %(username)s") % {"username": self.novice.username}
         return context
 
     def post(self, *args, **kwargs):
         operation = self.request.POST.get("operation")
 
         if operation not in ["accept", "decline"]:
-            notifications.error(self.request, "Geçersiz bir işlem seçtiniz.")
+            notifications.error(self.request, _("The selected operation was invalid."))
             return redirect(reverse("admin:novice_lookup", kwargs={"username": self.novice.username}))
 
         if operation == "accept":
@@ -89,7 +89,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user.save()
 
         # Log admin info
-        admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul edildi"
+        admin_info_msg = _("Authorship of the user '%(username)s' was approved.") % {"username": user.username}
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
@@ -99,7 +99,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " authorship by logging in."
         ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user("yazarlık başvurunuz kabul edildi", user_info_msg, FROM_EMAIL)
+        user.email_user(_("your authorship has been approved"), user_info_msg, FROM_EMAIL)
 
         notifications.success(self.request, admin_info_msg)
         return True
@@ -113,7 +113,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user.save()
 
         # Log admin info
-        admin_info_msg = f"{user.username} nickli kullanıcının yazarlık talebi kabul reddedildi"
+        admin_info_msg = _("Authorship of the user '%(username)s' was rejected.") % {"username": user.username}
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
@@ -123,7 +123,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " fill up 10 entries, you will be admitted to novice list again."
         ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user("yazarlık başvurunuz reddedildi", user_info_msg, FROM_EMAIL)
+        user.email_user(_("your authorship has been rejected"), user_info_msg, FROM_EMAIL)
 
         notifications.success(self.request, admin_info_msg)
         return True

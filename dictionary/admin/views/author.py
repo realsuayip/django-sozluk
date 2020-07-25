@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.contrib import messages as notifications
 from django.shortcuts import redirect
 from django.utils import timezone
+from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext
 
 from ...models import Author, Message
 from ...utils import get_generic_superuser, parse_date_or_none
@@ -19,12 +20,11 @@ class SuspendUser(IntermediateActionView):
     """
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
-    page_title = "Yazarları askıya al"
+    page_title = _lazy("Suspend authors")
     template_name = "dictionary/admin/actions/suspend_user.html"
     max_input = 100
 
     def post(self, request):
-        # @formatter:off
         time_choices = {
             "D1": timedelta(days=1),
             "W1": timedelta(days=7),
@@ -32,7 +32,7 @@ class SuspendUser(IntermediateActionView):
             "M1": timedelta(days=30),
             "M3": timedelta(days=90),
             "PM": None,
-        }  # @formatter:on
+        }
 
         choice = request.POST.get("suspension_time")
 
@@ -46,10 +46,12 @@ class SuspendUser(IntermediateActionView):
             user_list_raw = list(self.get_object_list())
 
             # Get and parse information for suspension
-            action_information = request.POST.get("information", "Bilgi verilmedi.")
-            message_for_user = f"Hesabınız askıya alındı. Yetkili mesajı: {action_information}. " \
-                               f"Profil sayfanızda hesabınızın tekrar aktifleştirilmesi için " \
-                               f"kalan süreyi görebilirsiniz."
+            action_information = request.POST.get("information", _("No information was given."))
+
+            message_for_user = _(
+                "your account has been suspended. administration message: %(message)s\n\n"
+                " in your profile page, you can see the remaining time until your account gets reactivated."
+            ) % {"message": action_information}
             message_for_log = f"Suspended until {suspended_until}, information: {action_information}"
 
             log_list = []  # Reserve list that hold instances for bulk creation
@@ -61,12 +63,17 @@ class SuspendUser(IntermediateActionView):
                 Message.objects.compose(get_generic_superuser(), user, message_for_user)
 
             # Bulk creation/updates
-            Author.objects.bulk_update(user_list_raw, ['suspended_until'])  # Update Author, does not call save()
+            Author.objects.bulk_update(user_list_raw, ["suspended_until"])  # Update Author, does not call save()
             logentry_bulk_create(log_list)  # Log user suspension for admin history
 
-            notifications.success(request, f"{len(user_list_raw)} yazar askıya alındı.")
+            count = len(user_list_raw)
+            notifications.success(
+                request,
+                ngettext("%(count)d author was suspended.", "%(count)d authors were suspended.", count)
+                % {"count": count},
+            )
         else:
-            notifications.error(request, "Geçersiz bir süre seçtiniz.")
+            notifications.error(request, _("The selected duration was invalid."))
 
         return redirect(self.get_changelist_url())
 
@@ -75,7 +82,7 @@ class UnsuspendUser(IntermediateActionView):
     # Same procedures as SuspendUser.
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
-    page_title = "Yazarların askıya alınmasını durdur"
+    page_title = _lazy("Unsuspend authors")
     template_name = "dictionary/admin/actions/unsuspend_user.html"
 
     def get_queryset(self):
@@ -94,10 +101,15 @@ class UnsuspendUser(IntermediateActionView):
                 user.suspended_until = None
                 log_list.append(logentry_instance("Removed suspension", request.user, Author, user))
 
-            Author.objects.bulk_update(user_list_raw, ['suspended_until'])
+            Author.objects.bulk_update(user_list_raw, ["suspended_until"])
             logentry_bulk_create(log_list)
 
-            notifications.success(request, f"{len(user_list_raw)} yazarın askıdan alınma durumu sona erdi.")
+            count = len(user_list_raw)
+            notifications.success(
+                request,
+                ngettext("%(count)d author was unsuspended.", "%(count)d authors were unsuspended.", count)
+                % {"count": count},
+            )
         else:
-            notifications.error(request, "İşlem gerçekleştirilemedi.")
+            notifications.error(request, _("we couldn't handle your request. try again later."))
         return redirect(self.get_changelist_url())
