@@ -62,7 +62,7 @@ class WishTopic(Mutation):
             previous_wish = topic.wishes.filter(author=sender)
             if previous_wish.exists():
                 previous_wish.delete()
-                return WishTopic(feedback=_("your wish was deleted"))
+                return WishTopic(feedback=_("your wish has been deleted"))
 
         if not sender.is_accessible:
             raise ValueError(_("sorry, the genie is now busy"))

@@ -96,7 +96,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user_info_msg = _(
             "dear %(username)s, congratulations! your application"
             " of authorship has been approved. you can utilize your"
-            "authorship by logging in."
+            " authorship by logging in."
         ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
         user.email_user("yazarlık başvurunuz kabul edildi", user_info_msg, FROM_EMAIL)

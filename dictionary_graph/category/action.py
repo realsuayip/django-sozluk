@@ -22,7 +22,7 @@ class FollowCategory(Mutation):
 
         if following.filter(pk=pk).exists():
             following.remove(category)
-            return FollowCategory(feedback=_("the channel is now followed"))
+            return FollowCategory(feedback=_("the channel is no longer followed"))
 
         following.add(category)
-        return FollowCategory(_("the channel is no longer followed"))
+        return FollowCategory(_("the channel is now followed"))

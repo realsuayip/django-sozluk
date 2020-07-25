@@ -35,7 +35,9 @@ class Login(LoginView):
         # Check if the user cancels account termination.
         with suppress(AccountTerminationQueue.DoesNotExist):
             AccountTerminationQueue.objects.get(author=form.get_user()).delete()
-            notifications.info(self.request, _("welcome back. your account was reactivated."), extra_tags="persistent")
+            notifications.info(
+                self.request, _("welcome back. your account has been reactivated."), extra_tags="persistent"
+            )
 
         notifications.info(self.request, _("successfully logged in, dear"))
         return super().form_valid(form)
@@ -68,7 +70,7 @@ class SignUp(FormView):
         notifications.info(
             self.request,
             _(
-                "a confirmation link was sent your e-mail address. by following"
+                "a confirmation link has been sent to your e-mail address. by following"
                 " this link you can activate and login into your account."
             ),
         )
@@ -116,7 +118,7 @@ class ResendEmailConfirmation(FormView):
         notifications.info(
             self.request,
             _(
-                "a confirmation link was sent your e-mail address. by following"
+                "a confirmation link has been sent to your e-mail address. by following"
                 " this link you can activate and login into your account."
             ),
         )
@@ -136,12 +138,12 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            self.request.user.email_user(_("your password was changed."), message, FROM_EMAIL)
+            self.request.user.email_user(_("your password has been changed."), message, FROM_EMAIL)
         except SMTPException:
             notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return super().form_invalid(form)
 
-        notifications.info(self.request, _("your password was changed"))
+        notifications.info(self.request, _("your password has been changed."))
         return super().form_valid(form)
 
 

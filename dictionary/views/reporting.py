@@ -27,7 +27,7 @@ class GeneralReportView(CreateView):
             instance.reporter_email = self.request.user.email
             instance.is_verified = True
             notifications.success(
-                self.request, _("your report request was successfully sent."), extra_tags="persistent"
+                self.request, _("your report request has been successfully sent."), extra_tags="persistent"
             )
             return super().form_valid(form)
 
@@ -38,7 +38,7 @@ class GeneralReportView(CreateView):
         message = _(
             "in order reporting form to reach us, you need to follow the link given below."
             " if you are in mindset such as 'what the hell? i did not send such report', you"
-            "can continue with your life as if nothing ever happened. the link:"
+            " can continue with your life as if nothing ever happened. the link:"
         )
 
         body = f'<p>{message}</p><a href="{link}">{link}</a>'
@@ -50,7 +50,7 @@ class GeneralReportView(CreateView):
             notifications.info(
                 self.request,
                 _(
-                    "a confirmation link was sent to your e-mail address."
+                    "a confirmation link has been sent to your e-mail address."
                     " your report will reach us if you follow the given link."
                 ),
                 extra_tags="persistent",

@@ -4,7 +4,7 @@ from django import template
 from django.template import defaultfilters
 from django.utils import timezone
 from django.utils.html import escape, mark_safe
-from django.utils.translation import gettext as _, pgettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy, pgettext_lazy
 
 from dateutil.parser import parse
 
@@ -32,6 +32,12 @@ RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\
 # Translators: Short for "also see this", used in entry editor.
 SEE = pgettext_lazy("editor", "see")
 SEARCH = pgettext_lazy("editor", "search")
+
+# Translators: Entry date format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+ENTRY_DATE_FORMAT = gettext_lazy("d.m.Y")
+
+# Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+ENTRY_TIME_FORMAT = gettext_lazy("H:i")
 
 
 @register.filter
@@ -124,11 +130,11 @@ def entrydate(created, edited):
         edited = timezone.localtime(edited)
 
         if created.date() == edited.date():
-            append = defaultfilters.date(edited, " ~ H:i")
+            append = defaultfilters.date(edited, f" ~ {ENTRY_TIME_FORMAT}")
         else:
-            append = defaultfilters.date(edited, " ~ d.m.Y H:i")
+            append = defaultfilters.date(edited, f" ~ {ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}")
 
-    return defaultfilters.date(created, "d.m.Y H:i") + append
+    return defaultfilters.date(created, f"{ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}") + append
 
 
 @register.filter

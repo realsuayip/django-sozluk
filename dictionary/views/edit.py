@@ -16,7 +16,7 @@ class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Author
     form_class = PreferencesForm
     template_name = "dictionary/user/preferences/index.html"
-    success_message = _lazy("settings was saved, dear")
+    success_message = _lazy("settings are saved, dear")
     success_url = reverse_lazy("user_preferences")
 
     def get_object(self, queryset=None):
@@ -118,7 +118,7 @@ class CommentCreate(CommentMixin, CreateView):
 
 
 class CommentUpdate(CommentMixin, UpdateView):
-    success_message = _lazy("the comment was updated")
+    success_message = _lazy("the comment has been updated")
 
     def get_object(self, queryset=None):
         return get_object_or_404(Comment, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
@@ -126,7 +126,7 @@ class CommentUpdate(CommentMixin, UpdateView):
     def form_valid(self, form):
         if self.request.POST.get("delete"):
             self.object.delete()
-            notifications.success(self.request, _("the comment was deleted"))
+            notifications.success(self.request, _("the comment has been deleted"))
             return redirect(self.object.entry.get_absolute_url())
 
         if not self.request.user.is_accessible:

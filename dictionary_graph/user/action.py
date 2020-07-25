@@ -46,7 +46,7 @@ class Block(Action, Mutation):
         subject.following.remove(sender)
         sender.blocked.add(subject)
         sender.favorite_entries.remove(*sender.favorite_entries.filter(author__in=[subject]))
-        return Block(feedback=_("the person was blocked"), redirect=info.context.build_absolute_uri(reverse("home")))
+        return Block(feedback=_("the person is now blocked"), redirect=info.context.build_absolute_uri(reverse("home")))
 
 
 class Follow(Action, Mutation):
