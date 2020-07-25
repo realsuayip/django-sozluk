@@ -2,6 +2,7 @@ from django import template
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import connection
 from django.utils.html import mark_safe
+from django.utils.translation import gettext as _
 
 from ..models import ExternalURL, Topic
 from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
@@ -53,25 +54,25 @@ def print_topic_title(context):
         return base + f" - #{context['entry_permalink'].pk}"
 
     mode_repr = {
-        "today": "bugün girilen entry'ler",
-        "popular": "gündem",
-        "novices": "çaylaklar",
-        "nice": "şükela tümü",
-        "nicetoday": "şükela bugün",
-        "following": "olan biten",
-        "recent": "benden sonra girilenler",
-        "links": "linkler",
-        "acquaintances": "takip ettiklerim",
-        "search": f"arama: {queries.get('keywords', '')}",
-        "history": f"tarihte bugün: {queries.get('year', '')}",
-        "answered": "yanıtlanmış entry'ler",
+        "today": _("today's entries"),
+        "popular": _("popular"),
+        "novices": _("novices"),
+        "nice": _("most liked entries of all time"),
+        "nicetoday": _("most liked entries of today"),
+        "following": _("activity"),
+        "recent": _("entries written after me"),
+        "links": _("links"),
+        "acquaintances": _("acquaintances"),
+        "search": _("search: %(keywords)s") % {"keywords": queries.get("keywords", "")},
+        "history": _("today in history: %(year)s") % {"year": queries.get("year", "")},
+        "answered": _("entries with replies"),
     }
 
     if (mode := context["mode"]) in mode_repr:
         base += f" - {mode_repr[mode]}"
 
     if (page := context["page_obj"].number) > 1:
-        base += f" - sayfa {page}"
+        base += " - " + _("page %(page)d") % {"page": page}
 
     return base
 

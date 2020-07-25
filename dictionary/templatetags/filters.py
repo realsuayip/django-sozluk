@@ -4,6 +4,7 @@ from django import template
 from django.template import defaultfilters
 from django.utils import timezone
 from django.utils.html import escape, mark_safe
+from django.utils.translation import gettext as _, pgettext_lazy
 
 from dateutil.parser import parse
 
@@ -27,6 +28,10 @@ def addstr(arg1, arg2):
 
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
 RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
+
+# Translators: Short for "also see this", used in entry editor.
+SEE = pgettext_lazy("editor", "see")
+SEARCH = pgettext_lazy("editor", "search")
 
 
 @register.filter
@@ -58,13 +63,13 @@ def formatted(raw_entry):
             # Internal links (entries and topics)
 
             if permalink := re.match(r"^/entry/([0-9]+)/?$", path):
-                return f'(bkz: <a href="{path}">#{permalink.group(1)}</a>)'
+                return f'({SEE}: <a href="{path}">#{permalink.group(1)}</a>)'
 
             if topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path):
                 # todo: When topic auto-redirect feature gets implemented, add redirect flag to this url.
                 slug = topic.group(1)
                 guess = slug.replace("-", " ").strip()
-                return f'(bkz: <a href="{path}">{guess}</a>)'
+                return f'({SEE}: <a href="{path}">{guess}</a>)'
 
         path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
         url = domain + path
@@ -74,17 +79,17 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\(bkz: (@?{RE_TOPIC_CHARSET})\)", r'(bkz: <a href="/topic/?q=\1">\1</a>)'),
-        (fr"\(bkz: #{RE_ENTRY_CHARSET}\)", r'(bkz: <a href="/entry/\1/">#\1</a>)'),
+        (fr"\({SEE}: (@?{RE_TOPIC_CHARSET})\)", fr'({SEE}: <a href="/topic/?q=\1">\1</a>)'),
+        (fr"\({SEE}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
         # Swh
-        (fr"`:{RE_TOPIC_CHARSET}`", r'<a data-sup="(bkz: \1)" href="/topic/?q=\1" title="(bkz: \1)">*</a>',),
+        (fr"`:{RE_TOPIC_CHARSET}`", fr'<a data-sup="({SEE}: \1)" href="/topic/?q=\1" title="({SEE}: \1)">*</a>',),
         # Reference with no indicator
         (fr"`(@?{RE_TOPIC_CHARSET})`", r'<a href="/topic/?q=\1">\1</a>'),
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
         # Search
         (
-            fr"\(ara: (@?{RE_TOPIC_CHARSET})\)",
-            r'(ara: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
+            fr"\({SEARCH}: (@?{RE_TOPIC_CHARSET})\)",
+            fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
         # Find links with label, then encapsulate them in anchor tag, which adds " character before the
@@ -181,6 +186,6 @@ def strdate(date_str):
 def humanize_count(value):
     if not isinstance(value, int):
         return value
-
-    k = "b"  # Short letter for "thousand", e.g. 1000 = 1.0k
+    # Translators: Short letter for "thousand", e.g. 1000 = 1.0k
+    k = _("k")
     return f"{value / 1000:.1f}{k}" if value > 999 else str(value)
