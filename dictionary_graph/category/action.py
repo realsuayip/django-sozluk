@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
+
 from graphene import ID, Mutation, String
 
 from dictionary.models import Category
@@ -20,7 +22,7 @@ class FollowCategory(Mutation):
 
         if following.filter(pk=pk).exists():
             following.remove(category)
-            return FollowCategory(feedback="takipten çıkıldı")
+            return FollowCategory(feedback=_("the channel is now followed"))
 
         following.add(category)
-        return FollowCategory("bu kategori takipte")
+        return FollowCategory(_("the channel is no longer followed"))

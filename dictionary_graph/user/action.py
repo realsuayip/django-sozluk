@@ -1,6 +1,8 @@
 from functools import wraps
 
 from django.shortcuts import get_object_or_404, reverse
+from django.utils.translation import gettext as _
+
 from graphene import Mutation, String
 
 from dictionary.models import Author
@@ -16,7 +18,7 @@ def useraction(mutator):
     def decorator(_root, info, username):
         subject, sender = get_object_or_404(Author, username=username), info.context.user
         if sender == subject or subject.is_private:
-            raise ValueError("bu olmadı işte")
+            raise ValueError(_("we couldn't handle your request. try again later."))
         return mutator(_root, info, sender, subject)
 
     return decorator
@@ -38,13 +40,13 @@ class Block(Action, Mutation):
     def mutate(_root, info, sender, subject):
         if sender.blocked.filter(pk=subject.pk).exists():
             sender.blocked.remove(subject)
-            return Block(feedback="engeller ortadan kalktı")
+            return Block(feedback=_("removed blockages"))
 
         sender.following.remove(subject)
         subject.following.remove(sender)
         sender.blocked.add(subject)
         sender.favorite_entries.remove(*sender.favorite_entries.filter(author__in=[subject]))
-        return Block(feedback="engelledim gitti", redirect=info.context.build_absolute_uri(reverse("home")))
+        return Block(feedback=_("the person was blocked"), redirect=info.context.build_absolute_uri(reverse("home")))
 
 
 class Follow(Action, Mutation):
@@ -52,11 +54,11 @@ class Follow(Action, Mutation):
     @useraction
     def mutate(_root, _info, sender, subject):
         if subject.blocked.filter(pk=sender.pk).exists() or sender.blocked.filter(pk=subject.pk).exists():
-            return Follow(feedback="olmaz")
+            return Follow(feedback=_("we couldn't handle your request. try again later."))
 
         if sender.following.filter(pk=subject.pk).exists():
             sender.following.remove(subject)
-            return Follow(feedback="takipten çıkıldı")
+            return Follow(feedback=_("you no longer follow this person"))
 
         sender.following.add(subject)
-        return Follow(feedback="takiptesin")
+        return Follow(feedback=_("you are now following this user"))

@@ -3,6 +3,7 @@ from functools import wraps
 from django.core.exceptions import PermissionDenied
 from django.db.models import F
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 
 from graphene import ID, Int, Mutation, String
 
@@ -22,7 +23,7 @@ def owneraction(mutator):
     def decorator(_root, info, pk):
         entry, sender = Entry.objects_all.get(pk=pk), info.context.user
         if entry.author != sender:
-            raise PermissionDenied("bu aksiyonu gerçekleştirmek için gereken yetkiye sahip değilsin")
+            raise PermissionDenied(_("we couldn't handle your request. try again later."))
         return mutator(_root, info, entry)
 
     return decorator
@@ -47,19 +48,21 @@ class DeleteEntry(Action, Mutation):
         # Deduct some karma upon entry deletion.
         info.context.user.karma = F("karma") - 2
         info.context.user.save()
-        return DeleteEntry(feedback="silindi", redirect=reverse_lazy("topic", kwargs={"slug": entry.topic.slug}))
+        return DeleteEntry(
+            feedback=_("your entry has been deleted"), redirect=reverse_lazy("topic", kwargs={"slug": entry.topic.slug})
+        )
 
 
 class PinEntry(Action, Mutation):
     @staticmethod
     @owneraction
     def mutate(_root, info, entry):
-        feedback = "entry sabitlendi"
+        feedback = _("this entry is now pinned")
         current = info.context.user.pinned_entry
 
         if current == entry:
             info.context.user.pinned_entry = None
-            feedback = "entry artık sabit değil"
+            feedback = _("this entry is no longer pinned")
         else:
             info.context.user.pinned_entry = entry
 
@@ -76,14 +79,16 @@ class FavoriteEntry(Action, Mutation):
         entry = Entry.objects_published.get(pk=pk)
 
         if entry.author.blocked.filter(pk=info.context.user.pk).exists():
-            raise PermissionDenied("terbiyesiz")
+            raise PermissionDenied(_("we couldn't handle your request. try again later."))
 
         if info.context.user.favorite_entries.filter(pk=pk).exists():
             info.context.user.favorite_entries.remove(entry)
-            return FavoriteEntry(feedback="favorilerden çıkarıldı", count=entry.favorited_by.count())
+            return FavoriteEntry(
+                feedback=_("the entry has been removed from favorites"), count=entry.favorited_by.count()
+            )
 
         info.context.user.favorite_entries.add(entry)
-        return FavoriteEntry(feedback="favorilendi", count=entry.favorited_by.count())
+        return FavoriteEntry(feedback=_("the entry has been favorited"), count=entry.favorited_by.count())
 
 
 def voteaction(mutator):
@@ -94,11 +99,11 @@ def voteaction(mutator):
         entry, sender = Entry.objects_all.get(pk=pk), info.context.user
 
         if entry.author == sender:
-            raise PermissionDenied("sen hayırdır?")
+            raise PermissionDenied(_("we couldn't handle your request. try again later."))
 
         if not sender.is_authenticated:
             if DISABLE_ANONYMOUS_VOTING:
-                raise PermissionDenied("sen hayırdır?")
+                raise PermissionDenied(_("we couldn't handle your request. try again later."))
 
             sender = AnonymousUserStorage(info.context)
 

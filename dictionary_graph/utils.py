@@ -1,6 +1,7 @@
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied
+from django.utils.translation import gettext as _
 
 from dictionary.utils.settings import VOTE_RATES
 
@@ -9,10 +10,10 @@ def login_required(func):
     """Utility decorator to check if the user logged in (mutations & resolvers)"""
 
     @wraps(func)
-    def decorator(_, info, *args, **kwargs):
+    def decorator(_root, info, *args, **kwargs):
         if not info.context.user.is_authenticated:
-            raise PermissionDenied("giriş yaparsan bu özellikten yararlanabilirsin aslında")
-        return func(_, info, *args, **kwargs)
+            raise PermissionDenied(_("actually, you may benefit from this feature by logging in."))
+        return func(_root, info, *args, **kwargs)
 
     return decorator
 
@@ -21,9 +22,9 @@ class VoteStorage:
     """
     A mocking object to mock the m2m fields (upvoted_entries, downvoted_entries) of Author, for anonymous users.
 
-    Anonymous users can vote, in order to hinder duplicate votings, session is used; though it is not the best way to
-    handle this, I think it's better than storing all the IP adresses of the guest users as acquiring an IP address is a
-    nuance; it depends on the server and it can also be manipulated by keen hackers. It's just better to stick to this
+    Anonymous users can vote, in order to hinder duplicate votes, session is used; though it is not the best way to
+    handle this, I think it's better than storing all the IP addresses of the guest users as acquiring an IP address is
+    a nuance; it depends on the server and it can also be manipulated by keen hackers. It's just better to stick to this
     way instead of making things complicated as there is no way to make this work 100% intended.
     """
 

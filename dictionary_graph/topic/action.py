@@ -1,5 +1,7 @@
 from django.core.validators import ValidationError
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
+
 from graphene import ID, Mutation, String
 
 from dictionary.models import Topic, Wish
@@ -23,10 +25,10 @@ class FollowTopic(Mutation):
 
         if following.filter(pk=pk).exists():
             following.remove(topic)
-            return FollowTopic(feedback="takipten çıkıldı")
+            return FollowTopic(feedback=_("you no longer follow this topic"))
 
         following.add(topic)
-        return FollowTopic("bu başlık takipte")
+        return FollowTopic(_("you are now following this topic"))
 
 
 class WishTopic(Mutation):
@@ -45,7 +47,7 @@ class WishTopic(Mutation):
         hint = i18n_lower(hint).strip() or None
 
         if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
-            raise ValueError("öyle olmaz ki")
+            raise ValueError(_("we couldn't handle your request. try again later."))
 
         wish = Wish(author=sender, hint=hint)
 
@@ -60,11 +62,14 @@ class WishTopic(Mutation):
             previous_wish = topic.wishes.filter(author=sender)
             if previous_wish.exists():
                 previous_wish.delete()
-                return WishTopic(feedback="ukte silindi.")
+                return WishTopic(feedback=_("your wish was deleted"))
 
         if not sender.is_accessible:
-            raise ValueError("sen ukte verme lütfen")
+            raise ValueError(_("sorry, the genie is now busy"))
 
         wish.save()
         topic.wishes.add(wish)
-        return WishTopic(feedback="ukteniz verildi. birileri bir şey yazarsa haber göndeririz.", hint=formatted(hint))
+        return WishTopic(
+            feedback=_("your wish is now enlisted. if someone starts a discussion, we will let you know."),
+            hint=formatted(hint),
+        )

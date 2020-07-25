@@ -1,6 +1,7 @@
 from django.core.validators import ValidationError
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from graphene import ID, List, Mutation, String
 
@@ -64,19 +65,19 @@ class ComposeMessage(Mutation):
     def mutate(_root, info, body, recipient):
         sender = info.context.user
         if len(body) < 3:
-            return ComposeMessage(feedback="az bir şeyler yaz yeğenim")
+            return ComposeMessage(feedback=_("can't you write down something more?"))
 
         try:
             recipient_ = Author.objects.get(username=recipient)
             validate_user_text(body)
         except Author.DoesNotExist:
-            return ComposeMessage(feedback="böyle biri yok yalnız")
+            return ComposeMessage(feedback=_("no such person though"))
         except ValidationError as error:
             return ComposeMessage(feedback=error.message)
 
         sent = Message.objects.compose(sender, recipient_, body)
 
         if not sent:
-            return ComposeMessage(feedback="mesajınızı gönderemedik ne yazık ki")
+            return ComposeMessage(feedback=_("we couldn't send your message"))
 
-        return ComposeMessage(feedback="mesajınız sağ salim gönderildi")
+        return ComposeMessage(feedback=_("your message has been successfully sent"))
