@@ -3,7 +3,7 @@ from functools import wraps
 from django.core.cache import cache
 
 
-# General decoratos
+# General decorators
 
 
 def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"):

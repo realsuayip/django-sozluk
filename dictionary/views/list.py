@@ -247,7 +247,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def form_valid(self, form):
         """
-        User sent new entry, whose topic may or may not be existant. If topic exists, adds the entry and redirects to
+        User sent new entry, whose topic may or may not be existent. If topic exists, adds the entry and redirects to
         the entry permalink. If topic doesn't exist, topic is created if the title is valid. Entry.save() automatically
         sets created_by field of the topic.
         """

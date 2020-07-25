@@ -93,7 +93,7 @@ class StaticSitemap(Sitemap):
 
 
 sitemaps = {
-    "anouncement": AnnouncementSitemap,
+    "announcement": AnnouncementSitemap,
     "author": AuthorSiteMap,
     "entry": EntrySiteMap,
     "topic": TopicSiteMap,
