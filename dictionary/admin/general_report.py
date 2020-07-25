@@ -1,4 +1,5 @@
 from django.contrib import admin, messages as notifications
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from ..models import GeneralReport
 
@@ -17,9 +18,9 @@ class GeneralReportAdmin(admin.ModelAdmin):
         "is_verified",
     )
     fieldsets = (
-        ("Rapor içeriği", {"fields": ("category", "subject", "content")}),
-        ("Üstveri", {"fields": ("reporter_email", "date_created", "is_verified", "date_verified")}),
-        ("Değerlendirme", {"fields": ("is_open",)}),
+        (_lazy("Report content"), {"fields": ("category", "subject", "content")}),
+        (_lazy("Metadata"), {"fields": ("reporter_email", "date_created", "is_verified", "date_verified")}),
+        (_lazy("Evaluation"), {"fields": ("is_open",)}),
     )
     list_filter = ("category", "is_open")
     ordering = ("-is_verified", "-is_open")
@@ -30,14 +31,14 @@ class GeneralReportAdmin(admin.ModelAdmin):
 
     def close_report(self, request, queryset):
         queryset.update(is_open=False)
-        notifications.success(request, "Seçilen raporların statüsü kapalı olarak işaretlendi")
+        notifications.success(request, _("Selected reports' status were marked as closed."))
 
     def open_report(self, request, queryset):
         queryset.update(is_open=True)
-        notifications.success(request, "Seçilen raporların statüsü açık olarak işaretlendi")
+        notifications.success(request, _("Selected reports' status were marked as open."))
 
-    close_report.short_description = "Seçili raporlarının statüsünü kapalı olarak işaretle"
-    open_report.short_description = "Seçili raporlarının statüsünü açık olarak işaretle"
+    close_report.short_description = _lazy("Mark selected reports' status as closed.")
+    open_report.short_description = _lazy("Mark selected reports' status as open.")
 
     def has_add_permission(self, request, obj=None):
         return False

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.urls import path
+from django.utils.translation import gettext_lazy as _lazy
 
 from ..models import Author
 from ..utils.admin import intermediate
@@ -74,8 +75,8 @@ class AuthorAdmin(UserAdmin):
         return "admin:unsuspend-user"
 
     # Short descriptions
-    suspend_user.short_description = f"Seçili {model._meta.verbose_name_plural} nesnelerini askıya al"
-    unsuspend_user.short_description = f"Seçili {model._meta.verbose_name_plural} nesnelerini askıdan kaldır"
+    suspend_user.short_description = _lazy("Suspend selected %(name)s objects") % {"name": model._meta.verbose_name}
+    unsuspend_user.short_description = _lazy("Unsuspend selected %(name)s objects") % {"name": model._meta.verbose_name}
 
     # Permissions
     suspend_user.allowed_permissions = ["suspension"]

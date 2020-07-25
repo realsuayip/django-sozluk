@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _lazy
 from django.views.generic.base import RedirectView
 
 from ..models import (
@@ -24,7 +25,7 @@ from .general_report import GeneralReportAdmin
 from .sites import SiteAdmin
 from .topic import TopicAdmin
 
-
+admin.site.site_header = admin.site.site_title = _lazy("Administration")
 admin.site.index_template = "dictionary/admin/index.html"
 admin.site.login = RedirectView.as_view(url=reverse_lazy("login"))
 admin.site.logout = RedirectView.as_view(url=reverse_lazy("logout"))
