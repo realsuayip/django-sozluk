@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import F
 from django.shortcuts import reverse
 from django.utils import timezone
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from ..models.messaging import Message
 from ..utils import get_generic_superuser, i18n_lower
@@ -44,9 +45,11 @@ class Entry(models.Model):
             Message.objects.compose(
                 get_generic_superuser(),
                 self.author,
-                "10 adet entry'nizi doldurduğunuz için sizi çaylak listesine aldık."
-                " profilinizden sıranızı görebilirsiniz. entry sayınız 10'un altına düştüğü"
-                " takdirde çaylak listesinden şutlanacaksınız.",
+                _(
+                    "as you entered your first 10 entries, you have been admitted to"
+                    " the novice list. you can see your queue number in your profile page."
+                    " if your entry count drops below 10, you will be kicked from the list."
+                ),
             )
 
         # assign topic creator (includes novices)
@@ -77,8 +80,8 @@ class Entry(models.Model):
 
 class Comment(models.Model):
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="comments")
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="+", verbose_name="Yazar")
-    content = models.TextField(validators=[validate_user_text], verbose_name="İçerik")
+    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="+", verbose_name=_lazy("Author"))
+    content = models.TextField(validators=[validate_user_text], verbose_name=_lazy("Content"))
 
     upvoted_by = models.ManyToManyField("Author", related_name="+")
     downvoted_by = models.ManyToManyField("Author", related_name="+")
@@ -87,11 +90,11 @@ class Comment(models.Model):
     date_edited = models.DateTimeField(null=True, editable=False)
 
     class Meta:
-        verbose_name = "yorum"
-        verbose_name_plural = "yorumlar"
+        verbose_name = _lazy("comment")
+        verbose_name_plural = _lazy("comments")
 
     def __str__(self):
-        return f"#{self.pk} numaralı yorum"
+        return _("Comment #%(number)d") % {"number": self.pk}
 
     def save(self, *args, **kwargs):
         self.content = i18n_lower(self.content)

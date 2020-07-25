@@ -1,14 +1,16 @@
 from django.db import models
 from django.shortcuts import reverse
-from django.template import defaultfilters
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _lazy
 
 from uuslug import uuslug
 
+from ..templatetags.filters import entrydate
+
 
 class Announcement(models.Model):
-    title = models.CharField(max_length=254, verbose_name="Başlık")
-    content = models.TextField(verbose_name="İçerik")
+    title = models.CharField(max_length=254, verbose_name=_lazy("Title"))
+    content = models.TextField(verbose_name=_lazy("Content"))
     slug = models.SlugField(editable=False)
 
     discussion = models.ForeignKey(
@@ -16,31 +18,29 @@ class Announcement(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        verbose_name="Tartışma başlığı",
-        help_text="Opsiyonel. Sözlükteki yazarların bu duyuru hakkında yazacakları başlık.",
+        verbose_name=_lazy("Discussion topic"),
+        help_text=_lazy("Optional. The topic where the users will be discussing this announcement."),
     )
 
     html_only = models.BooleanField(
         default=False,
-        verbose_name="HTML açık",
-        help_text="Sadece HTML kullanmak için bunu seçin,"
-        " aksi halde entry biçimlendirme seçenekleri kullanılabilir.",
+        verbose_name=_lazy("Allow HTML"),
+        help_text=_lazy("Check this to only use HTML, otherwise you can use entry formatting options."),
     )
 
     notify = models.BooleanField(
         default=False,
-        verbose_name="Kullanıcılara duyur",
-        help_text="İşaretlendiği takdirde duyuru yayınlandığı zaman kullanıcılar bildirim alacak.",
+        verbose_name=_lazy("Notify users"),
+        help_text=_lazy("When checked, users will get a notification when the announcement gets released."),
     )
 
     date_edited = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(
-        verbose_name="Yayınlanma tarihi",
-        help_text="Yayınlanma tarihini ileriki bir zaman olarak da belirleyebilirsiniz.",
+        verbose_name=_lazy("Publication date"), help_text=_lazy("You can set future dates for the publication date."),
     )
 
     def __str__(self):
-        return f"{self.title} - {defaultfilters.date(timezone.localtime(self.date_created), 'd.m.Y H:i')}"
+        return f"{self.title} - {entrydate(timezone.localtime(self.date_created), None)}"
 
     def save(self, *args, **kwargs):
         created = self.pk is None
@@ -63,5 +63,5 @@ class Announcement(models.Model):
         )
 
     class Meta:
-        verbose_name = "duyuru"
-        verbose_name_plural = "duyurular"
+        verbose_name = _lazy("announcement")
+        verbose_name_plural = _lazy("announcements")

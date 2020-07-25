@@ -3,6 +3,7 @@ from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.shortcuts import reverse
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from uuslug import uuslug
 
@@ -18,9 +19,9 @@ from .messaging import Message
 TOPIC_TITLE_VALIDATORS = [
     RegexValidator(
         r"^[a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+$",
-        message="bu başlık tanımı geçersiz karakterler içeriyor",
+        message=_lazy("the definition of this topic includes forbidden characters"),
     ),
-    MaxLengthValidator(50, message="bu başlık çok uzun"),
+    MaxLengthValidator(50, message=_lazy("this title is too long")),
 ]
 
 
@@ -30,8 +31,11 @@ class Topic(models.Model):
         unique=True,
         db_index=True,
         validators=TOPIC_TITLE_VALIDATORS,
-        verbose_name="Başlığın tanımı",
-        help_text="Başlık oluşturulduktan sonra tanımını değiştirmek için başlık taşıma özelliğini kullanmalısınız.",
+        verbose_name=_lazy("Definition"),
+        help_text=_lazy(
+            "In order to change the definition of the topic after it"
+            " has been created, you need to use topic moving feature."
+        ),
     )
 
     slug = models.SlugField(max_length=96, unique=True, editable=False)
@@ -41,56 +45,65 @@ class Topic(models.Model):
         null=True,
         editable=False,
         on_delete=models.SET_NULL,
-        verbose_name="İlk entry giren kullanıcı",
-        help_text="Bu başlığa ilk kez halka açık bir şekilde entry giren yazar veya çaylak.",
+        verbose_name=_lazy("First user to write an entry"),
+        help_text=_lazy("The author or novice who entered the first entry for this topic publicly."),
     )
 
-    category = models.ManyToManyField(Category, blank=True, verbose_name="Kanallar")
-    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name="Ukteler")
+    category = models.ManyToManyField(Category, blank=True, verbose_name=_lazy("Channels"))
+    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name=_lazy("Wishes"))
 
     mirrors = models.ManyToManyField(
         "self",
         blank=True,
-        verbose_name="Başlık ayrımı",
-        help_text="<p style='color: #ba2121'><b>Dikkat!</b> Girdiğiniz başlıklara otomatik olarak başlık ayrımı"
-        " eklenecek. Bu nedenle seçtiğiniz bir ana başlık üzerinde çalışmanız önerilir.<br> Bir başlığı ayrımdan"
-        " kaldırmak <b>tüm</b> ayrımların silinmesine neden olacaktır; bu nedenle silmek istediğiniz başlık"
-        " haricindeki başlıkları tekrar toplu halde eklemek üzere not etmelisiniz.</p>",
+        verbose_name=_lazy("Title disambiguation"),
+        help_text=_lazy(
+            "<p style='color: #ba2121'><b>Warning!</b> The topics that you enter will automatically"
+            " get related disambiguations. For this reason you should be working on a main topic that you"
+            " selected.<br> Removing a topic from will cause the removal of <b>ALL</b> disambiguations, so"
+            " you should note down the topics that you don't want to be removed to add them later.</p>"
+        ),
     )
 
-    media = models.TextField(blank=True, null=True, verbose_name="Medya bağlantıları")
+    media = models.TextField(blank=True, null=True, verbose_name=_lazy("Media links"))
 
     is_banned = models.BooleanField(
         default=False,
-        verbose_name="Yasaklı",
-        help_text="Yazar ve çaylakların bu başlığa entry girmesini engellemek istiyorsanız işaretleyin.",
+        verbose_name=_lazy("Prohibited"),
+        help_text=_lazy(
+            "Check this if you want to hinder authors and novices from entering new entries to this topic."
+        ),
     )
 
     is_censored = models.BooleanField(
         default=False,
-        verbose_name="Sansürlü",
-        help_text="Bu başlığın sözlük içi aramalarda ve <strong>halka açık</strong>"
-        " başlık listelerinde gözükmesini istemiyorsanız işaretleyin.",
+        verbose_name=_lazy("Censored"),
+        help_text=_lazy(
+            "Check this if you don't want this topic to appear"
+            " in in-site searches and <strong>public</strong> topic lists."
+        ),
     )
 
     is_pinned = models.BooleanField(
         default=False,
-        verbose_name="Sabitlenmiş",
-        help_text="Bu başlığın gündemde en üstte görünmesini istiyorsanız işaretleyin."
-        " <br>Başlığa en az 1 entry girilmiş olmalı.",
+        verbose_name=_lazy("Pinned"),
+        help_text=_lazy(
+            "Check this if you want this topic to be pinned in popular topics."
+            "<br>The topic needs to have at least one entry."
+        ),
     )
 
     is_ama = models.BooleanField(
         default=False,
-        verbose_name="Soru cevap etkinliği",
-        help_text="Bu başlığa ait entry'lere ait yorumlar görünür hale gelecek."
-        " Yetkili kullanıcılar entry'lere cevap yazabilecekler.",
+        verbose_name=_lazy("Ask me anything"),
+        help_text=_lazy(
+            "If checked, comments will be visible in this topic. Authorized users will be able to comment on entries."
+        ),
     )
 
     date_created = models.DateTimeField(
         auto_now_add=True,
-        verbose_name="Oluşturulma tarihi",
-        help_text="<i>Her zaman ilk entry ile örtüşmeyebilir.</i>",
+        verbose_name=_lazy("Date created"),
+        help_text=_lazy("<i>Might not always correspond to first entry.</i>"),
     )
 
     objects = TopicManager()
@@ -100,9 +113,9 @@ class Topic(models.Model):
         return f"{self.title}"
 
     class Meta:
-        permissions = (("move_topic", "başlık taşıyabilir"),)
-        verbose_name = "başlık"
-        verbose_name_plural = "başlıklar"
+        permissions = (("move_topic", _lazy("Can move topics")),)
+        verbose_name = _lazy("topic")
+        verbose_name_plural = _lazy("topics")
 
     def get_absolute_url(self):
         return reverse("topic", kwargs={"slug": self.slug})
@@ -137,10 +150,18 @@ class Topic(models.Model):
 
                 if not self_fulfillment:
                     message = (
-                        f"ukte verdiğiniz `{self.title}` başlığına `@{fulfiller_entry.author.username}`"
-                        f" tarafından entry girildi: (bkz: #{fulfiller_entry.pk})"
+                        _(
+                            "%(title)s, the topic you wished for, had an entry"
+                            " entered by %(username)s: (see: #%(entry)d)"
+                        )
+                        % {
+                            "title": self.title,
+                            "username": fulfiller_entry.author.username,
+                            "entry": fulfiller_entry.pk,
+                        }
                         if invoked_by_entry
-                        else f"ukte verdiğiniz `{self.title}` başlığına entry geldi."
+                        else _("%(title)s, the topic you wished for, is now populated with some entries.")
+                        % {"title": self.title}
                     )
 
                     Message.objects.compose(get_generic_superuser(), wish.author, message)

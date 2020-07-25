@@ -14,6 +14,7 @@ from django.db.models.functions import Coalesce
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from uuslug import uuslug
 
@@ -39,7 +40,7 @@ from .managers.author import AccountTerminationQueueManager, AuthorManagerAccess
 
 class AuthorNickValidator(UnicodeUsernameValidator):
     regex = r"^[a-z0-9]+(\ [a-z0-9]+)*$"
-    message = "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan bir nick münasiptir"
+    message = _lazy("unlike what you sent, an appropriate nickname would only consist of letters, numbers and spaces.")
 
 
 class Author(AbstractUser):
@@ -48,7 +49,7 @@ class Author(AbstractUser):
     WOMAN = "WM"
     OTHER = "OT"
     UNKNOWN = "NO"
-    GENDERS = ((UNKNOWN, "boşver"), (MAN, "erkek"), (WOMAN, "kadın"), (OTHER, "diğer"))
+    GENDERS = ((UNKNOWN, _lazy("forget it")), (MAN, _lazy("male")), (WOMAN, _lazy("female")), (OTHER, _lazy("other")))
 
     # Entry/topic per page preference options
     TEN = 10
@@ -64,21 +65,21 @@ class Author(AbstractUser):
     ON_HOLD = "OH"
     APPROVED = "AP"
     APPLICATION_STATUS = (
-        (PENDING, "çaylak listesinde"),
-        (ON_HOLD, "entry girmesi bekleniyor"),
-        (APPROVED, "yazar oldu"),
+        (PENDING, _lazy("in novice list")),
+        (ON_HOLD, _lazy("waiting for first ten entries")),
+        (APPROVED, _lazy("authorship approved")),
     )
 
-    # Recieving messages options
+    # Receiving messages options
     DISABLED = "DS"
     ALL_USERS = "AU"
     AUTHOR_ONLY = "AO"
     FOLLOWING_ONLY = "FO"
     MESSAGE_PREFERENCE = (
-        (DISABLED, "hiçkimse"),
-        (ALL_USERS, "yazar ve çaylaklar"),
-        (AUTHOR_ONLY, "yazarlar"),
-        (FOLLOWING_ONLY, "takip ettiklerim"),
+        (DISABLED, _lazy("nobody")),
+        (ALL_USERS, _lazy("authors and novices")),
+        (AUTHOR_ONLY, _lazy("authors")),
+        (FOLLOWING_ONLY, _lazy("people who i follow")),
     )
 
     # Base auth related fields, notice: username field will be used for nicknames
@@ -86,15 +87,21 @@ class Author(AbstractUser):
         "nick",
         max_length=35,
         unique=True,
-        help_text="sözlükte sizi temsil edecek rumuz. 3-35 karakter uzunluğunda,"
-        " boşluk içerebilir özel ve türkçe karakter içeremez.",
-        validators=[validate_username_partial, AuthorNickValidator(), MinLengthValidator(3, "bu nick çok minnoş")],
-        error_messages={"unique": "bu nick kapılmış"},
+        help_text=_lazy(
+            "the nickname that will represent you in the site."
+            " can be 3-35 characters long, can include only letters, numbers and spaces"
+        ),
+        validators=[
+            validate_username_partial,
+            AuthorNickValidator(),
+            MinLengthValidator(3, _lazy("this nickname is too tiny")),
+        ],
+        error_messages={"unique": _lazy("this nickname is already taken")},
     )
 
     slug = models.SlugField(max_length=35, unique=True, editable=False)
-    email = models.EmailField("e-posta adresi", unique=True)
-    is_active = models.BooleanField(default=False, verbose_name="aktif")
+    email = models.EmailField(_lazy("e-mail"), unique=True)
+    is_active = models.BooleanField(default=False, verbose_name=_lazy("active"))
 
     # Base auth field settings
     USERNAME_FIELD = "email"
@@ -103,7 +110,7 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ["username", "is_active"]
 
     # Novice application related fields
-    is_novice = models.BooleanField(default=True, verbose_name="çaylak")
+    is_novice = models.BooleanField(default=True, verbose_name=_lazy("novice"))
     application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
     application_date = models.DateTimeField(null=True, blank=True, default=None)
     last_activity = models.DateTimeField(null=True, blank=True, default=None)
@@ -111,8 +118,8 @@ class Author(AbstractUser):
 
     # Accessibility details
     suspended_until = models.DateTimeField(null=True, blank=True, default=None)
-    is_frozen = models.BooleanField(default=False, verbose_name="Hesap donuk mu?")
-    is_private = models.BooleanField(default=False, verbose_name="Hesap anonim mi?")
+    is_frozen = models.BooleanField(default=False, verbose_name=_lazy("Frozen"))
+    is_private = models.BooleanField(default=False, verbose_name=_lazy("Anonymous"))
 
     # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
@@ -162,13 +169,13 @@ class Author(AbstractUser):
 
     class Meta:
         permissions = (
-            ("can_activate_user", "çaylak lisesine erişim"),
-            ("suspend_user", "kullanıcıyı askıya alma"),
-            ("can_clear_cache", "önbelleği temizleme"),
-            ("can_comment", "entry'lere yorum yapma"),
+            ("can_activate_user", _lazy("Can access to the novice list")),
+            ("suspend_user", _lazy("Can suspend users")),
+            ("can_clear_cache", _lazy("Can clear cache")),
+            ("can_comment", _lazy("Can comment on entries")),
         )
-        verbose_name = "yazar"
-        verbose_name_plural = "yazarlar"
+        verbose_name = _lazy("author")
+        verbose_name_plural = _lazy("authors")
 
     def save(self, *args, **kwargs):
         created = self.pk is None  # If True, the user is created (not updated).
@@ -231,7 +238,7 @@ class Author(AbstractUser):
         daily_vote_count = upvoted.filter(**h24).count() + downvoted.filter(**h24).count()
 
         if daily_vote_count >= DAILY_VOTE_LIMIT:
-            return True, "bir gün içerisinde kullanabileceğiniz oy hakkınızı doldurdunuz. daha sonra tekrar deneyin."
+            return True, _("you have used up all the vote claims you have today. try again later.")
 
         if against:
             upvoted_against = upvoted.filter(entry__author=against).count()
@@ -239,14 +246,14 @@ class Author(AbstractUser):
             total_votes_against = upvoted_against + downvoted_against
 
             if total_votes_against >= TOTAL_VOTE_LIMIT_PER_USER:
-                return True, "olmaz. bu kullanıcıyla yeterince haşır neşir oldunuz."
+                return True, _("sorry, you have been haunting this person for a long time.")
 
             daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
             daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
             daily_votes_against = daily_upvoted_against + daily_downvoted_against
 
             if daily_votes_against >= DAILY_VOTE_LIMIT_PER_USER:
-                return True, "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara baksanız?"
+                return True, _("this person has taken enough of your votes today, maybe try other users?")
 
         return False, None
 
@@ -429,10 +436,14 @@ class AccountTerminationQueue(models.Model):
     NO_TRACE = "NT"
     LEGACY = "LE"
     FROZEN = "FZ"
-    STATES = ((NO_TRACE, "hesabı komple sil"), (LEGACY, "hesabı miras bırakarak sil"), (FROZEN, "hesabı dondur"))
+    STATES = (
+        (NO_TRACE, _lazy("delete account completely")),
+        (LEGACY, _lazy("delete account with legacy")),
+        (FROZEN, _lazy("freeze account")),
+    )
 
     author = models.OneToOneField(Author, on_delete=models.CASCADE)
-    state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=" son sözünüz?")
+    state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=_lazy("last words?"))
     termination_date = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -460,18 +471,20 @@ class AccountTerminationQueue(models.Model):
 
 
 class Badge(models.Model):
-    name = models.CharField(max_length=36, verbose_name="İsim")
-    description = models.TextField(null=True, blank=True, verbose_name="Açıklama")
+    name = models.CharField(max_length=36, verbose_name=_lazy("Name"))
+    description = models.TextField(null=True, blank=True, verbose_name=_lazy("Description"))
     url = models.URLField(
         null=True,
         blank=True,
-        verbose_name="Bağlantı",
-        help_text="Rozete tıklayınca gidilecek bağlantı. Eğer boş bırakırsanız ilgili başlığa yönlendirecek.",
+        verbose_name=_lazy("Link"),
+        help_text=_lazy(
+            "The link to follow when users click the badge. If no link is provided, related topic will be used."
+        ),
     )
 
     def __str__(self):
         return str(self.name)
 
     class Meta:
-        verbose_name = "rozet"
-        verbose_name_plural = "rozetler"
+        verbose_name = _lazy("badge")
+        verbose_name_plural = _lazy("badges")
