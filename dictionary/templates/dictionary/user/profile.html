@@ -1,10 +1,8 @@
 {% extends "dictionary/base.html" %}
+{% load filters %} {% load functions %} {% load i18n %}
 
-{% block title %}kullanıcı: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% if page_obj.number > 1 %} - sayfa {{ page_obj.number }}{% endif %}{% endblock %}
+{% block title %}{% trans "user" %}: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% if page_obj.number > 1 %} - {% trans "page" %} {{ page_obj.number }}{% endif %}{% endblock %}
 {% block bodyattr %}class="has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
-
-{% load filters %}
-{% load functions %}
 
 {% block content %}
     {% load humanize %}
@@ -13,7 +11,7 @@
             <a class="profile-username" href="{% url 'topic-search' %}?q={{ profile.username }}">{{ profile.username }}</a>
             {% with gen=profile.generation %}
                 {% if gen %}
-                    <small class="ml-2" style="font-size: .5em; vertical-align: middle">{{ gen|ordinal }} nesil {{ profile.is_novice|yesno:"çaylak,yazar" }}</small>
+                    <small class="ml-2" style="font-size: .5em; vertical-align: middle">{% blocktrans with user_type=profile.is_novice|yesno:_("novice,author") gen_ordinal=gen|ordinal %}{{ gen_ordinal }} generation {{ user_type }}{% endblocktrans %}</small>
                 {% endif %}
             {% endwith %}
         </h1>
@@ -22,45 +20,49 @@
             <ul class="user-links" data-username="{{ profile.username }}">
                 {% check_follow_user user profile as is_following %}
                 <li class="follow-user-trigger">
-                    <a role="button" tabindex="0">{{ is_following|yesno:"takip etme,takip et" }}</a>
+                    <a role="button" tabindex="0">{{ is_following|yesno:_("unfollow,follow") }}</a>
                 </li>
 
                 <li class="block-user">
-                    <a role="button" tabindex="0">engelle</a>
+                    <a role="button" tabindex="0">{% trans "block" %}</a>
                 </li>
 
                 <li class="send-message">
-                    <a role="button" tabindex="0">mesaj gönder</a>
+                    <a role="button" tabindex="0">{% trans "message" %}</a>
                 </li>
             </ul>
         {% endif %}
 
         {% if profile.is_suspended and user == profile %}
+            {% url "general-report" as report_url %}
             <div class="alert alert-secondary" role="alert">
-                Hesabınız {{ profile.suspended_until }} tarihine kadar askıya alınmıştır. Ayrıntılı bilgi için size
-                gönderilen özel mesajı kontrol edin. Eğer bir yanlışlık olduğunu düşünüyorsanız
-                <a href="{% url 'general-report' %}">iletişim formunu</a> kullanarak bizimle iletişime geçin.
+                {% blocktrans trimmed with date=profile.suspended_until %}
+                    Your account was suspended until the date {{ date }}. For a detailed information
+                    check the private message we sent to you. If you think something is wrong, you can use this
+                    <a href="{{ report_url }}">report form</a> to contact us.
+                {% endblocktrans %}
             </div>
         {% endif %}
 
         <ul class="user-stats mb-2">
-            <li title="toplam entry sayısı">{{ profile.entry_count }}</li>
-            <li title="son 1 ayda girdiği entry sayısı">{{ profile.entry_count_month }}</li>
-            <li title="son 1 haftada girdiği entry sayısı">{{ profile.entry_count_week }}</li>
-            <li title="son 24 saatte girdiği entry sayısı">{{ profile.entry_count_day }}</li>
-            <li class="nobullet" title="son entry girdiği zaman">{{ profile.last_entry_date|naturaltime|default:"hiç" }}</li>
+            <li title="{% trans "total number of entries" %}">{{ profile.entry_count }}</li>
+            <li title="{% trans "number of entries last month" %}">{{ profile.entry_count_month }}</li>
+            <li title="{% trans "number of entries last week" %}">{{ profile.entry_count_week }}</li>
+            <li title="{% trans "number of entries last 24 hours" %}">{{ profile.entry_count_day }}</li>
+            <li class="nobullet" title="{% trans "latest entry when?" %}">{{ profile.last_entry_date|naturaltime|default:_("never") }}</li>
 
             {% if novice_queue %}
-                <li class="float-right nobullet">çaylak onay listesinde {{ novice_queue|ordinal }} sıradasınız</li>
+                <li class="float-right nobullet">{% blocktrans with queue_ordinal=novice_queue|ordinal %}you are the {{ queue_ordinal }} person in the novice list.{% endblocktrans %}</li>
             {% endif %}
 
             <li class="profile-badges nobullet d-block mt-2">
                 {% if profile.is_novice %}
-                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string="çaylak" %}">çaylak</a>
+                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string=_("novice") %}">{% trans "novice" %}</a>
                 {% endif %}
 
                 {% if profile.is_suspended %}
-                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string="lanetli" %}" title="{{ profile.suspended_until|naturaltime }} boyunca">lanetli</a>
+                    {% blocktrans asvar curse_time with time=profile.suspended_until|naturaltime %}throughout {{ time }}{% endblocktrans %}
+                    <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string=_("cursed") %}" title="{{ curse_time }}">{% trans "cursed" %}</a>
                 {% endif %}
 
                 {% for badge in profile.badges.all %}
@@ -90,22 +92,22 @@
 
     {% with object_count=page_obj.paginator.count %}
 
-        <nav class="user-stats-nav" aria-label="Profil gezinme menüsü">
+        <nav class="user-stats-nav" aria-label="{% trans "Profile navigation menu" %}">
             <ul class="m-0 p-0">
-                <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">entry'ler</a></li>
-                <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">favorileri</a></li>
+                <li {% if tab.name == "latest" %}class="active"{% endif %}><a href="{{ profile.get_absolute_url }}">{% trans "entries" %}</a></li>
+                <li {% if tab.name == "favorites" %}class="active"{% endif %}><a href="{% url 'user-profile-stats' profile.slug "favorites" %}">{% trans "favorites" %}</a></li>
 
                 <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
-                    <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">istatistikler</a>
+                    <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "statistics" %}</a>
                     <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">en çok favorilenenleri</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">son oylananları</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">en beğenilenleri</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "weeklygoods" %}">bu hafta dikkat çekenleri</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "beloved" %}">el emeği göz nuru</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "authors" %}">favori yazarları</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "wishes" %}">ukteleri</a>
-                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "channels" %}">katkıda bulunduğu kanallar</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">{% trans "most favorited" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">{% trans "recently voted" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">{% trans "most liked" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "weeklygoods" %}">{% trans "attracting entries of this week" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "beloved" %}">{% trans "beloved entries" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "authors" %}">{% trans "favorite authors" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "wishes" %}">{% trans "wishes" %}</a>
+                        <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "channels" %}">{% trans "contributed channels" %}</a>
                     </div>
                 </li>
             </ul>
@@ -115,7 +117,7 @@
             <h2 class="h5 font-weight-bold">
                 <a href="{% url 'user-profile-stats' profile.slug tab.name %}">{{ tab.label }}{% if object_count %} ({{ object_count }}){% endif %}</a>
                 {% if page_obj.number > 1 %}
-                    <span class="ml-2">- sayfa {{ page_obj.number }}</span>
+                    <span class="ml-2">- {% trans "page" %} {{ page_obj.number }}</span>
                 {% endif %}
             </h2>
 
@@ -123,7 +125,7 @@
                 <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
                     <svg fill="currentColor" viewBox="0 0 16 16" width="24" height="24">
                         <use href="#lshift"></use>
-                        <title>başlık listesine taşı</title>
+                        <title>{% trans "navigate to the topic list" %}</title>
                     </svg>
                 </a>
             {% endif %}
@@ -147,7 +149,7 @@
                         {% check_follow_user user author as is_following_stat %}
                         <li class="list-group-item d-flex justify-content-between border-0" data-username="{{ author.username }}">
                             <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
-                            <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:"takip etme, takip et" }}</a></span>
+                            <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:_("unfollow,follow") }}</a></span>
                         </li>
                     {% endfor %}
                 </ul>
@@ -175,7 +177,7 @@
             {% endif %}
 
         {% else %}
-            <small>yok ki</small>
+            <small>{% trans "nothing here" %}</small>
         {% endif %}
 
     {% endwith %}
@@ -192,19 +194,13 @@
 
 {% block rightframe %}
     {% if user.is_authenticated %}
-
-        <label for="memento"><h2 class="h5"><strong>notlar</strong></h2></label>
-
+        <label for="memento"><h2 class="h5"><strong>{% trans "memento" %}</strong></h2></label>
         <form method="post" class="memento">
             {% load widget_tweaks %}
-
-            {% with profile.username|addstr:" hakkındaki düşünceleriniz" as text_placeholder %}
-                {% render_field form.body placeholder=text_placeholder name="memento" class="form-control" rows="10" id="memento" %}
-            {% endwith %}
-
+            {% blocktrans asvar text_placeholder with username=profile.username %}your thoughts about the user '{{ username }}'{% endblocktrans %}
+            {% render_field form.body placeholder=text_placeholder name="memento" class="form-control" rows="10" id="memento" %}
             {% csrf_token %}
-
-            <button class="btn btn-django mt-3 stretch-mobile">kaydet</button>
+            <button class="btn btn-django mt-3 stretch-mobile">{% trans "save" %}</button>
         </form>
     {% endif %}
 {% endblock %}

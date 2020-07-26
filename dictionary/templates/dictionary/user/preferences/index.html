@@ -1,13 +1,13 @@
 {% extends "dictionary/user/preferences/base.html" %}
-{% block title %}ayarlar{% endblock %}
-{% load widget_tweaks %}
+{% load widget_tweaks %} {% load i18n %}
+{% block title %}{% trans "settings" %}{% endblock %}
 
 {% block content_preferences %}
     <form method="post">
 
         <div class="form-group">
             <label class="mr-2" for="pref_messages"><strong>{{ form.message_preference.label }}</strong></label>
-            <small>kimler bana mesaj gönderebilir?</small>
+            <small>{% trans "what groups can send me messages?" %}</small>
             {% render_field form.message_preference class="form-control" id="pref_messages" %}
 
             <div class="custom-control custom-checkbox mt-3">
@@ -15,7 +15,6 @@
                 <label class="custom-control-label" for="allow_receipts">{{ form.allow_receipts.label }}</label>
             </div>
         </div>
-
 
         <div class="form-group">
             <div class="row">
@@ -49,8 +48,6 @@
 
         {% csrf_token %}
 
-        <button type="submit" class="btn btn-django mb-5 stretch">tercihleri kaydet</button>
+        <button type="submit" class="btn btn-django mb-5 stretch">{% trans "save preferences" %}</button>
     </form>
 {% endblock %}
-
-

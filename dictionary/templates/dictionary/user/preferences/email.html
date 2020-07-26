@@ -1,6 +1,6 @@
 {% extends "dictionary/user/preferences/index.html" %}
-{% block title %}e-posta değişimi{% endblock %}
-{% load widget_tweaks %}
+{% load widget_tweaks %} {% load i18n %}
+{% block title %}{% trans "change e-mail" %}{% endblock %}
 
 {% block content_preferences %}
 
@@ -11,19 +11,19 @@
     {% endif %}
 
     <div class="border rounded-sm p-3 bg-light mb-3">
-        <strong style="font-weight: 600; margin-right: .35em;">mevcut e-posta adresiniz:</strong>
+        <strong style="font-weight: 600; margin-right: .35em;">{% trans "current e-mail in use:" %}</strong>
         <span>{{ user.email }}</span>
     </div>
 
-
     {% if not user.email_confirmed %}
         <div class="alert alert-info" role="alert">
-            yeni e-posta adresinizi onaylamak için size onaylama bağlantısı içeren bir posta gönderdik. postadaki
-            bağlantıya tıklayarak yeni e-postanızı onaylayabilirsiniz. eğer onaylama bağlantısını almadıysanız aşağıdaki
-            formu tekrar doldurun.
+        {% blocktrans trimmed %}
+            a confirmation link has been sent to your new e-mail address. by following
+            this link you can complete your e-mail change. if you didn't receive any mails,
+            you can fill the form below again.
+        {% endblocktrans %}
         </div>
     {% endif %}
-
 
     <form method="post">
         <div class="form-group">
@@ -33,7 +33,6 @@
             {% for err in form.email1.errors %}
                 <p class="text-danger">{{ err }}</p>
             {% endfor %}
-
         </div>
 
         <div class="form-group">
@@ -43,7 +42,6 @@
             {% for err in form.email1.errors %}
                 <p class="text-danger">{{ err }}</p>
             {% endfor %}
-
         </div>
 
         <div class="form-group">
@@ -52,7 +50,7 @@
         </div>
         {% csrf_token %}
 
-        <small class="fs-90">e-posta değişikliğini onaylamak için yeni adresinize bir onaylama bağlantısı gönderilecek.</small>
-        <button class="btn btn-django stretch mt-3">e-posta adresimi değiştir</button>
+        <small class="fs-90">{% trans "a confirmation link will be sent to the new e-mail address." %}</small>
+        <button class="btn btn-django stretch mt-3">{% trans "change e-mail" %}</button>
     </form>
 {% endblock %}

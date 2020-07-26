@@ -1,4 +1,4 @@
-{% load filters %}
+{% load filters %} {% load i18n %}
 <div class="blackquote-container">
     <blockquote class="user-pin m-0">
         <h2 class="h5 d-flex justify-content-between">
@@ -7,7 +7,7 @@
                 <a role="button" tabindex="0" class="pin-sync" data-id="{{ entry.pk }}">
                     <svg class="float-right" fill="currentColor" width="16" height="16" viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg">
                         <use href="#pin"></use>
-                        <title>profilimden kaldır</title>
+                        <title>{% trans "unpin this from the profile" %}</title>
                     </svg>
                 </a>
             {% endif %}
@@ -16,9 +16,9 @@
             <span class="entry-content text-formatted">{{ text|truncatechars_html:700 }}</span>
             <div class="d-flex justify-content-between">
                 {% if entry.author == user %}
-                    <a class="mr-2" href="{% url 'entry_update' pk=entry.pk %}">düzelt</a>{% endif %}
+                    <a class="mr-2" href="{% url 'entry_update' pk=entry.pk %}">{% trans "edit" %}</a>{% endif %}
                 {% if text|length > 700 %}
-                    <a href="{{ entry.get_absolute_url }}">tamamını oku&nbsp;»</a>
+                    <a href="{{ entry.get_absolute_url }}">{% trans "read more »" %}</a>
                 {% endif %}
                 <a class="ml-auto" href="{{ entry.get_absolute_url }}">{{ entry.date_created|entrydate:entry.date_edited }}</a>
             </div>

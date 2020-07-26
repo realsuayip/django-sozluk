@@ -1,27 +1,39 @@
 {% extends "dictionary/user/preferences/index.html" %}
-{% block title %}Hesabı kapat{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "account deletion" %}{% endblock %}
 
 {% block content_preferences %}
     <div class="card mb-3 w-100">
-        <div class="card-header">işte, hesap kapatmak için seçenekleriniz şunlar:</div>
+        <div class="card-header">{% trans "here are the options you may choose for account deactivation:" %}</div>
         <div class="card-body">
-            <h2 class="card-title h5"><strong>a) hesabı komple sil</strong></h2>
-            <p class="card-text">iz bırakmadan temiz bir şekilde gitmek isteyenler için ideal. hesabınıza dair her şey:
-                entry'leriniz ve mesajlarınız da dahil olmak üzere silinecek.</p>
-        </div>
-
-        <div class="card-body">
-            <h2 class="card-title h5"><strong>b) hesabı miras bırakarak sil</strong></h2>
+            <h2 class="card-title h5"><strong>{% trans "a) delete account completely" %}</strong></h2>
             <p class="card-text">
-                hesabınız komple silinecek. yazar iseniz, entry'leriniz gelecek nesiller tarafından okunması için anonim olarak
-                tutulacak.</p>
+                {% blocktrans trimmed %}
+                    ideal for those who don't want to leave any trace behind. all the information about your
+                    account, including entries and messages, will be deleted.
+                {% endblocktrans %}
+            </p>
         </div>
 
         <div class="card-body">
-            <h2 class="card-title h5"><strong>c) hesabı dondur</strong></h2>
-            <p class="card-text">hesabınızla duygusal bir bağ kurduysanız ideal. hesabınız donukken profilinize kimse
-                ulaşamaz ve size mesaj gönderilemez. entry'leriniz görülebilir halde durur. hesabınıza giriş yaparsanız
-                hesabınız tekrar aktive olur.</p>
+            <h2 class="card-title h5"><strong>{% trans "b) delete account with legacy" %}</strong></h2>
+            <p class="card-text">
+                {% blocktrans trimmed %}
+                    your account will be deleted completely. if you have authorship, your entries
+                    will be preserved anonymously for the next generations.
+                {% endblocktrans %}
+            </p>
+        </div>
+
+        <div class="card-body">
+            <h2 class="card-title h5"><strong>{% trans "c) freeze account" %}</strong></h2>
+            <p class="card-text">
+                {% blocktrans trimmed %}
+                    ideal if you have emotional bond with your account. when your account is frozen, no
+                    one can access to your profile and send you messages. your entries will be visible. if
+                    you log in, your account will be reactivated.
+                {% endblocktrans %}
+            </p>
         </div>
     </div>
 
@@ -31,13 +43,16 @@
             <form method="post">
                 {% load widget_tweaks %}
 
-                <label for="termination_choice"><h2 class="card-title h5"><strong>son sözünüz?</strong></h2></label>
+                <label for="termination_choice"><h2 class="card-title h5"><strong>{% trans "last words?" %}</strong></h2></label>
                 {% render_field form.state class="form-control" id="termination_choice" %}
 
-                <p class="card-text mt-3">hesabınızı dondurduğunuz senaryonun dışında, seçtiğiniz senaryonun
-                    gerçekleşebilmesi için, işlemi yaptığınız andan itibaren 120 saat (5 gün) geçmesi gerekmektedir.
-                    bu sürenin sonunda seçim geri dönüşü olmayacak bir şekilde gerçekleştirilecektir. bu süre boyunca
-                    hesabınız donuk statüsünde olacaktır. işlemi iptal etmek için giriş yapabilirsiniz.
+                <p class="card-text mt-3">
+                    {% blocktrans trimmed %}
+                        except for the scenario where you choose to freeze your account, in order for your account to
+                        be deleted, 120 hours (5 days) needs to be passed after you confirm your action. for the time being,
+                        your account will be in frozen status and if you decide to cancel your action you may log in before
+                        its too late.
+                    {% endblocktrans %}
                 </p>
 
                 <div class="form-group">
@@ -46,7 +61,7 @@
                 </div>
 
                 {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light w-100">elveda et</button>
+                <button type="submit" class="btn btn-outline-light w-100">{% trans "farewell" %}</button>
             </form>
 
         </div>
