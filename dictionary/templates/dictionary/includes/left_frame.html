@@ -11,7 +11,7 @@
             {# CATEGORY SAFENAME #}
 
             {# GUNDEM FILTER TOGGLER BUTTON #}
-            <span {% if lf.slug != "popular" %}class="dj-hidden"{% endif %} id="gundem_excluder">
+            <span {% if lf.slug != "popular" %}class="dj-hidden"{% endif %} id="popular_excluder">
                 <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#cog"></use>
                     <title>gündem filtresi</title>
@@ -41,9 +41,9 @@
 
     {# GUNDEM FILTER OPTIONS #}
 
-    <div class="dj-hidden exclusion-settings" id="exlusion-choices">
+    <div class="dj-hidden exclusion-settings" id="exclusion-choices">
         <small style="display: block">gündeminizi kişiselleştirin:</small>
-        <ul class="exlusion-choices">
+        <ul class="exclusion-choices">
             {% if lf.slug == "popular" %}
                 {% for category in lf.exclusions.available %}
                     <li><a role="button" title="{{category.description}}" {% if category.slug in lf.exclusions.active %}class="active"{% endif %} tabindex="0" data-slug="{{ category.slug }}">#{{ category.name }}</a></li>

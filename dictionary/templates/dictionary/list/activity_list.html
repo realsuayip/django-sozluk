@@ -1,13 +1,12 @@
 {% extends "dictionary/base.html" %}
-{% block title %}olan biten{% endblock %}
+{% load filters %} {% load functions %} {% load i18n %}
 
-{% load filters %}
-{% load functions %}
+{% block title %}{% trans "activity" context "titleblock" %}{% endblock %}
 
 {% block content %}
 
     <div class="left-frame-in">
-        <h1 class="h4 description"><strong>olan biten</strong></h1>
+        <h1 class="h4 description"><strong>{% trans "activity" context "titleblock" %}</strong></h1>
 
         <ul class="list-group topic-list">
             <li class="list-group-item{% if user.unread_topic_count.announcements > 0 %} active{% endif %}">
@@ -16,7 +15,7 @@
                         <svg class="mr-2" fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <use href="#pin"></use>
                         </svg>
-                        <span>sözlük duyuruları</span>
+                        <span>{% trans "site announcements" %}</span>
                     </div>
                     {% if user.unread_topic_count.announcements > 0 %}
                         <small class="total_entries">{{ user.unread_topic_count.announcements }}</small>
@@ -28,12 +27,12 @@
         <hr class="mt-0">
 
         {% if topics.exists %}
-            <small class="mb-2 d-flex justify-content-between align-items-center">
-                <span>{{ page_obj.paginator.count }} başlık takipte</span>
+            <small class="mb-2 d-flex justify-content-between align-items-center fs-90">
+                <span>{% blocktrans count topic_count=page_obj.paginator.count %}following {{ topic_count }} topic{% plural %}following {{ topic_count }} topics{% endblocktrans %}</span>
                 {% if user.unread_topic_count.topics > 0 %}
                     <form method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline">başlıkları okundu olarak işaretle</button>
+                        <button type="submit" class="btn btn-sm btn-outline" onclick="return confirm('{% trans "Are you sure?" %}')">{% trans "mark all topics as read" %}</button>
                     </form>
                 {% endif %}
             </small>
@@ -54,5 +53,4 @@
 
         {% include "dictionary/includes/paginaton.html" with paginator=page_obj stretch="yes" classlist="lf_pagination my-4" %}
     </div>
-
 {% endblock %}

@@ -1,7 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% load functions %}
-{% load filters %}
+{% load functions %} {% load filters %} {% load i18n %}
 
 {% block title %}{% print_topic_title %}{% endblock %}
 
@@ -16,19 +15,19 @@
                 <h1 class="topic-title">
                     <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
 
-                    {% if mode == "search" %}<small>[arama terimleri: <strong>{{ request.GET.keywords.strip }}</strong>]</small>{% endif %}
-                    {% if mode == "links" %}<small><strong>[linkler]</strong></small>{% endif %}
-                    {% if mode == "history" %}<small><strong>[tarihte bugün: </strong>{{ request.GET.year.strip }}]</small>{% endif %}
-                    {% if mode == "novices" %}<small><strong>[çaylaklar]</strong></small>{% endif %}
-                    {% if mode == "following" %}<small><strong>[olan biten]</strong></small>{% endif %}
-                    {% if mode == "recent" %}<small><strong>[son]</strong></small>{% endif %}
-                    {% if mode == "acquaintances" %}<small><strong>[takip ettiklerim]</strong></small>{% endif %}
-                    {% if mode == "answered" %}<small><strong>[yanıtlanmış]</strong></small>{% endif %}
+                    {% if mode == "search" %}<small>[{% trans "search keywords" %}: <strong>{{ request.GET.keywords.strip }}</strong>]</small>
+                    {% elif mode == "links" %}<small><strong>[{% trans "links" %}]</strong></small>
+                    {% elif mode == "history" %}<small><strong>[{% trans "today in history" %}: </strong>{{ request.GET.year.strip }}]</small>
+                    {% elif mode == "novices" %}<small><strong>[{% trans "novices" %}]</strong></small>
+                    {% elif mode == "following" %}<small><strong>[{% trans "activity" %}]</strong></small>
+                    {% elif mode == "recent" %}<small><strong>[{% trans "followups" %}]</strong></small>
+                    {% elif mode == "acquaintances" %}<small><strong>[{% trans "acquaintances" %}]</strong></small>
+                    {% elif mode == "answered" %}<small><strong>[{% trans "with replies" %}]</strong></small>{% endif %}
 
                     {% if topic.is_pinned %}
                         <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <use href="#pin"></use>
-                            <title>Bu başlık sabitlenmiş.</title>
+                            <title>{% trans "This topic is pinned" %}</title>
                         </svg>
                     {% endif %}
                 </h1>
@@ -36,7 +35,7 @@
             {% with mirrors=topic.mirrors.all %}
                 {% if mirrors %}
                     <div class="mirror-list border bg-light rounded p-3 mb-2">
-                     <span>aynı isimdeki diğer başlıklar:</span>
+                     <span>{% trans "topics with the same title:" %}</span>
                         <ul class="pl-3">
                             {% for mirror in mirrors %}
                                <li class="p-0"><a href="{{ mirror.get_absolute_url }}">{{ mirror.title }}</a></li>
@@ -49,31 +48,32 @@
                 {% if populated %}
                     <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
-                    <span class="mr-3 nice-filter">şükela:&nbsp;&nbsp;<a title="tüm zamanların en çok beğenilenleri" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>tümü</a>
+                    <span class="mr-3 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" %}</a>
                         <span>&nbsp;|&nbsp;</span>
-                        <a title="bugün en çok beğenilenler" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>bugün</a>
+                        <a title="{% trans "most liked entries of today" %}" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>{% trans "today" %}</a>
                     </span>
 
-                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">başlıkta ara</a>
+                        <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">{% trans "search in topic" %}</a>
 
                         <div class="dropdown-menu topic-dropdown">
-                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">bugün</a>
-                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=links">linkler</a>
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">{% trans "today" %}</a>
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=links">{% trans "links" %}</a>
                             {% if topic.is_ama %}
-                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=answered">yanıtlanmış</a>
+                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=answered">{% trans "with replies" %}</a>
                             {% endif %}
                             {% if user.is_authenticated %}
-                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">benimkiler</a>
-                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=acquaintances">takip ettiklerim</a>
+                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">{% trans "my entries" %}</a>
+                                <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=acquaintances">{% trans "acquaintances" %}</a>
                             {% endif %}
 
                             <a class="dropdown-item pb-2">
                                 <form method="GET" action="{{ topic.get_absolute_url }}">
                                     <div class="input-group input-group-sm">
                                         <input type="hidden" name="a" value="search">
-                                        <input name="keywords" class="searchbox-text form-control" type="text" placeholder="kelime ya da @yazar" aria-label="kelime ya da @yazar" required>
+                                        <input name="keywords" class="searchbox-text form-control" type="text" placeholder="{% trans "words or @author" %}" aria-label="{% trans "words or @author" %}" required>
                                         <div class="input-group-append">
-                                            <input class="btn btn-django-link" type="submit" value="ara">
+                                            {# Translators: Small search button text. #}
+                                            <input class="btn btn-django-link" type="submit" value="{% trans "go" %}">
                                         </div>
                                     </div>
                                 </form>
@@ -82,7 +82,7 @@
                         </div>
                         {% if user.is_authenticated %}
                             {% check_follow_status user topic as status %}
-                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{% if status %}takip etme{% else %}takip et{% endif %}</a>
+                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{{ status|yesno:"unfollow,follow" }}</a>
                         {% endif %}
                     </div>
                     {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="pagination" %}
@@ -97,7 +97,8 @@
 
                     {# previous entries button #}
                     {% if previous_entries_count > 0 %}
-                        <a title="tümünü göster" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ previous_entries_page }}" class="more-entries-button mt-2">{{ previous_entries_count }} entry daha</a>
+                        {% blocktrans asvar prev count previous_count=previous_entries_count %}{{ previous_count }} more entry{% plural %}{{ previous_count }} more entries{% endblocktrans %}
+                        <a title="{% trans "show all" %}" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ previous_entries_page }}" class="more-entries-button mt-2">{{ prev }}</a>
                     {% endif %}
                     {# end of previous entries button #}
 
@@ -121,16 +122,17 @@
                                 {# topic has entries but parameters returned no corresponding entries #}
                                 <p class="mt-2">
                                     {% if mode == "novices" %}
-                                        <span>bu başlığa bugün pek çaylak entry'si girilmemiş.</span>
+                                        <span>{% trans "there has been no entries written by novices today." %}</span>
                                     {% elif mode == "regular" %}
-                                        <span>bu başlıkta hiç <u>yazar</u> entry'si yok.</span>
+                                        <span>{% trans "this topic has no entries written by <u>authors</u>." %}</span>
                                     {% else %}
-                                        <span>başlıkta aradığınız kritere uygun entry bulunamadı.</span>
+                                        <span>{% trans "no suitable entries were found with the criteria you specified." %}</span>
                                     {% endif %}
                                 </p>
 
                                 {% if all_entries_count %}
-                                    <a title="tümünü göster" href="{{ topic.get_absolute_url }}" class="more-entries-button">tümünü göster ({{ all_entries_count }} entry)</a>
+                                    {% blocktrans asvar allc count all_count=all_entries_count %}show all ({{ all_count }} entry){% plural %}show all ({{ all_count }} entries){% endblocktrans %}
+                                    <a href="{{ topic.get_absolute_url }}" class="more-entries-button">{{ allc }}</a>
                                 {% endif %}
 
                             {% endif %}
@@ -140,7 +142,8 @@
 
                     {# subsequent entries button #}
                     {% if subsequent_entries_count > 0 %}
-                        <a title="tümünü göster" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ subsequent_entries_page }}" class="more-entries-button">{{ subsequent_entries_count }} entry daha</a>
+                        {% blocktrans asvar subsq count subsequent_count=subsequent_entries_count %}{{ subsequent_count }} more entry{% plural %}{{ subsequent_count }} more entries{% endblocktrans %}
+                        <a title="{% trans "show all" %}" href="{% if entry_permalink %}{{ topic.get_absolute_url }}{% endif %}?page={{ subsequent_entries_page }}" class="more-entries-button">{{ subsq }}</a>
                     {% endif %}
                     {# end of subsequent entries button #}
 
@@ -148,7 +151,7 @@
                 {% else %}
                     {# Topic does exist but has no entries #}
                     <p>
-                        <span>böyle bir şey yok.</span>
+                        <span>{% trans "no such thing known to humankind." %}</span>
                         {% render_topic_suggestions topic.title %}
                     </p>
 
@@ -164,12 +167,12 @@
                 </header>
 
                 <p>
-                    <span>böyle bir şey yok.</span>
+                    <span>{% trans "no such thing known to humankind." %}</span>
                     {% render_topic_suggestions topic.title %}
                 </p>
 
                 {% if not valid %}
-                    <p>lanet olsun böyle başlığa zaten</p>
+                    <p>{% trans "curses to such a topic anyway." %}</p>
                 {% else %}
                     {% include "dictionary/includes/forms/wish.html" %}
                 {% endif %}
@@ -190,7 +193,11 @@
                         <svg class="mr-2" width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <use href="#saved"></use>
                         </svg>
-                        <span><strong>{{ topic.title }}</strong> başlığına ait <a data-lf-slug="drafts" href="{% url "topic_list" slug="drafts" %}">kenar</a>da duran entry'leriniz var:</span>
+
+                        {% url "topic_list" slug="drafts" as drafts_url %}
+                        {% blocktrans with drafts_attr='data-lf-slug="drafts"' title=topic.title %}
+                            <span> you have <a {{ drafts_attr }} href="{{ drafts_url }}">drafted</a> entries belonging to <strong>{{ title }}</strong>:</span>
+                        {% endblocktrans %}
                     </div>
 
                     <ul class="list-unstyled mt-2 mb-0">
@@ -207,29 +214,26 @@
 
                 <form method="post">
                     {% csrf_token %}
-
-                    {% with topic.title|addstr:" başlığı hakkında bilgi verin.." as text_placeholder %}
-                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label="Entry yazı alanı" %}
-                    {% endwith %}
+                    {% blocktrans asvar text_placeholder with title=topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
+                    {% trans "Entry content area" as area_label %}
+                    {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label=area_label %}
 
                     <div class="row align-items-center">
                         <div class="col-6">
                             {% if not user.is_suspended %}
                                 <div class="custom-control custom-checkbox">
                                     {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                    <label title="bu entry'i halka açık olarak yayınlamadan tut" class="custom-control-label" for="is_draft">kenarda dursun şimdilik</label>
+                                    <label title="{% trans "throw this entry to drafts before publishing it publicly" %}" class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
                                 </div>
                             {% else %}
-                                <p class="text-danger">entry'niz kenara atılacak.</p>
+                                <p class="text-danger">{% trans "your entry will be drafted." %}</p>
                             {% endif %}
                         </div>
                         <div class="col-6">
-                            <button type="submit" class="btn btn-django float-right">yolla</button>
+                            <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
                         </div>
                     </div>
                 </form>
-
-
             </section>
         {% endif %}
     {% endif %}
@@ -244,15 +248,13 @@
     {% with categories=topic.category.all %}
         {% if categories %}
             <section class="topic-categories-list">
-                <h2>başlığın kanalları</h2>
+                <h2>{% trans "belonging channels" %}</h2>
                 <ul>
-
                     {% for category in categories %}
                         <li>
                             <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category }}</a>
                         </li>
                     {% endfor %}
-
                 </ul>
             </section>
         {% endif %}

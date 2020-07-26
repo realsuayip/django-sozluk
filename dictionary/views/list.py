@@ -159,6 +159,18 @@ class CategoryList(ListView):
     template_name = "dictionary/list/category_list.html"
     context_object_name = "categories"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_authenticated:
+            queryset = queryset.annotate(
+                is_followed=Exists(
+                    Author.following_categories.through.objects.filter(
+                        author=self.request.user, category=OuterRef("pk")
+                    )
+                )
+            )
+        return queryset
+
 
 class TopicList(TemplateView):
     """Lists topics using LeftFrame interface."""

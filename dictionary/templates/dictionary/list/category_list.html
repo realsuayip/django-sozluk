@@ -1,28 +1,36 @@
 {% extends "dictionary/base.html" %}
-{% block title %}kanallar{% endblock %}
-{% block content %}
-    <h1 class="h4"><strong>kanallar</strong></h1>
+{% load i18n %}
 
-{% autoescape off %}
-    <p>sözlükteki başlıkları konularına göre sınıflandıran kanalların tam listesi. <a{{ user.is_authenticated|yesno:' data-lf-slug="today",' }} href="{% url 'topic_list' "today" %}">bugün</a>'de sadece takip ettiğiniz kanalların başlıkları ve <a data-lf-slug="uncategorized" href="{% url 'topic_list' "uncategorized" %}">sınıflandırılmamış başlıklar</a> listelenir.</p>
-{% endautoescape %}
+{% block title %}{% trans "channels" context "titleblock" %}{% endblock %}
+{% block content %}
+    <h1 class="h4"><strong>{% trans "channels" context "titleblock" %}</strong></h1>
+
+    {% url "topic_list" "today" as today_url %}
+    {% url 'topic_list' "uncategorized" as uncategorized_url %}
+
+    {% blocktrans trimmed with today_attr=user.is_authenticated|yesno:'data-lf-slug="today",'|safe uncategorized_attr='data-lf-slug="uncategorized"' %}
+        <p>the complete list of channels that classify the topics with general subjects. in
+            <a {{ today_attr }} href="{{ today_url }}">today</a> only the topics with channels you follow and
+            <a {{ uncategorized_attr }} href="{{ uncategorized_url }}">topics with no channels</a> are listed.</p>
+    {% endblocktrans %}
 
     <ul class="category-list-all m0 p-0">
-        {% with logged_in=user.is_authenticated following=user.following_categories.all %}
-            {% for category in categories %}
-                <li class="row">
-                    <div class="col-{{ logged_in|yesno:"9,12" }}">
-                        <h2 class="h5"><a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a></h2>
-                        <p>{{ category.description }}</p>
-                    </div>
+        {% for category in categories %}
+            <li class="row">
+                <div class="col-{{ user.is_authenticated|yesno:"9,12" }}">
+                    <h2 class="h5">
+                        <a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                    </h2>
+                    <p>{{ category.description }}</p>
+                </div>
 
-                    {% if logged_in %}
-                        <div class="col-3">
-                            <button type="button" class="btn btn-django-link float-right follow-category-trigger{% if category in following %} faded{% endif %}" data-category-id="{{ category.pk }}">{% if category in following %}bırak ya{% else %}takip et{% endif %}</button>
-                        </div>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        {% endwith %}
+                {% if user.is_authenticated %}
+                    <div class="col-3">
+                        {% trans "unfollow,follow" context "category-list" as state %}
+                        <button type="button" class="btn btn-django-link float-right follow-category-trigger{{ category.is_followed|yesno:" faded," }}" data-category-id="{{ category.pk }}">{{ category.is_followed|yesno:state }}</button>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
     </ul>
 {% endblock %}

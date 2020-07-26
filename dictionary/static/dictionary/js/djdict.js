@@ -365,9 +365,9 @@
         }
 
         renderExclusions (exclusions) {
-            const toggler = $("#gundem_excluder");
-            const categoryHolder = $("#exlusion-choices");
-            const categoryList = categoryHolder.children("ul.exlusion-choices");
+            const toggler = $("#popular_excluder");
+            const categoryHolder = $("#exclusion-choices");
+            const categoryList = categoryHolder.children("ul.exclusion-choices");
 
             if (exclusions) {
                 categoryList.empty();
@@ -521,7 +521,7 @@
         $(this).closest("div").siblings(".exclusion-settings").toggle(250);
     });
 
-    $("#exlusion-choices").on("click", "ul li a", function () {
+    $("#exclusion-choices").on("click", "ul li a", function () {
         $(this).toggleClass("active");
         LeftFrame.populate("popular", 1, null, null, null, null, [$(this).attr("data-slug")]);
     });

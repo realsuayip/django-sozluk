@@ -1,26 +1,27 @@
 {% extends "dictionary/base.html" %}
+{% load i18n %}
 
-{% block title %}takip/engellenmişler{% endblock %}
+{% block title %}{% trans "following/blocked" context "titleblock" %}{% endblock %}
 
 {% block content %}
-    <h1 class="h4"><strong>takip ettiğin ve engellenmiş insanlar</strong></h1>
-    <h2 class="h6"><u>takip ettiklerin:</u></h2>
+    <h1 class="h4"><strong>{% trans "people you follow/block" %}</strong></h1>
 
+    <h2 class="h6"><u>{% trans "following:" %}</u></h2>
     {% if following %}
-        {{ following|length }} kişi
+       {% blocktrans count following_count=following|length %}{{ following_count }} person{% plural %}{{ following_count }} people{% endblocktrans %}
         <ul class="people-list">
             {% for author in following %}
                 <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
-        <small>yok ki</small>
+        <small>{% trans "nothing here" %}</small>
     {% endif %}
 
-    <h2 class="h6"><u>engellediklerin:</u></h2>
-
+    <h2 class="h6"><u>{% trans "blocked:" %}</u></h2>
     {% if blocked %}
-        {{ blocked|length }} kişi, engeli kaldırmak için üstüne tıkla
+        {% blocktrans count blocked_count=blocked|length %}{{ blocked_count }} person{% plural %}{{ blocked_count }} people{% endblocktrans %}
+        <span>{% trans "(click nicknames to unblock)" %}</span>
         <ul class="people-list">
             {% for author in blocked %}
                 <li>
@@ -29,6 +30,6 @@
             {% endfor %}
         </ul>
     {% else %}
-        <small>yok ki</small>
+        <small>{% trans "nothing here" %}</small>
     {% endif %}
 {% endblock %}

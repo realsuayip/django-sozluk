@@ -1137,21 +1137,21 @@ footer.body-footer > ul {
     margin: 0 0 .25em;
 }
 
-ul.exlusion-choices {
+ul.exclusion-choices {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-ul.exlusion-choices > li {
+ul.exclusion-choices > li {
     display: inline-block;
 }
 
-ul.exlusion-choices > li:not(:last-child) {
+ul.exclusion-choices > li:not(:last-child) {
     margin-right: .75em;
 }
 
-ul.exlusion-choices > li > a.active {
+ul.exclusion-choices > li > a.active {
     color: #777;
 }
 
