@@ -1,15 +1,13 @@
 {% extends "dictionary/base.html" %}
-{% load widget_tweaks %}
-{% block title %}parola neydi{% endblock %}
+{% load widget_tweaks %} {% load i18n %}
+{% block title %}{% trans "what was my password" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong><a href="{% url 'login' %}">giriş</a> &raquo; parola neydi</strong></h1>
+    <h1 class="h4 mb-3"><strong><a href="{% url 'login' %}">{% trans "log in" %}</a> &raquo; {% trans "what was my password" context "titleblock" %}</strong></h1>
     <form method="post">
         {% csrf_token %}
 
         <div class="form-group">
-            <div class="alert alert-secondary" role="alert">
-                e-posta adresini verirsen parolanı sıfırlamana yardımcı olacak bir şeyler gönderebiliriz.
-            </div>
+            <div class="alert alert-secondary" role="alert">{% trans "provide your registered e-mail address so that we can send you something to reset your password." %}</div>
 
             {% if form.errors %}
                 <p class="text-danger">{{ form.email.errors.0 }}</p>
@@ -19,7 +17,7 @@
             {% render_field form.email type="email" id="resetEmail" class="form-control" %}
         </div>
 
-        <button type="submit" class="btn btn-django stretch">yap bi güzellik</button>
+        <button type="submit" class="btn btn-django stretch">{% trans "send" %}</button>
     </form>
 {% endblock %}
 

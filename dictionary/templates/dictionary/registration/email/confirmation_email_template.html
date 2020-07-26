@@ -1,10 +1,11 @@
-<h4>sayın {{ user.username }}</h4>
-
-<p>e-postanızı onaylamak için bu bağlantıya tıklayın: </p>
-<a href="{{ protocol}}://{{ domain }}{% url "confirm-email" token=token %}">e-postayı onayla</a>
-
-<p>eğer bağlantı gözükmüyor ise şunu kopyalayıp adres satırına yapıştır: </p>
-<p>{{ protocol}}://{{ domain }}{% url "confirm-email" token=token %}</p>
-<hr>
-<p>eğer e-posta onaylama talebinde bulunmadıysanız bu e-postayı hiç kafanıza takmanıza gerek yok. </p>
-<p>iyi günler dileriz.</p>
+{% load i18n %}
+{% url "confirm-email" token=token as confirm_url %}
+{% blocktrans trimmed with name=user.username %}
+    <h4>dear {{ name }}</h4>
+    <p>to confirm your e-mail, follow this link:</p>
+    <a href="{{ protocol }}://{{ domain }}{{ confirm_url }}">confirm e-mail</a>
+    <p>if you can't the see or click the link, navigate to this link via the address bar:</p>
+    <p>{{ protocol }}://{{ domain }}{{ confirm_url }}</p>
+    <p>if you didn't request such thing, you don't need to worry about anything.</p>
+    <p>have a good day.</p>
+{% endblocktrans %}

@@ -1,8 +1,9 @@
 {% extends "dictionary/base.html" %}
-{% load widget_tweaks %}
-{% block title %}giriş yap{% endblock %}
+{% load widget_tweaks %} {% load i18n %}
+
+{% block title %}{% trans "log in" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>giriş</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "log in" %}</strong></h1>
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-info" role="alert">{{ message }}</div>
@@ -10,7 +11,7 @@
     {% endif %}
 
     {% if user.is_authenticated %}
-        <p class="text-danger">şuan zaten '{{ user.username }}' olaraktan giriş yapmışsınız ona göre.</p>
+        <p class="text-danger">{% blocktrans with name=user.username %}just to let you know, you are already logged in as '{{ name }}'.{% endblocktrans %}</p>
     {% endif %}
 
     <form method="post" class="login-form">
@@ -41,10 +42,10 @@
         </div>
 
         <div class="mb-3">
-            <a href="{% url 'password_reset' %}" class="m-2" title="parola emekti">parola neydi</a>
-            <a href="{% url 'resend-email' %}">onaylama maili gelmedi</a>
+            <a href="{% url 'password_reset' %}" class="m-2" title="{% trans "what was it?" %}">{% trans "umm, password?" %}</a>
+            <a href="{% url 'resend-email' %}">{% trans "didn't receive confirmation email" %}</a>
         </div>
 
-        <button type="submit" class="btn btn-django stretch">giriş yap</button>
+        <button type="submit" class="btn btn-django stretch">{% trans "log in" %}</button>
     </form>
 {% endblock %}

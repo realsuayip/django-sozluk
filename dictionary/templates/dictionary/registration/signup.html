@@ -1,16 +1,15 @@
 {% extends "dictionary/base.html" %}
-{% load widget_tweaks %}
-{% load functions %}
 
-{% block title %}kayıt ol{% endblock %}
+{% load widget_tweaks %} {% load functions %} {% load i18n %}
+
+{% block title %}{% trans "register" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>yeni kullanıcı kaydı</strong></h1>
-
+    <h1 class="h4 mb-3"><strong>{% trans "registration" %}</strong></h1>
     <form method="post" id="signup">
         {% csrf_token %}
 
         {% if form.errors %}
-            <div class="alert alert-danger">lütfen aşağıdaki hataları kontrol edip tekrar deneyin.</div>
+            <div class="alert alert-danger">{% trans "please try again after checking specified errors." %}</div>
             {% for error in form.non_field_errors %}
                 <div class="alert alert-danger">{{ error|lower }}</div>
             {% endfor %}
@@ -78,10 +77,12 @@
 
             <div class="custom-control custom-checkbox">
                 {% render_field form.terms_conditions class="custom-control-input" id="terms_conditions" %}
-                <label class="custom-control-label" for="terms_conditions"><a target="_blank" href="/terms-of-use/">kullanıcı sözleşmesini</a> okudum ve kabul ediyorum.</label>
+                <label class="custom-control-label" for="terms_conditions">
+                    {% blocktrans with terms_url="/terms-of-use/"%}i have read and agree with the <a target="_blank" href="{{ terms_url }}">terms and conditions</a>.{% endblocktrans %}
+                </label>
             </div>
         {% endwith %}
 
-        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django stretch my-3">kayıt ol</button>
+        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django stretch my-3">{% trans "register" %}</button>
     </form>
 {% endblock %}

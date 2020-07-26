@@ -1,19 +1,16 @@
 {% extends "dictionary/base.html" %}
-{% load widget_tweaks %}
-{% block title %}parola sıfırlama{% endblock %}
+{% load widget_tweaks %} {% load i18n %}
+{% block title %}{% trans "password reset" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>parola sıfırlama</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "password reset" context "titleblock" %}</strong></h1>
 
     {% if form %}
         <form method="post">
             {% csrf_token %}
 
             <div class="form-group">
-
                 {% for err in form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {{ err }}
-                    </div>
+                    <div class="alert alert-danger">{{ err }}</div>
                 {% endfor %}
 
                 <div class="form-group">
@@ -27,7 +24,6 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-
                     <small class="form-text text-muted password-help">{{ form.new_password1.help_text }}</small>
                 </div>
 
@@ -42,19 +38,18 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-
                 </div>
-
             </div>
 
-            <button type="submit" class="btn btn-django stretch">bi daha unutmam inşallah</button>
-
+            <button type="submit" class="btn btn-django stretch">{% trans "hopefully i won't forget it again" %}</button>
         </form>
     {% else %}
+        {% url "password_reset" as password_reset_url %}
         <div class="alert alert-secondary" role="alert">
-        selam canım. ne dediğini pek anlayamadık açıkçası. parolanı sıfırlamak istiyorsan seni
-        <a href="{% url 'password_reset' %}">şuraya</a> alalım.
+            {% blocktrans trimmed %}
+                hello dear, we couldn't really understand you. if you want to reset your password visit
+                <a href="{{ password_reset_url }}">this page</a>.
+            {% endblocktrans %}
         </div>
     {% endif %}
 {% endblock %}
-

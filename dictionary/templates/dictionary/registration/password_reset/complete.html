@@ -1,10 +1,16 @@
 {% extends "dictionary/base.html" %}
-{% block title %}parola neydi{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "what was my password" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>parola neydi</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "what was my password" context "titleblock" %}</strong></h1>
+    {% url 'login' as login_url %}
     <div class="alert alert-secondary" role="alert">
-        parolanız sıfırlandı efendim güle güle kullanın. ahanda <a href="{% url "login" %}">burdan</a> giriş yapabilirsin.
-    </div>
-    <small class="fs-90">not: bu sayfayı parolasını sıfırlamaya çalışan arkadaşlar için bilgilendirme amacıyla yaptık. <strong>eğer parolanızı
-    sıfırlamaya çalışmıyorsanız</strong> ve kendinizi bir şekilde bu sayfada bulduysanız endişelenmenize gerek yok.</small>
+        {% blocktrans %}your password has been changed, use it wisely now. you might want to <a href="{{ login_url }}">log in</a> now.{% endblocktrans %}</div>
+
+    <small class="fs-90">
+    {% blocktrans trimmed %}
+        notice: this page was made to inform those who want to reset their password. <strong>if you are not
+        trying to reset your password</strong> and somehow found yourself here, you don't need to worry.
+    {% endblocktrans %}
+    </small>
 {% endblock %}

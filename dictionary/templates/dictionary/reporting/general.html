@@ -1,23 +1,23 @@
 {% extends "dictionary/base.html" %}
-{% block title %}şikayet{% endblock %}
-{% load functions %}
-{% load widget_tweaks %}
+{% load functions %} {% load widget_tweaks %} {% load i18n %}
+
+{% block title %}{% trans "contact" context "titleblock" %}{% endblock %}
 
 {% block content %}
-    <h1 class="h4"><strong>iletişim</strong></h1>
-    <h2 class="h5 text-muted">dikkat edilecek hususlar</h2>
+    <h1 class="h4"><strong>{% trans "contact" %}</strong></h1>
+    <h2 class="h5 text-muted">{% trans "matters to consider" %}</h2>
     <ol class="px-4">
-        <li>iletişime geçmeden önce lütfen <a href="/faq/">sıkça sorulan sorular</a> kısmını ziyaret edin.</li>
-        <li>lütfen istek veya şikayetinizi anlaşılır bir şekilde dile getirin.</li>
-        <li>yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi olmayacaktır, bu işlem anonim olarak yapılmaktadır.</li>
-        <li>onaylama ve geriş dönüş için geçerli bir e-posta adresi belirtin. eğer halihazırda üye iseniz kayıt olurken kullandığınız e-posta adresiniz kullanılacak.</li>
-        <li>her bir entry, başlık veya kullanıcı için ayrı şikayet oluşturmak yerine toplu halde bir şikayet oluşturmanız, dert dinleyenlerin akıl sağlığı için iyi olacaktır.</li>
+        <li>{% blocktrans with faq_url="/faq/" %}please visit <a href="{{ faq_url }}">frequently asked questions</a> page before submitting reports.{% endblocktrans %}</li>
+        <li>{% trans "please state your requests and complaints in a comprehensible and concise way." %}</li>
+        <li>{% trans "we will not notify other authors if you decide to report them, this is done anonymously." %}</li>
+        <li>{% trans "provide an e-mail address for confirmation and feedback. if you are logged in already, we will use your registered e-mail address." %}</li>
+        <li>{% trans "if have multiple statements, please consider them all in a report instead of sending them in seperate reports." %}</li>
     </ol>
 
     <form method="post" class="reporting-form">
         {% if not user.is_authenticated %}
             <div class="form-group">
-                <label for="reporter_email">{{ form.reporter_email.label }}</label>
+                <label for="reporter_email">{{ form.reporter_email.label|lower }}</label>
                 {% render_field form.reporter_email class="form-control" id="reporter_email" %}
             </div>
         {% else %}
@@ -25,20 +25,19 @@
         {% endif %}
 
         <div class="form-group">
-            <label for="report_category">{{ form.category.label }}</label>
+            <label for="report_category">{{ form.category.label|lower }}</label>
             {% render_field form.category class="form-control" id="report_category" %}
         </div>
         <div class="form-group">
-            <label for="reporter_subject">{{ form.subject.label }}</label>
+            <label for="reporter_subject">{{ form.subject.label|lower }}</label>
             {% render_field form.subject|attr:"autofocus" class="form-control" id="reporter_subject" %}
         </div>
         <div class="form-group">
-            <label for="reporter_content">{{ form.content.label }}</label>
+            <label for="reporter_content">{{ form.content.label|lower }}</label>
             {% render_field form.content rows="5" class="form-control" id="reporter_content" %}
         </div>
 
         {% csrf_token %}
-        <button class="btn btn-django stretch">gönder</button>
+        <button class="btn btn-django stretch mb-3">{% trans "send" %}</button>
     </form>
-    <br>
 {% endblock %}

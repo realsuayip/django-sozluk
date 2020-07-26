@@ -1,15 +1,15 @@
 {% extends "dictionary/base.html" %}
-{% block title %}e-mail onaylaması{% endblock %}
-{% block content %}
+{% load i18n %}
 
+{% block title %}{% trans "resend e-mail confirmation" context "titleblock" %}{% endblock %}
+
+{% block content %}
     <div class="alert alert-secondary" role="alert">
         {% if success %}
-            tebrikler. e-mail adresiniz başarıyla onaylandı {% if not user.is_authenticated %}
-            <a href="{% url "login" %}">buradan</a> giriş yapabilirsiniz.{% endif %}
+            {% url "login" as login_url %}
+            {% blocktrans %}congratulations, your e-mail was successfully confirmed. you may <a href="{{ login_url }}">log in</a> now.{% endblocktrans %}
         {% else %}
-            e-mail adresinizi onaylayamadık.
-            e-postanıza gönderilen bağlantı zaman aşımına uğradı veya adresi yanlış kopyaladınız.
+            {% trans "we couldn't confirm your e-mail. the confirmation link was wrong or expired." %}
         {% endif %}
     </div>
-
 {% endblock %}

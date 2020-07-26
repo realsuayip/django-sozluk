@@ -1,14 +1,21 @@
 {% extends "dictionary/base.html" %}
-{% block title %}parola neydi{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "what was my password" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>parola neydi</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "what was my password" context "titleblock" %}</strong></h1>
     <div class="alert alert-secondary" role="alert">
-        girdiğiniz e-posta adresine parolanızın sıfırlanması için bir şeyler gönderdik. en kısa sürede gelir.
-        eğer bir şey ulaşmadıysa doğru e-posta adresi girdiğinizden emin olun. spam klasörüne de bir bakın orda
-        olabilir.
+        {% blocktrans trimmed %}
+            we sent something that may help you reset your password to the e-mail you entered. it should arrive shortly.
+            if you don't receive anything, make sure that you entered your e-mail correctly. maybe check your spam
+            folder, it might be there also.
+        {% endblocktrans %}
     </div>
-    <small class="fs-90">not: bu sayfayı parolasını sıfırlamaya çalışan arkadaşlar için bilgilendirme amacıyla yaptık.<strong>eğer parolanızı
-    sıfırlamaya çalışmıyorsanız</strong> ve kendinizi bir şekilde bu sayfada bulduysanız endişelenmenize gerek yok.</small>
+
+    <small class="fs-90">
+        {% blocktrans trimmed %}
+            notice: this page was made to inform those who want to reset their password. <strong>if you are not
+            trying to reset your password</strong> and somehow found yourself here, you don't need to worry.
+        {% endblocktrans %}
+    </small>
 {% endblock %}
-
-

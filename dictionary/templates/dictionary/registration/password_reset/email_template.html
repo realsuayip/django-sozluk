@@ -1,7 +1,11 @@
-<h4>sayın {{ user.username }}</h4>
-<p>parolanızı unuttuğunuz için bizden parola sıfırlama bağlantısını talep ettiniz. işte o bağlantı: </p>
-<a href="{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">parolamı sıfırla</a>
-<p>eğer bağlantı gözükmüyor ise şunu kopyalayıp adres satırına yapıştır: </p>
-<p>{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}</p>
-<p>eğer parola yenileme talebinde bulunmadıysanız bu e-postayı hiç kafanıza takmanıza gerek yok. </p>
-<p>iyi günler dileriz.</p>
+{% load i18n %}
+{% url 'password_reset_confirm' uidb64=uid token=token as confirm_url %}
+{% blocktrans trimmed with name=user.username %}
+    <h4>dear {{ name }}</h4>
+    <p>you requested password reset link as you somehow forget your password. here is the link:</p>
+    <a href="{{ protocol }}://{{ domain }}{{ confirm_url }}">reset my password</a>
+    <p>if you can't the see or click the link, navigate to this link via the address bar:</p>
+    <p>{{ protocol }}://{{ domain }}{{ confirm_url }}</p>
+    <p>if you didn't request such thing, you don't need to worry about anything.</p>
+    <p>have a good day.</p>
+{% endblocktrans %}

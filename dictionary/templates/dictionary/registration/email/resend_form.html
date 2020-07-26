@@ -1,14 +1,14 @@
 {% extends "dictionary/base.html" %}
-{% block title %}e-mail onaylaması{% endblock %}
+{% load widget_tweaks %} {% load i18n %}
+
+{% block title %}{% trans "resend e-mail confirmation" context "titleblock" %}{% endblock %}
 {% block content %}
-    {% load widget_tweaks %}
-    <h1 class="h4 mb-3"><strong><a href="{% url 'login' %}">giriş</a> &raquo; onaylama e-postasını tekrar gönder</strong></h1>
+    <h1 class="h4 mb-3">
+        <strong><a href="{% url 'login' %}">{% trans "log in" %}</a> &raquo; {% trans "resend e-mail confirmation" context "titleblock" %}</strong></h1>
 
     {% if form.non_field_errors %}
         {% for error in form.non_field_errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
         {% endfor %}
     {% endif %}
 
@@ -22,7 +22,6 @@
         </div>
 
         {% csrf_token %}
-        <button class="btn btn-django stretch">yolla bakayım bir daha</button>
+        <button class="btn btn-django stretch">{% trans "send it again please" %}</button>
     </form>
-
 {% endblock %}
