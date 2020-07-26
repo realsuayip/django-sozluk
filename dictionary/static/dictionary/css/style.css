@@ -1177,9 +1177,7 @@ ul.exlusion-choices > li > a.active {
     border-left: 4px solid #0d2f18;
 }
 
-#main,
-#left-frame-nav,
-#right-frame {
+#main {
     scroll-margin-top: 100px;
 }
 
@@ -1190,7 +1188,7 @@ ul.exlusion-choices > li > a.active {
     position: absolute;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     text-align: center;
     transform: translateY(-200%);
     z-index: 10;
@@ -1199,11 +1197,6 @@ ul.exlusion-choices > li > a.active {
     background: #fff;
     border: 2px solid #16784f;
     transition: .3s ease-in-out;
-}
-
-.content-skipper small {
-    font-size: 12px;
-    display: block;
 }
 
 .content-skipper:focus {

@@ -1,14 +1,12 @@
 {% spaceless %}
+{% load static %} {% load functions %} {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!doctype html>
-<html lang="tr">
+<html lang="{{ LANGUAGE_CODE }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    {% load static %}
-    {% load functions %}
-    {% load i18n %}
 
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -34,10 +32,7 @@
 
         <div class="top-bar">
 
-            {% blocktrans asvar skipper_help_text %}Open this menu with caps lock.{% endblocktrans %}
-            <button class="content-skipper" data-text-identifier="{% trans "main content" %}" data-href="#main" id="skipper-main-menu">{% trans "Skip to main content." %}<small>{{ skipper_help_text }}</small></button>
-            <button class="content-skipper" data-text-identifier="{% trans "topic list" %}" data-href="#left-frame-nav">{% trans "Skip to topic list." %}<small>{{ skipper_help_text }}</small></button>
-            <button class="content-skipper" data-text-identifier="{% trans "additional content" %}" data-href="#right-frame">{% trans "Skip to additional content." %}<small>{{ skipper_help_text }}</small></button>
+            <button class="content-skipper" data-href="#main">{% trans "Skip to main content" %}</button>
 
             {# <!--- logo --> #}
             <div class="logo">
@@ -115,7 +110,7 @@
 
 
                     <li class="desktop-only">
-                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}ü">
+                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}">
                             <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#more"></use>
                             </svg>

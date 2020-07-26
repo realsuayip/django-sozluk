@@ -1167,13 +1167,6 @@
 
     $(".content-skipper").on("click", function () {
         location.replace($(this).attr("data-href"));
-        notify(`seçici <strong>${$(this).attr("data-text-identifier")}</strong> kısımına odaklandı.`);
-    });
-
-    $(document).keydown(function (e) {
-        if (e.which === 20) {
-            $("#skipper-main-menu").focus();
-        }
     });
 
     $("input.is-invalid").on("input", function () {
