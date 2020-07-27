@@ -1,11 +1,11 @@
 {% extends "dictionary/conversation/inbox_base.html" %}
-{% block title %}gelen kutusu{% endblock %}
+{% load humanize %} {% load i18n %}
 
-{% load humanize %}
+{% block title %}{% trans "messages" context "titleblock" %}{% endblock %}
 
 {% block titlemeta %}
     {% if request.GET.search_term.strip %}
-        <span class="ml-2">[arama terimi: <strong>{{ request.GET.search_term.strip }}</strong>]</span>
+        <span class="ml-2">[{% trans "search keywords" %}: <strong>{{ request.GET.search_term.strip }}</strong>]</span>
     {% endif %}
 {% endblock %}
 
@@ -20,17 +20,17 @@
                                 <h2 class="h5">{{ chat.target.username }} {% if chat.unread_count > 0 %}({{ chat.unread_count }}){% endif %}</h2>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="chat-selector custom-control-input" id="_cvs{{ chat.pk }}">
-                                    <label class="text-hide custom-control-label" for="_cvs{{ chat.pk }}">seç</label>
+                                    <label class="text-hide custom-control-label" for="_cvs{{ chat.pk }}">{% trans "select" %}</label>
                                 </div>
                             </header>
-                            <p>{{ lastmsg.body|default:"<em>mesaj yok</em>" }}</p>
+                            <p>{{ lastmsg.body|default:_("<em>no messages</em>") }}</p>
                         </a>
 
                         <footer class="d-flex justify-content-between fs-90">
                             <div>
-                                <a role="button" tabindex="0" class="chat-delete-individual mr-1">sil</a>
+                                <a role="button" tabindex="0" class="chat-delete-individual mr-1">{% trans "delete" %}</a>
                                 {% if lastmsg %}
-                                    <a role="button" tabindex="0" class="chat-archive-individual">arşivle</a>
+                                    <a role="button" tabindex="0" class="chat-archive-individual">{% trans "archive" context "verb" %}</a>
                                 {% endif %}
                             </div>
                             {% if lastmsg %}
@@ -42,6 +42,6 @@
             {% endfor %}
         </ul>
     {% else %}
-        <div class="border rounded-sm p-3 bg-light">pek bir şey bulamadım açıkçası 🤷</div>
+        <div class="border rounded-sm p-3 bg-light">{% trans "sorry, but couldn't find anything 🤷" %}</div>
     {% endif %}
 {% endblock %}

@@ -1,8 +1,7 @@
 {% extends "dictionary/conversation/inbox_base.html" %}
-{% block title %}sohbet arşivi{% endblock %}
+{% load filters %} {% load humanize %} {% load i18n %}
 
-{% load filters %}
-{% load humanize %}
+{% block title %}{% trans "conversation archive" context "titleblock" %}{% endblock %}
 
 {% block innercontent %}
     {% if conversations %}
@@ -15,7 +14,7 @@
                                 <h2 class="h5">{{ object.target }}</h2>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="chat-selector custom-control-input" id="_arc{{ object.pk }}">
-                                    <label class="text-hide custom-control-label" for="_arc{{ object.pk }}">seç</label>
+                                    <label class="text-hide custom-control-label" for="_arc{{ object.pk }}">{% trans "select" %}</label>
                                 </div>
                             </header>
                             <p>{{ lastmsg.body }}</p>
@@ -23,7 +22,7 @@
 
                         <footer class="d-flex justify-content-between fs-90">
                             <div>
-                                <a role="button" tabindex="0" class="chat-delete-individual mr-1">sil</a>
+                                <a role="button" tabindex="0" class="chat-delete-individual mr-1">{% trans "delete" %}</a>
                             </div>
                             <time>{{ lastmsg.sent_at|strdate|naturalday }}</time>
                         </footer>
@@ -32,6 +31,6 @@
             {% endfor %}
         </ul>
     {% else %}
-        <div class="border rounded-sm p-3 bg-light">arşiviniz bomboş 🤔</div>
+        <div class="border rounded-sm p-3 bg-light">{% trans "your archive is empty 🤔" %}</div>
     {% endif %}
 {% endblock %}

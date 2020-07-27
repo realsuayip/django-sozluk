@@ -1,17 +1,22 @@
 {% extends "dictionary/base.html" %}
-{% block title %}@{{ object.target }} ile arşivlenmiş sohbet{% endblock %}
+{% load filters %} {% load humanize %}{% load i18n %}
+
+
+{% block title %}{% blocktrans with username=object.target context "titleblock" %}@{{ username }} - conversation archive{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    {% load filters %}
-    {% load humanize %}
-    <h1 class="h4"><strong>@{{ object.target }} ile arşivlenmiş sohbet</strong></h1>
+    <h1 class="h4">
+        {% blocktrans trimmed with username=object.target %}
+            <strong>archived conversation with @{{ username }}</strong>
+        {% endblocktrans %}
+    </h1>
 
     <div class="chat-quick-links d-flex justify-content-between">
-        <a href="{% url 'messages-archive' %}" class="mr-2" title="çok oyalandım burda">
+        <a href="{% url 'messages-archive' %}" class="mr-2" title="{% trans "enough lingering here" %}">
             <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                 <use href="#arrow-left"></use>
             </svg>
-            <span>arşive dön</span>
+            <span>{% trans "back to messages" %}</span>
         </a>
 
         <div data-mode="archived" data-id="{{ object.pk }}">
@@ -19,7 +24,7 @@
                 <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                     <use href="#trash"></use>
                 </svg>
-                <span class="ml-1">sil</span>
+                <span class="ml-1">{% trans "delete" %}</span>
             </a>
         </div>
     </div>
@@ -29,13 +34,14 @@
     <ul id="message_list" class="chat">
         {% with messages=object.to_json.messages %}
             {% if messages|length > 4 %}
-                <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
+                <a id="message_history_show" role="button" tabindex="0" title="{% trans "make it rain" %}">{% trans "only the last 4 messages are shown. click here to show all messages." %}</a>
             {% endif %}
 
             {% for message in messages %}
                 <li class="bubble {% if message.sender__username == user.username %}sent{% else %}recieved{% endif %}">
                     <p class="text-formatted">{{ message.body|formatted|linebreaksbr }}</p>
-                    <span class="date-info"><time>{{ message.sent_at|strdate|date:"d.m.Y H:i" }}</time></span>
+                    {# Translators: Archived conversation timestamp #}
+                    <span class="date-info"><time>{{ message.sent_at|strdate|date:_("d.m.Y H:i") }}</time></span>
                 </li>
             {% endfor %}
         {% endwith %}

@@ -1,45 +1,44 @@
 {% extends "dictionary/base.html" %}
-{% block title %}@{{ recipient.username }} ile sohbet muhabbet{% endblock %}
+{% load humanize %} {% load filters %} {% load i18n %}
 
+{% block title %}{% blocktrans with username=recipient.username context "titleblock" %}@{{ username }} - conversation{% endblocktrans %}{% endblock %}
 {% block content %}
-    {% load humanize %}
-    {% load filters %}
     {% include "dictionary/includes/block_user_modal.html" %}
 
     <h1 class="h4">
-        <strong><a href="{{ recipient.get_absolute_url }}">@{{ recipient.username }}</a> ile sohbet muhabbet</strong>
+        {% blocktrans trimmed with url=recipient.get_absolute_url username=recipient.username %}
+            <strong>conversation with <a href="{{ url }}">@{{ username }}</a></strong>
+        {% endblocktrans %}
     </h1>
 
     {% with messages=conversation.collection %}
         <div class="chat-quick-links d-flex justify-content-between">
             <div>
-                <a href="{% url 'messages' %}" class="mr-2" title="çok oyalandım burda">
+                <a href="{% url 'messages' %}" class="mr-2" title="{% trans "enough lingering here" %}">
                     <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                         <use href="#arrow-left"></use>
                     </svg>
-                    <span>mesajlara dön</span>
+                    <span>{% trans "back to messages" %}</span>
                 </a>
 
-
-                <a role="button" tabindex="0" class="unblock-user-trigger sync" data-username="{{ recipient.username }}">{{ is_blocked|yesno:"engeli kaldır,bu herifi engelle" }}</a>
-
+                <a role="button" tabindex="0" class="unblock-user-trigger sync" data-username="{{ recipient.username }}">{{ is_blocked|yesno:_("remove block,block this guy") }}</a>
             </div>
 
             <div data-mode="present" data-id="{{ conversation.pk }}">
                 <a role="button" tabindex="0" class="mr-3 chat-delete-individual">
                     <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                         <use href="#trash"></use>
-                        <title>sil</title>
+                        <title>{% trans "delete" %}</title>
                     </svg>
-                    <span class="ml-1 d-none d-sm-inline-block">sil</span>
+                    <span class="ml-1 d-none d-sm-inline-block">{% trans "delete" %}</span>
                 </a>
                 {% if messages|length > 0 %}
                     <a role="button" tabindex="0" class="chat-archive-individual">
                         <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                             <use href="#archive"></use>
-                            <title>arşivle</title>
+                            <title>{% trans "archive" context "verb" %}</title>
                         </svg>
-                        <span class="ml-1 d-none d-sm-inline-block">arşivle</span>
+                        <span class="ml-1 d-none d-sm-inline-block">{% trans "archive" context "verb" %}</span>
                     </a>
                 {% endif %}
             </div>
@@ -49,7 +48,7 @@
 
 
         {% if messages|length > 4 %}
-            <a id="message_history_show" role="button" tabindex="0" title="aksın">sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın</a>
+            <a id="message_history_show" role="button" tabindex="0" title="{% trans "make it rain" %}">{% trans "only the last 4 messages are shown. click here to show all messages." %}</a>
         {% endif %}
 
         {% if messages %}
@@ -61,13 +60,14 @@
                             <span class="date-info">
                             <time>{{ message.sent_at|naturaltime }}</time>
                                 {% if message.has_receipt and message.read_at %}
-                                    <span title="görüldü, {{ message.read_at|timesince }} önce">
+                                    {% blocktrans asvar read_receipt with read_at=message.read_at|naturaltime %}seen, {{ read_at }}{% endblocktrans %}
+                                    <span title="{{ read_receipt }}">
                                         <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                             <use href="#msgread"></use>
                                         </svg>
                                     </span>
                                 {% else %}
-                                    <span title="gönderildi">
+                                    <span title="{% trans "sent" %}">
                                         <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                             <use href="#msgsent"></use>
                                         </svg>
@@ -84,18 +84,18 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <div class="border rounded-sm p-3 bg-light my-3">hiç mesaj kalmamış burda 🤷</div>
+            <div class="border rounded-sm p-3 bg-light my-3">{% trans "no messages left in this conversation 🤷" %}</div>
         {% endif %}
     {% endwith %}
 
 
     {% if not can_send_message %}
-        <p class="text-center">bu kullanıcıya mesaj gönderemesiniz.</p>
+        <p class="text-center">{% trans "you are not allowed to send messages to this user." %}</p>
     {% else %}
         <label for="message-body">
             <h2 class="h4">
-                <span class="mr-2">mesaj yaz</span>
-                <small style="font-size: 55%">(entry biçimlendirme seçenekleri kullanılabilir)</small>
+                <span class="mr-2">{% trans "write message" %}</span>
+                <small style="font-size: 55%">{% trans "(entry formatting optinos are available)" %}</small>
             </h2>
         </label>
         <section class="chat-reply mb-3">
@@ -103,7 +103,7 @@
             <form method="POST">
                 {% csrf_token %}
                 {% render_field form.body|attr:"autofocus" id="message-body" class="mr-2 form-control" rows="5" spellcheck="true" %}
-                <button type="submit" class="btn btn-django">gönder</button>
+                <button type="submit" class="btn btn-django">{% trans "send" %}</button>
             </form>
         </section>
     {% endif %}
