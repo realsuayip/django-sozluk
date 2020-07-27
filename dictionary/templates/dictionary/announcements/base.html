@@ -1,13 +1,11 @@
 {% extends "dictionary/base.html" %}
+{% load humanize %} {% load filters %} {% load i18n %}
 
-{% block title %}duyurular{% endblock %}
-
-{% load humanize %}
-{% load filters %}
+{% block title %}{% trans "announcements" context "titleblock" %}{% endblock %}
 
 {% block content %}
     <h1 class="h4">
-        <strong><a href="{% url 'announcements-index' %}">sözlük duyuruları</a></strong>
+        <strong><a href="{% url 'announcements-index' %}">{% trans "site announcements" %}</a></strong>
         {% block crumb %}{% endblock %}
     </h1>
 
@@ -18,7 +16,7 @@
             {% endfor %}
             {% include "dictionary/includes/paginaton.html" with paginator=page_obj %}
         {% else %}
-            <div class="border rounded-sm p-3 bg-light mb-3">henüz bir duyuru yapılmamış.</div>
+            <div class="border rounded-sm p-3 bg-light mb-3">{% trans "there are no announcements yet." %}</div>
         {% endif %}
         <br>
     {% endblock %}
@@ -27,7 +25,7 @@
 {% block rightframe %}
     {% if date_list.exists %}
         <nav class="topic-categories-list">
-            <h2>duyuru geçmişi</h2>
+            <h2>{% trans "announcement history" %}</h2>
             <ul class="list-unstyled">
                 {% for date in date_list %}
                     <li>

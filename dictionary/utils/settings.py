@@ -243,7 +243,7 @@ KARMA_EXPRESSIONS = {
     range(700, 725): _("damascus apricot"),
     range(725, 750): _("household"),
     range(750, 775): _("exuberant"),
-    range(775, 800): _("energizer rabbit"),
+    range(775, 800): _("energizer bunny"),
     range(800, 850): _("courteous"),
     range(850, 900): _("inhuman"),
     range(900, 1000): _("rating beast"),
