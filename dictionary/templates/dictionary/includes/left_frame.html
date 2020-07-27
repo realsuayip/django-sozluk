@@ -1,4 +1,4 @@
-{% load filters %}
+{% load filters %} {% load i18n %}
 
 {% with left_frame as lf %}
     {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
@@ -14,7 +14,7 @@
             <span {% if lf.slug != "popular" %}class="dj-hidden"{% endif %} id="popular_excluder">
                 <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#cog"></use>
-                    <title>gündem filtresi</title>
+                    <title>{% trans "channel exclusions" %}</title>
                 </svg>
             </span>
             {# GUNDEM FILTER TOGGLER BUTTON END #}
@@ -23,14 +23,14 @@
             <span id="load_indicator" style="display: none;">
                 <svg class="spinning" width="22" height="24" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#loading"></use>
-                    <title>yükleniyor</title>
+                    <title>{% trans "loading" %}</title>
                 </svg>
             </span>
             {# LOADING INDICATOR END #}
         </h2>
 
         {# YEAR SELECTOR START #}
-        <select {% if lf.slug != "today-in-history" %}style="display: none;"{% endif %} class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select" aria-label="Yıl seçici">
+        <select {% if lf.slug != "today-in-history" %}style="display: none;"{% endif %} class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select" aria-label="{% trans "Year selector" %}">
             {% for year in lf.year_range %}
                 <option value="{{ year }}" {% if year == lf.year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
@@ -40,9 +40,8 @@
     {# CATEGORY NAME AND DATA OPTIONS END #}
 
     {# GUNDEM FILTER OPTIONS #}
-
     <div class="dj-hidden exclusion-settings" id="exclusion-choices">
-        <small style="display: block">gündeminizi kişiselleştirin:</small>
+        <small style="display: block">{% trans "personalize popular topics:" %}</small>
         <ul class="exclusion-choices">
             {% if lf.slug == "popular" %}
                 {% for category in lf.exclusions.available %}
@@ -67,22 +66,22 @@
 
 
     {#  REFRESH BUTTON  #}
-    <div role="button" tabindex="0" class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun" title="akıt gelsin">yenile <span id="new_content_count">({{ lf.refresh_count }})</span></div>
+    <div role="button" tabindex="0" class="refresh-button {% if not lf.refresh_count %}dj-hidden{% endif %}" id="refresh_bugun" title="{% trans "make them rain" %}">{% trans "refresh" %} <span id="new_content_count">({{ lf.refresh_count }})</span></div>
     {#  REFRESH BUTTON  #}
 
     {# PAGINATION START #}
     <div id="lf_pagination_wrapper" class="lf_pagination index{% if lf.page.number == 1 or not lf.page.has_other_pages %} dj-hidden{% endif %}">
-        <a title="önceki sayfa" id="lf_navigate_before" role="button" tabindex="0">«</a>
+        <a title="{% trans "previous page" %}" id="lf_navigate_before" role="button" tabindex="0">«</a>
 
-        <select id="left_frame_paginator" aria-label="Sayfa seçici">
+        <select id="left_frame_paginator" aria-label="{% trans "Page selector" %}">
             {% for page in lf.page.paginator.page_range %}
                 <option value="{{ page }}" {% if page == lf.page.number %}selected{% endif %}>{{ page }}</option>
             {% endfor %}
         </select>
 
         <span class="mx-2">&sol;</span>
-        <a title="son sayfa" id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
-        <a title="sonraki sayfa" class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
+        <a title="{% trans "last page" %}" id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
+        <a title="{% trans "subsequent page" %}" class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
     </div>
     {# PAGINATION END #}
 
@@ -96,13 +95,13 @@
                     </li>
                 {% endfor %}
             {% else %}
-                <small>yok ki</small>
+                <small>{% trans "nothing here" %}</small>
             {% endif %}
             </ul>
             </nav>
     {# TOPIC LIST END #}
 
     {# SHOW MORE LINK  #}
-    <a href="#top" id="show_more" {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>tümünü görüntüle</a>
+    <a href="#top" id="show_more" {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>{% trans "show more" %}</a>
     {# SHOW MORE LINK  #}
 {% endwith %}

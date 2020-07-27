@@ -1,5 +1,6 @@
+{% load i18n %}
 {% if suggestions %}
-    <span class="ml-1" id="suggestions_label">elimizde şunlar var:</span>
+    <span class="ml-1" id="suggestions_label">{% trans "maybe this can help:" %}</span>
     <nav class="px-4 py-2 mb-2 border rounded" aria-labelledby="suggestions_label">
         <ul>
             {% for topic in suggestions %}

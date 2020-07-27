@@ -1,7 +1,9 @@
+{% load i18n %}
 <div class="editor-buttons">
-    <button title="bakınız.." id="insert_bkz" class="add-code">(bkz: hede)</button>
-    <button title="başlık, entry, yazara link" id="insert_hede" class="add-code">hede</button>
-    <button title="ironik bakınız" id="insert_swh" class="add-code">&#8727;</button>
-    <button title="sürprizbozan diye de bilinir" id="insert_spoiler" class="add-code">- spoiler -</button>
-    <button title="dış dünyaya link" id="insert_link" class="add-code">http://</button>
+    {# Translators: Editor button (see) #}
+    <button class="add-code" title="{% trans "also see this.." %}" id="insert_bkz" class="add-code">{% trans "(see: thingy)" %}</button>
+    <button class="add-code" title="{% trans "link to entry, author or topic" %}" id="insert_hede" class="add-code">{% trans "thingy" %}</button>
+    <button class="add-code" title="{% trans "see this (ironic)" %}" id="insert_swh">&#8727;</button>
+    <button class="add-code" title="{% trans "spoil something" %}" id="insert_spoiler">{% trans "--spoiler--" %}</button>
+    <button class="add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
 </div>

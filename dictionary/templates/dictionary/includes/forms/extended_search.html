@@ -1,22 +1,23 @@
 {#source = mobile or dropdown (used to seperate id's for javascript/html selectors and button events) #}
+{% load i18n %}
 <div class="form-group">
-    <label for="keywords_{{ source }}">kelimeler</label>
+    <label for="keywords_{{ source }}">{% trans "keywords" %}</label>
     <input form="search_form_extended_{{ source }}" name="keywords" type="text" class="form-control mb-2" id="keywords_{{ source }}" value="{{ request.GET.keywords }}">
 
-    <label for="author_nick_{{ source }}">yazar</label>
+    <label for="author_nick_{{ source }}">{% trans "author" %}</label>
     <input form="search_form_extended_{{ source }}" name="author_nick" type="text" class="form-control author-search" id="author_nick_{{ source }}" value="{{ request.GET.author_nick }}">
 </div>
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
         <input form="search_form_extended_{{ source }}" name="is_nice_ones" type="checkbox" class="custom-control-input" id="nice_ones_{{ source }}" value="true" {% if request.GET.is_nice_ones == "true" %}checked{% endif %}>
-        <label class="custom-control-label" for="nice_ones_{{ source }}">güzelinden olsun</label>
+        <label class="custom-control-label" for="nice_ones_{{ source }}">{% trans "goodies" %}</label>
     </div>
 
     {% if user.is_authenticated %}
         <div class="custom-control custom-checkbox">
             <input form="search_form_extended_{{ source }}" name="is_in_favorites" type="checkbox" class="custom-control-input" id="in_favorites_{{ source }}" value="true" {% if request.GET.is_in_favorites == "true" %}checked{% endif %}>
-            <label class="custom-control-label" for="in_favorites_{{ source }}">sadece entry favorilediğim başlıklarda ara</label>
+            <label class="custom-control-label" for="in_favorites_{{ source }}">{% trans "only the topics which i have favorite entries in" %}</label>
         </div>
     {% endif %}
 </div>
@@ -24,21 +25,21 @@
 <div class="form-group">
     <div class="row">
         <div class="col-lg-6">
-            <label for="date_from_{{ source }}">şu tarihten:</label>
+            <label for="date_from_{{ source }}">{% trans "from date:" %}</label>
             <input form="search_form_extended_{{ source }}" name="from_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_from_{{ source }}" value="{{ request.GET.from_date }}">
         </div>
         <div class="col-lg-6">
-            <label for="date_to_{{ source }}">bu tarihe kadar:</label>
+            <label for="date_to_{{ source }}">{% trans "to date:" %}</label>
             <input form="search_form_extended_{{ source }}" name="to_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_to_{{ source }}" value="{{ request.GET.to_date }}">
         </div>
     </div>
 </div>
 
 <div class="form-group">
-    <label for="ordering_{{ source }}">sıralama şekli</label>
+    <label for="ordering_{{ source }}">{% trans "ordering" %}</label>
     <select form="search_form_extended_{{ source }}" name="ordering" id="ordering_{{ source }}" class="form-control">
-        <option value="alpha" {% if request.GET.ordering == "alpha" %}selected{% endif %}>alfabetik</option>
-        <option value="newer" {% if request.GET.ordering == "newer" or not request.GET.ordering %}selected{% endif %}>yeniden eskiye</option>
-        <option value="popular" {% if request.GET.ordering == "popular" %}selected{% endif %}>dolu dolu</option>
+        <option value="alpha" {% if request.GET.ordering == "alpha" %}selected{% endif %}>{% trans "alphabetical" %}</option>
+        <option value="newer" {% if request.GET.ordering == "newer" or not request.GET.ordering %}selected{% endif %}>{% trans "recent" %}</option>
+        <option value="popular" {% if request.GET.ordering == "popular" %}selected{% endif %}>{% trans "number of entries" %}</option>
     </select>
 </div>

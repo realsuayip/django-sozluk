@@ -1,12 +1,13 @@
-{% load humanize %}
-{% load filters %}
+{% load humanize %} {% load filters %} {% load i18n %}
 
 {% with wishes=topic.wishes.all %}
     <ul class="list-group list-group-flush mb-3{{ wishes|yesno:", dj-hidden" }}" id="wish-list">
         {% for wish in wishes %}
-            <li class="list-group-item{% if user == wish.author %} owner{% endif %}">{{ wish.date_created|naturaltime }} verilen
-                <a href="{{ wish.author.get_absolute_url }}">{{ wish.author.username }}</a> uktesi bu.
-                {% if wish.hint %}notu da şöyle: <p class="m-0 p-0"><i>{{ wish.hint|formatted|linebreaksbr }}</i></p>{% endif %}
+            <li class="list-group-item{% if user == wish.author %} owner{% endif %}">
+                {% blocktrans trimmed with naturaltime=wish.date_created|naturaltime url=wish.author.get_absolute_url username=wish.author.username %}
+                    the user <a href="{{ url }}">{{ username }}</a> wants this topic to be populated. it was wished {{ naturaltime }}.
+                {% endblocktrans %}
+                {% if wish.hint %}{% trans "hints:" %}<p class="m-0 p-0"><i>{{ wish.hint|formatted|linebreaksbr }}</i></p>{% endif %}
             </li>
         {% endfor %}
     </ul>
@@ -15,11 +16,11 @@
 
 {% if user.is_authenticated %}
     <div class="wish" data-topic="{{ topic.title }}">
-        <textarea class="form-control dj-hidden" rows="3" placeholder="notlar (opsiyonel)" aria-label="Ukte notu"></textarea>
-        <a role="button" tabindex="0" class="wish-send mr-2 fw-600 dj-hidden">biri bu başlığı doldursun</a>
+        <textarea class="form-control dj-hidden" rows="3" placeholder="{% trans "hints (optional)" %}" aria-label="{% trans "Wish hint" %}"></textarea>
+        <a role="button" tabindex="0" class="wish-send mr-2 fw-600 dj-hidden">{% trans "someone should populate this" %}</a>
         {% with wished=topic|wished_by:user %}
-            <a role="button" tabindex="0" class="wish-purge{{ wished|yesno:', dj-hidden' }}">bu başlığa verdiğim ukteyi sil</a>
-            <a role="button" tabindex="0" class="wish-prepare{{ wished|yesno:' dj-hidden,' }}">biri bu başlığı doldursun</a>
+            <a role="button" tabindex="0" class="wish-purge{{ wished|yesno:', dj-hidden' }}">{% trans "remove the wish i asked" %}</a>
+            <a role="button" tabindex="0" class="wish-prepare{{ wished|yesno:' dj-hidden,' }}">{% trans "someone should populate this" %}</a>
         {% endwith %}
     </div>
 {% endif %}
