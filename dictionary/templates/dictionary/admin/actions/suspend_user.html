@@ -1,11 +1,12 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Giriş</a>
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        <a href="{% url 'admin:app_list' 'dictionary' %}">{% trans "Dictionary" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:dictionary_author_changelist' %}">Yazarlar</a>
+        <a href="{% url 'admin:dictionary_author_changelist' %}">{% trans "Authors" %}</a>
         {% block crumbs %}
             {% if title %} &rsaquo; {{ title }}{% endif %}
         {% endblock %}
@@ -13,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu yazarları askıya almayı seçtiniz:</p>
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">{% trans "You have selected these users to suspend:" %}</p>
     {% load humanize %}
     <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
         {% for source in sources %}
@@ -21,7 +22,7 @@
                 <strong>
                     <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.username }}</a>
                 </strong>
-                <small>(son entry: {{ source.last_entry_date|naturaltime }})</small>
+                <small>({% trans "last entry date:" %} {{ source.last_entry_date|naturaltime }})</small>
             </p>
         {% endfor %}
     </div>
@@ -30,26 +31,22 @@
 
     <form method="post">
         <div>
-
-            <label for="suspension_time">Askıya alınacak zaman zarfı:</label>
+            <label for="suspension_time">{% trans "Time interval for suspension:" %}</label>
             <select name="suspension_time" id="suspension_time" style="width: 100%;">
-                <option value="D1" selected>bir gün</option>
-                <option value="W1">bir hafta</option>
-                <option value="W2">iki hafta</option>
-                <option value="M1">bir ay</option>
-                <option value="M3">üç ay</option>
-                <option value="PM">sonsuza kadar</option>
+                <option value="D1" selected>{% trans "One day" %}</option>
+                <option value="W1">{% trans "One week" %}</option>
+                <option value="W2">{% trans "Two weeks" %}</option>
+                <option value="M1">{% trans "One month" %}</option>
+                <option value="M3">{% trans "Three months" %}</option>
+                <option value="PM">{% trans "Permanent" %}</option>
             </select>
         </div>
-
-        <label for="information">Kullanıcılara gönderilecek bilgi mesajı:</label>
-        <textarea name="information" cols="40" rows="10" id="information" style="width: 100%;"
-                  placeholder="entry biçimlendirme stilleri kullanılabilir. `hede` gibi." required></textarea>
+        <br>
+        <label for="information">{% trans "Information messages to be shown for users:" %} </label>
+        <textarea name="information" cols="40" rows="10" id="information" style="width: 100%;" placeholder="{% trans "(entry formatting options are available)" %}" required></textarea>
 
         {% csrf_token %}
 
-        <input type="submit" value="askıya al" class="default">
+        <input type="submit" value="{% trans "Suspend" %}" class="default">
     </form>
-
-
 {% endblock %}

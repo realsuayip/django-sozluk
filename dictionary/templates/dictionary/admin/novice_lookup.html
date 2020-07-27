@@ -1,9 +1,11 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
+
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Giriş</a>
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:novice_list' %}">Çaylak onay listesi</a>
+        <a href="{% url 'admin:novice_list' %}">{% trans "Novice review list" %}</a>
         {% block crumbs %}
             {% if title %} &rsaquo; {{ title }}{% endif %}
         {% endblock %}
@@ -22,14 +24,14 @@
 
     <br>
     <form method="POST">
-        <span style="margin-right: 1em;">işleminiz:</span>
-        <select name="operation" required>
-            <option name="x" selected="selected" value="select">seçin</option>
-            <option value="accept">yazarlık başvurusunu kabul et</option>
-            <option value="decline">yazarlık başvurusunu reddet ve tüm entrylerini sil</option>
+        <label for="operation" style="margin-right: 1em;">{% trans "Operation:" %}</label>
+        <select id="operation" name="operation" required>
+            <option name="x" selected="selected" value="select">{% trans "Select operation" %}</option>
+            <option value="accept">{% trans "Approve authorship" %}</option>
+            <option value="decline">{% trans "Reject authorship and purge all entries" %}</option>
         </select>
         <div style="float: right;">
-            <button style="background: #417690; padding:10px 15px;border:none;border-radius:4px;color: #fff;cursor: pointer;margin-right: 1em;" type="submit" class="default">işlemi uygula ve listeye dön</button>
+            <button style="background: #417690; padding:10px 15px;border:none;border-radius:4px;color: #fff;cursor: pointer;margin-right: 1em;" type="submit" class="default">{% trans "Apply and go back" %}</button>
         </div>
         {% csrf_token %}
     </form>

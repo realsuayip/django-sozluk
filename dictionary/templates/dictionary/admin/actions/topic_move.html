@@ -1,11 +1,12 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Giriş</a>
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        <a href="{% url 'admin:app_list' 'dictionary' %}">{% trans "Dictionary" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:dictionary_topic_changelist' %}">Başlıklar</a>
+        <a href="{% url 'admin:dictionary_topic_changelist' %}">{% trans "Topics" %}</a>
         {% block crumbs %}
             {% if title %} &rsaquo; {{ title }}{% endif %}
         {% endblock %}
@@ -13,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu başlıkları taşımayı seçtiniz:</p>
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">{% trans "You have selected these topics to move:" %} </p>
 
     <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
         {% for source in sources %}
@@ -21,7 +22,7 @@
                 <strong>
                     <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.title }}</a>
                 </strong>
-                <small>({{ source.entries.count }} entry)</small>
+                <small>({% trans "entry count:" %} {{ source.entry_count }})</small>
             </p>
         {% endfor %}
     </div>
@@ -30,35 +31,32 @@
 
     <form method="post" onsubmit="document.querySelector('#submit-btn').disabled=true;">
         <div class="form-row field-title">
-            <label for="target_topic">Nereye taşınacak?</label>
-            <input style="width: 100%;" placeholder="hedef başlığın bire bir ismini girin" type="text"
-                   name="target_topic" id="target_topic" required>
+            <label for="target_topic">{% trans "Target topic:" %}</label>
+            <input style="width: 100%;" placeholder="{% trans "Enter the exact title of the target topic" %}" type="text" name="target_topic" id="target_topic" required>
         </div>
 
         <div style="padding: 1rem 0;">
-            <p>Entry'ler için tarih aralığı belirt (opsiyonel):</p>
+            <p>{% trans "Give a date interval for entries (optional):" %}</p>
             <div class="form-row field-title">
-                <label for="from_date">Şu tarihten: </label>
-                <input placeholder="gg.aa.yyyy ss:dd" type="text"
-                       name="from_date" id="from_date">
+                <label for="from_date">{% trans "from date:" %}</label>
+                {# Translators: Day should come first. It should be a parsable date. #}
+                <input placeholder="{% trans "dd.mm.yyyy hh:mm" %}" type="text" name="from_date" id="from_date">
             </div>
             <br>
             <div class="form-row field-title">
-                <label for="to_date">Bu tarihe kadar: </label>
-                <input placeholder="gg.aa.yyyy ss:dd" type="text"
-                       name="to_date" id="to_date">
+                <label for="to_date">{% trans "to date:" %}</label>
+                <input placeholder="{% trans "dd.mm.yyyy hh:mm" %}" type="text" name="to_date" id="to_date">
             </div>
         </div>
 
         <div class="checkbox-row" style="margin: 1rem 0;">
-            <input type="checkbox" name="add_bkz" id="add_bkz" value="yes">
-            <label class="vCheckboxLabel" for="add_bkz">taşıdıktan sonra eski başlıklara bkz ver</label>
+            <input type="checkbox" name="reference" id="reference" value="yes">
+            <label class="vCheckboxLabel" for="reference">{% trans "Leave a reference to the new topic after moving" %}</label>
         </div>
-
 
         <div style="float: left;">
             {% csrf_token %}
-            <input type="submit" id="submit-btn" value="başlığı taşı" class="default">
+            <input type="submit" id="submit-btn" value="{% trans "Move topic" %}" class="default">
         </div>
     </form>
 

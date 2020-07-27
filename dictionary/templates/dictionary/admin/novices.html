@@ -1,25 +1,26 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
 {% block content %}
     <table id="result_list" style="width: 100%;">
         <thead>
         <tr>
             <th scope="col" class="column-username">
-                <div class="text"><a>Kullanıcı adı</a></div>
+                <div class="text"><a>{% trans "Username" %}</a></div>
                 <div class="clear"></div>
             </th>
 
             <th scope="col" class="sortable column-email">
-                <div class="text"><a>Email adresi</a></div>
+                <div class="text"><a>{% trans "E-mail" %}</a></div>
                 <div class="clear"></div>
             </th>
 
             <th scope="col" class="sortable column-last_name">
-                <div class="text"><a>Başvuru tarihi</a></div>
+                <div class="text"><a>{% trans "Application date" %}</a></div>
                 <div class="clear"></div>
             </th>
 
             <th scope="col" class="sortable column-last_name">
-                <div class="text"><a>Kayıt tarihi</a></div>
+                <div class="text"><a>{% trans "Registration date" %}</a></div>
                 <div class="clear"></div>
             </th>
         </tr>
@@ -27,8 +28,7 @@
         <tbody>
         {% for obj in object_list %}
             <tr class="row{% if forloop.counter|divisibleby:2 %}2{% else %}1{% endif %}">
-                <th class="field-username"><a
-                        href="{% url 'admin:novice_lookup' username=obj.username %}">{{ obj.username }}</a></th>
+                <th class="field-username"><a href="{% url 'admin:novice_lookup' username=obj.username %}">{{ obj.username }}</a></th>
                 <td class="field-email">{{ obj.email }}</td>
                 <td class="field-date">{{ obj.application_date }}</td>
                 <td class="field-first_name">{{ obj.date_joined }}</td>
@@ -38,5 +38,5 @@
     </table>
     <hr>
     <br>
-    <small>çaylak listesindeki mevcut kullanıcı sayısı: {{ novice_count }}</small>
+    <small>{% trans "current number of users in novice list:" %} {{ novice_count }}</small>
 {% endblock %}

@@ -1,11 +1,12 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Giriş</a>
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:app_list' 'dictionary' %}">Sözlük</a>
+        <a href="{% url 'admin:app_list' 'dictionary' %}">{% trans "Dictionary" %}</a>
         &rsaquo;
-        <a href="{% url 'admin:dictionary_author_changelist' %}">Yazarlar</a>
+        <a href="{% url 'admin:dictionary_author_changelist' %}">{% trans "Authors" %}</a>
         {% block crumbs %}
             {% if title %} &rsaquo; {{ title }}{% endif %}
         {% endblock %}
@@ -13,28 +14,25 @@
 {% endblock %}
 
 {% block content %}
-    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">Şu yazarların askıya alınmasını durdurmayı
-        seçtiniz:</p>
+    <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">{% trans "You have selected these users to unsuspend:" %}</p>
     <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
         {% for source in sources %}
             <p>
                 <strong>
                     <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.username }}</a>
                 </strong>
-                <small>(askıya alınma bitiş tarihi: {{ source.suspended_until }})</small>
+                <small>({% trans "suspension expiration date:" %} {{ source.suspended_until }})</small>
             </p>
         {% endfor %}
     </div>
     <hr style="margin: 1rem 0;">
-    <h4>Emin misiniz? Devam etmek için onaylayın</h4>
+    <h4>{% trans "Are you sure?" %}</h4>
     <div class="delete-confirmation">
-
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="post" value="yes">
-            <input type="submit" value="Evet, eminim">
-            <a href="{% url 'admin:dictionary_author_changelist' %}" class="button cancel-link">Hayır, beni geri
-                götür</a>
+            <input type="submit" value="{% trans "Yes, I'm sure" %}">
+            <a href="{% url 'admin:dictionary_author_changelist' %}" class="button cancel-link">{% trans "No, take me back" %}</a>
         </form>
     </div>
 {% endblock %}

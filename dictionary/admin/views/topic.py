@@ -1,7 +1,7 @@
 from django.contrib import messages as notifications
 from django.db.models import Count
 from django.shortcuts import redirect
-from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext
+from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext, pgettext
 
 from ...models import Author, Entry, Topic
 from ...utils import get_generic_superuser, parse_date_or_none
@@ -26,7 +26,7 @@ class TopicMove(IntermediateActionView):
         return queryset
 
     def post(self, request):
-        add_bkz = request.POST.get("add_bkz") == "yes"
+        reference = request.POST.get("reference") == "yes"
         target_topic = request.POST.get("target_topic", "").strip()
         from_date = parse_date_or_none(request.POST.get("from_date"))
         to_date = parse_date_or_none(request.POST.get("to_date"))
@@ -49,9 +49,13 @@ class TopicMove(IntermediateActionView):
             target_topic.register_wishes()
 
             # Include an informative entry on old topic to indicate the new topic
-            if add_bkz:
+            if reference:
                 bulk_list = [
-                    Entry(topic=obj, content=f"(bkz: {target_topic.title})", author=generic_superuser)
+                    Entry(
+                        topic=obj,
+                        content=f"({pgettext('editor', 'see')}: {target_topic.title})",
+                        author=generic_superuser,
+                    )
                     for obj in topic_list_raw
                 ]
                 Entry.objects.bulk_create(bulk_list)
