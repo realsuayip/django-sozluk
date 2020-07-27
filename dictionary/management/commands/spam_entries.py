@@ -13,10 +13,10 @@ class Command(BaseDebugCommand):
     def handle(self, **options):
         topics = None
         size = int(input("size: "))
-        is_random = input("sürekli aynı başlıklara spamla? y/N: ")
+        is_random = input("spam to specified topics? y/N: ")
 
         if is_random == "y":
-            _range = input("pk aralığı? x,y: ").split(",")
+            _range = input("pk range (x,y): ").split(",")
             topics = tuple(Topic.objects.filter(pk__range=(_range[0], _range[1])))
 
         while size > 0:

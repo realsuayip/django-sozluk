@@ -1,5 +1,6 @@
 from django.core.validators import validate_email
 from django.db.utils import IntegrityError
+from django.utils.translation import gettext as _
 
 from ...models import Author
 from ...utils.settings import GENERIC_PRIVATEUSER_USERNAME, GENERIC_SUPERUSER_USERNAME
@@ -10,12 +11,14 @@ from . import BaseDebugCommand
 
 
 class Command(BaseDebugCommand):
-    help = "Generic kullanıcı oluşturur."
+    @property
+    def help(self):
+        return _("Creates a generic user")
 
     def add_arguments(self, parser):
-        parser.add_argument("user-type", type=str, help="Oluşturulacak kullanıcın tipi")
-        parser.add_argument("password", type=str, help="Oluşturulacak kullanıcın parolası")
-        parser.add_argument("email", type=str, help="Oluşturulacak kullanıcın e-posta adresi")
+        parser.add_argument("user-type", type=str, help=_("The type of the user to be created"))
+        parser.add_argument("password", type=str, help=_("The password of the user to be created"))
+        parser.add_argument("email", type=str, help=_("E-mail address of the user to bo be created"))
 
     def handle(self, **options):
         available_types = ("private", "superuser")
@@ -25,14 +28,17 @@ class Command(BaseDebugCommand):
         validate_email(email)  # Throws django.core.exceptions.ValidationError if not valid.
 
         if user_type not in available_types:
-            raise ValueError(f"Kullanıcı tipi geçersiz, geçerli seçenekler: {available_types}.")
+            raise ValueError(f"({_('Invalid user type, available types:')} {available_types}.")
 
         is_private = user_type == "private"
         username = GENERIC_PRIVATEUSER_USERNAME if is_private else GENERIC_SUPERUSER_USERNAME
 
         confirmation = input(
-            f"{username} ismiyle {user_type} tipiyle ve {email}"
-            f" e-posta adresiyle oluşturulacak. devam edilsin mi? y/N: "
+            _(
+                "An user with username %(username)s, generic type %(user_type)s"
+                " and email %(email)s will be created. Continue? y/N: "
+            )
+            % {"username": username, "user_type": user_type, "email": email}
         )
 
         if confirmation == "y":
@@ -49,11 +55,14 @@ class Command(BaseDebugCommand):
                 )
 
                 self.stdout.write(
-                    f"{guser.username} ismi ve {guser.email} e-posta adresiyle"
-                    f" generic_{user_type} oluşturuldu. daha sonra arzu ederseniz"
-                    f" bu kullanıcıyı admin sitesinde bulabilirsiniz."
+                    _(
+                        "generic_%(user_type)s has been created with the username"
+                        " %(username) and email %(email)s. You can edit the details"
+                        " of this user via admin page if you wish."
+                    )
+                    % {"username": guser.username, "user_type": user_type, "email": guser.email}
                 )
             except IntegrityError:
-                self.stdout.write("Hata: Bu isimle bir kullanıcı zaten oluşturulmuş veya e-posta adresi kullanımda.")
+                self.stdout.write(_("Error: either there is a existing user with given username or e-mail is in use."))
         else:
-            self.stdout.write("İşlem iptal edildi.")
+            self.stdout.write(_("Command aborted."))
