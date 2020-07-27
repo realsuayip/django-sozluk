@@ -1,17 +1,18 @@
 {% extends "dictionary/base.html" %}
 
-{% load widget_tweaks %}
-{% load filters %}
+{% load widget_tweaks %} {% load filters %} {% load i18n %}
 
-{% block title %}{{ entry.topic.title }}#{{ entry.pk }} {{ updating|yesno:"yorumu düzeltiliyor,yorumlanıyor" }}{% endblock %}
+{% block title %}{{ entry.topic.title }}#{{ entry.pk }} {{ updating|yesno:_(" - updating comment, - commenting") }}{% endblock %}
 
 {% block content %}
     <h1 class="h4">
         <strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong>
-        <small><strong><a href="{{ entry.get_absolute_url }}">#{{ entry.pk }}</a> {{ updating|yesno:"yorumu düzeltiliyor,yorumlanıyor" }}</strong></small>
+        <small><strong><a href="{{ entry.get_absolute_url }}">#{{ entry.pk }}</a> {{ updating|yesno:_(" - updating comment, - commenting") }}</strong></small>
     </h1>
     <h2 class="h6">
-        <strong><a href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a> takma isimli kullanıcı demiş ki:</strong>
+        {% blocktrans trimmed with name=entry.author.username url=entry.author.get_absolute_url %}
+            <strong>user with nickname <a href="{{ url }}">{{ name }}</a> wrote:</strong>
+        {% endblocktrans %}
     </h2>
 
     <span class="text-formatted d-block my-3">{{ entry.content|formatted|linebreaksbr }}</span>
@@ -26,19 +27,19 @@
         {% include "dictionary/includes/editor_buttons.html" %}
         <form method="post">
             {% csrf_token %}
-            {% with entry.topic.title|addstr:" başlığına yapılan bu entry'i yorumlayın..." as text_placeholder %}
-                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label="Yorum yazı alanı" %}
-            {% endwith %}
+            {% blocktrans asvar text_placeholder with title=entry.topic.title %}comment on this entry written in {{ title }}...{% endblocktrans %}
+            {% trans "Comment content area" as area_label %}
+            {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label=area_label %}
 
             <div class="row align-items-center">
                 {% if updating %}
                     <div class="col-6">
-                        <button name="delete" value="true" onclick="return confirm('Emin misiniz?');" type="submit" class="btn btn-sm btn-outline">sil</button>
+                        <button name="delete" value="true" onclick="return confirm('{% trans "Are you sure?" %}');" type="submit" class="btn btn-sm btn-outline">{% trans "delete" %}</button>
                     </div>
                 {% endif %}
 
                 <div class="{{ updating|yesno:"col-6,col-12" }}">
-                    <button type="submit" class="btn btn-django float-right">{{ updating|yesno:"yorumu düzelt,yorumla" }}</button>
+                    <button type="submit" class="btn btn-django float-right">{{ updating|yesno:_("update comment,comment") }}</button>
                 </div>
             </div>
         </form>
