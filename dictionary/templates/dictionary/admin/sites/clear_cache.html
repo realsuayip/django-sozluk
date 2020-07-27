@@ -1,7 +1,8 @@
 {% extends "admin/base_site.html" %}
+{% load i18n %}
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">Giriş</a>
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a>
         {% block crumbs %}
             {% if title %} &rsaquo; {{ title }}{% endif %}
         {% endblock %}
@@ -10,25 +11,29 @@
 
 {% block content %}
     <div>
-    <p style="background: #79aec8; padding: 1em; color: #efefef; margin: 0;">
-        Zaman aşımına uğramış nesneleri önbellekten temizlemek için bunu kullanabilirsiniz. Belirli
-        bir nesneyi silmek için önbellek anahtarı belirtin. Eğer önbellek anahtarı belirtmezseniz
-        <strong>TÜM</strong> önbellek temizlenecek. Eğer site yüksek trafiğe
-        sahip ise tüm önbelleği bir anda temizlemek istek sayısını yükseltecektir.
-    </p>
-
-    <form method="post">
-        <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
-            <div class="form-row">
-                <input type="text" name="cache_key" placeholder="önbellek anahtarı" style="width: 100%; box-sizing: border-box;">
-            </div>
-            <br>
-            <div class="submit-row">
-                <input onclick="return confirm('Emin misiniz?')" type="submit" id="submit-btn" value="Önbelleği temizle" class="default" style="background: #ba2121; float: left;">
-            </div>
-            <div style="clear: both"></div>
+        <div style="background: #79aec8; padding: 1em; color: #efefef; margin: 0; max-width: 500px; box-sizing: border-box;">
+            <label for="cache_key">
+                {% blocktrans trimmed %}
+                    You can use this utility to clear expired/invalid objects from cache. You may specify
+                    a cache key to delete a specific object. If you leave the cache key blank, <strong>ALL</strong>
+                    of the objects from the cache will be deleted. If the site has high traffic, flushing all the
+                    cache is likely to increase the number of incoming requests.
+                {% endblocktrans %}
+            </label>
         </div>
-        {% csrf_token %}
-    </form>
+
+        <form method="post">
+            <div style="border: 1px solid #79aec8; padding: 1em; border-top: none; max-width: 500px; box-sizing: border-box;">
+                <div class="form-row">
+                    <input id="cache_key" type="text" name="cache_key" placeholder="{% trans "Cache key" %}" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <br>
+                <div class="submit-row">
+                    <input onclick="return confirm('{% trans "Are you sure?" %}')" type="submit" id="submit-btn" value="{% trans "Clear cache" %}" class="default" style="background: #ba2121; float: left;">
+                </div>
+                <div style="clear: both"></div>
+            </div>
+            {% csrf_token %}
+        </form>
     </div>
 {% endblock %}

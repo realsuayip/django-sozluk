@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% load filters %} {% load widget_tweaks %} {% load i18n %}
+{% load filters widget_tweaks i18n %}
 {% block title %}{% trans "edit" context "titleblock" %}{% endblock %}
 {% block content %}
     <h1 class="h4">
@@ -9,7 +9,6 @@
 
     <section class="user-comments mt-3">
         {% include "dictionary/includes/editor_buttons.html" %}
-        {% load widget_tweaks %}
 
         <form method="post">
             {% csrf_token %}

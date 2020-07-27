@@ -1,7 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% load functions %} {% load filters %} {% load i18n %}
-
+{% load filters functions i18n %}
 {% block title %}{% print_topic_title %}{% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}

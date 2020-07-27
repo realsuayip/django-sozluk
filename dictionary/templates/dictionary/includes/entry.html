@@ -1,4 +1,4 @@
-{% load filters %}{% load functions %} {% load i18n %}
+{% load filters functions i18n %}
 <li data-id="{{ entry.pk }}" {% print_entry_class %}{% if show_title == "yes" %} data-topic="{{ entry.topic.title }}"{% endif %}>
     <section>
     {% with time=entry.date_created|entrydate:entry.date_edited %}

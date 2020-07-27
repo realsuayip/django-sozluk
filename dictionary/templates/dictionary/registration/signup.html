@@ -1,10 +1,9 @@
 {% extends "dictionary/base.html" %}
-
-{% load widget_tweaks %} {% load functions %} {% load i18n %}
-
+{% load widget_tweaks functions i18n %}
 {% block title %}{% trans "register" context "titleblock" %}{% endblock %}
+
 {% block content %}
-    <h1 class="h4 mb-3"><strong>{% trans "registration" %}</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "registration" context "titleblock" %}</strong></h1>
     <form method="post" id="signup">
         {% csrf_token %}
 

@@ -1,5 +1,5 @@
 {% spaceless %}
-{% load static %} {% load functions %} {% load i18n %}
+{% load filters functions i18n static cache %}
 {% get_current_language as LANGUAGE_CODE %}
 <!doctype html>
 <html lang="{{ LANGUAGE_CODE }}">
@@ -245,10 +245,7 @@
     <aside class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
 
-        {% load cache %}
-
         {% cache None footer user.is_authenticated %}
-            {% load filters %}
             {% load flatpages %}
             {% get_flatpages for user as flatpages %}
             {% get_external_urls as external_urls %}

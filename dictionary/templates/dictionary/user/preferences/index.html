@@ -1,6 +1,6 @@
 {% extends "dictionary/user/preferences/base.html" %}
-{% load widget_tweaks %} {% load i18n %}
-{% block title %}{% trans "settings" %}{% endblock %}
+{% load widget_tweaks i18n %}
+{% block title %}{% trans "settings" context "titleblock" %}{% endblock %}
 
 {% block content_preferences %}
     <form method="post">

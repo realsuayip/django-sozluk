@@ -1,5 +1,5 @@
 {% extends "dictionary/base.html" %}
-{% load filters %} {% load humanize %}{% load i18n %}
+{% load filters humanize i18n %}
 
 
 {% block title %}{% blocktrans with username=object.target context "titleblock" %}@{{ username }} - conversation archive{% endblocktrans %}{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% load widget_tweaks %} {% load filters %} {% load i18n %}
+{% load widget_tweaks filters i18n %}
 
 {% block title %}{{ entry.topic.title }}#{{ entry.pk }} {{ updating|yesno:_(" - updating comment, - commenting") }}{% endblock %}
 

@@ -1,8 +1,8 @@
 {% extends "dictionary/base.html" %}
 {% load i18n %}
-{% block title %}{% trans "settings" %}{% endblock %}
+{% block title %}{% trans "settings" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>{% trans "settings" %}</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "settings" context "titleblock" %}</strong></h1>
 
     {% url 'user_preferences' as preferences %}
     {% url 'user_preferences_password' as password %}
@@ -23,10 +23,8 @@
         <li class="nav-item">
             <a class="nav-link {% if request.path == terminate %}active{% endif %}" href="{{ terminate }}">{% trans "account deletion" %}</a>
         </li>
-
     </ul>
 
     {% block content_preferences %}
     {% endblock %}
-
 {% endblock %}

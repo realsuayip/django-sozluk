@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1 class="h4">
-        <strong>{% trans "messages" context "blocktitle" %}</strong>
+        <strong>{% trans "messages" context "titleblock" %}</strong>
         <small>
             {% if user.unread_message_count > 0 %}
                 <span class="ml-2">({{ user.unread_message_count }} {% trans "unread" %})</span>

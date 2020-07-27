@@ -1,4 +1,4 @@
-{% load humanize %} {% load filters %} {% load i18n %}
+{% load humanize filters i18n %}
 
 {% with wishes=topic.wishes.all %}
     <ul class="list-group list-group-flush mb-3{{ wishes|yesno:", dj-hidden" }}" id="wish-list">

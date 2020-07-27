@@ -1,5 +1,5 @@
 {% extends "dictionary/base.html" %}
-{% load filters %} {% load functions %} {% load i18n %}
+{% load filters functions i18n %}
 
 {% block title %}{% trans "user" %}: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% if page_obj.number > 1 %} - {% trans "page" %} {{ page_obj.number }}{% endif %}{% endblock %}
 {% block bodyattr %}class="has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
