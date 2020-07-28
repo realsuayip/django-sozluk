@@ -131,9 +131,9 @@
 
 
             {% else %}
-                <nav class="usermenu" aria-label="{% trans "Account menu" %}">
+                <nav class="usermenu" aria-label="{% trans "Account Menu" %}">
                     <ul>
-                        <li><a href="{% url 'login' %}">{% trans "log in" %}</a></li>
+                        <li><a href="{% url 'login' %}?next={% firstof request.get_full_path|urlencode '/' %}">{% trans "log in" %}</a></li>
                         <li><a href="{% url 'register' %}">{% trans "register" %}</a></li>
                     </ul>
                 </nav>
@@ -173,7 +173,7 @@
 
                 {% else %}
                     <li>
-                        <a href="{% url 'login' %}">{% trans "log in" %}</a>
+                        <a href="{% url 'login' %}?next={% firstof request.get_full_path|urlencode '/' %}">{% trans "log in" %}</a>
                     </li>
                     <li>
                         <a href="{% url 'register' %}">{% trans "register" %}</a>

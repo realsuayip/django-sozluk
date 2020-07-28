@@ -3,17 +3,17 @@ from django.contrib.admin import DateFieldListFilter, SimpleListFilter
 from django.db import models
 from django.forms import Textarea
 from django.utils import timezone
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext, gettext_lazy as _
 
 from ..models.announcements import Announcement
 
 
 class PublishFilter(SimpleListFilter):
-    title = _lazy("Publish status")
+    title = _("Publish status")
     parameter_name = "published"
 
     def lookups(self, request, model_admin):
-        return [("yes", _("Published")), ("no", _("Waiting for publication date"))]
+        return [("yes", gettext("Published")), ("no", gettext("Waiting for publication date"))]
 
     def queryset(self, request, queryset):
         if self.value() == "yes":

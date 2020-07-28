@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
 from ..forms.edit import MementoForm, SendMessageForm
@@ -78,16 +78,16 @@ class UserProfile(IntegratedFormMixin, ListView):
     tab = None
 
     tabs = {
-        "latest": {"label": _lazy("entries"), "type": "entry"},
-        "favorites": {"label": _lazy("favorites"), "type": "entry"},
-        "popular": {"label": _lazy("most favorited"), "type": "entry"},
-        "liked": {"label": _lazy("most liked"), "type": "entry"},
-        "weeklygoods": {"label": _lazy("attracting entries of this week"), "type": "entry"},
-        "beloved": {"label": _lazy("beloved entries"), "type": "entry"},
-        "authors": {"label": _lazy("favorite authors"), "type": "author"},
-        "recentlyvoted": {"label": _lazy("recently voted"), "type": "entry"},
-        "wishes": {"label": _lazy("wishes"), "type": "topic"},
-        "channels": {"label": _lazy("contributed channels"), "type": "category"},
+        "latest": {"label": _("entries"), "type": "entry"},
+        "favorites": {"label": _("favorites"), "type": "entry"},
+        "popular": {"label": _("most favorited"), "type": "entry"},
+        "liked": {"label": _("most liked"), "type": "entry"},
+        "weeklygoods": {"label": _("attracting entries of this week"), "type": "entry"},
+        "beloved": {"label": _("beloved entries"), "type": "entry"},
+        "authors": {"label": _("favorite authors"), "type": "author"},
+        "recentlyvoted": {"label": _("recently voted"), "type": "entry"},
+        "wishes": {"label": _("wishes"), "type": "topic"},
+        "channels": {"label": _("contributed channels"), "type": "category"},
     }
 
     def form_valid(self, form):
@@ -96,13 +96,13 @@ class UserProfile(IntegratedFormMixin, ListView):
         if existing_memento:
             if not body:
                 existing_memento.delete()
-                notifications.info(self.request, _("just deleted that"))
+                notifications.info(self.request, gettext("just deleted that"))
             else:
                 existing_memento.body = body
                 existing_memento.save()
         else:
             if not body:
-                notifications.info(self.request, _("if only you could write down something"))
+                notifications.info(self.request, gettext("if only you could write down something"))
             else:
                 memento = form.save(commit=False)
                 memento.holder = self.request.user

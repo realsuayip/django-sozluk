@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib import messages as notifications
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext
+from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
 from ...models import Author, Message
 from ...utils import get_generic_superuser, parse_date_or_none
@@ -18,9 +18,10 @@ class SuspendUser(IntermediateActionView):
     possible to select already suspended users, but latest submission will be taken into account. Note that composing
     a message to each banned user is an expensive action, large inputs (> 100) may take time. (~7 sec for 800 objects)
     """
+
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
-    page_title = _lazy("Suspend authors")
+    page_title = _("Suspend authors")
     template_name = "dictionary/admin/actions/suspend_user.html"
     max_input = 100
 
@@ -46,11 +47,11 @@ class SuspendUser(IntermediateActionView):
             user_list_raw = list(self.get_object_list())
 
             # Get and parse information for suspension
-            action_information = request.POST.get("information", _("No information was given."))
+            action_information = request.POST.get("information", gettext("No information was given."))
 
-            message_for_user = _(
+            message_for_user = gettext(
                 "your account has been suspended. administration message: %(message)s\n\n"
-                " in your profile page, you can see the remaining time until your account gets reactivated."
+                "in your profile page, you can see the remaining time until your account gets reactivated."
             ) % {"message": action_information}
             message_for_log = f"Suspended until {suspended_until}, information: {action_information}"
 
@@ -73,7 +74,7 @@ class SuspendUser(IntermediateActionView):
                 % {"count": count},
             )
         else:
-            notifications.error(request, _("The selected duration was invalid."))
+            notifications.error(request, gettext("The selected duration was invalid."))
 
         return redirect(self.get_changelist_url())
 
@@ -82,7 +83,7 @@ class UnsuspendUser(IntermediateActionView):
     # Same procedures as SuspendUser.
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
-    page_title = _lazy("Unsuspend authors")
+    page_title = _("Unsuspend authors")
     template_name = "dictionary/admin/actions/unsuspend_user.html"
 
     def get_queryset(self):
@@ -111,5 +112,5 @@ class UnsuspendUser(IntermediateActionView):
                 % {"count": count},
             )
         else:
-            notifications.error(request, _("we couldn't handle your request. try again later."))
+            notifications.error(request, gettext("we couldn't handle your request. try again later."))
         return redirect(self.get_changelist_url())

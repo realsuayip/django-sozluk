@@ -29,15 +29,19 @@ def addstr(arg1, arg2):
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
 RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
 
+# For each new language append to these expressions.
+SEE_EXPR = r"(?:bkz|see)"
+SEARCH_EXPR = r"(?:ara|search)"
+
 # Translators: Short for "also see this", used in entry editor.
 SEE = pgettext_lazy("editor", "see")
 SEARCH = pgettext_lazy("editor", "search")
 
 # Translators: Entry date format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
-ENTRY_DATE_FORMAT = gettext_lazy("d.m.Y")
+ENTRY_DATE_FORMAT = gettext_lazy("M j, Y")
 
 # Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
-ENTRY_TIME_FORMAT = gettext_lazy("H:i")
+ENTRY_TIME_FORMAT = gettext_lazy("g:h a")
 
 
 @register.filter
@@ -85,8 +89,8 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\({SEE}: (@?{RE_TOPIC_CHARSET})\)", fr'({SEE}: <a href="/topic/?q=\1">\1</a>)'),
-        (fr"\({SEE}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
+        (fr"\({SEE_EXPR}: (@?{RE_TOPIC_CHARSET})\)", fr'({SEE}: <a href="/topic/?q=\1">\1</a>)'),
+        (fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
         # Swh
         (fr"`:{RE_TOPIC_CHARSET}`", fr'<a data-sup="({SEE}: \1)" href="/topic/?q=\1" title="({SEE}: \1)">*</a>',),
         # Reference with no indicator
@@ -94,7 +98,7 @@ def formatted(raw_entry):
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
         # Search
         (
-            fr"\({SEARCH}: (@?{RE_TOPIC_CHARSET})\)",
+            fr"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
             fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Links. Order matters. In order to hinder clash between labelled and linkified:

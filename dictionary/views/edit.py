@@ -5,7 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import CreateView, UpdateView
 
 from ..forms.edit import EntryForm, PreferencesForm
@@ -16,14 +16,14 @@ class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Author
     form_class = PreferencesForm
     template_name = "dictionary/user/preferences/index.html"
-    success_message = _lazy("settings are saved, dear")
+    success_message = _("settings are saved, dear")
     success_url = reverse_lazy("user_preferences")
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def form_invalid(self, form):
-        notifications.error(self.request, _("we couldn't handle your request. try again later."))
+        notifications.error(self.request, gettext("we couldn't handle your request. try again later."))
         return super().form_invalid(form)
 
 
@@ -35,7 +35,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         if self.object.is_draft:
-            notifications.info(self.request, _("saved this as draft"))
+            notifications.info(self.request, gettext("saved this as draft"))
             return reverse("entry_update", kwargs={"pk": self.object.pk})
 
         return reverse("entry-permalink", kwargs={"entry_id": self.object.pk})
@@ -60,7 +60,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
             # Updating published entry
             if self.request.user.is_suspended:
                 notifications.error(
-                    self.request, _("you lack the permissions to edit this entry. you might as well delete it?")
+                    self.request, gettext("you lack the permissions to edit this entry. you might as well delete it?")
                 )
                 return super().form_invalid(form)
 
@@ -91,7 +91,7 @@ class CommentMixin(LoginRequiredMixin, SuccessMessageMixin):
 
 
 class CommentCreate(CommentMixin, CreateView):
-    success_message = _lazy("the comment was successfully launched into stratosphere")
+    success_message = _("the comment was successfully launched into stratosphere")
     entry = None
 
     def dispatch(self, request, *args, **kwargs):
@@ -118,7 +118,7 @@ class CommentCreate(CommentMixin, CreateView):
 
 
 class CommentUpdate(CommentMixin, UpdateView):
-    success_message = _lazy("the comment has been updated")
+    success_message = _("the comment has been updated")
 
     def get_object(self, queryset=None):
         return get_object_or_404(Comment, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
@@ -126,12 +126,12 @@ class CommentUpdate(CommentMixin, UpdateView):
     def form_valid(self, form):
         if self.request.POST.get("delete"):
             self.object.delete()
-            notifications.success(self.request, _("the comment has been deleted"))
+            notifications.success(self.request, gettext("the comment has been deleted"))
             return redirect(self.object.entry.get_absolute_url())
 
         if not self.request.user.is_accessible:
             notifications.error(
-                self.request, _("you lack the permissions to edit this comment. you might as well delete it?")
+                self.request, gettext("you lack the permissions to edit this comment. you might as well delete it?")
             )
             return self.form_invalid(form)
 

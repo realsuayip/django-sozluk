@@ -194,8 +194,8 @@
                         </svg>
 
                         {% url "topic_list" slug="drafts" as drafts_url %}
-                        {% blocktrans with drafts_attr='data-lf-slug="drafts"' title=topic.title %}
-                            <span> you have <a {{ drafts_attr }} href="{{ drafts_url }}">drafted</a> entries belonging to <strong>{{ title }}</strong>:</span>
+                        {% blocktrans trimmed with drafts_attr='data-lf-slug="drafts"' title=topic.title %}
+                            <span>you have <a {{ drafts_attr }} href="{{ drafts_url }}">drafted</a> entries belonging to <strong>{{ title }}</strong>:</span>
                         {% endblocktrans %}
                     </div>
 

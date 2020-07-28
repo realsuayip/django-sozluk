@@ -1,7 +1,7 @@
 from django.db import models
 from django.shortcuts import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _lazy
+from django.utils.translation import gettext_lazy as _
 
 from uuslug import uuslug
 
@@ -9,8 +9,8 @@ from ..templatetags.filters import entrydate
 
 
 class Announcement(models.Model):
-    title = models.CharField(max_length=254, verbose_name=_lazy("Title"))
-    content = models.TextField(verbose_name=_lazy("Content"))
+    title = models.CharField(max_length=254, verbose_name=_("Title"))
+    content = models.TextField(verbose_name=_("Content"))
     slug = models.SlugField(editable=False)
 
     discussion = models.ForeignKey(
@@ -18,25 +18,25 @@ class Announcement(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        verbose_name=_lazy("Discussion topic"),
-        help_text=_lazy("Optional. The topic where the users will be discussing this announcement."),
+        verbose_name=_("Discussion topic"),
+        help_text=_("Optional. The topic where the users will be discussing this announcement."),
     )
 
     html_only = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Allow HTML"),
-        help_text=_lazy("Check this to only use HTML, otherwise you can use entry formatting options."),
+        verbose_name=_("Allow HTML"),
+        help_text=_("Check this to only use HTML, otherwise you can use entry formatting options."),
     )
 
     notify = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Notify users"),
-        help_text=_lazy("When checked, users will get a notification when the announcement gets released."),
+        verbose_name=_("Notify users"),
+        help_text=_("When checked, users will get a notification when the announcement gets released."),
     )
 
     date_edited = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(
-        verbose_name=_lazy("Publication date"), help_text=_lazy("You can set future dates for the publication date."),
+        verbose_name=_("Publication date"), help_text=_("You can set future dates for the publication date."),
     )
 
     def __str__(self):
@@ -63,5 +63,5 @@ class Announcement(models.Model):
         )
 
     class Meta:
-        verbose_name = _lazy("announcement")
-        verbose_name_plural = _lazy("announcements")
+        verbose_name = _("announcement")
+        verbose_name_plural = _("announcements")

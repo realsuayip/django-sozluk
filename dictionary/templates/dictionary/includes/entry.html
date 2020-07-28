@@ -122,7 +122,7 @@
                         <p>{{ comment.content|formatted|linebreaksbr }}</p>
                         <footer class="d-flex justify-content-between fs-90">
                             {% firstof comment.author.get_full_name comment.author.username as name %}
-                            <span>{% blocktrans with name_url=comment.author.get_absolute_url %}replied by <a href="{{ name_url }}">{{ name }}</a>{% endblocktrans %}</span>
+                            <span>{% blocktrans with name_url=comment.author.get_absolute_url %}replied by <a href="{{ name_url }}">{{ name }}</a>.{% endblocktrans %}</span>
                             <div>
                                 {% if user == comment.author %}
                                     <a class="mr-2" href="{% url 'comment_update' pk=comment.pk %}">{% trans "edit" %}</a>

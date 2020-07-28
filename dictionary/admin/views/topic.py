@@ -1,7 +1,7 @@
 from django.contrib import messages as notifications
 from django.db.models import Count
 from django.shortcuts import redirect
-from django.utils.translation import gettext as _, gettext_lazy as _lazy, ngettext, pgettext
+from django.utils.translation import gettext, gettext_lazy as _, ngettext, pgettext
 
 from ...models import Author, Entry, Topic
 from ...utils import get_generic_superuser, parse_date_or_none
@@ -19,7 +19,7 @@ class TopicMove(IntermediateActionView):
     permission_required = ("dictionary.move_topic", "dictionary.change_topic")
     model = Topic
     template_name = "dictionary/admin/actions/topic_move.html"
-    page_title = _lazy("Topic transfer")
+    page_title = _("Topic transfer")
 
     def get_queryset(self):
         queryset = self.model.objects.annotate(count=Count("entries")).filter(pk__in=self.get_source_ids(), count__gt=0)
@@ -75,8 +75,8 @@ class TopicMove(IntermediateActionView):
                 % {"count": entries_count},
             )
         except Topic.DoesNotExist:
-            notifications.error(request, _("Couldn't find the target topic."))
+            notifications.error(request, gettext("Couldn't find the target topic."))
         except Author.DoesNotExist:
-            notifications.error(request, _("GENERIC_SUPERUSER is missing?"))
+            notifications.error(request, gettext("GENERIC_SUPERUSER is missing?"))
 
         return redirect(self.get_changelist_url())

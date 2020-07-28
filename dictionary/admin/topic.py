@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from django.utils.translation import gettext_lazy as _lazy
+from django.utils.translation import gettext_lazy as _
 
 from ..admin.views.topic import TopicMove
 from ..models import Topic
@@ -11,14 +11,14 @@ from ..utils.admin import intermediate
 class TopicAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("title", "category", "mirrors")}),
-        (_lazy("Accessibility settings"), {"fields": ("is_pinned", "is_banned", "is_censored", "is_ama")}),
-        (_lazy("Metadata"), {"fields": ("created_by", "date_created")}),
+        (_("Accessibility settings"), {"fields": ("is_pinned", "is_banned", "is_censored", "is_ama")}),
+        (_("Metadata"), {"fields": ("created_by", "date_created")}),
         (
-            _lazy("Media"),
+            _("Media"),
             {
                 "classes": ("collapse",),
                 "fields": ("media",),
-                "description": _lazy(
+                "description": _(
                     "<br>You can embed social media content into topics. You need to specify links of the media line"
                     " by line. Available options and example links:<br><br>"
                     "<b>YouTube video: </b>(https://www.youtube.com/embed/qXN15uh4DLU)<br>"
@@ -58,7 +58,7 @@ class TopicAdmin(admin.ModelAdmin):
         return "admin:topic-move"
 
     # Short descriptions
-    move_topic.short_description = _lazy("Move entries from selected topics")
+    move_topic.short_description = _("Move entries from selected topics")
 
     # Permissions
     move_topic.allowed_permissions = ["move_topic"]

@@ -3,7 +3,7 @@ from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.shortcuts import reverse
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext, gettext_lazy as _
 
 from uuslug import uuslug
 
@@ -19,9 +19,9 @@ from .messaging import Message
 TOPIC_TITLE_VALIDATORS = [
     RegexValidator(
         r"^[a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+$",
-        message=_lazy("the definition of this topic includes forbidden characters"),
+        message=_("the definition of this topic includes forbidden characters"),
     ),
-    MaxLengthValidator(50, message=_lazy("this title is too long")),
+    MaxLengthValidator(50, message=_("this title is too long")),
 ]
 
 
@@ -31,8 +31,8 @@ class Topic(models.Model):
         unique=True,
         db_index=True,
         validators=TOPIC_TITLE_VALIDATORS,
-        verbose_name=_lazy("Definition"),
-        help_text=_lazy(
+        verbose_name=_("Definition"),
+        help_text=_(
             "In order to change the definition of the topic after it"
             " has been created, you need to use topic moving feature."
         ),
@@ -45,18 +45,18 @@ class Topic(models.Model):
         null=True,
         editable=False,
         on_delete=models.SET_NULL,
-        verbose_name=_lazy("First user to write an entry"),
-        help_text=_lazy("The author or novice who entered the first entry for this topic publicly."),
+        verbose_name=_("First user to write an entry"),
+        help_text=_("The author or novice who entered the first entry for this topic publicly."),
     )
 
-    category = models.ManyToManyField(Category, blank=True, verbose_name=_lazy("Channels"))
-    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name=_lazy("Wishes"))
+    category = models.ManyToManyField(Category, blank=True, verbose_name=_("Channels"))
+    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name=_("Wishes"))
 
     mirrors = models.ManyToManyField(
         "self",
         blank=True,
-        verbose_name=_lazy("Title disambiguation"),
-        help_text=_lazy(
+        verbose_name=_("Title disambiguation"),
+        help_text=_(
             "<p style='color: #ba2121'><b>Warning!</b> The topics that you enter will automatically"
             " get related disambiguations. For this reason you should be working on a main topic that you"
             " selected.<br> Removing a topic from will cause the removal of <b>ALL</b> disambiguations, so"
@@ -64,20 +64,18 @@ class Topic(models.Model):
         ),
     )
 
-    media = models.TextField(blank=True, null=True, verbose_name=_lazy("Media links"))
+    media = models.TextField(blank=True, null=True, verbose_name=_("Media links"))
 
     is_banned = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Prohibited"),
-        help_text=_lazy(
-            "Check this if you want to hinder authors and novices from entering new entries to this topic."
-        ),
+        verbose_name=_("Prohibited"),
+        help_text=_("Check this if you want to hinder authors and novices from entering new entries to this topic."),
     )
 
     is_censored = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Censored"),
-        help_text=_lazy(
+        verbose_name=_("Censored"),
+        help_text=_(
             "Check this if you don't want this topic to appear"
             " in in-site searches and <strong>public</strong> topic lists."
         ),
@@ -85,8 +83,8 @@ class Topic(models.Model):
 
     is_pinned = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Pinned"),
-        help_text=_lazy(
+        verbose_name=_("Pinned"),
+        help_text=_(
             "Check this if you want this topic to be pinned in popular topics."
             "<br>The topic needs to have at least one entry."
         ),
@@ -94,16 +92,16 @@ class Topic(models.Model):
 
     is_ama = models.BooleanField(
         default=False,
-        verbose_name=_lazy("Ask me anything"),
-        help_text=_lazy(
+        verbose_name=_("Ask me anything"),
+        help_text=_(
             "If checked, comments will be visible in this topic. Authorized users will be able to comment on entries."
         ),
     )
 
     date_created = models.DateTimeField(
         auto_now_add=True,
-        verbose_name=_lazy("Date created"),
-        help_text=_lazy("<i>Might not always correspond to first entry.</i>"),
+        verbose_name=_("Date created"),
+        help_text=_("<i>Might not always correspond to first entry.</i>"),
     )
 
     objects = TopicManager()
@@ -113,9 +111,9 @@ class Topic(models.Model):
         return f"{self.title}"
 
     class Meta:
-        permissions = (("move_topic", _lazy("Can move topics")),)
-        verbose_name = _lazy("topic")
-        verbose_name_plural = _lazy("topics")
+        permissions = (("move_topic", _("Can move topics")),)
+        verbose_name = _("topic")
+        verbose_name_plural = _("topics")
 
     def get_absolute_url(self):
         return reverse("topic", kwargs={"slug": self.slug})
@@ -150,9 +148,9 @@ class Topic(models.Model):
 
                 if not self_fulfillment:
                     message = (
-                        _(
-                            "%(title)s, the topic you wished for, had an entry"
-                            " entered by %(username)s: (see: #%(entry)d)"
+                        gettext(
+                            "`%(title)s`, the topic you wished for, had an entry"
+                            " entered by `@%(username)s`: (see: #%(entry)d)"
                         )
                         % {
                             "title": self.title,
@@ -160,7 +158,7 @@ class Topic(models.Model):
                             "entry": fulfiller_entry.pk,
                         }
                         if invoked_by_entry
-                        else _("%(title)s, the topic you wished for, is now populated with some entries.")
+                        else gettext("`%(title)s`, the topic you wished for, is now populated with some entries.")
                         % {"title": self.title}
                     )
 

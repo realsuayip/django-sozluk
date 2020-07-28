@@ -264,7 +264,7 @@ more than max specified in KARMA_EXPRESSIONS but less than KARMA_BOUNDARY_UPPER.
 KARMA_BOUNDARY_LOWER = -200
 """
 Karma points required to be given the underwhelming karma expression.
-Also, if an user has has such karma, they won't be able to influence
+Also, if a user has has such karma, they won't be able to influence
 other people's karma by voting.
 """
 

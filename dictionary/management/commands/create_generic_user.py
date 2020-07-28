@@ -35,7 +35,7 @@ class Command(BaseDebugCommand):
 
         confirmation = input(
             _(
-                "An user with username %(username)s, generic type %(user_type)s"
+                "A user with username %(username)s, generic type %(user_type)s"
                 " and email %(email)s will be created. Continue? y/N: "
             )
             % {"username": username, "user_type": user_type, "email": email}

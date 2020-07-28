@@ -400,7 +400,7 @@
         renderTopicList (objectList, slugIdentifier, parameters) {
             const topicList = $("ul#topic-list");
             if (objectList.length === 0) {
-                topicList.html(`<small>yok ki</small>`);
+                topicList.html(`<small>${gettext("nothing here")}</small>`);
             } else {
                 topicList.empty();
                 const params = parameters || "";
@@ -615,7 +615,7 @@
         if (!sel) {
             return false;
         } else {
-            if (replacementType === "bkz") {
+            if (replacementType === "ref") {
                 txtarea.value = allText.substring(0, start) + `(${pgettext("editor", "see")}: ${sel})` + allText.substring(finish, allText.length);
             } else if (replacementType === "hede") {
                 txtarea.value = allText.substring(0, start) + `\`${sel}\`` + allText.substring(finish, allText.length);
@@ -634,11 +634,11 @@
         }
     }
 
-    $("button#insert_bkz").on("click", function () {
-        if (!replaceText("user_content_edit", "bkz")) {
-            const bkzText = prompt(gettext("target topic, #entry or @author to reference:"));
-            if (bkzText) {
-                $("textarea#user_content_edit").insertAtCaret(`(bkz: ${bkzText})`);
+    $("button#insert_ref").on("click", function () {
+        if (!replaceText("user_content_edit", "ref")) {
+            const refText = prompt(gettext("target topic, #entry or @author to reference:"));
+            if (refText) {
+                $("textarea#user_content_edit").insertAtCaret(`(${pgettext("editor", "see")}: ${refText})`);
             }
         }
     });

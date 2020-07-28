@@ -162,6 +162,7 @@ EMAIL_PORT = 1025
 PASSWORD_RESET_TIMEOUT_DAYS = 1  # deprecated in django 3.1
 LOGIN_URL = "/login/"
 
+LANGUAGE_COOKIE_NAME = "langcode"
 USE_I18N = True
 USE_L10N = True
 LANGUAGES = (

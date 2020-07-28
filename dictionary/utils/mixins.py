@@ -3,7 +3,7 @@ from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
@@ -18,7 +18,7 @@ class PasswordConfirmMixin:
     """
 
     password_field_name = "password_confirm"  # nosec
-    password_error_message = _lazy("your password was incorrect")  # nosec
+    password_error_message = _("your password was incorrect")  # nosec
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -79,14 +79,14 @@ class IntermediateActionMixin:
         except self.model.DoesNotExist:
             notifications.error(
                 request,
-                _("Couldn't find any suitable %(obj_name)s objects.")
+                gettext("Couldn't find any suitable %(obj_name)s objects.")
                 % {"obj_name": self.model._meta.verbose_name},
             )
             return redirect(self.get_changelist_url())
         except InputNotInDesiredRangeError:
             notifications.error(
                 request,
-                _("At most, you can only work with %(max_input)d %(obj_name)s objects.",)
+                gettext("At most, you can only work with %(max_input)d %(obj_name)s objects.",)
                 % {"obj_name": self.model._meta.verbose_name, "max_input": self.max_input},
             )
             return redirect(self.get_changelist_url())
