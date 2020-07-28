@@ -81,7 +81,7 @@
                         </div>
                         {% if user.is_authenticated %}
                             {% check_follow_status user topic as status %}
-                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{{ status|yesno:"unfollow,follow" }}</a>
+                            <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{{ status|yesno:_("unfollow,follow") }}</a>
                         {% endif %}
                     </div>
                     {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="pagination" %}
