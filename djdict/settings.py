@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
@@ -161,8 +163,11 @@ PASSWORD_RESET_TIMEOUT_DAYS = 1  # deprecated in django 3.1
 LOGIN_URL = "/login/"
 
 USE_I18N = True
-
 USE_L10N = True
+LANGUAGES = (
+    ('tr', _('Turkish')),
+    ('en', _('English')),
+)
 
 USE_TZ = True
 # Static files (CSS, JavaScript, Images)

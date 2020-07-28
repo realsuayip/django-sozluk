@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.sitemaps import views as sitemap_views
 from django.urls import include, path
+from django.views.i18n import JavaScriptCatalog
 from django.views.decorators.gzip import gzip_page
 
 from dictionary.sitemaps import sitemaps
@@ -26,6 +27,9 @@ urlpatterns = [
     path("", include("dictionary.urls")),
     path("graphql/", include("dictionary_graph.urls")),
     path("admin/", admin.site.urls),
+    # i18n
+    path("jsi18n/", JavaScriptCatalog.as_view(packages=["dictionary"]), name="javascript-catalog"),
+    path('i18n/', include('django.conf.urls.i18n')),
     # Sitemap
     path("sitemap.xml", gzip_page(sitemap_views.index), {"sitemaps": sitemaps}),
     path(
@@ -35,3 +39,6 @@ urlpatterns = [
         name="django.contrib.sitemaps.views.sitemap",
     ),
 ]
+
+# Will consider this near release:
+# https://docs.djangoproject.com/en/3.0/topics/i18n/translation/#note-on-performance

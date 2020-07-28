@@ -1,4 +1,4 @@
-/* global Cookies */
+/* global Cookies gettext pgettext ngettext interpolate */
 (function () {
     $.ajaxSetup({
         beforeSend (xhr, settings) {
@@ -40,7 +40,7 @@
             <div class="toast-body ${level}">
                 <div class="toast-content">
                     <span>${message}</span>
-                    ${persistent ? `<button type="button" class="ml-2 close" data-dismiss="toast" aria-label="Kapat"><span aria-hidden="true">&times;</span></button>` : ""}
+                    ${persistent ? `<button type="button" class="ml-2 close" data-dismiss="toast" aria-label="${gettext("Close")}"><span aria-hidden="true">&times;</span></button>` : ""}
                 </div>
             </div>
         </div>`;
@@ -56,7 +56,7 @@
         });
     }
 
-    function gqlc (data, failSilently = false, failMessage = "bir şeyler yanlış gitti") {
+    function gqlc (data, failSilently = false, failMessage = gettext("something went wrong")) {
         // GraphQL call, data -> { query, variables }
         return $.post("/graphql/", JSON.stringify(data)).fail(function () {
             if (!failSilently) {
@@ -168,7 +168,7 @@
     $("#header_search").autocomplete({
         triggerSelectOnValidInput: false,
         showNoSuggestionNotice: true,
-        noSuggestionNotice: "-- buna yakın bir sonuç yok --",
+        noSuggestionNotice: gettext("-- no corresponding results --"),
         appendTo: ".header-search-form",
 
         lookup (lookup, done) {
@@ -307,7 +307,7 @@
             gqlc({ query, variables }).then(function (response) {
                 if (response.errors) {
                     self.loadIndicator.css("display", "none");
-                    notify("bir şeyler yanlış gitti", "error");
+                    notify(gettext("something went wrong"), "error");
                 } else {
                     self.render(response.data.topics);
                 }
@@ -616,15 +616,16 @@
             return false;
         } else {
             if (replacementType === "bkz") {
-                txtarea.value = allText.substring(0, start) + `(bkz: ${sel})` + allText.substring(finish, allText.length);
+                txtarea.value = allText.substring(0, start) + `(${pgettext("editor", "see")}: ${sel})` + allText.substring(finish, allText.length);
             } else if (replacementType === "hede") {
                 txtarea.value = allText.substring(0, start) + `\`${sel}\`` + allText.substring(finish, allText.length);
             } else if (replacementType === "swh") {
                 txtarea.value = allText.substring(0, start) + `\`:${sel}\`` + allText.substring(finish, allText.length);
             } else if (replacementType === "spoiler") {
-                txtarea.value = allText.substring(0, start) + `--\`spoiler\`--\n${sel}\n--\`spoiler\`--` + allText.substring(finish, allText.length);
+                const spoiler = gettext("spoiler");
+                txtarea.value = allText.substring(0, start) + `{--\`${spoiler}\`--}\n${sel}\n--\`${spoiler}\`--` + allText.substring(finish, allText.length);
             } else if (replacementType === "link") {
-                const linkText = prompt("hangi adrese gidecek?", "http://");
+                const linkText = prompt(gettext("which address to link?"), "http://");
                 if (linkText !== "http://") {
                     txtarea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length);
                 }
@@ -635,7 +636,7 @@
 
     $("button#insert_bkz").on("click", function () {
         if (!replaceText("user_content_edit", "bkz")) {
-            const bkzText = prompt("bkz verilecek başlık, #entry veya @yazar");
+            const bkzText = prompt(gettext("target topic, #entry or @author to reference:"));
             if (bkzText) {
                 $("textarea#user_content_edit").insertAtCaret(`(bkz: ${bkzText})`);
             }
@@ -644,7 +645,7 @@
 
     $("button#insert_hede").on("click", function () {
         if (!replaceText("user_content_edit", "hede")) {
-            const hedeText = prompt("hangi başlık veya #entry için link oluşturulacak?");
+            const hedeText = prompt(gettext("target topic, #entry or @author to thingy:"));
             if (hedeText) {
                 $("textarea#user_content_edit").insertAtCaret(`\`${hedeText}\``);
             }
@@ -653,7 +654,7 @@
 
     $("button#insert_swh").on("click", function () {
         if (!replaceText("user_content_edit", "swh")) {
-            const swhText = prompt("yıldız içinde ne görünecek?");
+            const swhText = prompt(gettext("what should be referenced in asterisk?"));
             if (swhText) {
                 $("textarea#user_content_edit").insertAtCaret(`\`:${swhText}\``);
             }
@@ -662,7 +663,7 @@
 
     $("button#insert_spoiler").on("click", function () {
         if (!replaceText("user_content_edit", "spoiler")) {
-            const spoilerText = prompt("spoiler arasına ne yazılacak?");
+            const spoilerText = prompt(gettext("what to write between spoiler tags?"));
             if (spoilerText) {
                 $("textarea#user_content_edit").insertAtCaret(`--\`spoiler\`--\n${spoilerText}\n--\`spoiler\`--`);
             }
@@ -671,9 +672,9 @@
 
     $("button#insert_link").on("click", function () {
         if (!replaceText("user_content_edit", "link")) {
-            const linkText = prompt("hangi adrese gidecek?", "http://");
+            const linkText = prompt(gettext("which address to link?"), "http://");
             if (linkText && linkText !== "http://") {
-                const linkName = prompt(" verilecek linkin adı ne olacak?");
+                const linkName = prompt(gettext("alias for the link?"));
                 if (linkName) {
                     $("textarea#user_content_edit").insertAtCaret(`[${linkText} ${linkName}]`);
                 }
@@ -727,7 +728,7 @@
             favoritesList.attr("data-loaded", "true");
 
             if (!allUsers.length) {
-                favoritesList.html("<span class='p-2'>hiç yok aslında</span>");
+                favoritesList.html(`<span class='p-2'>${gettext("actually, nothing here.")}</span>`);
                 return;
             }
 
@@ -738,7 +739,8 @@
             }
 
             if (novices.length > 0) {
-                favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">... ${novices.length} çaylak</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+                const noviceString = interpolate(ngettext("... %(count)s novice", "... %(count)s novices", novices.length), { count: novices.length }, true);
+                favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">${noviceString}</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
 
                 $("a#show_novice_button").on("click", function () {
                     $("#favorites_list_novices").toggleClass("dj-hidden");
@@ -803,7 +805,7 @@
     });
 
     $(".unblock-user-trigger").on("click", function () {
-        if (confirm("emin misiniz?")) {
+        if (confirm(gettext("Are you sure?"))) {
             let loc;
             if ($(this).hasClass("sync")) {
                 loc = location;
@@ -817,7 +819,7 @@
     $(".follow-user-trigger").on("click", function () {
         const targetUser = $(this).parent().attr("data-username");
         userAction("follow", targetUser);
-        $(this).children("a").toggleText("takip et", "takip etme");
+        $(this).children("a").toggleText(gettext("follow"), gettext("unfollow"));
     });
 
     function entryAction (type, pk, redirect = false) {
@@ -866,7 +868,7 @@
     });
 
     $(".entry-actions").on("click", ".delete-entry", function () {
-        if (confirm("harbiden silinsin mi?")) {
+        if (confirm(gettext("are you sure to delete?"))) {
             const entry = $(this).parents(".entry-full");
             const redirect = $("ul.topic-view-entries li.entry-full").length === 1;
 
@@ -883,7 +885,7 @@
     });
 
     $(".delete-entry-redirect").on("click", function () {
-        if (confirm("harbiden silinsin mi?")) {
+        if (confirm(gettext("are you sure to delete?"))) {
             entryAction("delete", $(this).attr("data-target-entry"), true).then(function (response) {
                 window.location = response.data.entry.delete.redirect;
             });
@@ -918,7 +920,7 @@
     }
 
     $(".follow-topic-trigger").on("click", function () {
-        $(this).toggleText("takip etme", "takip et");
+        $(this).toggleText(gettext("unfollow"), gettext("follow"));
         topicAction("follow", $(this).attr("data-topic-id"));
     });
 
@@ -934,7 +936,7 @@
     function truncateEntryText () {
         for (const element of $("article.entry p")) {
             if ($(element).overflown()) {
-                $(element).parent().append(`<div role="button" tabindex="0" class="read_more">devamını okuyayım</div>`);
+                $(element).parent().append(`<div role="button" tabindex="0" class="read_more">${gettext("continue reading")}</div>`);
             }
         }
     }
@@ -998,7 +1000,7 @@
     $(".entry-actions").on("click", ".send-message-trigger", function () {
         const recipient = $(this).parent().siblings(".username").text();
         const entryInQuestion = $(this).parents(".entry-full").attr("data-id");
-        showMessageDialog(recipient, `\`#${entryInQuestion}\` hakkında:\n`);
+        showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`);
     });
 
     $("#send_message_btn").on("click", function () {
@@ -1007,14 +1009,14 @@
         const msgModal = $("#sendMessageModal");
         const body = textarea.val();
 
-        if (!isValidText(body)) {
-            notify("bu içerik geçersiz karakterler içeriyor", "error");
+        if (body.length < 3) {
+            // not strictly needed but written so as to reduce api calls.
+            notify(gettext("if only you could write down something"), "error");
             return;
         }
 
-        if (body.length < 3) {
-            // not strictly needed but written so as to reduce api calls.
-            notify("düzgün bir şeyler yazsan çeşke", "error");
+        if (!isValidText(body)) {
+            notify(gettext("this content includes forbidden characters."), "error");
             return;
         }
 
@@ -1030,7 +1032,7 @@
     $("button.follow-category-trigger").on("click", function () {
         const self = $(this);
         categoryAction("follow", $(this).data("category-id")).then(function () {
-            self.toggleText("bırak ya", "takip et");
+            self.toggleText(pgettext("category-list", "unfollow"), pgettext("category-list", "follow"));
             self.toggleClass("faded");
         });
     });
@@ -1075,27 +1077,27 @@
         const entryID = entry.attr("data-id");
         const topicTitle = encodeURIComponent(entry.closest("[data-topic]").attr("data-topic"));
         const actions = self.siblings(".entry-actions");
-        const pinLabel = entryID === $("body").attr("data-pin") ? "profilimden kaldır" : "profilime sabitle";
+        const pinLabel = entryID === $("body").attr("data-pin") ? gettext("unpin from profile") : gettext("pin to profile");
 
         actions.empty();
 
         if (userIsAuthenticated) {
             if (entry.hasClass("commentable")) {
-                actions.append(`<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">yorum yap</a>`);
+                actions.append(`<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">${gettext("comment")}</a>`);
             }
             if (entry.hasClass("owner")) {
                 actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">${pinLabel}</a>`);
-                actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">sil</a>`);
-                actions.append(`<a href="/entry/update/${entryID}/" class="dropdown-item">düzelt</a>`);
+                actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">${gettext("delete")}</a>`);
+                actions.append(`<a href="/entry/update/${entryID}/" class="dropdown-item">${gettext("edit")}</a>`);
             } else {
                 if (!entry.hasClass("private")) {
-                    actions.append(`<a role="button" tabindex="0" class="dropdown-item send-message-trigger">mesaj gönder</a>`);
-                    actions.append(`<a role="button" tabindex="0" class="dropdown-item block-user-trigger">engelle</a>`);
+                    actions.append(`<a role="button" tabindex="0" class="dropdown-item send-message-trigger">${gettext("message")}</a>`);
+                    actions.append(`<a role="button" tabindex="0" class="dropdown-item block-user-trigger">${gettext("block")}</a>`);
                 }
             }
         }
 
-        actions.append(`<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">şikayet</a>`);
+        actions.append(`<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${gettext("report")}</a>`);
         self.addClass("loaded");
     });
 
@@ -1121,7 +1123,7 @@
 
     $("a.wish-prepare[role=button]").on("click", function () {
         $(this).siblings(":not(.wish-purge)").toggle();
-        $(this).toggleText("biri bu başlığı doldursun", "boşver");
+        $(this).toggleText(gettext("someone should populate this"), gettext("nevermind"));
     });
 
     $("a.wish-send[role=button]").on("click", function () {
@@ -1130,7 +1132,7 @@
         const hint = textarea.val();
 
         if (hint && !isValidText(hint)) {
-            notify("bu içerik geçersiz karakterler içeriyor", "error");
+            notify(gettext("this content includes forbidden characters."), "error");
             return;
         }
 
@@ -1146,7 +1148,7 @@
             self.toggle();
             self.siblings().toggle();
             const hintFormatted = response.data.topic.wish.hint;
-            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">bu başlığa az önce ukte verdiniz. ${hintFormatted ? `notunuz: <p class="m-0"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
+            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
             $(window).scrollTop(0);
             notify(response.data.topic.wish.feedback);
         });
@@ -1155,10 +1157,10 @@
     $("a.wish-purge[role=button]").on("click", function () {
         const self = $(this);
         const title = self.parents("section").attr("data-topic");
-        if (confirm("harbiden silinsin mi?")) {
+        if (confirm(gettext("are you sure to delete?"))) {
             wishTopic(title).then(function (response) {
                 self.toggle();
-                self.siblings(".wish-prepare").text("biri bu başlığı doldursun").toggle();
+                self.siblings(".wish-prepare").text(gettext("someone should populate this")).toggle();
                 $("ul#wish-list").children("li.owner").hide();
                 notify(response.data.topic.wish.feedback);
             });
@@ -1218,7 +1220,7 @@
     }
 
     $("a[role=button].chat-delete-individual").on("click", function () {
-        if (!confirm("harbiden silinsin mi?")) {
+        if (!confirm(gettext("are you sure to delete?"))) {
             return false;
         }
 
@@ -1230,7 +1232,7 @@
             if (data) {
                 if ($("li.chat").length > 1) {
                     chat.remove();
-                    notify("silindi");
+                    notify(gettext("deleted conversation"));
                 } else {
                     window.location = data.redirect;
                 }
@@ -1242,7 +1244,7 @@
         const selected = $("li.chat.selected");
 
         if (selected.length) {
-            if (!confirm("seçilen sohbetler harbiden silinsin mi?")) {
+            if (!confirm(gettext("are you sure to delete all selected conversations?"))) {
                 return false;
             }
 
@@ -1253,7 +1255,7 @@
                 }
             });
         } else {
-            notify("silmek için bir sohbet seçmedin ki", "error");
+            notify(gettext("you need to select at least one conversation to delete"), "error");
         }
     });
 
@@ -1267,7 +1269,7 @@
         const selected = $("li.chat.selected");
 
         if (selected.length) {
-            if (!confirm("seçilen sohbetler harbiden arşivlensin mi?")) {
+            if (!confirm(gettext("are you sure to archive all selected conversations?"))) {
                 return false;
             }
 
@@ -1278,12 +1280,12 @@
                 }
             });
         } else {
-            notify("arşivlemek için bir sohbet seçmedin ki", "error");
+            notify(gettext("you need to select at least one conversation to archive"), "error");
         }
     });
 
     $("a[role=button].chat-archive-individual").on("click", function () {
-        if (!confirm("harbiden arşivlensin mi?")) {
+        if (!confirm(gettext("are you sure to archive?"))) {
             return false;
         }
 
@@ -1294,7 +1296,7 @@
             if (data) {
                 if ($("li.chat").length > 1) {
                     chat.remove();
-                    notify("arşivlendi");
+                    notify(gettext("archived conversation"));
                 } else {
                     window.location = data.redirect;
                 }

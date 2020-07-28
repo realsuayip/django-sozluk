@@ -3,7 +3,7 @@
 {% block title %}{% trans "contact" context "titleblock" %}{% endblock %}
 
 {% block content %}
-    <h1 class="h4"><strong>{% trans "contact" "titleblock" %}</strong></h1>
+    <h1 class="h4"><strong>{% trans "contact" context "titleblock" %}</strong></h1>
     <h2 class="h5 text-muted">{% trans "matters to consider" %}</h2>
     <ol class="px-4">
         <li>{% blocktrans with faq_url="/faq/" %}please visit <a href="{{ faq_url }}">frequently asked questions</a> page before submitting reports.{% endblocktrans %}</li>

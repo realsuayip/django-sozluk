@@ -18,6 +18,7 @@
     <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script defer src="{% static 'dictionary/js/vendor/jquery.autocomplete.min.js' %}"></script>
+    <script defer src="{% url 'javascript-catalog' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
 
     <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
@@ -267,6 +268,18 @@
         {% endcache %}
 
         {% include "dictionary/includes/devinfo.html" %}
+
+         <form action="{% url 'set_language' %}" method="post" class="mt-1">
+            {% csrf_token %}
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+                {% if language.code != LANGUAGE_CODE %}
+                    <button class="btn btn-sm btn-outline py-1" type="submit" name="language" value="{{ language.code }}">{{ language.name_local }}</button>
+                {% endif %}
+            {% endfor %}
+        </form>
     </aside>
 
 </div>
