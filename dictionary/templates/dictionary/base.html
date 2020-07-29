@@ -246,7 +246,7 @@
     <aside class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
 
-        {% cache None footer user.is_authenticated %}
+        {% cache None footer user.is_authenticated LANGUAGE_CODE %}
             {% load flatpages %}
             {% get_flatpages for user as flatpages %}
             {% get_external_urls as external_urls %}

@@ -1,0 +1,191 @@
+# Turkish translation for dictionary javascript files.
+# This file is distributed under GPLv3 License.
+# Şuayip Üzülmez <suayip.541@gmail.com>, 2020.
+
+msgid ""
+msgstr ""
+"Project-Id-Version:\n"
+"Report-Msgid-Bugs-To: <suayip.541@gmail.com>\n"
+"POT-Creation-Date: 2020-07-29 05:40+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: b'<suayip.541@gmail.com>'\n"
+"Language-Team: \n"
+"Language: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\static\dictionary\js\djdict.js:43
+msgid "Close"
+msgstr "Kapat"
+
+#: .\static\dictionary\js\djdict.js:59 .\static\dictionary\js\djdict.js:310
+msgid "something went wrong"
+msgstr "bir şeyler yanlış gitti"
+
+#: .\static\dictionary\js\djdict.js:171
+msgid "-- no corresponding results --"
+msgstr "-- buna yakın bir sonuç yok --"
+
+#: .\static\dictionary\js\djdict.js:403
+msgid "nothing here"
+msgstr "yok ki"
+
+#: .\static\dictionary\js\djdict.js:619 .\static\dictionary\js\djdict.js:641
+msgctxt "editor"
+msgid "see"
+msgstr "bkz"
+
+#: .\static\dictionary\js\djdict.js:625
+msgid "spoiler"
+msgstr ""
+
+#: .\static\dictionary\js\djdict.js:628 .\static\dictionary\js\djdict.js:675
+msgid "which address to link?"
+msgstr "hangi adrese gidecek?"
+
+#: .\static\dictionary\js\djdict.js:639
+msgid "target topic, #entry or @author to reference:"
+msgstr "bkz verilecek başlık, #entry veya @yazar"
+
+#: .\static\dictionary\js\djdict.js:648
+msgid "target topic, #entry or @author to thingy:"
+msgstr "hangi başlık veya #entry için hede oluşturulacak?"
+
+#: .\static\dictionary\js\djdict.js:657
+msgid "what should be referenced in asterisk?"
+msgstr "yıldız içinde ne görünecek?"
+
+#: .\static\dictionary\js\djdict.js:666
+msgid "what to write between spoiler tags?"
+msgstr "spoiler arasına ne yazılacak?"
+
+#: .\static\dictionary\js\djdict.js:677
+msgid "alias for the link?"
+msgstr "verilecek linkin adı ne olacak?"
+
+#: .\static\dictionary\js\djdict.js:731
+msgid "actually, nothing here."
+msgstr "hiç yok aslında"
+
+#: .\static\dictionary\js\djdict.js:742
+msgid "... %(count)s novice"
+msgid_plural "... %(count)s novices"
+msgstr[0] "... %(count)s çaylak"
+msgstr[1] "... %(count)s çaylak"
+
+#: .\static\dictionary\js\djdict.js:808
+msgid "Are you sure?"
+msgstr ""
+
+#: .\static\dictionary\js\djdict.js:822 .\static\dictionary\js\djdict.js:923
+msgid "follow"
+msgstr "takip et"
+
+#: .\static\dictionary\js\djdict.js:822 .\static\dictionary\js\djdict.js:923
+msgid "unfollow"
+msgstr "takip etme"
+
+#: .\static\dictionary\js\djdict.js:871 .\static\dictionary\js\djdict.js:888
+#: .\static\dictionary\js\djdict.js:1160 .\static\dictionary\js\djdict.js:1223
+msgid "are you sure to delete?"
+msgstr "harbiden silinsin mi?"
+
+#: .\static\dictionary\js\djdict.js:939
+msgid "continue reading"
+msgstr "devamını okuyayım"
+
+#: .\static\dictionary\js\djdict.js:1014
+msgid "if only you could write down something"
+msgstr "çeşke bi şeyler yazsaydın"
+
+#: .\static\dictionary\js\djdict.js:1019 .\static\dictionary\js\djdict.js:1135
+msgid "this content includes forbidden characters."
+msgstr "bu içerik geçersiz karakterler içeriyor"
+
+#: .\static\dictionary\js\djdict.js:1035
+msgctxt "category-list"
+msgid "unfollow"
+msgstr "bırak ya"
+
+#: .\static\dictionary\js\djdict.js:1035
+msgctxt "category-list"
+msgid "follow"
+msgstr "takip et"
+
+#: .\static\dictionary\js\djdict.js:1080
+msgid "unpin from profile"
+msgstr "profilimden kaldır"
+
+#: .\static\dictionary\js\djdict.js:1080
+msgid "pin to profile"
+msgstr "profilime sabitle"
+
+#: .\static\dictionary\js\djdict.js:1086
+msgid "comment"
+msgstr "yorum yap"
+
+#: .\static\dictionary\js\djdict.js:1090
+msgid "delete"
+msgstr "sil"
+
+#: .\static\dictionary\js\djdict.js:1091
+msgid "edit"
+msgstr "düzelt"
+
+#: .\static\dictionary\js\djdict.js:1094
+msgid "message"
+msgstr "mesaj gönder"
+
+#: .\static\dictionary\js\djdict.js:1095
+msgid "block"
+msgstr "engelle"
+
+#: .\static\dictionary\js\djdict.js:1100
+msgid "report"
+msgstr "şikayet"
+
+#: .\static\dictionary\js\djdict.js:1126 .\static\dictionary\js\djdict.js:1163
+msgid "someone should populate this"
+msgstr "biri bu başlığı doldursun"
+
+#: .\static\dictionary\js\djdict.js:1126
+msgid "nevermind"
+msgstr "boşver"
+
+#: .\static\dictionary\js\djdict.js:1151
+msgid "you just wished for this topic."
+msgstr "bu başlığa az önce ukte verdiniz."
+
+#: .\static\dictionary\js\djdict.js:1151
+msgid "your hint:"
+msgstr "notunuz:"
+
+#: .\static\dictionary\js\djdict.js:1235
+msgid "deleted conversation"
+msgstr "sohbet silindi"
+
+#: .\static\dictionary\js\djdict.js:1247
+msgid "are you sure to delete all selected conversations?"
+msgstr "seçilen sohbetler harbiden silinsin mi?"
+
+#: .\static\dictionary\js\djdict.js:1258
+msgid "you need to select at least one conversation to delete"
+msgstr "silmek için bir sohbet seçmedin ki"
+
+#: .\static\dictionary\js\djdict.js:1272
+msgid "are you sure to archive all selected conversations?"
+msgstr "seçilen sohbetler harbiden arşivlensin mi?"
+
+#: .\static\dictionary\js\djdict.js:1283
+msgid "you need to select at least one conversation to archive"
+msgstr "arşivlemek için bir sohbet seçmedin ki"
+
+#: .\static\dictionary\js\djdict.js:1288
+msgid "are you sure to archive?"
+msgstr "harbiden arşivlensin mi?"
+
+#: .\static\dictionary\js\djdict.js:1299
+msgid "archived conversation"
+msgstr "sohbet arşivlendi"
