@@ -207,32 +207,37 @@
                 </div>
             {% endif %}
 
-            <section class="user-comments mt-4">
-                {% include "dictionary/includes/editor_buttons.html" %}
-                {% load widget_tweaks %}
+            <section class="user-content mt-4">
+                {% if not user.is_novice %}
+                    <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload">{% csrf_token %}</form>
+                {% endif %}
+                <section class="user-comments">
+                    {% include "dictionary/includes/editor_buttons.html" %}
+                    {% load widget_tweaks %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    {% blocktrans asvar text_placeholder with title=topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
-                    {% trans "Entry content area" as area_label %}
-                    {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label=area_label %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {% blocktrans asvar text_placeholder with title=topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
+                        {% trans "Entry content area" as area_label %}
+                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label=area_label %}
 
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            {% if not user.is_suspended %}
-                                <div class="custom-control custom-checkbox">
-                                    {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                    <label title="{% trans "throw this entry to drafts before publishing it publicly" %}" class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
-                                </div>
-                            {% else %}
-                                <p class="text-danger">{% trans "your entry will be drafted." %}</p>
-                            {% endif %}
+                        <div class="row align-items-center">
+                            <div class="col-6">
+                                {% if not user.is_suspended %}
+                                    <div class="custom-control custom-checkbox">
+                                        {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
+                                        <label title="{% trans "throw this entry to drafts before publishing it publicly" %}" class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
+                                    </div>
+                                {% else %}
+                                    <p class="text-danger">{% trans "your entry will be drafted." %}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </section>
             </section>
         {% endif %}
     {% endif %}

@@ -19,9 +19,10 @@ from ..models import (
 from .announcements import AnnouncementAdmin
 from .author import AuthorAdmin
 from .category import CategoryAdmin
-from .entry import EntryAdmin, CommentAdmin
+from .entry import CommentAdmin, EntryAdmin
 from .flatpages import FlatPageAdmin
 from .general_report import GeneralReportAdmin
+from .images import ImageAdmin
 from .sites import SiteAdmin
 from .topic import TopicAdmin
 

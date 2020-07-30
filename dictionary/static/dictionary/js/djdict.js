@@ -1,4 +1,4 @@
-/* global Cookies gettext pgettext ngettext interpolate */
+/* global Cookies gettext pgettext ngettext interpolate Dropzone */
 (function () {
     $.ajaxSetup({
         beforeSend (xhr, settings) {
@@ -633,6 +633,10 @@
             return true;
         }
     }
+
+    $("button#insert_image").on("click", function () {
+        $(".dropzone").toggle();
+    });
 
     $("button#insert_ref").on("click", function () {
         if (!replaceText("user_content_edit", "ref")) {
@@ -1303,4 +1307,43 @@
             }
         });
     });
+
+    function deleteImage (slug) {
+        return gqlc({
+            query: "mutation($slug:String!){image{delete(slug:$slug){feedback}}}",
+            variables: { slug }
+        });
+    }
+
+    $("a[role=button].delete-image").on("click", function () {
+        if (confirm(gettext("Are you sure?"))) {
+            const img = $(this).parents(".image-detail");
+            deleteImage(img.attr("data-slug"));
+            img.remove();
+        }
+    });
+
+    Dropzone.options.userImageUpload = {
+        addRemoveLinks: true,
+        paramName: "file",
+        maxFilesize: 2.5, // MB
+        // acceptedFiles: "image/*",
+        maxFiles: 10,
+        dictDefaultMessage: gettext("click or drop files here to upload"),
+        dictRemoveFile: gettext("remove image"),
+
+        success (file, response) {
+            $("#user_content_edit").insertAtCaret(`(${pgettext("editor", "image")}: ${response.slug})`);
+        },
+
+        removedfile (file) {
+            // if (confirm(gettext("Are you sure?"))){
+            file.previewElement.remove();
+            const text = $("#user_content_edit")[0];
+            const slug = JSON.parse(file.xhr.response).slug;
+            text.value = text.value.replace(new RegExp(`\\(${pgettext("editor", "image")}: ${slug}\\)`, "g"), "");
+            deleteImage(slug);
+        }
+        // }
+    };
 })();

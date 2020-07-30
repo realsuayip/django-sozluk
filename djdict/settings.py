@@ -175,3 +175,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 LOGIN_REDIRECT_URL = '/'
 STATIC_URL = '/static/'
+
+# https://docs.djangoproject.com/en/3.0/howto/static-files/deployment/#serving-static-files-in-production
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"

@@ -189,6 +189,11 @@ Vote section will be visible to guests but they
 won't have any effect.
 """
 
+DAILY_IMAGE_UPLOAD_LIMIT = 10
+"""
+In a 24 hour period, users will be able to upload this many files at most.
+"""
+
 # Notice: Decimal places larger than 2 is not allowed. e.g. 0.125 is not valid.
 
 VOTE_RATES = {

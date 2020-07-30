@@ -6,4 +6,7 @@
     <button class="add-code" title="{% trans "see this (ironic)" %}" id="insert_swh">&#8727;</button>
     <button class="add-code" title="{% trans "spoil something" %}" id="insert_spoiler">{% trans "--spoiler--" %}</button>
     <button class="add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
+    {% if not user.is_novice %}
+        <button class="add-code float-right" title="{% trans "add some nice images" %}" id="insert_image">image</button>
+    {% endif %}
 </div>

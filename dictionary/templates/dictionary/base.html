@@ -8,8 +8,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    {# In production, some static files should be served together. #}
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.css">
     <link rel="stylesheet" href="{% static "dictionary/css/style.css" %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
 
@@ -17,6 +19,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
     <script defer src="{% static 'dictionary/js/vendor/jquery.autocomplete.min.js' %}"></script>
     <script defer src="{% url 'javascript-catalog' %}"></script>
     <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
@@ -120,6 +123,9 @@
                             <div class="user-dropdown dropdown-menu dropdown-menu-right" aria-labelledby="user-dropdown">
                                 <a class="dropdown-item" href="{% url 'category_list' %}">{% trans "channels" %}</a>
                                 <a class="dropdown-item" href="{% url 'user_preferences' %}">{% trans "settings" %}</a>
+                                {% if not user.is_novice %}
+                                    <a class="dropdown-item" href="{% url 'image-list' %}">{% trans "my images" %}</a>
+                                {% endif %}
                                 <a class="dropdown-item" href="{% url 'people' %}">{% trans "following/blocked" %}</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{% url 'logout' %}">{% trans "log out" %}</a>
@@ -166,6 +172,9 @@
                         <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">{% trans "novices" %}</a>
                         <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">{% trans "advanced search" %}</a>
                         <a href="{% url "user_preferences" %}" class="dropdown-item">{% trans "settings" %}</a>
+                        {% if not user.is_novice %}
+                            <a class="dropdown-item" href="{% url 'image-list' %}">{% trans "my images" %}</a>
+                        {% endif %}
                         <a href="{% url "people" %}" class="dropdown-item">{% trans "following/blocked" %}</a>
                         <div class="dropdown-divider"></div>
                         <a href="{% url "logout" %}" class="dropdown-item">{% trans "log out" %}</a>

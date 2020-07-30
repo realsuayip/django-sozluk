@@ -3,6 +3,7 @@ from graphene import Field, ObjectType, Schema
 from .autocomplete import AutoCompleteQueries
 from .category import CategoryMutations
 from .entry import EntryMutations, EntryQueries
+from .images import ImageMutations
 from .messaging import MessageMutations
 from .topic import TopicMutations, TopicQueries
 from .user import UserMutations
@@ -31,6 +32,7 @@ class Mutation(ObjectType):
     topic = Field(TopicMutations)
     category = Field(CategoryMutations)
     entry = Field(EntryMutations)
+    image = Field(ImageMutations)
 
     @staticmethod
     def resolve_message(*args, **kwargs):
@@ -51,6 +53,10 @@ class Mutation(ObjectType):
     @staticmethod
     def resolve_entry(*args, **kwargs):
         return EntryMutations()
+
+    @staticmethod
+    def resolve_image(*args, **kwargs):
+        return ImageMutations()
 
 
 schema = Schema(query=Query, mutation=Mutation)

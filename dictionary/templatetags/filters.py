@@ -27,7 +27,7 @@ def addstr(arg1, arg2):
 
 
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
-RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+=':%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
+RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+='%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
 
 # For each new language append to these expressions.
 SEE_EXPR = r"(?:bkz|see)"
