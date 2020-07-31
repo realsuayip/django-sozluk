@@ -14,7 +14,7 @@
                         <img src="{{ image.get_absolute_url }}" alt="{% trans "image" context "editor" %}" class="img-fluid" draggable="false">
                         <div class="meta px-2 pt-2">
                             <div class="d-flex justify-content-between">
-                                <span>(image: <a target="_blank" href="{{ image.get_absolute_url }}">{{ image.slug }}</a>)</span>
+                                <span>({% trans "image" context "editor" %}: <a target="_blank" href="{{ image.get_absolute_url }}">{{ image.slug }}</a>)</span>
                                 <a role="button" tabindex="0" class="ml-4 delete-image">{% trans "delete" %}</a>
                             </div>
                             <time title="{{ image.date_created }}">{{ image.date_created|naturalday }}</time>

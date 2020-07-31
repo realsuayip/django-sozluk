@@ -1,12 +1,11 @@
 # Turkish translation for dictionary_graph app.
 # This file is distributed under GPLv3 License.
 # Şuayip Üzülmez <suayip.541@gmail.com>, 2020.
-
 msgid ""
 msgstr ""
 "Project-Id-Version:\n"
-"Report-Msgid-Bugs-To: <suayip.541@gmail.com>\n"
-"POT-Creation-Date: 2020-07-29 05:37+0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-31 21:52+0300\n"
 "PO-Revision-Date: 2020-07-29 05:37+0156\n"
 "Last-Translator: b'<suayip.541@gmail.com>'\n"
 "Language-Team: \n"
