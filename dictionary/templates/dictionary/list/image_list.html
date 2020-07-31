@@ -1,21 +1,29 @@
 {% extends "dictionary/base.html" %}
 {% load humanize i18n %}
 
+{% block title %}{% trans "my images" context "titleblock" %}{% endblock %}
+
 {% block content %}
-    <h1 class="h4 mb-3"><strong>{% trans "my images" context blocktitle %}</strong></h1>
+    <h1 class="h4 mb-3"><strong>{% trans "my images" context "titleblock" %}</strong></h1>
 
     <div class="image-list">
-        {% for image in object_list %}
-            <div class="image-detail" data-slug="{{ image.slug }}">
-                <img src="{{ image.file.url }}" alt="{% trans "image" context "editor" %}" class="img-fluid" draggable="false">
-                <div class="meta px-2 pt-2">
-                    <div class="d-flex justify-content-between">
-                        <span>(image: <a href="#">{{ image.slug }}</a>)</span>
-                        <a role="button" tabindex="0" class="ml-4 delete-image">{% trans "delete" %}</a>
+        {% with images=object_list %}
+            {% if images %}
+                {% for image in images %}
+                    <div class="image-detail" data-slug="{{ image.slug }}">
+                        <img src="{{ image.get_absolute_url }}" alt="{% trans "image" context "editor" %}" class="img-fluid" draggable="false">
+                        <div class="meta px-2 pt-2">
+                            <div class="d-flex justify-content-between">
+                                <span>(image: <a target="_blank" href="{{ image.get_absolute_url }}">{{ image.slug }}</a>)</span>
+                                <a role="button" tabindex="0" class="ml-4 delete-image">{% trans "delete" %}</a>
+                            </div>
+                            <time title="{{ image.date_created }}">{{ image.date_created|naturalday }}</time>
+                        </div>
                     </div>
-                    <time title="{{ image.date_created }}">{{ image.date_created|naturalday }}</time>
-                </div>
-            </div>
-        {% endfor %}
+                {% endfor %}
+            {% else %}
+                {% trans "sorry, but couldn't find anything 🤷" %}
+            {% endif %}
+        {% endwith %}
     </div>
 {% endblock %}

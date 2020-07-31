@@ -17,7 +17,7 @@ class DeleteImage(Mutation):
     @staticmethod
     @login_required
     def mutate(_root, info, slug):
-        image = Image.objects.get(author=info.context.user, slug=slug)
+        image = Image.objects.get(author=info.context.user, is_deleted=False, slug=slug)
         image.is_deleted = True
         image.save()
         return DeleteImage(feedback=None)

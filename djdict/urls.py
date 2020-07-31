@@ -14,8 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps import views as sitemap_views
 from django.urls import include, path
@@ -40,9 +38,7 @@ urlpatterns = [
         {"sitemaps": sitemaps},
         name="django.contrib.sitemaps.views.sitemap",
     ),
-] + static(
-    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
-)  # Development only!
+]
 
 # Will consider this near release:
 # https://docs.djangoproject.com/en/3.0/topics/i18n/translation/#note-on-performance

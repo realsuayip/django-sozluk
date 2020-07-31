@@ -1327,23 +1327,41 @@
         addRemoveLinks: true,
         paramName: "file",
         maxFilesize: 2.5, // MB
-        // acceptedFiles: "image/*",
+        acceptedFiles: "image/*",
         maxFiles: 10,
+        dictRemoveFileConfirmation: gettext("Are you sure?"),
         dictDefaultMessage: gettext("click or drop files here to upload"),
-        dictRemoveFile: gettext("remove image"),
+        dictRemoveFile: gettext("remove image"), // lok for other dicts
+        dictFileTooBig: gettext("File is too big ({{filesize}}MB). Max filesize: {{maxFilesize}}MB."),
+        dictMaxFilesExceeded: gettext("You can not upload any more files."),
+        dictUploadCanceled: gettext("Upload canceled."),
+        dictCancelUploadConfirmation: gettext("Are you sure?"),
 
         success (file, response) {
             $("#user_content_edit").insertAtCaret(`(${pgettext("editor", "image")}: ${response.slug})`);
         },
 
         removedfile (file) {
-            // if (confirm(gettext("Are you sure?"))){
             file.previewElement.remove();
             const text = $("#user_content_edit")[0];
             const slug = JSON.parse(file.xhr.response).slug;
             text.value = text.value.replace(new RegExp(`\\(${pgettext("editor", "image")}: ${slug}\\)`, "g"), "");
             deleteImage(slug);
         }
-        // }
     };
+
+    $(".entry a[data-img]").on("click", function () {
+        const self = $(this);
+        if (!self.is("[data-loaded]")) {
+            const p = self.parent("p");
+            p.css("max-height", "none"); // Click "read more" button.
+            p.next(".read_more").hide();
+            const url = self.attr("data-img");
+            self.after(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3"></a>
+                        <img src="${url}" alt="image" class="img-thumbnail img-fluid" draggable="false"">`);
+        } else {
+            self.nextAll().slice(0, 2).toggle(); // Next 2 elements (expand button and image)
+        }
+        self.attr("data-loaded", "");
+    });
 })();

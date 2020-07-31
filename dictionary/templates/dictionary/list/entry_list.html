@@ -209,7 +209,7 @@
 
             <section class="user-content mt-4">
                 {% if not user.is_novice %}
-                    <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload">{% csrf_token %}</form>
+                    <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
                 {% endif %}
                 <section class="user-comments">
                     {% include "dictionary/includes/editor_buttons.html" %}

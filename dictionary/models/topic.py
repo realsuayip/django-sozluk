@@ -18,7 +18,7 @@ from .messaging import Message
 
 TOPIC_TITLE_VALIDATORS = [
     RegexValidator(
-        r"^[a-z0-9 ğçıöşü₺&()_+='%/\",.!?~\[\]{}<>^;\\|-]+$",
+        r"^[a-z0-9 ğçıöşü&()_+='%/\",.!?~\[\]{}<>^;\\|-]+$",
         message=_("the definition of this topic includes forbidden characters"),
     ),
     MaxLengthValidator(50, message=_("this title is too long")),

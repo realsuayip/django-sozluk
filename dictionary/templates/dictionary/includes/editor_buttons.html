@@ -1,12 +1,14 @@
 {% load i18n %}
-<div class="editor-buttons">
-    {# Translators: Editor button (see) #}
-    <button class="add-code" title="{% trans "also see this.." %}" id="insert_ref">{% trans "(see: thingy)" %}</button>
-    <button class="add-code" title="{% trans "link to entry, author or topic" %}" id="insert_hede">{% trans "thingy" %}</button>
-    <button class="add-code" title="{% trans "see this (ironic)" %}" id="insert_swh">&#8727;</button>
-    <button class="add-code" title="{% trans "spoil something" %}" id="insert_spoiler">{% trans "--spoiler--" %}</button>
-    <button class="add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
+<div class="editor-buttons d-flex justify-content-between">
+    <div>
+        {# Translators: Editor button (see) #}
+        <button class="add-code" title="{% trans "also see this.." %}" id="insert_ref">{% trans "(see: thingy)" %}</button>
+        <button class="add-code" title="{% trans "link to entry, author or topic" %}" id="insert_hede">{% trans "thingy" %}</button>
+        <button class="add-code" title="{% trans "see this (ironic)" %}" id="insert_swh">&#8727;</button>
+        <button class="add-code" title="{% trans "spoil something" %}" id="insert_spoiler">{% trans "--spoiler--" %}</button>
+        <button class="add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
+    </div>
     {% if not user.is_novice %}
-        <button class="add-code float-right" title="{% trans "add some nice images" %}" id="insert_image">image</button>
+        <button class="add-code" title="{% trans "add some nice images" %}" id="insert_image">{% trans "image" context "editor" %}</button>
     {% endif %}
 </div>

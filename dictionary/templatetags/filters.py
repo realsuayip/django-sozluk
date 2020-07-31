@@ -32,10 +32,12 @@ RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+='%/\",.!?~\[\]{}<>^;\\|
 # For each new language append to these expressions.
 SEE_EXPR = r"(?:bkz|see)"
 SEARCH_EXPR = r"(?:ara|search)"
+IMAGE_EXPR = r"(?:görsel|image)"
 
 # Translators: Short for "also see this", used in entry editor.
 SEE = pgettext_lazy("editor", "see")
 SEARCH = pgettext_lazy("editor", "search")
+IMAGE = pgettext_lazy("editor", "image")
 
 # Translators: Entry date format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
 ENTRY_DATE_FORMAT = gettext_lazy("M j, Y")
@@ -47,19 +49,7 @@ ENTRY_TIME_FORMAT = gettext_lazy("g:h a")
 @register.filter
 def formatted(raw_entry):
     """
-    Formats custom entry tags (e.g. hede, spoiler. Tag explanations given in order with replacements tuple.
-    1) Input: (bkz: unicode topic title or @username), Output: unchanged, but the input has a link that points to the
-    to given topic/user profile. No trailing whitespace allowed, only allow indicated chars.
-    2) Input: (bkz: #90), Output: unchanged, but #90 has link to entry with the id of 90. Allow only positive integers
-    after '#', up to 10 digits.
-    3) Input: `:swh`, Output: * (an asterisks) -- This is a link that points to the topic named 'swh'.
-    4) Input: Same as 1 but with no indicators.
-    5) Input: `#90`, Output: #90 -- This is a link that points to the entry with pk 90.
-    6) Input: (ara: beni yar) Output: unchanged, but 'beni yar' has a link that, when clicked searchs for that keyword
-    in topics and appends to the left frame (redirects to the advanced search page on mobile).
-    7) Input http://www.djangoproject.com  Output: http://www.djangoproject.com  -- Linkification. (protocol required)
-    8) Input: [http://www.djangoproject.com django] Output: django -- A link that opens http://www.djangoproject.com in
-    a new tab. Protocol name (http/https only) required. Label should be longer than one character.
+    Entry formatting/linkifying regex logic.
     """
 
     if not raw_entry:
@@ -81,6 +71,9 @@ def formatted(raw_entry):
                 guess = slug.replace("-", " ").strip()
                 return f'({SEE}: <a href="{path}">{guess}</a>)'
 
+            if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
+                return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}">{IMAGE}</a>'
+
         path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
         url = domain + path
 
@@ -101,6 +94,8 @@ def formatted(raw_entry):
             fr"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
             fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
+        # Image
+        (fr"\({IMAGE_EXPR}: ([a-z0-9]{{8}})\)", fr'<a role="button" tabindex="0" data-img="/img/\1">{IMAGE}</a>'),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
         # Find links with label, then encapsulate them in anchor tag, which adds " character before the
         # link. Then we find all other links which don't have " at the start.

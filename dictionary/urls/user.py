@@ -1,10 +1,17 @@
+from django.conf import settings
 from django.urls import path
 
 from ..views.detail import Chat, ChatArchive, UserProfile
 from ..views.edit import UserPreferences
-from ..views.images import ImageList, ImageUpload, ImageDetailNginx, ImageDetailDevelopment
+from ..views.images import ImageList, ImageUpload, ImageDetailProduction, ImageDetailDevelopment
 from ..views.list import ActivityList, ConversationArchiveList, ConversationList, PeopleList
 
+
+ImageDetailView = ImageDetailDevelopment if settings.DEBUG else ImageDetailProduction
+"""
+This should be set to ImageDetailProduction if your media files served outside
+Django. (Check ImageDetailProduction view for info)
+"""
 
 urlpatterns_user = [
     # user related urls
@@ -21,3 +28,5 @@ urlpatterns_user = [
     path("upload/", ImageUpload.as_view(), name="image-upload"),
     path("img/<slug:slug>", ImageDetailDevelopment.as_view(), name="image-detail"),
 ]
+
+urlpatterns_user += [path("img/<slug:slug>", ImageDetailView.as_view(), name="image-detail")]

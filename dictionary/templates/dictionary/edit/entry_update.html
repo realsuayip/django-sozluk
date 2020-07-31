@@ -7,32 +7,37 @@
         <strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong><small><strong>#{{ entry.pk }}</strong></small>
     </h1>
 
-    <section class="user-comments mt-3">
-        {% include "dictionary/includes/editor_buttons.html" %}
+    <section class="user-content mt-3">
+        {% if not user.is_novice %}
+            <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
+        {% endif %}
+        <section class="user-comments">
+            {% include "dictionary/includes/editor_buttons.html" %}
 
-        <form method="post">
-            {% csrf_token %}
-            {% blocktrans asvar text_placeholder with title=entry.topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
-            {% trans "Entry content area" as area_label %}
-            {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="20" spellcheck="true" aria-label=area_label %}
+            <form method="post">
+                {% csrf_token %}
+                {% blocktrans asvar text_placeholder with title=entry.topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
+                {% trans "Entry content area" as area_label %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="20" spellcheck="true" aria-label=area_label %}
 
-            <div class="row align-items-center">
-                <div class="col-6">
-                    {% if entry.is_draft and not user.is_suspended %}
-                        <div class="custom-control custom-checkbox">
-                            {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                            <label class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
-                        </div>
-                    {% endif %}
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        {% if entry.is_draft and not user.is_suspended %}
+                            <div class="custom-control custom-checkbox">
+                                {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
+                                <label class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
+                            </div>
+                        {% endif %}
 
-                    <a role="button" tabindex="0" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">{% trans "delete" %}</a>
+                        <a role="button" tabindex="0" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">{% trans "delete" %}</a>
+                    </div>
+
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
+                    </div>
                 </div>
+            </form>
 
-                <div class="col-6">
-                    <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
-                </div>
-            </div>
-        </form>
-
+        </section>
     </section>
 {% endblock %}
