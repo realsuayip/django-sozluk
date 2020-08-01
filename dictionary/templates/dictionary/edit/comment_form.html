@@ -22,26 +22,30 @@
             <time class="ml-auto">{{ entry.date_created|entrydate:entry.date_edited }}</time>
         </a>
     </div>
+    <section class="user-content my-4">
+        {% if not user.is_novice %}
+            <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
+        {% endif %}
+        <section class="user-comments">
+            {% include "dictionary/includes/editor_buttons.html" %}
+            <form method="post">
+                {% csrf_token %}
+                {% blocktrans asvar text_placeholder with title=entry.topic.title %}comment on this entry written in {{ title }}...{% endblocktrans %}
+                {% trans "Comment content area" as area_label %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label=area_label %}
 
-    <section class="user-comments my-4">
-        {% include "dictionary/includes/editor_buttons.html" %}
-        <form method="post">
-            {% csrf_token %}
-            {% blocktrans asvar text_placeholder with title=entry.topic.title %}comment on this entry written in {{ title }}...{% endblocktrans %}
-            {% trans "Comment content area" as area_label %}
-            {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label=area_label %}
+                <div class="row align-items-center">
+                    {% if updating %}
+                        <div class="col-6">
+                            <button name="delete" value="true" onclick="return confirm('{% trans "Are you sure?" %}');" type="submit" class="btn btn-sm btn-outline">{% trans "delete" %}</button>
+                        </div>
+                    {% endif %}
 
-            <div class="row align-items-center">
-                {% if updating %}
-                    <div class="col-6">
-                        <button name="delete" value="true" onclick="return confirm('{% trans "Are you sure?" %}');" type="submit" class="btn btn-sm btn-outline">{% trans "delete" %}</button>
+                    <div class="{{ updating|yesno:"col-6,col-12" }}">
+                        <button type="submit" class="btn btn-django float-right">{{ updating|yesno:_("update comment,comment") }}</button>
                     </div>
-                {% endif %}
-
-                <div class="{{ updating|yesno:"col-6,col-12" }}">
-                    <button type="submit" class="btn btn-django float-right">{{ updating|yesno:_("update comment,comment") }}</button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </section>
     </section>
 {% endblock %}
