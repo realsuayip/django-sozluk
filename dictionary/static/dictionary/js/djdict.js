@@ -1154,7 +1154,7 @@
             self.toggle();
             self.siblings().toggle();
             const hintFormatted = response.data.topic.wish.hint;
-            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
+            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
             $(window).scrollTop(0);
             notify(response.data.topic.wish.feedback);
         });
@@ -1352,7 +1352,7 @@
         }
     };
 
-    $(".entry a[data-img]").on("click", function () {
+    $(document).on("click", ".entry a[data-img], .text-formatted a[data-img]", function () {
         const self = $(this);
         if (!self.is("[data-loaded]")) {
             const p = self.parent("p");

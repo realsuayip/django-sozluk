@@ -119,7 +119,7 @@
                         </a>
                     </aside>
                     <article class="w-100">
-                        <p>{{ comment.content|formatted|linebreaksbr }}</p>
+                        <p class="text-formatted">{{ comment.content|formatted|linebreaksbr }}</p>
                         <footer class="d-flex justify-content-between fs-90">
                             {% firstof comment.author.get_full_name comment.author.username as name %}
                             <span>{% blocktrans with name_url=comment.author.get_absolute_url %}replied by <a href="{{ name_url }}">{{ name }}</a>.{% endblocktrans %}</span>

@@ -7,7 +7,7 @@
         </header>
     {% endif %}
 
-    <p class="m-0">{% if post.html_only %}{{ post.content|safe|linebreaksbr }}{% else %}{{ post.content|formatted|linebreaksbr }}{% endif %}</p>
+    <p class="m-0{{ post.html_only|yesno:", text-formatted" }}">{% if post.html_only %}{{ post.content|safe|linebreaksbr }}{% else %}{{ post.content|formatted|linebreaksbr }}{% endif %}</p>
 
     <footer class="d-flex justify-content-between mt-2 my-3">
         {% if post.discussion %}

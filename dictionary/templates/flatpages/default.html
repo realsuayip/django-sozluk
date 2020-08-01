@@ -7,7 +7,7 @@
             <p>{{ flatpage.content|linebreaksbr }}</p>
         {% else %}
             {% load filters %}
-            <p>{{ flatpage.content|formatted|linebreaksbr }}</p>
+            <p class="text-formatted">{{ flatpage.content|formatted|linebreaksbr }}</p>
         {% endif %}
     </article>
 {% endblock %}

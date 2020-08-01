@@ -7,7 +7,7 @@
                 {% blocktrans trimmed with naturaltime=wish.date_created|naturaltime url=wish.author.get_absolute_url username=wish.author.username %}
                     the user <a href="{{ url }}">{{ username }}</a> wants this topic to be populated. it was wished {{ naturaltime }}.
                 {% endblocktrans %}
-                {% if wish.hint %}{% trans "hints:" %}<p class="m-0 p-0"><i>{{ wish.hint|formatted|linebreaksbr }}</i></p>{% endif %}
+                {% if wish.hint %}{% trans "hints:" %}<p class="m-0 p-0 text-formatted"><i>{{ wish.hint|formatted|linebreaksbr }}</i></p>{% endif %}
             </li>
         {% endfor %}
     </ul>

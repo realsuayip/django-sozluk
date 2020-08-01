@@ -11,7 +11,7 @@
         {% endblocktrans %}
     </h1>
 
-    <div class="chat-quick-links d-flex justify-content-between">
+    <div class="chat-quick-links d-flex justify-content-between mb-1">
         <a href="{% url 'messages-archive' %}" class="mr-2" title="{% trans "enough lingering here" %}">
             <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                 <use href="#arrow-left"></use>
@@ -28,8 +28,6 @@
             </a>
         </div>
     </div>
-
-    <hr class="mt-1">
 
     <ul id="message_list" class="chat">
         {% with messages=object.to_json.messages %}
