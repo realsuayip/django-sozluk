@@ -1,4 +1,22 @@
-[0.184.0-dev-pre](2020.07.25)(incompatible)
+[0.185.0-dev-pre](2020.08.01)(compatible)
+--Additions--
+1) Added images mode for entry list.
+
+-- Changes --
+1) Fixed some minor ui issues.
+2) In messages, the initial number of messages
+shown are increased to 10.
+3) Fixed social media buttons' behaviour for
+Safari.
+4) Users with add_image permission can now
+add unlimited amount of images.
+5) Fixed topic entry list search behaviour
+for Postgresql.
+
+--Deletions--
+None
+
+[0.184.0-dev-pre](2020.07.31)(incompatible)
 --Additions--
 1) Added images feature (along with some dependencies).
 **incompatible** run makemigrations+migrate for dictionary.

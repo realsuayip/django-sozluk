@@ -1316,8 +1316,8 @@ msgstr "akıt gelsin"
 
 #: .\templates\dictionary\conversation\conversation.html:51
 #: .\templates\dictionary\conversation\conversation_archive.html:37
-msgid "only the last 4 messages are shown. click here to show all messages."
-msgstr "sadece son 4 mesaj gösteriliyor. tüm mesajları görmek için tıklayın."
+msgid "only the last 10 messages are shown. click here to show all messages."
+msgstr "sadece son 10 mesaj gösteriliyor. tüm mesajları görmek için tıklayın."
 
 #: .\templates\dictionary\conversation\conversation.html:63
 #, python-format

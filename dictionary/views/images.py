@@ -44,9 +44,9 @@ Nginx only. Apache counterpart is 'X-Sendfile' which requires mod_xsendfile.
 
 
 def compress(file):
-    im, im_io = PIL_Image.open(file), BytesIO()
-    im.save(im_io, im.format, quality=COMPRESS_QUALITY)
-    return File(im_io, name=file.name)
+    img, img_io = PIL_Image.open(file), BytesIO()
+    img.save(img_io, img.format, quality=COMPRESS_QUALITY)
+    return File(img_io, name=file.name)
 
 
 class ImageUpload(LoginRequiredMixin, CreateView):
@@ -60,10 +60,9 @@ class ImageUpload(LoginRequiredMixin, CreateView):
         if self.request.user.is_novice or not self.request.user.is_accessible:
             return HttpResponseBadRequest(gettext("you lack the required permissions."))
 
-        if (
-            Image.objects.filter(author=self.request.user, date_created__gte=time_threshold(hours=24)).count()
-            >= DAILY_IMAGE_UPLOAD_LIMIT
-        ):
+        if Image.objects.filter(
+            author=self.request.user, date_created__gte=time_threshold(hours=24)
+        ).count() >= DAILY_IMAGE_UPLOAD_LIMIT and not self.request.user.has_perm("dictionary.add_image"):
             return HttpResponseBadRequest(
                 gettext("you have reached the upload limit (%(limit)d images in a 24 hour period). try again later.")
                 % {"limit": DAILY_IMAGE_UPLOAD_LIMIT}

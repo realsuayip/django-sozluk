@@ -23,6 +23,7 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Comment, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
+from ..templatetags.filters import IMAGE_REGEX
 from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
 from ..utils.decorators import cached_context
 from ..utils.managers import TopicListManager, entry_prefetch
@@ -247,6 +248,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         "links",
         "acquaintances",
         "answered",
+        "images",
     )
     """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
        parameter 'a'. For example ?a=today returns only today's entries."""
@@ -353,9 +355,10 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                     author = Author.objects.get(username=keywords[1:])
                     return self.topic.entries.filter(author=author)
             else:
-                return self.topic.entries.filter(
-                    **{"content__search" if connection.vendor == "postgresql" else "content__icontains": keywords}
-                )
+                filters = Q(content__icontains=keywords)
+                if connection.vendor == "postgresql":
+                    filters |= Q(content__search=keywords)
+                return self.topic.entries.filter(filters)
 
         return None
 
@@ -417,6 +420,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             has_comments=True
         )
 
+    def images(self):
+        return self.topic.entries.filter(content__regex=IMAGE_REGEX)
+
     def get_queryset(self):
         """Filter queryset by self.view_mode"""
         queryset = None
@@ -472,6 +478,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 "recent",
                 "links",
                 "acquaintances",
+                "images",
             ):
                 show_previous = True
                 show_subsequent = True

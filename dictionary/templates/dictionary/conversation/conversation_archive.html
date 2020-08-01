@@ -33,8 +33,8 @@
 
     <ul id="message_list" class="chat">
         {% with messages=object.to_json.messages %}
-            {% if messages|length > 4 %}
-                <a id="message_history_show" role="button" tabindex="0" title="{% trans "make it rain" %}">{% trans "only the last 4 messages are shown. click here to show all messages." %}</a>
+            {% if messages|length > 10 %}
+                <a id="message_history_show" role="button" tabindex="0" title="{% trans "make it rain" %}">{% trans "only the last 10 messages are shown. click here to show all messages." %}</a>
             {% endif %}
 
             {% for message in messages %}

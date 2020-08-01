@@ -833,7 +833,9 @@
     $("a.twitter[role='button'], a.facebook[role='button']").on("click", function () {
         const base = $(this).hasClass("twitter") ? "https://twitter.com/intent/tweet?text=" : "https://www.facebook.com/sharer/sharer.php?u=";
         const entry = $(this).closest(".feedback").siblings(".meta").children("a.permalink").attr("href");
-        window.open(`${base}${window.location.origin}${entry}`, "_blank", "noopener");
+        const windowReference = window.open();
+        windowReference.opener = null;
+        windowReference.location = `${base}${window.location.origin}${entry}`;
     });
 
     $(".entry-vote .vote").on("click", function () {
@@ -1357,7 +1359,7 @@
             p.css("max-height", "none"); // Click "read more" button.
             p.next(".read_more").hide();
             const url = self.attr("data-img");
-            self.after(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3"></a>
+            self.after(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3 position-relative" style="top: 3px;"></a>
                         <img src="${url}" alt="image" class="img-thumbnail img-fluid" draggable="false"">`);
         } else {
             self.nextAll().slice(0, 2).toggle(); // Next 2 elements (expand button and image)

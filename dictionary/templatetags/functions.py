@@ -66,6 +66,7 @@ def print_topic_title(context):
         "search": _("search: %(keywords)s") % {"keywords": queries.get("keywords", "")},
         "history": _("today in history: %(year)s") % {"year": queries.get("year", "")},
         "answered": _("entries with replies"),
+        "images": _("images"),
     }
 
     if (mode := context["mode"]) in mode_repr:

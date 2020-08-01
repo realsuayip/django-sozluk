@@ -21,7 +21,8 @@
                     {% elif mode == "following" %}<small><strong>[{% trans "activity" %}]</strong></small>
                     {% elif mode == "recent" %}<small><strong>[{% trans "followups" %}]</strong></small>
                     {% elif mode == "acquaintances" %}<small><strong>[{% trans "acquaintances" %}]</strong></small>
-                    {% elif mode == "answered" %}<small><strong>[{% trans "with replies" %}]</strong></small>{% endif %}
+                    {% elif mode == "answered" %}<small><strong>[{% trans "with replies" %}]</strong></small>
+                    {% elif mode == "images" %}<small><strong>[{% trans "images" %}]</strong></small>{% endif %}
 
                     {% if topic.is_pinned %}
                         <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
@@ -60,6 +61,7 @@
                             {% if topic.is_ama %}
                                 <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=answered">{% trans "with replies" %}</a>
                             {% endif %}
+                            <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=images">{% trans "images" %}</a>
                             {% if user.is_authenticated %}
                                 <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=search&keywords=@{{ user.username }}">{% trans "my entries" %}</a>
                                 <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=acquaintances">{% trans "acquaintances" %}</a>

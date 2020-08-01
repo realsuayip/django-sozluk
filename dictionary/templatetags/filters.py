@@ -34,6 +34,8 @@ SEE_EXPR = r"(?:bkz|see)"
 SEARCH_EXPR = r"(?:ara|search)"
 IMAGE_EXPR = r"(?:görsel|image)"
 
+IMAGE_REGEX = fr"\({IMAGE_EXPR}: ([a-z0-9]{{8}})\)"
+
 # Translators: Short for "also see this", used in entry editor.
 SEE = pgettext_lazy("editor", "see")
 SEARCH = pgettext_lazy("editor", "search")
@@ -95,7 +97,7 @@ def formatted(raw_entry):
             fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Image
-        (fr"\({IMAGE_EXPR}: ([a-z0-9]{{8}})\)", fr'<a role="button" tabindex="0" data-img="/img/\1">{IMAGE}</a>'),
+        (IMAGE_REGEX, fr'<a role="button" tabindex="0" data-img="/img/\1">{IMAGE}</a>'),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
         # Find links with label, then encapsulate them in anchor tag, which adds " character before the
         # link. Then we find all other links which don't have " at the start.
