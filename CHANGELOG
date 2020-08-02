@@ -1,3 +1,20 @@
+[0.187.0-dev-pre](2020.08.02)(compatible)
+--Additions--
+1) Add validator validate_topic_title.
+(run makemigrations+migrate for dictionary)
+
+-- Changes --
+1) Overhauled draft saving system. Users now
+can save drafts asynchronously by using the new save
+button instead of checkbox style synchronous save.
+Saving a draft will also show a preview. Ctrl + S
+shortcut is also available.
+2) Deleting draft entries will no longer cause
+karma deduction (this was unintentional).
+
+--Deletions--
+None
+
 [0.186.0-dev-pre](2020.08.01)(compatible)
 --Additions--
 1) None

@@ -3,9 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, UpdateView
 
 from ..forms.edit import EntryForm, PreferencesForm
@@ -33,38 +34,19 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
     template_name = "dictionary/edit/entry_update.html"
     context_object_name = "entry"
 
-    def get_success_url(self):
-        if self.object.is_draft:
-            notifications.info(self.request, gettext("saved this as draft"))
-            return reverse("entry_update", kwargs={"pk": self.object.pk})
-
-        return reverse("entry-permalink", kwargs={"entry_id": self.object.pk})
-
     def form_valid(self, form):
-        is_draft_initial = Entry.objects_all.get(pk=self.kwargs["pk"]).is_draft
         entry = form.save(commit=False)
 
-        if is_draft_initial:
-            # Updating never-published (draft), entry = submitted form data
-            if not entry.is_draft:
-                # Entry is being published by user (suspended users can't publish their drafts)
-                if self.request.user.is_suspended:
-                    entry.is_draft = True
-                    entry.date_edited = timezone.now()
-                else:
-                    entry.date_created = timezone.now()
-                    entry.date_edited = None
-            else:
-                entry.date_edited = timezone.now()
-        else:
-            # Updating published entry
-            if self.request.user.is_suspended:
-                notifications.error(
-                    self.request, gettext("you lack the permissions to edit this entry. you might as well delete it?")
-                )
-                return super().form_invalid(form)
+        if self.request.user.is_suspended or entry.topic.is_banned:
+            notifications.error(self.request, gettext(_("no, no i don't think i will.")))
+            return super().form_invalid(form)
 
+        if entry.is_draft:
             entry.is_draft = False
+            entry.date_created = timezone.now()
+            entry.date_edited = None
+            notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
+        else:
             entry.date_edited = timezone.now()
 
         return super().form_valid(form)
@@ -75,8 +57,8 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
 
         return super().form_invalid(form)
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(Entry.objects_all, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
+    def get_queryset(self):
+        return Entry.objects_all.filter(author=self.request.user)
 
 
 class CommentMixin(LoginRequiredMixin, SuccessMessageMixin):

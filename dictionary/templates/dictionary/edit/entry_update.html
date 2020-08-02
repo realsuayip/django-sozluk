@@ -4,40 +4,41 @@
 {% block title %}{% trans "edit" context "titleblock" %}{% endblock %}
 {% block content %}
     <h1 class="h4">
-        <strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong><small><strong>#{{ entry.pk }}</strong></small>
+        <strong><a href="{{ entry.topic.get_absolute_url }}">{{ entry.topic.title }}</a></strong>
+        <small class="ml-2"><strong>#{{ entry.pk }}</strong></small>
     </h1>
 
     <section class="user-content mt-3">
+        {% if entry.is_draft %}
+            <section class="pw-area">
+                <h2 class="h5 text-muted">{% trans "preview" %}</h2>
+                <p class="text-formatted pw-text">{{ entry.content|formatted|linebreaksbr }}</p>
+            </section>
+        {% endif %}
+
         {% if not user.is_novice %}
             <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
         {% endif %}
+
         <section class="user-comments">
             {% include "dictionary/includes/editor_buttons.html" %}
 
-            <form method="post">
+            <form method="post" class="content-form">
                 {% csrf_token %}
                 {% blocktrans asvar text_placeholder with title=entry.topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
                 {% trans "Entry content area" as area_label %}
-                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="20" spellcheck="true" aria-label=area_label %}
+                {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave" rows="20" spellcheck="true" aria-label=area_label %}
 
-                <div class="row align-items-center">
-                    <div class="col-6">
-                        {% if entry.is_draft and not user.is_suspended %}
-                            <div class="custom-control custom-checkbox">
-                                {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                <label class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
-                            </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        {% if entry.is_draft %}
+                            <button type="button" class="btn draft-async px-0 mr-3" data-pk="{{ entry.pk }}">{% trans "save changes" %}</button>
                         {% endif %}
-
-                        <a role="button" tabindex="0" data-target-entry="{{ entry.id }}" class="delete-entry-redirect">{% trans "delete" %}</a>
+                        <button type="button" data-target-entry="{{ entry.id }}" class="btn btn-django-link fs-90 delete-entry-redirect">{% trans "delete" %}</button>
                     </div>
-
-                    <div class="col-6">
-                        <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
-                    </div>
+                    <button type="submit" class="btn btn-django-link"{% if user.is_suspended or entry.topic.is_banned %} title="{% trans "you lack the required permissions." %}" disabled{% endif %}>{% trans "publish" %}</button>
                 </div>
             </form>
-
         </section>
     </section>
 {% endblock %}

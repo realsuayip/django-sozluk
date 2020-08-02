@@ -217,26 +217,16 @@
                     {% include "dictionary/includes/editor_buttons.html" %}
                     {% load widget_tweaks %}
 
-                    <form method="post">
+                    <form method="post" id="content-form">
                         {% csrf_token %}
                         {% blocktrans asvar text_placeholder with title=topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
                         {% trans "Entry content area" as area_label %}
-                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="5" spellcheck="true" aria-label=area_label %}
-
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                {% if not user.is_suspended %}
-                                    <div class="custom-control custom-checkbox">
-                                        {% render_field form.is_draft class="custom-control-input" id="is_draft" %}
-                                        <label title="{% trans "throw this entry to drafts before publishing it publicly" %}" class="custom-control-label" for="is_draft">{% trans "keep this as draft" %}</label>
-                                    </div>
-                                {% else %}
-                                    <p class="text-danger">{% trans "your entry will be drafted." %}</p>
-                                {% endif %}
+                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave" rows="5" spellcheck="true" aria-label=area_label %}
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <button type="button" class="btn draft-async px-0" data-title="{{ topic.title }}">{% trans "keep this as draft" %}</button>
                             </div>
-                            <div class="col-6">
-                                <button type="submit" class="btn btn-django float-right">{% trans "send" %}</button>
-                            </div>
+                            <button type="submit" class="btn btn-django-link"{% if user.is_suspended %} title="{% trans "you lack the required permissions." %}" disabled{% endif %}>{% trans "publish" %}</button>
                         </div>
                     </form>
                 </section>

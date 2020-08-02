@@ -266,46 +266,43 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         sets created_by field of the topic.
         """
 
-        # Hinders sending entries to banned topics.
-        if self.topic.exists and self.topic.is_banned:  # Cannot check is_banned before chechking its existance
+        if (self.topic.exists and self.topic.is_banned) or self.request.user.is_suspended:
+            # Cannot check is_banned before checking its existence.
             # Translators: Not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, _("no, no i don't think i will."))
             return self.form_invalid(form)
 
-        # Entry creation handling
-        entry = form.save(commit=False)
-        entry.author = self.request.user
-        is_draft = form.cleaned_data.get("is_draft")  # for redirect purposes
+        draft_pk = self.request.POST.get("pub_draft_pk")
 
-        # Hinders entry publishing for suspended users.
-        if self.request.user.is_suspended:
-            is_draft = True  # for redirect purposes
-            entry.is_draft = True
-
-        if self.topic.exists:
-            entry.topic = self.topic
-        else:
-            # Create topic
+        if draft_pk and draft_pk.isdigit():
+            # Publishing previously draft entry.
             try:
-                # make sure that there is no topic with empty slug, empty slug is reserved for validity testing
-                if not slugify(self.topic.title):
-                    notifications.error(self.request, _("that title is just too nasty."))
+                entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
+                entry.is_draft = False
+                entry.date_created = timezone.now()
+                entry.date_edited = None
+            except Entry.DoesNotExist:
+                notifications.error(self.request, _("no, no i don't think i will."))
+                return self.form_invalid(form)
+        else:
+            # Creating a brand new entry.
+            entry = form.save(commit=False)
+            entry.author = self.request.user
+
+            if self.topic.exists:
+                entry.topic = self.topic
+            else:
+                # Create topic
+                try:
+                    Topic(title=self.topic.title).full_clean()
+                except ValidationError as error:
+                    for msg in error.messages:
+                        notifications.error(self.request, msg)
                     return self.form_invalid(form)
 
-                Topic(title=self.topic.title).full_clean()
-            except ValidationError as error:
-                for msg in error.messages:
-                    notifications.error(self.request, msg)
-                return self.form_invalid(form)
-
-            entry.topic = Topic.objects.create_topic(title=self.topic.title)
+                entry.topic = Topic.objects.create_topic(title=self.topic.title)
 
         entry.save()
-
-        if is_draft:
-            notifications.info(self.request, _("saved this as draft"))
-            return redirect(reverse("entry_update", kwargs={"pk": entry.pk}))
-
         notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
@@ -560,11 +557,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """
         # Normal handling of an existing topic
         if self.kwargs.get("slug"):
-            self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug").strip())
+            self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug"))
 
         # Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
         elif self.kwargs.get("unicode_string"):
-            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string").strip())
+            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string"))
 
             if self.topic.exists:
                 return self._redirect_to_self()

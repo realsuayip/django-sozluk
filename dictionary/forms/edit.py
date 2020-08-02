@@ -24,7 +24,7 @@ class PreferencesForm(UserChangeForm):
 class EntryForm(forms.ModelForm):
     class Meta:
         model = Entry
-        fields = ("content", "is_draft")
+        fields = ("content",)
         error_messages = {
             "content": {"required": _("my dear, just write your entry, how hard could it be?")}
         }

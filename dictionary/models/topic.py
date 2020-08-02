@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MaxLengthValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.shortcuts import reverse
@@ -8,7 +7,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from uuslug import uuslug
 
 from ..utils import get_generic_superuser, i18n_lower
-from ..utils.validators import validate_user_text
+from ..utils.validators import validate_topic_title, validate_user_text
 from .author import Author
 from .category import Category
 from .m2m import TopicFollowing
@@ -16,21 +15,12 @@ from .managers.topic import TopicManager, TopicManagerPublished
 from .messaging import Message
 
 
-TOPIC_TITLE_VALIDATORS = [
-    RegexValidator(
-        r"^[a-z0-9 ğçıöşü&()_+='%/\",.!?~\[\]{}<>^;\\|-]+$",
-        message=_("the definition of this topic includes forbidden characters"),
-    ),
-    MaxLengthValidator(50, message=_("this title is too long")),
-]
-
-
 class Topic(models.Model):
     title = models.CharField(
         max_length=50,
         unique=True,
         db_index=True,
-        validators=TOPIC_TITLE_VALIDATORS,
+        validators=[validate_topic_title],
         verbose_name=_("Definition"),
         help_text=_(
             "In order to change the definition of the topic after it"

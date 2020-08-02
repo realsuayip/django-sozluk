@@ -628,7 +628,7 @@ section.user-comments .editor-buttons button.add-code:hover {
 }
 
 section.user-comments textarea.entry_editor {
-    margin: .5em 0;
+    margin: .5em 0 1em;
     width: 100%;
     padding: .5em;
 }

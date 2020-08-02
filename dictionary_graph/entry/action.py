@@ -45,12 +45,14 @@ class DeleteEntry(Action, Mutation):
     @owneraction
     def mutate(_root, info, entry):
         entry.delete()
-        # Deduct some karma upon entry deletion.
-        info.context.user.karma = F("karma") - 2
-        info.context.user.save()
-        return DeleteEntry(
-            feedback=_("your entry has been deleted"), redirect=reverse_lazy("topic", kwargs={"slug": entry.topic.slug})
-        )
+        redirect_url = reverse_lazy("topic", kwargs={"slug": entry.topic.slug})
+
+        if not entry.is_draft:
+            # Deduct some karma upon entry deletion.
+            info.context.user.karma = F("karma") - 2
+            info.context.user.save()
+
+        return DeleteEntry(feedback=_("your entry has been deleted"), redirect=redirect_url)
 
 
 class PinEntry(Action, Mutation):

@@ -623,7 +623,7 @@
                 txtarea.value = allText.substring(0, start) + `\`:${sel}\`` + allText.substring(finish, allText.length);
             } else if (replacementType === "spoiler") {
                 const spoiler = gettext("spoiler");
-                txtarea.value = allText.substring(0, start) + `{--\`${spoiler}\`--}\n${sel}\n--\`${spoiler}\`--` + allText.substring(finish, allText.length);
+                txtarea.value = allText.substring(0, start) + `--\`${spoiler}\`--\n${sel}\n--\`${spoiler}\`--` + allText.substring(finish, allText.length);
             } else if (replacementType === "link") {
                 const linkText = prompt(gettext("which address to link?"), "http://");
                 if (linkText !== "http://") {
@@ -1365,5 +1365,85 @@
             self.nextAll().slice(0, 2).toggle(); // Next 2 elements (expand button and image)
         }
         self.attr("data-loaded", "");
+    });
+
+    function draftEntry (content, pk = null, title = null) {
+        return gqlc({
+            query: "mutation($content:String!,$pk:ID,$title:String){entry{edit(content:$content,pk:$pk,title:$title){pk,content,feedback}}}",
+            variables: { content, title, pk }
+        }).then(function (response) {
+            if (response.errors) {
+                for (const error of response.errors) {
+                    notify(error.message, "error");
+                }
+            } else {
+                const btn = $("button.draft-async");
+                btn.text(gettext("save changes"));
+                if (!btn.is("[data-pk]")) {
+                    // ^^ Only render delete button once.
+                    btn.after(`<button type="button" class="btn btn-django-link fs-90 ml-3 draft-del">${gettext("delete")}</button>`);
+                }
+                window.onbeforeunload = null;
+                notify(response.data.entry.edit.feedback, "info");
+                return response;
+            }
+        });
+    }
+
+    $("button.draft-async").on("click", function () {
+        const self = $(this);
+        const title = self.attr("data-title");
+        const pk = self.attr("data-pk");
+        const content = $("#user_content_edit").val();
+
+        if (!$.trim(content)) {
+            notify(gettext("if only you could write down something"), "error");
+            return;
+        }
+
+        if (pk) {
+            draftEntry(content, pk).then(function (response) {
+                if (response) {
+                    $("p.pw-text").html(response.data.entry.edit.content);
+                }
+            });
+            return; // Don't check title.
+        }
+
+        if (title) {
+            draftEntry(content, null, title).then(function (response) {
+                if (response) {
+                    $(".user-content").prepend(`<section class="pw-area"><h2 class="h5 text-muted">${gettext("preview")}</h2><p class="text-formatted pw-text">${response.data.entry.edit.content}</p></section>`);
+                    const pk = response.data.entry.edit.pk;
+                    self.attr("data-pk", pk);
+                    $("#content-form").prepend(`<input type="hidden" name="pub_draft_pk" value="${pk}" />`);
+                }
+            });
+        }
+    });
+
+    $(document).on("click", "button.draft-del", function () {
+        if (confirm(gettext("Are you sure?"))) {
+            const self = $(this);
+            const btn = $("button.draft-async");
+            entryAction("delete", btn.attr("data-pk")).then(function (response) {
+                $("section.pw-area").remove();
+                $("#user_content_edit").val("");
+                $("[name=pub_draft_pk]").remove();
+                btn.text(gettext("keep this as draft"));
+                btn.removeAttr("data-pk");
+                self.remove();
+                notify(response.data.entry.delete.feedback, "info");
+            });
+        }
+    });
+
+    $(".allowsave").keydown(function (e) {
+        if (e.ctrlKey || e.metaKey) {
+            if (String.fromCharCode(e.which).toLowerCase() === "s") {
+                e.preventDefault();
+                $("button.draft-async").click();
+            }
+        }
     });
 })();

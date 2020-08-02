@@ -5,8 +5,6 @@ from django.db import models
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 
-from uuslug import slugify
-
 from ...models import Entry
 from ...utils import i18n_lower
 
@@ -28,9 +26,6 @@ class TopicManager(models.Manager):
 
     def _get_pseudo(self, title):
         pseudo = self.PseudoTopic(title)
-
-        if not slugify(title):
-            return pseudo
 
         try:
             self.model(title=title).full_clean()
