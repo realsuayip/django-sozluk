@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-31 21:47+0300\n"
-"PO-Revision-Date: 2020-07-31 21:55+0156\n"
+"POT-Creation-Date: 2020-08-02 20:19+0300\n"
+"PO-Revision-Date: 2020-08-02 20:19+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -75,147 +75,162 @@ msgid_plural "... %(count)s novices"
 msgstr[0] "... %(count)s çaylak"
 msgstr[1] "... %(count)s çaylak"
 
-#: .\static\dictionary\js\djdict.js:812 .\static\dictionary\js\djdict.js:1319
-#: .\static\dictionary\js\djdict.js:1332 .\static\dictionary\js\djdict.js:1338
+#: .\static\dictionary\js\djdict.js:812 .\static\dictionary\js\djdict.js:1329
+#: .\static\dictionary\js\djdict.js:1342 .\static\dictionary\js\djdict.js:1348
+#: .\static\dictionary\js\djdict.js:1434
 msgid "Are you sure?"
 msgstr "Emin misiniz?"
 
-#: .\static\dictionary\js\djdict.js:826 .\static\dictionary\js\djdict.js:927
+#: .\static\dictionary\js\djdict.js:826 .\static\dictionary\js\djdict.js:929
 msgid "follow"
 msgstr "takip et"
 
-#: .\static\dictionary\js\djdict.js:826 .\static\dictionary\js\djdict.js:927
+#: .\static\dictionary\js\djdict.js:826 .\static\dictionary\js\djdict.js:929
 msgid "unfollow"
 msgstr "takip etme"
 
-#: .\static\dictionary\js\djdict.js:875 .\static\dictionary\js\djdict.js:892
-#: .\static\dictionary\js\djdict.js:1164 .\static\dictionary\js\djdict.js:1227
+#: .\static\dictionary\js\djdict.js:877 .\static\dictionary\js\djdict.js:894
+#: .\static\dictionary\js\djdict.js:1166 .\static\dictionary\js\djdict.js:1237
 msgid "are you sure to delete?"
 msgstr "harbiden silinsin mi?"
 
-#: .\static\dictionary\js\djdict.js:943
+#: .\static\dictionary\js\djdict.js:945
 msgid "continue reading"
 msgstr "devamını okuyayım"
 
-#: .\static\dictionary\js\djdict.js:1018
+#: .\static\dictionary\js\djdict.js:1020 .\static\dictionary\js\djdict.js:1408
 msgid "if only you could write down something"
 msgstr "çeşke bi şeyler yazsaydın"
 
-#: .\static\dictionary\js\djdict.js:1023 .\static\dictionary\js\djdict.js:1139
+#: .\static\dictionary\js\djdict.js:1025 .\static\dictionary\js\djdict.js:1141
+#: .\static\dictionary\js\djdict.js:1193
 msgid "this content includes forbidden characters."
 msgstr "bu içerik geçersiz karakterler içeriyor"
 
-#: .\static\dictionary\js\djdict.js:1039
+#: .\static\dictionary\js\djdict.js:1041
 msgctxt "category-list"
 msgid "unfollow"
 msgstr "bırak ya"
 
-#: .\static\dictionary\js\djdict.js:1039
+#: .\static\dictionary\js\djdict.js:1041
 msgctxt "category-list"
 msgid "follow"
 msgstr "takip et"
 
-#: .\static\dictionary\js\djdict.js:1084
+#: .\static\dictionary\js\djdict.js:1086
 msgid "unpin from profile"
 msgstr "profilimden kaldır"
 
-#: .\static\dictionary\js\djdict.js:1084
+#: .\static\dictionary\js\djdict.js:1086
 msgid "pin to profile"
 msgstr "profilime sabitle"
 
-#: .\static\dictionary\js\djdict.js:1090
+#: .\static\dictionary\js\djdict.js:1092
 msgid "comment"
 msgstr "yorum yap"
 
-#: .\static\dictionary\js\djdict.js:1094
+#: .\static\dictionary\js\djdict.js:1096 .\static\dictionary\js\djdict.js:1392
 msgid "delete"
 msgstr "sil"
 
-#: .\static\dictionary\js\djdict.js:1095
+#: .\static\dictionary\js\djdict.js:1097
 msgid "edit"
 msgstr "düzelt"
 
-#: .\static\dictionary\js\djdict.js:1098
+#: .\static\dictionary\js\djdict.js:1100
 msgid "message"
 msgstr "mesaj gönder"
 
-#: .\static\dictionary\js\djdict.js:1099
+#: .\static\dictionary\js\djdict.js:1101
 msgid "block"
 msgstr "engelle"
 
-#: .\static\dictionary\js\djdict.js:1104
+#: .\static\dictionary\js\djdict.js:1106
 msgid "report"
 msgstr "şikayet"
 
-#: .\static\dictionary\js\djdict.js:1130 .\static\dictionary\js\djdict.js:1167
+#: .\static\dictionary\js\djdict.js:1132 .\static\dictionary\js\djdict.js:1169
 msgid "someone should populate this"
 msgstr "biri bu başlığı doldursun"
 
-#: .\static\dictionary\js\djdict.js:1130
+#: .\static\dictionary\js\djdict.js:1132
 msgid "nevermind"
 msgstr "boşver"
 
-#: .\static\dictionary\js\djdict.js:1155
+#: .\static\dictionary\js\djdict.js:1157
 msgid "you just wished for this topic."
 msgstr "bu başlığa az önce ukte verdiniz."
 
-#: .\static\dictionary\js\djdict.js:1155
+#: .\static\dictionary\js\djdict.js:1157
 msgid "your hint:"
 msgstr "notunuz:"
 
-#: .\static\dictionary\js\djdict.js:1239
+#: .\static\dictionary\js\djdict.js:1249
 msgid "deleted conversation"
 msgstr "sohbet silindi"
 
-#: .\static\dictionary\js\djdict.js:1251
+#: .\static\dictionary\js\djdict.js:1261
 msgid "are you sure to delete all selected conversations?"
 msgstr "seçilen sohbetler harbiden silinsin mi?"
 
-#: .\static\dictionary\js\djdict.js:1262
+#: .\static\dictionary\js\djdict.js:1272
 msgid "you need to select at least one conversation to delete"
 msgstr "silmek için bir sohbet seçmedin ki"
 
-#: .\static\dictionary\js\djdict.js:1276
+#: .\static\dictionary\js\djdict.js:1286
 msgid "are you sure to archive all selected conversations?"
 msgstr "seçilen sohbetler harbiden arşivlensin mi?"
 
-#: .\static\dictionary\js\djdict.js:1287
+#: .\static\dictionary\js\djdict.js:1297
 msgid "you need to select at least one conversation to archive"
 msgstr "arşivlemek için bir sohbet seçmedin ki"
 
-#: .\static\dictionary\js\djdict.js:1292
+#: .\static\dictionary\js\djdict.js:1302
 msgid "are you sure to archive?"
 msgstr "harbiden arşivlensin mi?"
 
-#: .\static\dictionary\js\djdict.js:1303
+#: .\static\dictionary\js\djdict.js:1313
 msgid "archived conversation"
 msgstr "sohbet arşivlendi"
 
-#: .\static\dictionary\js\djdict.js:1333
+#: .\static\dictionary\js\djdict.js:1343
 msgid "click or drop files here to upload"
 msgstr "buraya tıklayıp görselleri seçin veya sürükleyip bırakın"
 
-#: .\static\dictionary\js\djdict.js:1334
-msgid "remove image"
-msgstr "görseli kaldır"
+#: .\static\dictionary\js\djdict.js:1344
+#| msgid "remove image"
+msgid "delete image"
+msgstr "görseli sil"
 
-#: .\static\dictionary\js\djdict.js:1335
+#: .\static\dictionary\js\djdict.js:1345
 msgid "File is too big ({{filesize}}MB). Max filesize: {{maxFilesize}}MB."
 msgstr "Dosya çok büyük ({{filesize}}MB). Maksimum boyut: {{maxFilesize}}MB."
 
-#: .\static\dictionary\js\djdict.js:1336
+#: .\static\dictionary\js\djdict.js:1346
 msgid "You can not upload any more files."
 msgstr "Daha fazla dosya yükleyemezsiniz."
 
-#: .\static\dictionary\js\djdict.js:1337
+#: .\static\dictionary\js\djdict.js:1347
 msgid "Upload canceled."
 msgstr "Yükleme iptal edildi."
 
-#: .\static\dictionary\js\djdict.js:1341 .\static\dictionary\js\djdict.js:1348
+#: .\static\dictionary\js\djdict.js:1351 .\static\dictionary\js\djdict.js:1358
 msgctxt "editor"
 msgid "image"
 msgstr "görsel"
 
-#: .\static\dictionary\js\djdict.js:1360
+#: .\static\dictionary\js\djdict.js:1370
 msgid "open full image in new tab"
 msgstr "tam görseli yeni sekmede aç"
+
+#: .\static\dictionary\js\djdict.js:1389
+msgid "save changes"
+msgstr "değişiklikleri kaydet"
+
+#: .\static\dictionary\js\djdict.js:1424
+msgid "preview"
+msgstr "önizleme"
+
+#: .\static\dictionary\js\djdict.js:1441
+msgid "keep this as draft"
+msgstr "kenarda dursun şimdilik"

@@ -129,7 +129,15 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def slug_identifier(self):
-        return self._manager.slug_identifier
+        identifier_map = {
+            **dict.fromkeys(("acquaintances", "top", "userstats"), "/entry/"),
+            "drafts": "/entry/update/",
+        }
+
+        if f"{self.slug}_{self._manager.tab}" in ("userstats_channels", "acquaintances_entries"):
+            return "/topic/"
+
+        return identifier_map.get(self.slug, "/topic/")
 
     @cached_property
     def refresh_count(self):

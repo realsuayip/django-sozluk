@@ -75,8 +75,8 @@ class AuthorAdmin(UserAdmin):
         return "admin:unsuspend-user"
 
     # Short descriptions
-    suspend_user.short_description = _("Suspend selected %(name)s objects") % {"name": model._meta.verbose_name}
-    unsuspend_user.short_description = _("Unsuspend selected %(name)s objects") % {"name": model._meta.verbose_name}
+    suspend_user.short_description = _("Suspend selected authors")
+    unsuspend_user.short_description = _("Unsuspend selected authors")
 
     # Permissions
     suspend_user.allowed_permissions = ["suspension"]

@@ -27,7 +27,7 @@ def addstr(arg1, arg2):
 
 
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
-RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü₺&()_+='%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
+RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü&()_+='%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
 
 # For each new language append to these expressions.
 SEE_EXPR = r"(?:bkz|see)"
@@ -45,7 +45,7 @@ IMAGE = pgettext_lazy("editor", "image")
 ENTRY_DATE_FORMAT = gettext_lazy("M j, Y")
 
 # Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
-ENTRY_TIME_FORMAT = gettext_lazy("g:h a")
+ENTRY_TIME_FORMAT = gettext_lazy("g:i a")
 
 
 @register.filter

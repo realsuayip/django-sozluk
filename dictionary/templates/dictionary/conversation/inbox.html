@@ -23,7 +23,7 @@
                                     <label class="text-hide custom-control-label" for="_cvs{{ chat.pk }}">{% trans "select" %}</label>
                                 </div>
                             </header>
-                            <p>{{ lastmsg.body|default:_("<em>no messages</em>") }}</p>
+                            <p>{{ lastmsg.body|default:_("<em>no messages</em>")|truncatechars:225 }}</p>
                         </a>
 
                         <footer class="d-flex justify-content-between fs-90">

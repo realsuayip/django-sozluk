@@ -49,7 +49,7 @@
                     <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
                     <span class="mr-3 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" %}</a>
-                        <span>&nbsp;|&nbsp;</span>
+                        <span class="mx-2">|</span>
                         <a title="{% trans "most liked entries of today" %}" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>{% trans "today" %}</a>
                     </span>
 

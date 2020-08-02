@@ -1,5 +1,6 @@
 from django.core.validators import ValidationError
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import linebreaksbr
 from django.utils.translation import gettext as _
 
 from graphene import ID, Mutation, String
@@ -71,5 +72,5 @@ class WishTopic(Mutation):
         topic.wishes.add(wish)
         return WishTopic(
             feedback=_("your wish is now enlisted. if someone starts a discussion, we will let you know."),
-            hint=formatted(hint),
+            hint=linebreaksbr(formatted(hint)),
         )

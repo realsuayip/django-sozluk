@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
 from ..models.messaging import Message
-from ..utils import get_generic_superuser, i18n_lower
+from ..utils import get_generic_superuser, get_generic_privateuser, i18n_lower
 from ..utils.validators import validate_user_text
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 
@@ -63,10 +63,17 @@ class Entry(models.Model):
         return reverse("entry-permalink", kwargs={"entry_id": self.pk})
 
     def delete(self, *args, **kwargs):
+        if self.comments.exists():
+            self.author = get_generic_privateuser()
+            self.save()
+            return
+
         super().delete(*args, **kwargs)
+
         if self.author.is_novice and self.author.application_status == "PN" and self.author.entry_count < 10:
-            # if the entry count drops less than 10, remove user from novice lookup
-            # does not work if bulk deletion made on admin panel (users can only remove one entry at a time)
+            # If the entry count drops less than 10, remove user from novice lookup.
+            # This does not trigger if bulk deletion made on admin panel (users can
+            # only remove one entry at a time) or the entry in question has answers.
             self.author.application_status = "OH"
             self.author.application_date = None
             self.author.queue_priority = 0

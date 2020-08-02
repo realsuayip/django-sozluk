@@ -3,11 +3,11 @@
 # Şuayip Üzülmez <suayip.541@gmail.com>, 2020.
 msgid ""
 msgstr ""
-"Project-Id-Version:\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-31 21:52+0300\n"
-"PO-Revision-Date: 2020-07-29 05:37+0156\n"
-"Last-Translator: b'<suayip.541@gmail.com>'\n"
+"POT-Creation-Date: 2020-08-02 20:14+0300\n"
+"PO-Revision-Date: 2020-08-02 20:16+0156\n"
+"Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -28,31 +28,44 @@ msgstr "kanal takibi bırakıldı"
 msgid "the channel is now followed"
 msgstr "bu kanal takipte"
 
-#: .\entry\action.py:26 .\entry\action.py:82 .\entry\action.py:102
-#: .\entry\action.py:106 .\topic\action.py:50 .\user\action.py:21
-#: .\user\action.py:57
+#: .\entry\action.py:26 .\entry\action.py:84 .\entry\action.py:104
+#: .\entry\action.py:108 .\entry\edit.py:56 .\topic\action.py:51
+#: .\user\action.py:21 .\user\action.py:57
 msgid "we couldn't handle your request. try again later."
 msgstr "işleminizi gerçekleştiremedik. daha sonra tekrar deneyin."
 
-#: .\entry\action.py:52
+#: .\entry\action.py:55
 msgid "your entry has been deleted"
 msgstr "entry silindi"
 
-#: .\entry\action.py:60
+#: .\entry\action.py:62
 msgid "this entry is now pinned"
 msgstr "entry sabitlendi"
 
-#: .\entry\action.py:65
+#: .\entry\action.py:67
 msgid "this entry is no longer pinned"
 msgstr "entry artık sabit değil"
 
-#: .\entry\action.py:87
+#: .\entry\action.py:89
 msgid "the entry has been removed from favorites"
 msgstr "entry favorilerden çıkarıldı"
 
-#: .\entry\action.py:91
+#: .\entry\action.py:93
 msgid "the entry has been favorited"
 msgstr "entry favorilendi"
+
+#: .\entry\edit.py:38
+msgid "your changes have been saved as draft"
+msgstr "değişiklikleriniz kenara kaydedildi"
+
+#: .\entry\edit.py:45
+msgid "no, no i don't think i will."
+msgstr "olmaz ki canım... hürrüpü"
+
+#: .\entry\edit.py:53
+#| msgid "your entry has been deleted"
+msgid "your entry has been saved as draft"
+msgstr "entry'niz kenara kaydedildi."
 
 #: .\messaging\action.py:68
 msgid "can't you write down something more?"
@@ -70,23 +83,23 @@ msgstr "mesajınızı gönderemedik ne yazık ki"
 msgid "your message has been successfully sent"
 msgstr "mesajınız sağ salim gönderildi"
 
-#: .\topic\action.py:28
+#: .\topic\action.py:29
 msgid "you no longer follow this topic"
 msgstr "takipten çıkıldı"
 
-#: .\topic\action.py:31
+#: .\topic\action.py:32
 msgid "you are now following this topic"
 msgstr "bu başlık takipte"
 
-#: .\topic\action.py:65
+#: .\topic\action.py:66
 msgid "your wish has been deleted"
 msgstr "ukteniz silindi"
 
-#: .\topic\action.py:68
+#: .\topic\action.py:69
 msgid "sorry, the genie is now busy"
 msgstr "sen ukte verme lütfen"
 
-#: .\topic\action.py:73
+#: .\topic\action.py:74
 msgid ""
 "your wish is now enlisted. if someone starts a discussion, we will let you "
 "know."

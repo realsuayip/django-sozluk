@@ -1,3 +1,23 @@
+[0.0.0-alpha](2020.08.02)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed a bug which caused "today in history"
+and "top" to be out of sync (thanks to Aras Diler).
+2) Fixed some translation problems and translated
+latest feature into Turkish.
+3) Entries with comments are now cannot be deleted,
+if users decide delete such entries, they will lose
+the authorship of that entry (entry will be marked anonymous).
+4) Fixed some UI issues.
+5) When users send entries, the 'forbidden characters' error
+will now be given instantly.
+6) Moved slug_identifier to LeftFrame (from TopicListHandler).
+
+--Deletions--
+None
+
 [0.187.0-dev-pre](2020.08.02)(compatible)
 --Additions--
 1) Add validator validate_topic_title.

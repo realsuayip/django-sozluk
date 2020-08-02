@@ -558,7 +558,7 @@ class TopicListHandler:
         if cached_data is not None:
             if self.slug in ("top", "today-in-history"):
                 # check if the day has changed or not for top or today-in-history
-                if cached_data.get("set_at").day == timezone.now().day:
+                if cached_data.get("set_at").day == timezone.localtime(timezone.now()).day:
                     self.cache_exists = True
             else:
                 self.cache_exists = True
@@ -602,20 +602,6 @@ class TopicListHandler:
 
         # Notice: caching the queryset will evaluate it anyway
         return self._cache_data(tuple(self.data))
-
-    @property
-    def slug_identifier(self):
-        # todo: move this to LeftFrame and refactor it to be like parameters
-        if f"{self.slug}_{self.tab}" in ("userstats_channels", "acquaintances_entries"):
-            return "/topic/"
-
-        if self.slug in ("acquaintances", "top", "userstats"):
-            return "/entry/"
-
-        if self.slug == "drafts":
-            return "/entry/update/"
-
-        return "/topic/"
 
     @property
     def refresh_count(self):  # (yenile count)

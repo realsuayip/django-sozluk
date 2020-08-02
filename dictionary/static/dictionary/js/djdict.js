@@ -1154,7 +1154,7 @@
             self.toggle();
             self.siblings().toggle();
             const hintFormatted = response.data.topic.wish.hint;
-            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted.replace(/\n/g, "<br>")}</i></p>` : ""}</li>`);
+            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted}</i></p>` : ""}</li>`);
             $(window).scrollTop(0);
             notify(response.data.topic.wish.feedback);
         });
@@ -1187,6 +1187,14 @@
 
     $("form").submit(function () {
         window.onbeforeunload = null;
+        const userContent = $(this).children("#user_content_edit");
+        if (userContent.length) {
+            if (!isValidText(userContent.val())) {
+                notify(gettext("this content includes forbidden characters."), "error");
+                window.onbeforeunload = () => true;
+                return false;
+            }
+        }
     });
 
     // Conversation actions functionality
@@ -1333,7 +1341,7 @@
         maxFiles: 10,
         dictRemoveFileConfirmation: gettext("Are you sure?"),
         dictDefaultMessage: gettext("click or drop files here to upload"),
-        dictRemoveFile: gettext("remove image"), // lok for other dicts
+        dictRemoveFile: gettext("delete image"),
         dictFileTooBig: gettext("File is too big ({{filesize}}MB). Max filesize: {{maxFilesize}}MB."),
         dictMaxFilesExceeded: gettext("You can not upload any more files."),
         dictUploadCanceled: gettext("Upload canceled."),
