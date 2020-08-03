@@ -40,6 +40,12 @@ class Topic(models.Model):
     )
 
     category = models.ManyToManyField(Category, blank=True, verbose_name=_("Channels"))
+    allow_suggestions = models.BooleanField(
+        default=True,
+        verbose_name=_("Allow suggestions"),
+        help_text=_("When checked, users will be able to suggest channels to this topic."),
+    )
+
     wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name=_("Wishes"))
 
     mirrors = models.ManyToManyField(

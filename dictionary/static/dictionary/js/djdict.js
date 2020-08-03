@@ -705,7 +705,7 @@
         });
     });
 
-    $(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, .dropdown-advanced-search, .autocomplete-suggestions", e => {
+    $(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, .dropdown-advanced-search, .autocomplete-suggestions, .noprop", e => {
         e.stopPropagation();
     });
 
@@ -870,6 +870,27 @@
             self.siblings(".vote").removeClass("active");
             self.toggleClass("active");
             self.siblings(".rating").text(response.data.entry.votecomment.count);
+        });
+    });
+
+    $(".suggestion-vote button").on("click", function () {
+        const self = $(this);
+        const direction = self.hasClass("up") ? 1 : -1;
+        const topic = self.parent().attr("data-topic");
+        const category = self.parent().attr("data-category");
+
+        gqlc({
+            query: "mutation($category:String!,$topic:String!,$direction:Int!){category{suggest(category:$category,topic:$topic,direction:$direction){feedback}}}",
+            variables: { category, topic, direction }
+        }).then(function (response) {
+            if (response.errors) {
+                for (const error of response.errors) {
+                    notify(error.message, "error");
+                }
+            } else {
+                self.toggleClass("btn-django-link");
+                self.siblings("button").removeClass("btn-django-link");
+            }
         });
     });
 

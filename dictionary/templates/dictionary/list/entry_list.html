@@ -48,7 +48,7 @@
                 {% if populated %}
                     <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
-                    <span class="mr-3 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" %}</a>
+                    <span class="mr-3 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" context "nicefilter" %}</a>
                         <span class="mx-2">|</span>
                         <a title="{% trans "most liked entries of today" %}" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>{% trans "today" %}</a>
                     </span>
@@ -241,18 +241,54 @@
 
 
 {% block rightframe %}
-    {% with categories=topic.category.all %}
-        {% if categories %}
-            <section class="topic-categories-list">
-                <h2>{% trans "belonging channels" %}</h2>
-                <ul>
-                    {% for category in categories %}
-                        <li>
-                            <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </section>
-        {% endif %}
-    {% endwith %}
+    {% if topic.exists %}
+        {% with categories=topic.category.all %}
+            {% if categories or perms.dictionary.can_suggest_categories %}
+                <section class="topic-categories-list">
+                    <h2>{% trans "belonging channels" %}</h2>
+                    {% if categories %}
+                        <ul>
+                            {% for category in categories %}
+                                <li>
+                                    <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span>{% trans "this topic is yet to be classified" %}</span>
+                    {% endif %}
+
+                    {% if not user.is_novice and perms.dictionary.can_suggest_categories and topic.allow_suggestions %}
+                        <div class="dropdown mt-2">
+                            <a role="button" tabindex="0" id="suggestDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "suggest channels" %}</a>
+                            <div class="dropdown-menu noprop tinybar" aria-labelledby="suggestDrop" style="max-height: 400px; overflow-y: scroll">
+                                <ul class="list-group pl-3 pr-2" style="min-width: 200px;">
+                                    {% get_topic_suggestions user topic as categories_with_suggestions %}
+                                    {% for category in categories_with_suggestions %}
+                                        <li class="py-2 d-flex justify-content-between">
+                                            <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                                            <div class="suggestion-vote" style="min-width: 55px;" data-topic="{{ topic.slug }}" data-category="{{ category.slug }}">
+                                                <button type="button" class="btn btn-sm up{{ category.up|yesno:" btn-django-link," }}">
+                                                    <svg fill="currentColor" width="10" height="10" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                                        <use href="#up"></use>
+                                                        <title>{% trans "suggest" %}</title>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" class="btn btn-sm{{ category.down|yesno:" btn-django-link," }}">
+                                                    <svg fill="currentColor" width="10" height="10" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                                        <use href="#down"></use>
+                                                        <title>{% trans "put down" %}</title>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </section>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
 {% endblock %}

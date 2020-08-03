@@ -11,7 +11,10 @@ from ..utils.admin import intermediate
 class TopicAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("title", "category", "mirrors")}),
-        (_("Accessibility settings"), {"fields": ("is_pinned", "is_banned", "is_censored", "is_ama")}),
+        (
+            _("Accessibility settings"),
+            {"fields": ("allow_suggestions", "is_pinned", "is_banned", "is_censored", "is_ama")},
+        ),
         (_("Metadata"), {"fields": ("created_by", "date_created")}),
         (
             _("Media"),

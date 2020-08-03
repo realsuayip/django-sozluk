@@ -273,3 +273,20 @@ UNDERWHELMING_KARMA_EXPRESSION = _("imbecile")
 
 OVERWHELMING_KARMA_EXPRESSION = _("the champion")
 """Expression for too high karma points. (decided by KARMA_BOUNDARY_UPPER)"""
+
+# Suggestions
+
+SUGGESTIONS_PER_TOPIC = 3
+"""Number of suggestions a user can make per topic."""
+
+SUGGESTIONS_PER_DAY = 45
+"""Number of suggestions users can make in a 24 hour period."""
+
+SUGGESTIONS_QUALIFY_RATE = 3
+"""
+Rate which qualifies a channel for a topic, e.g. AT LEAST this many users
+should agree to qualify a channel.
+"""
+
+SUGGESTIONS_ENTRY_REQUIREMENT = 100
+"""The number of entries required to acquire the privilege of suggesting channels."""

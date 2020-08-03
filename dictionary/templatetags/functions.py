@@ -1,12 +1,12 @@
 from django import template
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import connection
+from django.db.models import Exists, OuterRef
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
-from ..models import ExternalURL, Topic
+from ..models import Category, ExternalURL, Suggestion, Topic
 from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
-
 
 register = template.Library()
 
@@ -36,6 +36,14 @@ def check_follow_user(user, target):
 @register.simple_tag
 def get_external_urls():
     return ExternalURL.objects.all()
+
+
+@register.simple_tag
+def get_topic_suggestions(user, topic):
+    def exists(direction):
+        return Exists(Suggestion.objects.filter(direction=direction, author=user, topic=topic, category=OuterRef("pk")))
+
+    return Category.objects.annotate(up=exists(1), down=exists(-1))
 
 
 @register.simple_tag

@@ -173,6 +173,7 @@ class Author(AbstractUser):
             ("suspend_user", _("Can suspend users")),
             ("can_clear_cache", _("Can clear cache")),
             ("can_comment", _("Can comment on entries")),
+            ("can_suggest_categories", _("Can suggest categories for topics")),
         )
         verbose_name = _("author")
         verbose_name_plural = _("authors")

@@ -1,6 +1,6 @@
 from .announcements import Announcement
 from .author import AccountTerminationQueue, Author, Badge, Memento, UserVerification
-from .category import Category
+from .category import Category, Suggestion
 from .entry import Comment, Entry
 from .flatpages import ExternalURL, MetaFlatPage
 from .images import Image

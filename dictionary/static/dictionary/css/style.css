@@ -172,38 +172,41 @@ nav.sub-nav ul .more_tags_dropdown,
     position: fixed;
     width: 250px;
     padding: 0 .5em;
+}
+
+.tinybar {
     scrollbar-width: thin; /* firefox only */
 }
 
-.left-frame::-webkit-scrollbar-button {
+.tinybar::-webkit-scrollbar-button {
     display: none;
     height: 13px;
     border-radius: 0;
     background-color: #b9b9b9;
 }
 
-.left-frame::-webkit-scrollbar-button:hover {
+.tinybar::-webkit-scrollbar-button:hover {
     background-color: #aaa;
 }
 
-.left-frame::-webkit-scrollbar-thumb {
+.tinybar::-webkit-scrollbar-thumb {
     background-color: #bababa;
     border-radius: 2px;
 }
 
-.left-frame::-webkit-scrollbar-thumb:hover {
+.tinybar::-webkit-scrollbar-thumb:hover {
     background-color: #666;
 }
 
-.left-frame::-webkit-scrollbar-track {
+.tinybar::-webkit-scrollbar-track {
     background-color: #efefef;
 }
 
-.left-frame::-webkit-scrollbar-track:hover {
+.tinybar::-webkit-scrollbar-track:hover {
     background-color: #ccc;
 }
 
-.left-frame::-webkit-scrollbar {
+.tinybar::-webkit-scrollbar {
     width: 6px;
 }
 
