@@ -1,4 +1,8 @@
+from django.utils.functional import SimpleLazyObject
+
 from user_agents import parse
+
+from ..utils.context_processors import LeftFrameProcessor
 
 
 class MobileDetectionMiddleware:
@@ -17,4 +21,21 @@ class MobileDetectionMiddleware:
 
         # Code to be executed for each request/response after
         # the view is called.
+        return response
+
+
+class LeftFrameMiddleware:
+    """Injects left frame to context data."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
+    def process_template_response(self, request, response):
+        response.context_data["left_frame"] = (
+            SimpleLazyObject(LeftFrameProcessor(request, response).get_context) if not request.is_mobile else {}
+        )
         return response

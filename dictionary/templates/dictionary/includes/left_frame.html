@@ -11,7 +11,7 @@
             {# CATEGORY SAFENAME #}
 
             {# GUNDEM FILTER TOGGLER BUTTON #}
-            <span {% if lf.slug != "popular" %}class="dj-hidden"{% endif %} id="popular_excluder">
+            <span {% if lf.slug != "popular" %}class="dj-hidden"{% else %}{{ lf.exclusions.active|yesno:'class="active",'|safe }}{% endif %} id="popular_excluder">
                 <svg role="button" tabindex="0" class="exclusion-button" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <use href="#cog"></use>
                     <title>{% trans "channel exclusions" %}</title>

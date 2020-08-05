@@ -21,6 +21,7 @@ from ..models import Author, Category, Comment, DownvotedEntries, Entry, EntryFa
 from ..utils import parse_date_or_none, time_threshold
 from ..utils.decorators import for_public_methods
 from ..utils.settings import (
+    DEFAULT_EXCLUSIONS,
     DEFAULT_CACHE_TIMEOUT,
     DISABLE_CATEGORY_CACHING,
     EXCLUDABLE_CATEGORIES,
@@ -314,7 +315,7 @@ class TopicQueryHandler:
         return result
 
     def generic_category(self, slug):
-        category = get_object_or_404(Category, slug=slug)
+        category = get_object_or_404(Category.objects, slug=slug)
         return (
             Topic.objects.filter(**self.base_filter, **self.day_filter, category=category)
             .order_by("-latest")
@@ -353,8 +354,8 @@ class TopicQueryHandler:
 
 class TopicListHandler:
     """
-    Handles given topic slug and finds corresponding method in TopicQueryHandler to serialize data. Caches topic lists.
-    Handles authentication and validation.
+    Handles given topic slug and finds corresponding method in TopicQueryHandler
+    to serialize data. Caches topic lists. Handles authentication and validation.
     """
 
     data = None
@@ -378,12 +379,15 @@ class TopicListHandler:
         extra: dict = None,
     ):
         """
-        :param user: User requesting the list. Used for topics per page and checking login requirements.
+        :param user: User requesting the list. Used for topics per page and
+        checking login requirements/.
         :param slug: Slug of the category.
         :param year: Required for today-in-history.
         :param search_keys: Search keys for "search" (advanced search).
         :param tab: Tab name for tabbed categories.
         :param exclusions: List of category slugs to be excluded in popular.
+        None will fallback to DEFAULT_EXCLUSIONS. An empty list [] will include
+        all categories.
         :param extra: Any other metadata about the slug.
         """
 
@@ -427,11 +431,13 @@ class TopicListHandler:
         return getattr(self, slug_method)(*arg_map.get(slug_method, []))
 
     def _validate_exclusions(self, exclusions):
-        return (
-            tuple(slug for slug in exclusions if slug in EXCLUDABLE_CATEGORIES)
-            if self.slug == "popular" and exclusions is not None
-            else ()
-        )
+        if self.slug == "popular":
+            if exclusions is None:
+                return DEFAULT_EXCLUSIONS
+
+            return tuple(slug for slug in exclusions if slug in EXCLUDABLE_CATEGORIES)
+
+        return ()
 
     def _validate_tab(self, tab):
         if self.slug in TABBED_CATEGORIES:
@@ -443,7 +449,7 @@ class TopicListHandler:
     def _validate_year(self, year):
         """Validates and sets the year."""
         if self.slug == "today-in-history":
-            default = 2020
+            default = YEAR_RANGE[0]
             if year is not None:
 
                 if not isinstance(year, (str, int)):
@@ -488,7 +494,7 @@ class TopicListHandler:
                 if not category_slug:
                     raise Http404
 
-                channel = get_object_or_404(Category, slug=category_slug)
+                channel = get_object_or_404(Category.objects, slug=category_slug)
                 self.extra["channel_object"] = channel
                 fmtstr["channel"] = channel.name
             else:
@@ -558,7 +564,7 @@ class TopicListHandler:
         if cached_data is not None:
             if self.slug in ("top", "today-in-history"):
                 # check if the day has changed or not for top or today-in-history
-                if cached_data.get("set_at").day == timezone.localtime(timezone.now()).day:
+                if timezone.localtime(cached_data.get("set_at")).day == timezone.localtime(timezone.now()).day:
                     self.cache_exists = True
             else:
                 self.cache_exists = True

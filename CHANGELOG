@@ -1,3 +1,37 @@
+[0.2.0-alpha](2020.08.05)(incompatible)
+--Additions--
+1) Category now has 2 more fields: is_pseudo and is_default.
+More description available about these fields in help texts.
+(**incompatible** run makemigrations+migrate for dictionary)
+
+-- Changes --
+1) Left frame:
+    a) Related cookies are now encoded.
+    b) Renamed related cookie keys.
+    c) A new middleware was added to serve
+    the left frame, replacing the context processor
+    (done so as to manipulate cookies).
+    d) In mobile, popular exclusions are now handled via
+    cookies.
+    e) Fixed a possible crash related to json decode error.
+    f) Added a new setting DEFAULT_EXCLUSIONS. Will be
+    used as default exclusions when users first visit.
+    g) Some of the invalid cookie values will be
+    removed/reset upon new requests.
+    h) Once again, fixed the date mismatch caused by
+    "popular" and "today in history".
+    j) For today in history, default year will now be the
+    first item of YEAR_RANGE instead of hard-coded 2020.
+    g) There is now a visual hint to indicate if category
+    exclusions are active.
+
+2) In formatted texts, aliased links wouldn't work when there
+were multiple links in one line, fixed that. Also removed the
+requirement of 2 characters for aliases.
+
+--Deletions--
+None
+
 [0.1.0-alpha](2020.08.03)(incompatible)
 --Additions--
 1) Added category suggestion feature.

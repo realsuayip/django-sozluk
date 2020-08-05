@@ -43,7 +43,7 @@ def get_topic_suggestions(user, topic):
     def exists(direction):
         return Exists(Suggestion.objects.filter(direction=direction, author=user, topic=topic, category=OuterRef("pk")))
 
-    return Category.objects.annotate(up=exists(1), down=exists(-1))
+    return Category.objects_all.annotate(up=exists(1), down=exists(-1))
 
 
 @register.simple_tag

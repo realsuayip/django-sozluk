@@ -187,7 +187,7 @@ class Author(AbstractUser):
         super().save(*args, **kwargs)
 
         if created:
-            self.following_categories.add(*Category.objects.all())
+            self.following_categories.add(*Category.objects.filter(is_default=True))
 
     def get_absolute_url(self):
         return reverse("user-profile", kwargs={"slug": self.slug})

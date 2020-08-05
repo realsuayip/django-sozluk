@@ -19,7 +19,7 @@ class FollowCategory(Mutation):
     @staticmethod
     @login_required
     def mutate(_root, info, pk):
-        category = get_object_or_404(Category, id=pk)
+        category = get_object_or_404(Category.objects, id=pk)
         following = info.context.user.following_categories
 
         if following.filter(pk=pk).exists():
@@ -61,7 +61,7 @@ class SuggestCategory(Mutation):
         if suggestion_count_today >= SUGGESTIONS_PER_DAY:
             raise ValueError(_("you have used up all the suggestion claims you have today. try again later."))
 
-        category = get_object_or_404(Category, slug=category)
+        category = get_object_or_404(Category.objects_all, slug=category)
         kwargs = {"author": info.context.user, "topic": topic, "category": category}
 
         try:

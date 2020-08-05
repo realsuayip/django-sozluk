@@ -103,7 +103,7 @@ def formatted(raw_entry):
         # link. Then we find all other links which don't have " at the start.
         # Users can't send " character, they send the escaped version: &quot;
         (
-            fr"\[{RE_WEBURL} (?!\s)([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[\]{{}}<>^;\\|-]{{2,}})(?<!\s)\]",
+            fr"\[{RE_WEBURL} (?!\s)([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
             r'<a rel="ugc nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
         (fr"(?<!\"){RE_WEBURL}", linkify,),

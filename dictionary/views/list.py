@@ -1,12 +1,15 @@
 import datetime
 import math
 import random
+import json
 
 from contextlib import suppress
+from json.decoder import JSONDecodeError
+from urllib.parse import quote, unquote
 
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db.models import Exists, Max, Min, OuterRef, Q
@@ -29,7 +32,13 @@ from ..utils.decorators import cached_context
 from ..utils.managers import TopicListManager, entry_prefetch
 from ..utils.mixins import IntegratedFormMixin
 from ..utils.serializers import LeftFrame
-from ..utils.settings import ENTRIES_PER_PAGE_DEFAULT, INDEX_TYPE, LOGIN_REQUIRED_CATEGORIES, YEAR_RANGE
+from ..utils.settings import (
+    DEFAULT_EXCLUSIONS,
+    ENTRIES_PER_PAGE_DEFAULT,
+    INDEX_TYPE,
+    LOGIN_REQUIRED_CATEGORIES,
+    YEAR_RANGE,
+)
 
 
 class Index(ListView):
@@ -161,7 +170,7 @@ class CategoryList(ListView):
     context_object_name = "categories"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = self.model.objects.all()
         if self.request.user.is_authenticated:
             queryset = queryset.annotate(
                 is_followed=Exists(
@@ -173,33 +182,54 @@ class CategoryList(ListView):
         return queryset
 
 
-class TopicList(TemplateView):
+class TopicList(UserPassesTestMixin, TemplateView):
     """Lists topics using LeftFrame interface."""
 
     template_name = "dictionary/list/topic_list.html"
+    cookies = None
 
     def get_context_data(self, **kwargs):
         params = self.request.GET
+        exclusions = self.request.COOKIES.get("lfex")
+
+        if exclusions is not None:
+            try:
+                parsed = json.loads(unquote(exclusions))
+                if isinstance(parsed, list) and all(isinstance(s, str) for s in parsed):
+                    exclusions = parsed
+                else:
+                    raise ValueError
+            except (JSONDecodeError, ValueError):
+                exclusions = None
+
+        if exclusions is None:
+            self.cookies = {"lfex": json.dumps(DEFAULT_EXCLUSIONS)}
+
         query = (
             self.kwargs.get("slug"),
             self.request.user,
             params.get("year"),
             params,  # search keys
             params.get("tab"),
-            list(filter(None, params.get("exclude", "").split(","))) or None,  # exclusions
+            exclusions,
             {"user": params.get("user"), "channel": params.get("channel")},  # extras
         )
         manager = TopicListManager(*query)
         frame = LeftFrame(manager, params.get("page"))
         return frame.as_context()
 
-    def dispatch(self, request, *args, **kwargs):
-        """User tries to view unauthorized category."""
-        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not request.user.is_authenticated:
-            notifications.info(request, _("actually, you may benefit from this feature by logging in."))
-            return redirect(reverse("login"))
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        if self.cookies:
+            for key, val in self.cookies.items():
+                response.set_cookie(key, quote(val), samesite="Lax")
+        return response
 
-        return super().dispatch(request)
+    def test_func(self):
+        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
+            notifications.info(self.request, _("actually, you may benefit from this feature by logging in."))
+            return False
+        return True
 
     @method_decorator(login_required)
     def post(self, *args, **kwargs):

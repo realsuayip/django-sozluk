@@ -1159,6 +1159,10 @@ footer.body-footer > ul {
     margin-left: 3px;
 }
 
+#popular_excluder.active svg {
+    fill: #16784f;
+}
+
 .exclusion-settings {
     background: #e3e3e3;
     padding: .5em;

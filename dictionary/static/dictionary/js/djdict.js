@@ -1,5 +1,14 @@
 /* global Cookies gettext pgettext ngettext interpolate Dropzone */
 (function () {
+    const cookies = Cookies.withConverter({
+        read (value) {
+            return decodeURIComponent(value);
+        },
+        write (value) {
+            return encodeURIComponent(value);
+        }
+    }).withAttributes({ sameSite: "Lax" });
+
     $.ajaxSetup({
         beforeSend (xhr, settings) {
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -215,6 +224,26 @@
         });
     }
 
+    function setExclusions (exclusions) {
+        const cookieExclusions = JSON.parse(cookies.get("lfex") || "null");
+        if (exclusions) {
+            if (cookieExclusions) {
+                for (const exclusion of exclusions) {
+                    if (cookieExclusions.includes(exclusion)) {
+                        exclusions = cookieExclusions.filter(item => item !== exclusion);
+                    } else {
+                        cookieExclusions.push(exclusion);
+                        exclusions = cookieExclusions;
+                    }
+                }
+            }
+            cookies.set("lfex", JSON.stringify(exclusions));
+            return exclusions;
+        } else {
+            return cookieExclusions;
+        }
+    }
+
     class LeftFrame {
         constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null, exclusions = null, extra = null) {
             this.slug = slug;
@@ -231,52 +260,37 @@
         }
 
         setCookies () {
-            Cookies.set("active_category", this.slug);
-            Cookies.set("navigation_page", this.page);
+            cookies.set("lfac", this.slug);
+            cookies.set("lfnp", this.page);
 
             if (this.tab) {
-                Cookies.set("active_tab", this.tab);
+                cookies.set("lfat", this.tab);
             } else {
-                this.tab = Cookies.get("active_tab") || null;
+                this.tab = cookies.get("lfat") || null;
             }
 
             if (this.extra) {
-                Cookies.set("extra", this.extra);
+                cookies.set("lfea", this.extra);
             } else {
-                this.extra = Cookies.get("extra") || null;
+                this.extra = cookies.get("lfea") || null;
             }
 
             if (this.slug === "today-in-history") {
-                const cookieYear = Cookies.get("selected_year");
+                const cookieYear = cookies.get("lfsy");
                 if (!this.year) {
                     this.year = cookieYear || null;
                 } else {
-                    Cookies.set("selected_year", this.year);
+                    cookies.set("lfsy", this.year);
                 }
             } else if (this.slug === "search") {
-                const cookieSearchKeys = Cookies.get("search_parameters");
+                const cookieSearchKeys = cookies.get("lfsp");
                 if (!this.searchKeys) {
                     this.searchKeys = cookieSearchKeys || null;
                 } else {
-                    Cookies.set("search_parameters", this.searchKeys);
+                    cookies.set("lfsp", this.searchKeys);
                 }
             } else if (this.slug === "popular") {
-                const cookieExclusions = JSON.parse(Cookies.get("exclusions") || "[]");
-                if (this.exclusions) {
-                    if (cookieExclusions) {
-                        for (const exclusion of this.exclusions) {
-                            if (cookieExclusions.includes(exclusion)) {
-                                this.exclusions = cookieExclusions.filter(item => item !== exclusion);
-                            } else {
-                                cookieExclusions.push(exclusion);
-                                this.exclusions = cookieExclusions;
-                            }
-                        }
-                    }
-                    Cookies.set("exclusions", JSON.stringify(this.exclusions));
-                } else {
-                    this.exclusions = cookieExclusions || null;
-                }
+                this.exclusions = setExclusions(this.exclusions);
             }
         }
 
@@ -377,6 +391,11 @@
                     const isActive = exclusions.active.includes(category.slug);
                     categoryList.append(`<li><a role="button" title="${category.description}" ${isActive ? `class="active"` : ""} tabindex="0" data-slug="${category.slug}">#${category.name}</a></li>`);
                 }
+                if (exclusions.active.length) {
+                    toggler.addClass("active");
+                } else {
+                    toggler.removeClass("active");
+                }
             } else {
                 toggler.addClass("dj-hidden");
                 categoryHolder.hide();
@@ -475,7 +494,7 @@
 
     $("select#left_frame_paginator").on("change", function () {
         // Page is changed
-        LeftFrame.populate(Cookies.get("active_category"), this.value);
+        LeftFrame.populate(cookies.get("lfac"), this.value);
     });
 
     $("#lf_total_pages").on("click", function () {
@@ -504,7 +523,7 @@
 
     $("a#show_more").on("click", function () {
         // Show more button event
-        const slug = Cookies.get("active_category");
+        const slug = cookies.get("lfac");
 
         if (slug) {
             LeftFrame.populate(slug, 2);
@@ -527,29 +546,8 @@
     });
 
     $("#exclusion-settings-mobile").on("click", "ul li a", function () {
-        const slug = $(this).attr("data-slug");
-        const excludeParam = new URLSearchParams(window.location.search).get("exclude");
-        let exclusions;
-
-        if (excludeParam) {
-            exclusions = excludeParam.split(",");
-        } else {
-            exclusions = [];
-        }
-
-        if (exclusions.includes(slug)) {
-            exclusions = exclusions.filter(item => item !== slug);
-        } else {
-            exclusions.push(slug);
-        }
-
-        const exclude = exclusions.join(",");
-
-        if (exclude) {
-            window.location.replace("?exclude=" + exclude);
-        } else {
-            window.location.replace(window.location.href.split("?")[0]);
-        }
+        setExclusions([$(this).attr("data-slug")]);
+        window.location = location;
     });
 
     /* End of LefFrame related triggers */

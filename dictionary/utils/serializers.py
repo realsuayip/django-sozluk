@@ -190,7 +190,7 @@ class LeftFrame(PlainSerializer):
 
     @cached_context
     def _get_available_exclusions(self):
-        return list(Category.objects.filter(slug__in=EXCLUDABLE_CATEGORIES))
+        return list(Category.objects_all.filter(slug__in=EXCLUDABLE_CATEGORIES))
 
     @cached_property
     def exclusions(self):

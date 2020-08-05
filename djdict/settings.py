@@ -77,7 +77,9 @@ MIDDLEWARE = [
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'dictionary.middleware.users.NoviceActivityMiddleware',
-    'dictionary.middleware.frontend.MobileDetectionMiddleware'
+    'dictionary.middleware.frontend.MobileDetectionMiddleware',  # 1
+    'dictionary.middleware.frontend.LeftFrameMiddleware'  # 2
+
 ]
 
 ROOT_URLCONF = 'djdict.urls'
@@ -94,7 +96,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'dictionary.utils.context_processors.header_categories',
-                'dictionary.utils.context_processors.left_frame',
             ],
         },
     },

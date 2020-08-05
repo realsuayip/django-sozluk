@@ -8,13 +8,32 @@ from uuslug import uuslug
 
 from ..utils.settings import SUGGESTIONS_QUALIFY_RATE
 from ..utils.validators import validate_category_name
+from .managers.category import CategoryManager, CategoryManagerAll
 
 
 class Category(models.Model):
     name = models.CharField(max_length=24, unique=True, verbose_name=_("Name"), validators=[validate_category_name])
     slug = models.SlugField(editable=False)
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
+    is_pseudo = models.BooleanField(
+        default=False,
+        verbose_name=_("Pseudo channel"),
+        help_text=_(
+            "Pseudo channels cannot be browsed by the users but can be assigned"
+            " to the topics. You can add these channels to popular exclusions."
+        ),
+    )
+    is_default = models.BooleanField(
+        default=True,
+        help_text=_(
+            "When checked, this channel will be present in the following"
+            " channels of newly registered users. (Pseudo channels are excluded.)"
+        ),
+    )
     weight = models.SmallIntegerField(default=0, verbose_name=_("Weight"))
+
+    objects_all = CategoryManagerAll()
+    objects = CategoryManager()
 
     def __str__(self):
         return f"{self.name}"

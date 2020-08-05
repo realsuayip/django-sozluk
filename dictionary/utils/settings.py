@@ -99,6 +99,13 @@ LOGIN_REQUIRED_CATEGORIES = USER_EXCLUSIVE_CATEGORIES + ("novices",)
 EXCLUDABLE_CATEGORIES = ("spor", "siyaset", "anket", "yetiskin")
 """List of category slugs (database categories) that users can opt out to see in popular."""
 
+DEFAULT_EXCLUSIONS = ["yetiskin"]
+"""
+List of category slugs (database categories) that will be excluded in popular
+by default. (When a user requests the site for the first time.) If you don't
+want anything to be excluded by default, leave it blank: []
+"""
+
 DEFAULT_CATEGORY = "popular"
 """
 Default category to be shown when the user requests for the first time.
@@ -175,8 +182,8 @@ same can identify each other. This also provides feedback to users
 to see which users are newbies.
 """
 
-FIRST_GENERATION_DATE = "09.08.2019"
-"""Set this to first user's registration date."""
+FIRST_GENERATION_DATE = "13.08.2019"
+"""Set this to first user's registration date. (day should be first)"""
 
 GENERATION_GAP_DAYS = 180
 """Set the interval for seperating generations."""
