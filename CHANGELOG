@@ -1,3 +1,17 @@
+[0.3.0-alpha](2020.08.06)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Removed spaceless tag, if you see inconsistent/bad
+spacing (compared to previous versions) between
+elements after this update, please report. + Optimized UI.
+2) Fixed preview for drafts.
+3) Moved all image settings to utils/settings.py
+
+--Deletions--
+None
+
 [0.2.0-alpha](2020.08.05)(incompatible)
 --Additions--
 1) Category now has 2 more fields: is_pseudo and is_default.

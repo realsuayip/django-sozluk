@@ -1,4 +1,3 @@
-{% spaceless %}
 {% load filters functions i18n static cache %}
 {% get_current_language as LANGUAGE_CODE %}
 <!doctype html>
@@ -59,7 +58,7 @@
                             </svg>
                         </button>
 
-                        <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search p-0">
+                        <div class="dropdown-menu dropdown-menu-right dropdown-advanced-search noprop p-0">
                             <div class="px-3 py-2">
                                 {% include "dictionary/includes/forms/extended_search.html" with source="dropdown" %}
                                 <div class="form-group">
@@ -138,7 +137,7 @@
 
             {% else %}
                 <nav class="usermenu" aria-label="{% trans "Account Menu" %}">
-                    <ul>
+                    <ul class="m-0 py-1 px-0">
                         <li><a href="{% url 'login' %}?next={% firstof request.get_full_path|urlencode '/' %}">{% trans "log in" %}</a></li>
                         <li><a href="{% url 'register' %}">{% trans "register" %}</a></li>
                     </ul>
@@ -302,4 +301,3 @@
 
 </body>
 </html>
-{% endspaceless %}

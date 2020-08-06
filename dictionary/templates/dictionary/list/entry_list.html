@@ -48,8 +48,8 @@
                 {% if populated %}
                     <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
-                    <span class="mr-3 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" context "nicefilter" %}</a>
-                        <span class="mx-2">|</span>
+                    <span class="mr-2 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" context "nicefilter" %}</a>
+                        <span>|</span>
                         <a title="{% trans "most liked entries of today" %}" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>{% trans "today" %}</a>
                     </span>
 
@@ -221,7 +221,7 @@
                         {% csrf_token %}
                         {% blocktrans asvar text_placeholder with title=topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
                         {% trans "Entry content area" as area_label %}
-                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave" rows="5" spellcheck="true" aria-label=area_label %}
+                        {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave expandable" rows="5" spellcheck="true" aria-label=area_label %}
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <button type="button" class="btn draft-async px-0" data-title="{{ topic.title }}">{% trans "keep this as draft" %}</button>

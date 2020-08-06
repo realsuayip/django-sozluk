@@ -36,6 +36,7 @@ header.page_header {
     margin-bottom: .5em;
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
 }
 
 .header-search-form {
@@ -487,7 +488,6 @@ section.ama-comments aside.votes strong {
 }
 
 mark {
-    margin: 0 .15em;
     padding: 0;
     background-color: yellow;
 }
@@ -516,6 +516,7 @@ ul.user-navigation li {
     list-style-type: none;
     display: inline;
     padding: 4px;
+    height: 32px;
 }
 
 ul.user-navigation li a.nav-quicklink {
@@ -626,7 +627,7 @@ section.user-comments .editor-buttons button.add-code {
     color: #444;
     border-radius: 4px;
     border: 1px solid #fff;
-    margin: .25rem .25rem .25rem 0;
+    margin-bottom: .25rem;
     padding: 0 .25em;
 }
 
@@ -977,7 +978,7 @@ ul.category-list-all li h2 {
 }
 
 .lf_pagination.index a {
-    width: 48px;
+    width: 45px;
     display: inline-block;
     text-align: center;
     height: 30px;

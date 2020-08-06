@@ -297,3 +297,34 @@ should agree to qualify a channel.
 
 SUGGESTIONS_ENTRY_REQUIREMENT = 100
 """The number of entries required to acquire the privilege of suggesting channels."""
+
+# Images
+
+MAX_UPLOAD_SIZE = 2621440  # 2.5MB | 1MB = 1048576 bytes (also change it in front-end)
+
+DAILY_IMAGE_UPLOAD_LIMIT = 25
+"""
+In a 24 hour period, users will be able to upload this many files at most.
+"""
+
+COMPRESS_IMAGES = False
+"""
+Set True to enable image compression according to subsequent settings while uploading.
+Notice: GIFs are not supported, they will lose animations.
+"""
+
+COMPRESS_THRESHOLD = 2621440  # 2.5MB
+"""
+Images with size bigger than this will get compressed, set to 1 to always compress.
+"""
+
+COMPRESS_QUALITY = 70
+"""
+Compression quality. The higher the better quality but more in size.
+(Integer from 1 to 95.)
+"""
+
+XSENDFILE_HEADER_NAME = "X-Accel-Redirect"
+"""
+Nginx only. Apache counterpart is 'X-Sendfile' which requires mod_xsendfile.
+"""

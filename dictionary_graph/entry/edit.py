@@ -7,6 +7,7 @@ from graphene import ID, Mutation, String
 
 from dictionary.models import Entry, Topic
 from dictionary.templatetags.filters import formatted
+from dictionary.utils import i18n_lower
 from dictionary.utils.validators import validate_user_text
 
 from ..utils import login_required
@@ -34,7 +35,7 @@ class DraftEdit(Mutation):
             entry.save()
             return DraftEdit(
                 pk=entry.pk,
-                content=linebreaksbr(formatted(content)),
+                content=linebreaksbr(formatted(i18n_lower(content))),
                 feedback=_("your changes have been saved as draft"),
             )
 
@@ -50,7 +51,9 @@ class DraftEdit(Mutation):
             entry = Entry(author=info.context.user, topic=topic, content=content, is_draft=True)
             entry.save()
             return DraftEdit(
-                pk=entry.pk, content=linebreaksbr(formatted(content)), feedback=_("your entry has been saved as draft")
+                pk=entry.pk,
+                content=linebreaksbr(formatted(i18n_lower(content))),
+                feedback=_("your entry has been saved as draft"),
             )
 
         raise ValueError(_("we couldn't handle your request. try again later."))
