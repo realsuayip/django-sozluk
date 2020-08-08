@@ -91,8 +91,8 @@ class PeopleList(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["following"], context["blocked"] = (
-            tuple(self.request.user.following(manager="objects_accessible").all()),
-            tuple(self.request.user.blocked(manager="objects_accessible").all()),
+            tuple(self.request.user.following.all()),
+            tuple(self.request.user.blocked.all()),
         )
         return context
 

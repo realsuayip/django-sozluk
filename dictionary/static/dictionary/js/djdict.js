@@ -1,5 +1,6 @@
 /* global Cookies gettext pgettext ngettext interpolate Dropzone */
 (function () {
+    const lang = document.documentElement.lang;
     const cookies = Cookies.withConverter({
         read (value) {
             return decodeURIComponent(value);
@@ -1476,6 +1477,24 @@
             if (String.fromCharCode(e.which).toLowerCase() === "s") {
                 e.preventDefault();
                 $("button.draft-async").click();
+            }
+        }
+    });
+
+    $(".p-search").on("input", function () {
+        const ulID = $(this).attr("data-for");
+        const term = $(this).val().toLocaleLowerCase(lang);
+        for (const element of $(`#${ulID} li`)) {
+            const self = $(element);
+            if (!term) {
+                self.removeAttr("style");
+            } else {
+                const value = self.children("a[href]").text().toLocaleLowerCase(lang);
+                if (!value.includes(term)) {
+                    self.attr("style", "display: none !important;");
+                } else {
+                    self.removeAttr("style");
+                }
             }
         }
     });

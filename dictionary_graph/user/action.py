@@ -53,7 +53,11 @@ class Follow(Action, Mutation):
     @staticmethod
     @useraction
     def mutate(_root, _info, sender, subject):
-        if subject.blocked.filter(pk=sender.pk).exists() or sender.blocked.filter(pk=subject.pk).exists():
+        if (
+            subject.is_hidden
+            or subject.blocked.filter(pk=sender.pk).exists()
+            or sender.blocked.filter(pk=subject.pk).exists()
+        ):
             return Follow(feedback=_("we couldn't handle your request. try again later."))
 
         if sender.following.filter(pk=subject.pk).exists():

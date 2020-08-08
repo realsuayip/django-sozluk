@@ -1,3 +1,16 @@
+[0.3.2-alpha](2020.08.08)(compatible)
+--Additions--
+1) Add is_hidden property to Author, includes
+users that are supposed to be hidden.
+
+-- Changes --
+1) Revamped following/blocked page.
+2) Hidden users now can't be
+(un)followed.
+
+--Deletions--
+None
+
 [0.3.1-alpha](2020.08.06)(compatible)
 --Additions--
 None

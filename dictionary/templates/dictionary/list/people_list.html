@@ -6,30 +6,54 @@
 {% block content %}
     <h1 class="h4"><strong>{% trans "people you follow/block" %}</strong></h1>
 
-    <h2 class="h6"><u>{% trans "following:" %}</u></h2>
-    {% if following %}
-       {% blocktrans count following_count=following|length %}{{ following_count }} person{% plural %}{{ following_count }} people{% endblocktrans %}
-        <ul class="people-list">
-            {% for author in following %}
-                <li><a href="{{ author.get_absolute_url }}">{{ author.username }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <small>{% trans "nothing here" %}</small>
-    {% endif %}
+    <ul class="nav nav-tabs mt-3" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="following-tab" data-toggle="tab" href="#following" role="tab" aria-controls="following" aria-selected="true">
+                <span>{% trans "following" %}</span>
+                <span class="badge bg-light ml-2">{{ following|length }}</span></a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="blocked-tab" data-toggle="tab" href="#blocked" role="tab" aria-controls="blocked" aria-selected="false">
+                <span>{% trans "blocked" %}</span>
+                <span class="badge bg-light ml-2">{{ blocked|length }}</span>
+            </a>
+        </li>
+    </ul>
 
-    <h2 class="h6"><u>{% trans "blocked:" %}</u></h2>
-    {% if blocked %}
-        {% blocktrans count blocked_count=blocked|length %}{{ blocked_count }} person{% plural %}{{ blocked_count }} people{% endblocktrans %}
-        <span>{% trans "(click nicknames to unblock)" %}</span>
-        <ul class="people-list">
-            {% for author in blocked %}
-                <li>
-                    <a role="button" tabindex="0" class="unblock-user-trigger" data-username="{{ author.username }}">{{ author.username }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <small>{% trans "nothing here" %}</small>
-    {% endif %}
+    <div class="tab-content">
+        <div class="tab-pane show active mt-3" id="following" role="tabpanel" aria-labelledby="following-tab">
+            {% if following %}
+                <div class="form-group">
+                    <input data-for="following-list" type="text" class="form-control border-0 bg-light p-search" placeholder="{% trans "search" %}" aria-label="{% trans "search" %}">
+                </div>
+                <ul class="list-group list-group-flush" id="following-list">
+                    {% for author in following %}
+                        <li class="list-group-item d-flex justify-content-between border-0" data-username="{{ author.username }}">
+                            <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
+                            <span class="follow-user-trigger"> <a role="button" tabindex="0">{% trans "unfollow" %}</a></span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="bg-light p-3 rounded">{% trans "nothing here" %}</div>
+            {% endif %}
+        </div>
+        <div class="tab-pane mt-3" id="blocked" role="tabpanel" aria-labelledby="blocked-tab">
+            {% if blocked %}
+                <div class="form-group">
+                    <input data-for="blocked-list" type="text" class="form-control border-0 bg-light p-search" placeholder="{% trans "search" %}" aria-label="{% trans "search" %}">
+                </div>
+                <ul class="list-group list-group-flush" id="blocked-list">
+                    {% for author in blocked %}
+                        <li class="list-group-item d-flex justify-content-between border-0">
+                            <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
+                            <a role="button" tabindex="0" class="unblock-user-trigger" data-username="{{ author.username }}">{% trans "remove block" %}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="bg-light p-3 rounded">{% trans "nothing here" %}</div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

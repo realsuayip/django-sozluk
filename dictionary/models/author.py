@@ -359,7 +359,11 @@ class Author(AbstractUser):
 
     @property
     def is_accessible(self):
-        return not (self.is_frozen or (not self.is_active) or self.is_private or self.is_suspended)
+        return not (self.is_hidden or self.is_suspended)
+
+    @property
+    def is_hidden(self):
+        return self.is_frozen or (not self.is_active) or self.is_private
 
     @cached_property
     def unread_message_count(self):
