@@ -1,4 +1,6 @@
 import datetime
+import re
+
 from contextlib import suppress
 
 from django.contrib.auth import get_user_model
@@ -20,6 +22,14 @@ RE_WEBURL = (
 )
 """This is a modified version of Diego Perini's weburl regex. (https://gist.github.com/dperini/729294)"""
 
+RE_WEBURL_NC = (
+    r"(?:(?:(?:(?:https?):)\/\/)(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1["
+    r"6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?"
+    r":[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9][a-z0-9_-]{0,62})?[a-z0-9]\.)+(?:[a-z]{2,}\.?))(?::\d{2,5})?)(?:"
+    r"(?:[/?#](?:(?![\s\"<>{}|\\^~\[\]`])(?!&lt;|&gt;|&quot;|&#x27;).)*))?"
+)
+"""RE_WEBURL but with no capturing groups."""
+
 
 class proceed_or_404(suppress):
     """If the supplied exceptions occur in a block of code, raise Http404"""
@@ -37,6 +47,20 @@ def i18n_lower(value):
         return value.translate(lower_map).lower()
 
     return value.lower()
+
+
+def smart_lower(value):
+    url_nc = re.compile(f"({RE_WEBURL_NC})")
+
+    # Links should not be lowered
+    if url_nc.search(value):
+        substrings = url_nc.split(value)
+        for idx, substr in enumerate(substrings):
+            if not url_nc.match(substr):
+                substrings[idx] = i18n_lower(substr)
+        return "".join(substrings)
+
+    return i18n_lower(value)
 
 
 def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwargs):

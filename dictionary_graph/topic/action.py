@@ -7,7 +7,7 @@ from graphene import ID, Mutation, String
 
 from dictionary.models import Topic, Wish
 from dictionary.templatetags.filters import formatted
-from dictionary.utils import i18n_lower
+from dictionary.utils import smart_lower
 
 from ..utils import login_required
 
@@ -45,7 +45,7 @@ class WishTopic(Mutation):
     def mutate(_root, info, title, hint=""):
         sender = info.context.user
         topic = Topic.objects.get_or_pseudo(unicode_string=title)
-        hint = i18n_lower(hint).strip() or None
+        hint = smart_lower(hint).strip() or None
 
         if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
             raise ValueError(_("we couldn't handle your request. try again later."))

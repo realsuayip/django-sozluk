@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
 from ..models.messaging import Message
-from ..utils import get_generic_superuser, get_generic_privateuser, i18n_lower
+from ..utils import get_generic_superuser, get_generic_privateuser, smart_lower
 from ..utils.validators import validate_user_text
 from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
 
@@ -33,7 +33,7 @@ class Entry(models.Model):
         verbose_name_plural = "entry"
 
     def save(self, *args, **kwargs):
-        self.content = i18n_lower(self.content)
+        self.content = smart_lower(self.content)
         super().save(*args, **kwargs)
 
         # Check if the user has written 10 entries, If so make them available for novice lookup
@@ -104,7 +104,7 @@ class Comment(models.Model):
         return gettext("Comment #%(number)d") % {"number": self.pk}
 
     def save(self, *args, **kwargs):
-        self.content = i18n_lower(self.content)
+        self.content = smart_lower(self.content)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

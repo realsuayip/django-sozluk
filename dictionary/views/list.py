@@ -308,6 +308,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # Publishing previously draft entry.
             try:
                 entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
+                entry.content = form.cleaned_data["content"]
                 entry.is_draft = False
                 entry.date_created = timezone.now()
                 entry.date_edited = None
