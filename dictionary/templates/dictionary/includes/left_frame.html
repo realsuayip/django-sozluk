@@ -1,6 +1,8 @@
-{% load filters i18n %}
+{% load filters functions i18n %}
 
-{% with left_frame as lf %}
+{% firstofany left_frame left_frame_fallback as lfproxy %}
+
+{% with lfproxy.context as lf %}
     {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
     <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
 

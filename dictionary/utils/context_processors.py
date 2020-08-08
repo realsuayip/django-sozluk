@@ -6,7 +6,7 @@ from urllib.parse import parse_qsl, quote, unquote
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils.functional import cached_property
+from django.utils.functional import LazyObject, cached_property
 
 from ..models import Category
 from .decorators import cached_context
@@ -15,23 +15,39 @@ from .serializers import LeftFrame
 from .settings import DEFAULT_CATEGORY, DEFAULT_EXCLUSIONS
 
 
+def lf_proxy(request, response=None):
+    class LazyLeftFrame(LazyObject):
+        def _setup(self):
+            self._wrapped = LeftFrameProcessor(request, response)
+
+    return LazyLeftFrame()
+
+
 class LeftFrameProcessor:
     """
     Provides necessary data for left frame rendering on page load. Validates
     cookies and handles default left frame settings.
     """
 
-    def __init__(self, request, response):
+    def __init__(self, request, response=None):
         self.user = request.user
         self.cookies = request.COOKIES
         self.response = response
+        self.context = self._get_context
 
     def get_cookie(self, key):
         value = self.cookies.get(key)
         return unquote(value) if value else None
 
     def set_cookie(self, key, value):
-        return self.response.set_cookie(key, quote(value), samesite="Lax")
+        if self.response:
+            return self.response.set_cookie(key, quote(value), samesite="Lax")
+        return None
+
+    def delete_cookie(self, key):
+        if self.response:
+            return self.response.delete_cookie(key)
+        return None
 
     @cached_property
     def slug(self):
@@ -81,10 +97,10 @@ class LeftFrameProcessor:
                     return parsed
                 raise ValueError
             except (JSONDecodeError, ValueError):
-                self.response.delete_cookie("lfea")
+                self.delete_cookie("lfea")
         return {}
 
-    def get_context(self, manager=None):
+    def _get_context(self, manager=None):
         try:
             handler = manager or TopicListManager(
                 self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions, self._extra
@@ -92,9 +108,17 @@ class LeftFrameProcessor:
             context = LeftFrame(handler, page=self._page).as_context()
         except (Http404, PermissionDenied):
             self.set_cookie("lfac", DEFAULT_CATEGORY)
-            return self.get_context(manager=TopicListManager(DEFAULT_CATEGORY))
+            return self._get_context(manager=TopicListManager(DEFAULT_CATEGORY))
 
         return context
+
+
+def left_frame_fallback(request):
+    """
+    Fallback for left frame middleware. Required for the responses that
+    are not of TemplateResponse. e.g. flatpages.
+    """
+    return {"left_frame_fallback": lf_proxy(request) if not request.is_mobile else {}}
 
 
 @cached_context

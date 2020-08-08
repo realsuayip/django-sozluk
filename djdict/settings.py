@@ -96,6 +96,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'dictionary.utils.context_processors.header_categories',
+                'dictionary.utils.context_processors.left_frame_fallback',
             ],
         },
     },

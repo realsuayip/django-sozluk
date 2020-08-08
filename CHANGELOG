@@ -1,3 +1,19 @@
+[0.3.3-alpha](2020.08.08)(compatible)
+--Additions--
+1) Added new utility tag firstofany, behaves
+like firstof but works on all objects.
+
+-- Changes --
+1) Left frame:
+    a) Fixed a regression (from 0.2.0-alpha) which
+    caused left frame to not render in flat pages.
+    b) LeftFrameProcessor is now lazier than ever,
+    added lx_proxy to initialize the whole object lazily.
+2) Fixed a UI issue about birth date selector.
+
+--Deletions--
+None
+
 [0.3.2-alpha](2020.08.08)(compatible)
 --Additions--
 1) Add is_hidden property to Author, includes

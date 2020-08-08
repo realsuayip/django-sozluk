@@ -24,6 +24,14 @@ def url_replace(request, field, value):
 
 
 @register.simple_tag
+def firstofany(*args_list):
+    for arg in args_list:
+        if arg or arg == args_list[-1]:
+            return arg
+    return None
+
+
+@register.simple_tag
 def check_follow_status(user, topic):
     return topic.follow_check(user)
 
@@ -117,7 +125,8 @@ def render_header_link(context, slug):
     if (slug in LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated) or details is None:
         return {"unauthorized": True}
 
-    is_active = context.get("left_frame", {}).get("slug") == slug
+    frame = context.get("left_frame") or context.get("left_frame_fallback")
+    is_active = slug == frame.slug if hasattr(frame, "slug") else False
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}
 
 
