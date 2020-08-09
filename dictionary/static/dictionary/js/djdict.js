@@ -605,7 +605,29 @@
 
     });
 
-    function replaceText (elementId, replacementType) {
+    function insertMeta (type) {
+        let fmt;
+
+        switch (type) {
+        case "ref":
+            fmt = [gettext("target topic, #entry or @author to reference:"), text => `(${pgettext("editor", "see")}: ${text})`];
+            break;
+        case "thingy":
+            fmt = [gettext("target topic, #entry or @author to thingy:"), text => `\`${text}\``];
+            break;
+        case "swh":
+            fmt = [gettext("what should be referenced in asterisk?"), text => `\`:${text}\``];
+            break;
+        case "spoiler":
+            const spoiler = gettext("spoiler");
+            fmt = [gettext("what to write between spoiler tags?"), text => `--\`${spoiler}\`--\n${text}\n--\`${spoiler}\`--`];
+            break;
+        }
+
+        return { label: fmt[0], format: fmt[1] };
+    }
+
+    function replaceText (elementId, type) {
         const txtarea = document.getElementById(elementId);
         const start = txtarea.selectionStart;
         const finish = txtarea.selectionEnd;
@@ -614,21 +636,15 @@
         if (!sel) {
             return false;
         } else {
-            if (replacementType === "ref") {
-                txtarea.value = allText.substring(0, start) + `(${pgettext("editor", "see")}: ${sel})` + allText.substring(finish, allText.length);
-            } else if (replacementType === "hede") {
-                txtarea.value = allText.substring(0, start) + `\`${sel}\`` + allText.substring(finish, allText.length);
-            } else if (replacementType === "swh") {
-                txtarea.value = allText.substring(0, start) + `\`:${sel}\`` + allText.substring(finish, allText.length);
-            } else if (replacementType === "spoiler") {
-                const spoiler = gettext("spoiler");
-                txtarea.value = allText.substring(0, start) + `--\`${spoiler}\`--\n${sel}\n--\`${spoiler}\`--` + allText.substring(finish, allText.length);
-            } else if (replacementType === "link") {
+            if (type === "link") {
                 const linkText = prompt(gettext("which address to link?"), "http://");
                 if (linkText !== "http://") {
                     txtarea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length);
                 }
+            } else {
+                txtarea.value = allText.substring(0, start) + insertMeta(type).format(sel) + allText.substring(finish, allText.length);
             }
+            txtarea.focus();
             return true;
         }
     }
@@ -637,38 +653,13 @@
         $(".dropzone").toggle();
     });
 
-    $("button#insert_ref").on("click", function () {
-        if (!replaceText("user_content_edit", "ref")) {
-            const refText = prompt(gettext("target topic, #entry or @author to reference:"));
-            if (refText) {
-                $("textarea#user_content_edit").insertAtCaret(`(${pgettext("editor", "see")}: ${refText})`);
-            }
-        }
-    });
-
-    $("button#insert_hede").on("click", function () {
-        if (!replaceText("user_content_edit", "hede")) {
-            const hedeText = prompt(gettext("target topic, #entry or @author to thingy:"));
-            if (hedeText) {
-                $("textarea#user_content_edit").insertAtCaret(`\`${hedeText}\``);
-            }
-        }
-    });
-
-    $("button#insert_swh").on("click", function () {
-        if (!replaceText("user_content_edit", "swh")) {
-            const swhText = prompt(gettext("what should be referenced in asterisk?"));
-            if (swhText) {
-                $("textarea#user_content_edit").insertAtCaret(`\`:${swhText}\``);
-            }
-        }
-    });
-
-    $("button#insert_spoiler").on("click", function () {
-        if (!replaceText("user_content_edit", "spoiler")) {
-            const spoilerText = prompt(gettext("what to write between spoiler tags?"));
-            if (spoilerText) {
-                $("textarea#user_content_edit").insertAtCaret(`--\`spoiler\`--\n${spoilerText}\n--\`spoiler\`--`);
+    $("button.insert").on("click", function () {
+        const type = $(this).attr("data-type");
+        if (!replaceText("user_content_edit", type)) {
+            const meta = insertMeta(type);
+            const text = prompt(meta.label);
+            if (text) {
+                $("#user_content_edit").insertAtCaret(meta.format(text));
             }
         }
     });

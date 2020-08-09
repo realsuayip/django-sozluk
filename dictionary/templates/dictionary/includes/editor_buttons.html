@@ -2,10 +2,10 @@
 <div class="editor-buttons d-flex justify-content-between">
     <div>
         {# Translators: Editor button (see) #}
-        <button class="add-code" title="{% trans "also see this.." %}" id="insert_ref">{% trans "(see: thingy)" %}</button>
-        <button class="add-code" title="{% trans "link to entry, author or topic" %}" id="insert_hede">{% trans "thingy" %}</button>
-        <button class="add-code" title="{% trans "see this (ironic)" %}" id="insert_swh">&#8727;</button>
-        <button class="add-code" title="{% trans "spoil something" %}" id="insert_spoiler">{% trans "--spoiler--" %}</button>
+        <button class="add-code insert" data-type="ref" title="{% trans "also see this.." %}">{% trans "(see: thingy)" %}</button>
+        <button class="add-code insert" data-type="thingy" title="{% trans "link to entry, author or topic" %}">{% trans "thingy" %}</button>
+        <button class="add-code insert" data-type="swh" title="{% trans "see this (ironic)" %}">&#8727;</button>
+        <button class="add-code insert" data-type="spoiler" title="{% trans "spoil something" %}">{% trans "--spoiler--" %}</button>
         <button class="add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
     </div>
     {% if not user.is_novice %}
