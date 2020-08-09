@@ -618,10 +618,10 @@
         case "swh":
             fmt = [gettext("what should be referenced in asterisk?"), text => `\`:${text}\``];
             break;
-        case "spoiler":
+        case "spoiler": {
             const spoiler = gettext("spoiler");
             fmt = [gettext("what to write between spoiler tags?"), text => `--\`${spoiler}\`--\n${text}\n--\`${spoiler}\`--`];
-            break;
+            break; }
         }
 
         return { label: fmt[0], format: fmt[1] };

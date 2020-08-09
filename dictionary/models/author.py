@@ -138,6 +138,7 @@ class Author(AbstractUser):
 
     # User-category relations
     following_categories = models.ManyToManyField("Category", blank=True)
+    allow_uncategorized = models.BooleanField(default=True)
 
     # User-topic relations
     following_topics = models.ManyToManyField("Topic", through="TopicFollowing", related_name="followers", blank=True)

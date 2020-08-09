@@ -15,19 +15,26 @@ class PreferencesForm(UserChangeForm):
     topics_per_page = forms.ChoiceField(choices=Author.TOPIC_COUNTS, label=_("topics per page"))
     message_preference = forms.ChoiceField(choices=Author.MESSAGE_PREFERENCE, label=_("message"))
     allow_receipts = forms.BooleanField(required=False, label=_("show read receipts"))
+    allow_uncategorized = forms.BooleanField(required=False, label=_("allow uncategorized topics in today"))
 
     class Meta:
         model = Author
-        fields = ("gender", "birth_date", "entries_per_page", "topics_per_page", "message_preference", "allow_receipts")
+        fields = (
+            "gender",
+            "birth_date",
+            "entries_per_page",
+            "topics_per_page",
+            "message_preference",
+            "allow_receipts",
+            "allow_uncategorized",
+        )
 
 
 class EntryForm(forms.ModelForm):
     class Meta:
         model = Entry
         fields = ("content",)
-        error_messages = {
-            "content": {"required": _("my dear, just write your entry, how hard could it be?")}
-        }
+        error_messages = {"content": {"required": _("my dear, just write your entry, how hard could it be?")}}
 
 
 class SendMessageForm(forms.ModelForm):

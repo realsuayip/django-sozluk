@@ -61,12 +61,13 @@ class TopicQueryHandler:
     values_entry = ("title", "slug")  # values with count excluded (used for entry listing)
 
     def today(self, user):
+        categories = Q(category__in=user.following_categories.all())
+
+        if user.allow_uncategorized:
+            categories |= Q(category=None)
+
         return (
-            Topic.objects.filter(
-                Q(category__in=user.following_categories.all()) | Q(category=None),
-                **self.base_filter,
-                **self.day_filter,
-            )
+            Topic.objects.filter(categories, **self.base_filter, **self.day_filter)
             .order_by("-latest")
             .annotate(**self.latest, count=Count("entries", distinct=True))
             .exclude(created_by__in=user.blocked.all())
