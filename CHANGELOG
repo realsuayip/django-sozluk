@@ -1,3 +1,17 @@
+[0.5.0-alpha](2020.08.09)(compatible)
+--Additions--
+1) This project now uses Celery and
+django-celery-email to handle
+periodic tasks and to send e-mails
+asynchronously. Management commands
+that previously required cron are deprecated.
+
+-- Changes --
+1) Django version up 2.2.15 from 2.2.14.
+
+--Deletions--
+None
+
 [0.4.0-alpha](2020.08.09)(incompatible)
 --Additions--
 1) Added setting for users to disable
