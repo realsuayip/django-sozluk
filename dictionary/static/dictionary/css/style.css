@@ -4,7 +4,6 @@ html {
 
 body {
     font-family: "Source Sans Pro", sans-serif;
-    font-size: 14px;
     overflow-y: scroll;
 }
 
@@ -54,12 +53,6 @@ header.page_header {
 
 .searchbox > .searchbox-text {
     border-right: none;
-}
-
-select.form-control,
-input.form-control,
-textarea.form-control {
-    border-color: #e3e3e3;
 }
 
 .searchbox > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle) {
@@ -492,8 +485,8 @@ mark {
     background-color: yellow;
 }
 
-.datepick select:nth-child(2) {
-    margin: 0 1em;
+.datepick select {
+    min-width: max-content;
 }
 
 .btn-django {
@@ -845,7 +838,7 @@ ul.chat li.bubble > span.date-info {
     align-items: center;
 }
 
-ul.chat li.bubble.recieved {
+ul.chat li.bubble.received {
     border: 1px solid #e3e3e3;
     left: 0;
 }
@@ -958,6 +951,11 @@ ul.category-list-all li {
     align-items: center;
     list-style-type: none;
     padding: 1em;
+}
+
+ul.category-list-all li div {
+    flex: 1;
+    margin-right: .75rem;
 }
 
 ul.category-list-all li:hover {
@@ -1319,6 +1317,13 @@ ul.exclusion-choices > li > a.active {
     .container {
         padding-left: 5px;
         padding-right: 5px;
+    }
+}
+
+@media (max-width: 850px) {
+    .search-dates {
+        grid-template-columns: none;
+        grid-gap: 0;
     }
 }
 

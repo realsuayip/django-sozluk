@@ -1,7 +1,7 @@
 {% load humanize filters i18n %}
 
 {% with wishes=topic.wishes.all %}
-    <ul class="list-group list-group-flush mb-3{{ wishes|yesno:", dj-hidden" }}" id="wish-list">
+    <ul class="list-group mb-3{{ wishes|yesno:", dj-hidden" }}" id="wish-list">
         {% for wish in wishes %}
             <li class="list-group-item{% if user == wish.author %} owner{% endif %}">
                 {% blocktrans trimmed with naturaltime=wish.date_created|naturaltime url=wish.author.get_absolute_url username=wish.author.username %}

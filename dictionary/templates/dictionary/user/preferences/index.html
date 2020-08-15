@@ -21,29 +21,29 @@
         </div>
 
         <div class="form-group">
-            <div class="row">
-                <div class="col-sm-6 col-6">
+            <div class="d-grid grid-col-2 grid-gap-1">
+                <div>
                     <label for="pref_entries_per_page"><strong>{{ form.entries_per_page.label }}</strong></label>
                     {% render_field form.entries_per_page class="form-control" id="pref_entries_per_page" %}
                 </div>
-                <div class="col-sm-6 col-6">
+                <div>
                     <label for="pref_topics_per_page"><strong>{{ form.topics_per_page.label }}</strong></label>
                     {% render_field form.topics_per_page class="form-control" id="pref_topics_per_page" %}
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xl-5">
+        <div class="d-grid grid-col-2 grid-gap-1 grid-sm-row grid-sm-gap-0">
+            <div>
                 <div class="form-group">
                     <label for="pref_gender"><strong>{{ form.gender.label }}</strong></label>
                     {% render_field form.gender class="form-control" id="pref_gender" %}
                 </div>
             </div>
-            <div class="col-xl-7">
+            <div>
                 <div class="form-group">
                     <label class="d-block" for="pref_birth_date"><strong>{{ form.birth_date.label }}</strong></label>
-                    <div class="datepick d-flex">
+                    <div class="datepick d-grid grid-col-3 grid-gap-1">
                         {% render_field form.birth_date class="form-control" id="pref_birth_date datepicker" %}
                     </div>
                 </div>
@@ -52,6 +52,6 @@
 
         {% csrf_token %}
 
-        <button type="submit" class="btn btn-django mb-5 stretch">{% trans "save preferences" %}</button>
+        <button type="submit" class="btn btn-django stretch">{% trans "save preferences" %}</button>
     </form>
 {% endblock %}

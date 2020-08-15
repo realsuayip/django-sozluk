@@ -31,7 +31,7 @@
     {% block innercontent %}{% endblock %}
 
     {% if conversations %}
-        <div class="mb-3 border rounded-sm p-3 bg-light d-flex justify-content-between">
+        <div class="mb-3 border rounded p-3 bg-light d-flex justify-content-between">
             <div>
                 <a role="button" tabindex="0" class="mr-3 chat-delete">
                     <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
@@ -73,7 +73,7 @@
         <h2 class="h5"><strong>{% trans "new message" %}</strong></h2>
 
         <div class="form-group">
-            <label for="recipient_name" class="col-form-label">{{ form.recipient.label }}:</label>
+            <label for="recipient_name">{{ form.recipient.label }}:</label>
             {% render_field form.recipient class="form-control author-search" id="recipient_name" %}
         </div>
 

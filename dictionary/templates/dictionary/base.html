@@ -9,7 +9,7 @@
 
     {# In production, some static files should be served together. #}
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static "dictionary/css/helpers.css" %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.css">
     <link rel="stylesheet" href="{% static "dictionary/css/style.css" %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
@@ -90,7 +90,7 @@
                     <li {% if user.unread_message_count > 0 %}class="new"{% endif %}>
                         <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="{% trans "messages" %}">
                             {% if user.unread_message_count > 0 %}
-                                <div class="badge badge-light user-badge">{{ user.unread_message_count }}</div>
+                                <div class="badge user-badge">{{ user.unread_message_count }}</div>
                             {% endif %}
                             <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#chat"></use>
@@ -102,7 +102,7 @@
                     <li {% if user.unread_topic_count.sum > 0 %}class="new"{% endif %}>
                         <a class="nav-quicklink" aria-label="{% trans "following topics" %}" href="{% url 'activity' %}">
                             {% if user.unread_topic_count.sum > 0 %}
-                                <div class="badge badge-light user-badge">{{ user.unread_topic_count.sum }}</div>
+                                <div class="badge user-badge">{{ user.unread_topic_count.sum }}</div>
                             {% endif %}
                             <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#bell"></use>
@@ -284,7 +284,7 @@
             {% get_language_info_list for LANGUAGES as languages %}
             {% for language in languages %}
                 {% if language.code != LANGUAGE_CODE %}
-                    <button class="btn btn-sm btn-outline py-1" type="submit" name="language" value="{{ language.code }}">{{ language.name_local }}</button>
+                    <button class="btn btn-sm py-1" type="submit" name="language" value="{{ language.code }}">{{ language.name_local }}</button>
                 {% endif %}
             {% endfor %}
         </form>
@@ -292,11 +292,13 @@
 
 </div>
 
-<ul class="d-none" id="request-messages" data-has-messages="{{ messages|yesno:'true,false' }}">
-    {% for message in messages %}
-        <li data-message="{{ message }}" data-level="{% get_message_level message.level %}" data-extra="{{ message.extra_tags }}"></li>
-    {% endfor %}
-</ul>
+{% spaceless %}
+    <ul class="d-none" id="request-messages" data-has-messages="{{ messages|yesno:'true,false' }}">
+        {% for message in messages %}
+            <li data-message="{{ message }}" data-level="{% get_message_level message.level %}" data-extra="{{ message.extra_tags }}"></li>
+        {% endfor %}
+    </ul>
+{% endspaceless %}
 <div class="toast-holder" aria-live="polite"></div>
 
 </body>

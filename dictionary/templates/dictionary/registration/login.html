@@ -6,7 +6,7 @@
     <h1 class="h4 mb-3"><strong>{% trans "log in" context "titleblock" %}</strong></h1>
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-info" role="alert">{{ message }}</div>
+            <div class="alert-info mb-3 p-3 rounded" role="alert">{{ message }}</div>
         {% endfor %}
     {% endif %}
 
@@ -19,7 +19,7 @@
 
         <div class="form-group">
             {% for err in form.non_field_errors %}
-                <div class="alert alert-danger">{{ err }}</div>
+                <div class="alert-danger p-3 mb-3 rounded">{{ err }}</div>
             {% endfor %}
             <label for="loginUser">{{ form.username.label|lower }}</label>
             {% render_field form.username type="email" id="loginUser" class="form-control" %}

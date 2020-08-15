@@ -3,65 +3,62 @@
 {% block title %}{% trans "account deletion" context "titleblock" %}{% endblock %}
 
 {% block content_preferences %}
-    <div class="card mb-3 w-100">
-        <div class="card-header">{% trans "here are the options you may choose for account deactivation:" %}</div>
-        <div class="card-body">
-            <h2 class="card-title h5"><strong>{% trans "a) delete account completely" %}</strong></h2>
-            <p class="card-text">
+    <div class="mb-3 bg-light p-3 rounded">
+        <h1 class="h5 mb-3">{% trans "here are the options you may choose for account deactivation:" %}</h1>
+        <article>
+            <h2 class="h5"><strong>{% trans "a) delete account completely" %}</strong></h2>
+            <p>
                 {% blocktrans trimmed %}
                     ideal for those who don't want to leave any trace behind. all the information about your
                     account, including entries and messages, will be deleted.
                 {% endblocktrans %}
             </p>
-        </div>
+        </article>
 
-        <div class="card-body">
-            <h2 class="card-title h5"><strong>{% trans "b) delete account with legacy" %}</strong></h2>
-            <p class="card-text">
+        <article>
+            <h2 class="h5"><strong>{% trans "b) delete account with legacy" %}</strong></h2>
+            <p>
                 {% blocktrans trimmed %}
                     your account will be deleted completely. if you have authorship, your entries
                     will be preserved anonymously for the next generations.
                 {% endblocktrans %}
             </p>
-        </div>
+        </article>
 
-        <div class="card-body">
-            <h2 class="card-title h5"><strong>{% trans "c) freeze account" %}</strong></h2>
-            <p class="card-text">
+        <article>
+            <h2 class="h5"><strong>{% trans "c) freeze account" %}</strong></h2>
+            <p>
                 {% blocktrans trimmed %}
                     ideal if you have emotional bond with your account. when your account is frozen, no
                     one can access to your profile and send you messages. your entries will be visible. if
                     you log in, your account will be reactivated.
                 {% endblocktrans %}
             </p>
-        </div>
+        </article>
     </div>
 
-    <div class="card text-white bg-danger mb-3 w-100">
-        <div class="card-body">
+    <div class="mb-3 p-3 rounded" style="background: #dc3545; color: #f8f9fa;">
+        <form method="post">
+            <label for="termination_choice"><h2 class="h5"><strong>{% trans "last words?" %}</strong>
+            </h2></label>
+            {% render_field form.state class="form-control" id="termination_choice" %}
 
-            <form method="post">
-                <label for="termination_choice"><h2 class="card-title h5"><strong>{% trans "last words?" %}</strong></h2></label>
-                {% render_field form.state class="form-control" id="termination_choice" %}
+            <p class="mt-3">
+                {% blocktrans trimmed %}
+                    except for the scenario where you choose to freeze your account, in order for your account to
+                    be deleted, 120 hours (5 days) needs to be passed after you confirm your action. for the time being,
+                    your account will be in frozen status and if you decide to cancel your action you may log in before
+                    its too late.
+                {% endblocktrans %}
+            </p>
 
-                <p class="card-text mt-3">
-                    {% blocktrans trimmed %}
-                        except for the scenario where you choose to freeze your account, in order for your account to
-                        be deleted, 120 hours (5 days) needs to be passed after you confirm your action. for the time being,
-                        your account will be in frozen status and if you decide to cancel your action you may log in before
-                        its too late.
-                    {% endblocktrans %}
-                </p>
+            <div class="form-group">
+                <label for="password_confirm">{{ form.password_confirm.label }}</label>
+                {% render_field form.password_confirm class="form-control" id="password_confirm" %}
+            </div>
 
-                <div class="form-group">
-                    <label for="password_confirm">{{ form.password_confirm.label }}</label>
-                    {% render_field form.password_confirm class="form-control" id="password_confirm" %}
-                </div>
-
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light w-100">{% trans "farewell" %}</button>
-            </form>
-
-        </div>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light w-100">{% trans "farewell" %}</button>
+        </form>
     </div>
 {% endblock %}

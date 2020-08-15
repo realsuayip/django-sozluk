@@ -73,8 +73,10 @@
                                 <use href="#favorite"></use>
                             </svg>
                         </a>
-                        <a role="button" class="fav-count" tabindex="0" data-toggle="dropdown" aria-label="{% trans "Favorites" %}" aria-haspopup="true" aria-expanded="false">{% firstof entry.favorited_by.count %}</a>
-                        <span class="dropdown-menu favorites-list tinybar" data-loaded="false"></span>
+                        {% with entry.favorited_by.count as fav_count %}
+                            <a role="button" class="fav-count" tabindex="{{ fav_count|yesno:"0,-1" }}" data-toggle="dropdown" aria-label="{% trans "Favorites" %}" aria-haspopup="true" aria-expanded="false" {% if not fav_count %}aria-hidden="true" {% endif %}>{% firstof fav_count %}</a>
+                            <span class="dropdown-menu favorites-list tinybar" data-loaded="false"></span>
+                        {% endwith %}
                     </div>
                 {% endif %}
             </div>

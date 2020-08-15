@@ -4,9 +4,9 @@
 
 {% with lfproxy.context as lf %}
     {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
-    <div class="row m-0" id="category_holder" style="min-height: 34px; align-items: center;">
+    <div class="m-0" id="category_holder" style="min-height: 35px; align-items: center;">
 
-        <h2 class="col-lg-auto p-0" id="top">
+        <h2 class="p-0" id="top">
 
             {# CATEGORY SAFENAME #}
             <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span>
@@ -32,7 +32,7 @@
         </h2>
 
         {# YEAR SELECTOR START #}
-        <select {% if lf.slug != "today-in-history" %}style="display: none;"{% endif %} class="year-select col-lg-auto py-1 px-1 mb-1 form-control" id="year_select" aria-label="{% trans "Year selector" %}">
+        <select {% if lf.slug != "today-in-history" %}style="display: none;"{% endif %} class="year-select py-1 px-1 mb-1 form-control" id="year_select" aria-label="{% trans "Year selector" %}">
             {% for year in lf.year_range %}
                 <option value="{{ year }}" {% if year == lf.year %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
@@ -44,13 +44,15 @@
     {# GUNDEM FILTER OPTIONS #}
     <div class="dj-hidden exclusion-settings" id="exclusion-choices">
         <small style="display: block">{% trans "personalize popular topics:" %}</small>
-        <ul class="exclusion-choices">
-            {% if lf.slug == "popular" %}
-                {% for category in lf.exclusions.available %}
-                    <li><a role="button" title="{{category.description}}" {% if category.slug in lf.exclusions.active %}class="active"{% endif %} tabindex="0" data-slug="{{ category.slug }}">#{{ category.name }}</a></li>
-                {% endfor %}
-            {% endif %}
-        </ul>
+        {% spaceless %}
+            <ul class="exclusion-choices">
+                {% if lf.slug == "popular" %}
+                    {% for category in lf.exclusions.available %}
+                        <li><a role="button" title="{{ category.description }}" {% if category.slug in lf.exclusions.active %}class="active"{% endif %} tabindex="0" data-slug="{{ category.slug }}">#{{ category.name }}</a></li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        {% endspaceless %}
     </div>
     {# GUNDEM FILTER END #}
 

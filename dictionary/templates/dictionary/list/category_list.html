@@ -14,21 +14,18 @@
             <a {{ uncategorized_attr }} href="{{ uncategorized_url }}">topics with no channels</a> are listed.</p>
     {% endblocktrans %}
 
-    <ul class="category-list-all m0 p-0">
+    <ul class="category-list-all p-0">
         {% for category in categories %}
-            <li class="row">
-                <div class="col-{{ user.is_authenticated|yesno:"9,12" }}">
+            <li class="d-flex justify-content-between">
+                <div>
                     <h2 class="h5">
                         <a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
                     </h2>
                     <p>{{ category.description }}</p>
                 </div>
-
                 {% if user.is_authenticated %}
-                    <div class="col-3">
-                        {% trans "unfollow,follow" context "category-list" as state %}
-                        <button type="button" class="btn btn-django-link float-right follow-category-trigger{{ category.is_followed|yesno:" faded," }}" data-category-id="{{ category.pk }}">{{ category.is_followed|yesno:state }}</button>
-                    </div>
+                    {% trans "unfollow,follow" context "category-list" as state %}
+                    <button type="button" class="btn btn-django-link float-right follow-category-trigger{{ category.is_followed|yesno:" faded," }}" data-category-id="{{ category.pk }}">{{ category.is_followed|yesno:state }}</button>
                 {% endif %}
             </li>
         {% endfor %}

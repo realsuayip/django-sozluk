@@ -10,7 +10,7 @@
 
             <div class="form-group">
                 {% for err in form.non_field_errors %}
-                    <div class="alert alert-danger">{{ err }}</div>
+                    <div class="alert-danger p-3 mb-3 rounded">{{ err }}</div>
                 {% endfor %}
 
                 <div class="form-group">
@@ -24,7 +24,7 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    <small class="form-text text-muted password-help">{{ form.new_password1.help_text }}</small>
+                    <small class="text-muted password-help">{{ form.new_password1.help_text }}</small>
                 </div>
 
                 <div class="form-group">
@@ -45,7 +45,7 @@
         </form>
     {% else %}
         {% url "password_reset" as password_reset_url %}
-        <div class="alert alert-secondary" role="alert">
+        <div class="bg-light p-3 mb-3 rounded" role="alert">
             {% blocktrans trimmed %}
                 hello dear, we couldn't really understand you. if you want to reset your password visit
                 <a href="{{ password_reset_url }}">this page</a>.

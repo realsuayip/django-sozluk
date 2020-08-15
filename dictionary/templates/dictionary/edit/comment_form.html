@@ -34,16 +34,11 @@
                 {% trans "Comment content area" as area_label %}
                 {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control" rows="10" spellcheck="true" aria-label=area_label %}
 
-                <div class="row align-items-center">
+                <div class="d-flex align-items-center">
                     {% if updating %}
-                        <div class="col-6">
-                            <button name="delete" value="true" onclick="return confirm('{% trans "Are you sure?" %}');" type="submit" class="btn btn-sm btn-outline">{% trans "delete" %}</button>
-                        </div>
+                        <button name="delete" value="true" onclick="return confirm('{% trans "Are you sure?" %}');" type="submit" class="btn btn-sm">{% trans "delete" %}</button>
                     {% endif %}
-
-                    <div class="{{ updating|yesno:"col-6,col-12" }}">
-                        <button type="submit" class="btn btn-django float-right">{{ updating|yesno:_("update comment,comment") }}</button>
-                    </div>
+                    <button type="submit" class="btn btn-django ml-auto">{{ updating|yesno:_("update comment,comment") }}</button>
                 </div>
             </form>
         </section>

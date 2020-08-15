@@ -22,16 +22,14 @@
     {% endif %}
 </div>
 
-<div class="form-group">
-    <div class="row">
-        <div class="col-lg-6">
-            <label for="date_from_{{ source }}">{% trans "from date:" %}</label>
-            <input form="search_form_extended_{{ source }}" name="from_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_from_{{ source }}" value="{{ request.GET.from_date }}">
-        </div>
-        <div class="col-lg-6">
-            <label for="date_to_{{ source }}">{% trans "to date:" %}</label>
-            <input form="search_form_extended_{{ source }}" name="to_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_to_{{ source }}" value="{{ request.GET.to_date }}">
-        </div>
+<div class="search-dates d-grid grid-col-2 grid-gap-1">
+    <div class="form-group">
+        <label for="date_from_{{ source }}">{% trans "from date:" %}</label>
+        <input form="search_form_extended_{{ source }}" name="from_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_from_{{ source }}" value="{{ request.GET.from_date }}">
+    </div>
+    <div class="form-group">
+        <label for="date_to_{{ source }}">{% trans "to date:" %}</label>
+        <input form="search_form_extended_{{ source }}" name="to_date" type="date" placeholder="yyyy-aa-gg" class="form-control" id="date_to_{{ source }}" value="{{ request.GET.to_date }}">
     </div>
 </div>
 

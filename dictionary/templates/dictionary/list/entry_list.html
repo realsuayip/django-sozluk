@@ -69,7 +69,7 @@
 
                             <a class="dropdown-item pb-2">
                                 <form method="GET" action="{{ topic.get_absolute_url }}">
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group">
                                         <input type="hidden" name="a" value="search">
                                         <input name="keywords" class="searchbox-text form-control" type="text" placeholder="{% trans "words or @author" %}" aria-label="{% trans "words or @author" %}" required>
                                         <div class="input-group-append">
@@ -189,7 +189,7 @@
         {% include "dictionary/includes/block_user_modal.html" %}
         {% if not banned and valid %}
             {% if drafts.exists %}
-                <div class="border rounded-sm p-3 bg-light my-3">
+                <div class="border rounded p-3 bg-light my-3">
                     <div class="d-flex" role="alert">
                         <svg class="mr-2" width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <use href="#saved"></use>

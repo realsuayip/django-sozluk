@@ -8,9 +8,9 @@
         {% csrf_token %}
 
         {% if form.errors %}
-            <div class="alert alert-danger">{% trans "please try again after checking specified errors." %}</div>
+            <div class="alert-danger p-3 mb-3 rounded">{% trans "please try again after checking specified errors." %}</div>
             {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">{{ error|lower }}</div>
+                <div class="alert-danger p-3 mb-3 rounded">{{ error|lower }}</div>
             {% endfor %}
         {% endif %}
 
@@ -57,19 +57,15 @@
                 {% endif %}
             </div>
 
-            <div class="row">
-                <div class="col-xl-5">
-                    <div class="form-group">
-                        <label for="signup_gender">{{ form.gender.label }}</label>
-                        {% render_field form.gender class="form-control" id="signup_gender" %}
-                    </div>
+            <div class="d-grid grid-col-2 grid-gap-1 grid-sm-row grid-sm-gap-0">
+                <div class="form-group">
+                    <label for="signup_gender">{{ form.gender.label }}</label>
+                    {% render_field form.gender class="form-control" id="signup_gender" %}
                 </div>
-                <div class="col-xl-7">
-                    <div class="form-group">
-                        <label class="d-block" for="id_birth_date_day">{{ form.birth_date.label }}</label>
-                        <div class="datepick d-flex">
-                            {% render_field form.birth_date class="form-control" %}
-                        </div>
+                <div class="form-group">
+                    <label class="d-block" for="id_birth_date_day">{{ form.birth_date.label }}</label>
+                    <div class="datepick d-grid grid-gap-1 grid-col-3">
+                        {% render_field form.birth_date class="form-control" %}
                     </div>
                 </div>
             </div>

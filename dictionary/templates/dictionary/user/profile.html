@@ -35,7 +35,7 @@
 
         {% if profile.is_suspended and user == profile %}
             {% url "general-report" as report_url %}
-            <div class="alert alert-secondary" role="alert">
+            <div class="rounded bg-light mb-3 p-3" role="alert">
                 {% blocktrans trimmed with date=profile.suspended_until %}
                     Your account was suspended until the date {{ date }}. For a detailed information
                     check the private message we sent to you. If you think something is wrong, you can use this
@@ -122,7 +122,7 @@
             </h2>
 
             {% if tab.type == "entry" %}
-                <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
+                <a role="button" tabindex="0" href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab={{ tab.name }}" data-lf-slug="userstats" data-tab="{{ tab.name }}" data-lf-extra='{"user":"{{ profile.slug }}"}'>
                     <svg fill="currentColor" viewBox="0 0 16 16" width="24" height="24">
                         <use href="#lshift"></use>
                         <title>{% trans "navigate to the topic list" %}</title>
@@ -144,10 +144,10 @@
             {% endif %}
 
             {% if tab.type == "author" %}
-                <ul class="list-group list-group-flush">
+                <ul class="list-group">
                     {% for author in object_list %}
                         {% check_follow_user user author as is_following_stat %}
-                        <li class="list-group-item d-flex justify-content-between border-0" data-username="{{ author.username }}">
+                        <li class="list-group-item d-flex justify-content-between" data-username="{{ author.username }}">
                             <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
                             <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:_("unfollow,follow") }}</a></span>
                         </li>
@@ -156,9 +156,9 @@
             {% endif %}
 
             {% if tab.type == "topic" %}
-                <ul class="list-group list-group-flush">
+                <ul class="list-group">
                     {% for topic in object_list %}
-                        <li class="list-group-item d-flex justify-content-between border-0">
+                        <li class="list-group-item d-flex justify-content-between">
                             <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                         </li>
                     {% endfor %}
@@ -166,9 +166,9 @@
             {% endif %}
 
             {% if tab.type == "category" %}
-                <ul class="list-group list-group-flush">
+                <ul class="list-group">
                     {% for category in object_list %}
-                        <li class="list-group-item d-flex justify-content-between border-0">
+                        <li class="list-group-item d-flex justify-content-between">
                             <a href="{% url 'topic_list' slug='userstats' %}?user={{ profile.slug }}&tab=channels&channel={{ category.slug }}" data-lf-slug="userstats" data-tab="channels" data-lf-extra='{"user": "{{ profile.slug }}", "channel": "{{ category.slug }}"}' title="{{ category.description }}">#{{ category.name }}</a>
                             <span>{{ category.count }}</span>
                         </li>

@@ -30,7 +30,7 @@
                 {% if user.unread_topic_count.topics > 0 %}
                     <form method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-outline" onclick="return confirm('{% trans "Are you sure?" %}')">{% trans "mark all topics as read" %}</button>
+                        <button type="submit" class="btn btn-sm" onclick="return confirm('{% trans "Are you sure?" %}')">{% trans "mark all topics as read" %}</button>
                     </form>
                 {% endif %}
             </small>

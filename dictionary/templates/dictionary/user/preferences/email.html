@@ -6,17 +6,17 @@
 
     {% if form.non_field_errors %}
         {% for error in form.non_field_errors %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
+            <div class="alert-danger p-3 mb-3 rounded" role="alert">{{ error }}</div>
         {% endfor %}
     {% endif %}
 
-    <div class="border rounded-sm p-3 bg-light mb-3">
+    <div class="border rounded p-3 bg-light mb-3">
         <strong style="font-weight: 600; margin-right: .35em;">{% trans "current e-mail in use:" %}</strong>
         <span>{{ user.email }}</span>
     </div>
 
     {% if not user.email_confirmed %}
-        <div class="alert alert-info" role="alert">
+        <div class="alert-info p-3 mb-3 rounded" role="alert">
         {% blocktrans trimmed %}
             a confirmation link has been sent to your new e-mail address. by following
             this link you can complete your e-mail change. if you didn't receive any mails,

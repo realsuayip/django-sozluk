@@ -685,10 +685,13 @@
             const countHolder = self.next();
 
             self.toggleClass("active");
-            countHolder.text(count);
 
             if (count === 0) {
                 countHolder.text("");
+                countHolder.attr("tabindex", "-1");
+            } else {
+                countHolder.text(count);
+                countHolder.attr("tabindex", "0");
             }
 
             self.siblings("span.favorites-list").attr("data-loaded", "false");

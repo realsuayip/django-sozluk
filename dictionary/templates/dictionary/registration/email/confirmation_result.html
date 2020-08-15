@@ -4,7 +4,7 @@
 {% block title %}{% trans "e-mail confirmation" context "titleblock" %}{% endblock %}
 
 {% block content %}
-    <div class="alert alert-secondary" role="alert">
+    <div class="bg-light rounded border p-3" role="alert">
         {% if success %}
             {% url "login" as login_url %}
             {% blocktrans %}congratulations, your e-mail was successfully confirmed. you may <a href="{{ login_url }}">log in</a> now.{% endblocktrans %}

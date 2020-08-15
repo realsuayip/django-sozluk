@@ -1,4 +1,15 @@
-[0.5.0-alpha](2020.08.09)(compatible)
+[0.6.0-alpha](2020.08.16)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Dropped Bootstrap CSS. Added helpers.css
+which uses some styling utilities from Bootstrap.
+
+--Deletions--
+None
+
+[0.5.0-alpha](2020.08.13)(compatible)
 --Additions--
 1) This project now uses Celery and
 django-celery-email to handle
