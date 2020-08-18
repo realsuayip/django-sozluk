@@ -41,12 +41,23 @@
         });
     }
 
+    function sleep (ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function createTemplate (html) {
+        const template = document.createElement("template");
+        template.innerHTML = html.trim();
+        return template.content.firstChild;
+    }
+
     let toastQueue = 0;
 
-    function notify (message, level = "default", initialDelay = 2000, persistent = false) {
-        const toastHolder = $(".toast-holder");
+    async function notify (message, level = "default", initialDelay = 1800, persistent = false) {
+        const toastHolder = document.querySelector(".toast-holder");
+        const delay = initialDelay + (toastQueue * 1000);
         const toastTemplate = `
-        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast shadow-sm" data-autohide="${!persistent}">
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast fade showing">
             <div class="toast-body ${level}">
                 <div class="toast-content">
                     <span>${message}</span>
@@ -54,16 +65,30 @@
                 </div>
             </div>
         </div>`;
+        const toast = createTemplate(toastTemplate);
+        toastHolder.prepend(toast);
 
-        const toast = $(toastTemplate).prependTo(toastHolder);
-        const delay = initialDelay + (toastQueue * 1000);
+        if (persistent) {
+            toast.addEventListener("click", async event => {
+                if (event.target.closest("[data-dismiss=toast]")) {
+                    toast.classList.remove("show");
+                    await sleep(100);
+                    toast.remove();
+                }
+            });
+        }
 
-        $(toast).toast({ delay }).toast("show").on("shown.bs.toast", function () {
+        await sleep(0);
+        toast.classList.add("show");
+
+        if (!persistent) {
             toastQueue += 1;
-        }).on("hidden.bs.toast", function () {
-            $(this).remove();
+            await sleep(delay);
+            toast.classList.remove("show");
             toastQueue -= 1;
-        });
+            await sleep(100);
+            toast.remove();
+        }
     }
 
     function gqlc (data, failSilently = false, failMessage = gettext("something went wrong")) {
@@ -698,14 +723,6 @@
         });
     });
 
-    $(document).on("click", "footer.entry-footer > .feedback > .favorites .dropdown-menu, .autocomplete-suggestions, .noprop", e => {
-        e.stopPropagation();
-    });
-
-    $(".dropdown-advanced-search > div > a.search-closer").on("click", function () {
-        $(".dropdown-advanced-search").removeClass("show");
-    });
-
     $("a.fav-count[role='button']").on("click", function () {
         const self = $(this);
         const favoritesList = self.next();
@@ -771,15 +788,17 @@
     function showBlockDialog (recipient, redirect = true) {
         $("#block_user").attr("data-username", recipient).attr("data-re", redirect);
         $("#username-holder").text(recipient);
-        $("#blockUserModal").modal("show");
+
+        const modal = document.querySelector("#blockUserModal");
+        modal._modalInstance.show();
     }
 
     function showMessageDialog (recipient, extraContent) {
-        const msgModal = $("#sendMessageModal");
+        const msgModal = document.querySelector("#sendMessageModal");
         $("#sendMessageModal span.username").text(recipient);
         $("#sendMessageModal textarea#message_body").val(extraContent);
-        msgModal.attr("data-for", recipient);
-        msgModal.modal("show");
+        msgModal.setAttribute("data-for", recipient);
+        msgModal._modalInstance.show();
     }
 
     $(".entry-actions").on("click", ".block-user-trigger", function () {
@@ -800,7 +819,6 @@
             });
         }
         userAction("block", targetUser, null, re);
-        $("#blockUserModal").modal("hide");
     });
 
     $(".unblock-user-trigger").on("click", function () {
@@ -1028,7 +1046,7 @@
     $("#send_message_btn").on("click", function () {
         const self = $(this);
         const textarea = $("#sendMessageModal textarea");
-        const msgModal = $("#sendMessageModal");
+        const msgModal = document.querySelector("#sendMessageModal");
         const body = textarea.val();
 
         if (body.length < 3) {
@@ -1043,8 +1061,8 @@
         }
 
         self.prop("disabled", true);
-        composeMessage(msgModal.attr("data-for"), body).then(function () {
-            msgModal.modal("hide");
+        composeMessage(msgModal.getAttribute("data-for"), body).then(function () {
+            msgModal._modalInstance.hide();
             textarea.val("");
         }).always(function () {
             self.prop("disabled", false);
@@ -1068,8 +1086,8 @@
     });
 
     $("body").on("keypress", "[role=button], .key-clickable", function (e) {
-        if (e.which === 13 || e.which === 32) { // space or enter
-            $(this).click();
+        if (e.key === " " || e.key === "Enter") { // space or enter
+            $(this)[0].click();
         }
     });
 

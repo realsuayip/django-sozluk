@@ -99,7 +99,7 @@
 
                 <li class="profile-stat-expand{% if tab.name != "latest" and tab.name != "favorites" %} active{% endif %}">
                     <a class="expand" role="button" tabindex="0" id="more-tabs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "statistics" %}</a>
-                    <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown">
+                    <div class="dropdown-menu" aria-labelledby="more-tabs-dropdown" data-orientation="bottom-start">
                         <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "popular" %}">{% trans "most favorited" %}</a>
                         <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "recentlyvoted" %}">{% trans "recently voted" %}</a>
                         <a class="dropdown-item" href="{% url 'user-profile-stats' profile.slug "liked" %}">{% trans "most liked" %}</a>

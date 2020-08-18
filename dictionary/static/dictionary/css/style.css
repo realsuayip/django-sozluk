@@ -920,10 +920,6 @@ a.expand::after {
     color: #999;
 }
 
-.topic-dropdown {
-    padding: 0;
-}
-
 .topic-dropdown a.dropdown-item {
     padding: .2em .7em;
     font-size: 14px;

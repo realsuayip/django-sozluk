@@ -1,3 +1,19 @@
+[0.7.0-alpha](2020.08.19)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Dropped Bootstrap JS and rewrote all
+dependant API in helpers.js (this file will be
+merged into djdict.js later). With this change
+bootstrap library is now completely discarded.
+
+Notice: This update breaks people list page,
+this will be fixed in a subsequent update.
+
+--Deletions--
+1) Some unused CSS rules.
+
 [0.6.0-alpha](2020.08.16)(compatible)
 --Additions--
 None

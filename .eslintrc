@@ -45,7 +45,10 @@
     ],
     "func-style": [
       2,
-      "declaration"
+      "declaration",
+      {
+        "allowArrowFunctions": true
+      }
     ],
     "quote-props": [
       2,

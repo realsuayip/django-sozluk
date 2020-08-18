@@ -23,7 +23,7 @@
                 <a href="{{ entry.get_absolute_url }}" class="permalink">
                     <time datetime="{{ entry.date_created|date:"c" }}">{{ time }}</time>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right entry-actions"></div>
+                <div class="dropdown-menu entry-actions"></div>
             </div>
         </header>
 
@@ -75,7 +75,7 @@
                         </a>
                         {% with entry.favorited_by.count as fav_count %}
                             <a role="button" class="fav-count" tabindex="{{ fav_count|yesno:"0,-1" }}" data-toggle="dropdown" aria-label="{% trans "Favorites" %}" aria-haspopup="true" aria-expanded="false" {% if not fav_count %}aria-hidden="true" {% endif %}>{% firstof fav_count %}</a>
-                            <span class="dropdown-menu favorites-list tinybar" data-loaded="false"></span>
+                            <span class="dropdown-menu no-collapse favorites-list tinybar" data-orientation="bottom-start" data-loaded="false"></span>
                         {% endwith %}
                     </div>
                 {% endif %}
@@ -96,7 +96,7 @@
                         <use href="#more"></use>
                     </svg>
                 </a>
-                <div class="dropdown-menu dropdown-menu-right entry-actions"></div>
+                <div class="dropdown-menu entry-actions"></div>
             </div>
         </footer>
     {% endwith %}
