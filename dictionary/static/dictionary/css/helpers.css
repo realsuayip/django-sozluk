@@ -78,6 +78,7 @@ strong {
 
 small {
     font-size: 80%;
+    font-weight: 400;
 }
 
 sub,
@@ -1475,14 +1476,6 @@ a.close.disabled {
 
 .toast-body {
     padding: .75rem;
-}
-
-.tab-content > .tab-pane {
-    display: none;
-}
-
-.tab-content > .active {
-    display: block;
 }
 
 .bg-light {

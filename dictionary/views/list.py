@@ -13,12 +13,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db.models import Exists, Max, Min, OuterRef, Q
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.generic import ListView, TemplateView
 
 from dateutil.relativedelta import relativedelta
@@ -85,16 +85,36 @@ class Index(ListView):
         return random.sample(nice_pk_set, self.size) if len(nice_pk_set) > self.size else nice_pk_set
 
 
-class PeopleList(LoginRequiredMixin, TemplateView):
+class PeopleList(LoginRequiredMixin, ListView):
     template_name = "dictionary/list/people_list.html"
+    paginate_by = 15
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["following"], context["blocked"] = (
-            tuple(self.request.user.following.all()),
-            tuple(self.request.user.blocked.all()),
-        )
-        return context
+    tab = None
+    tabs = {"following": gettext_lazy("following list"), "blocked": gettext_lazy("blocked list")}
+
+    def get_queryset(self):
+        queryset = getattr(self, self.tab)()
+
+        if term := self.request.GET.get("search", "").strip():
+            queryset = queryset.filter(username__icontains=term)
+
+        return queryset
+
+    def following(self):
+        return self.request.user.following.all()
+
+    def blocked(self):
+        return self.request.user.blocked.all()
+
+    def dispatch(self, request, *args, **kwargs):
+        tab = kwargs.get("tab")
+
+        if tab is not None and tab not in self.tabs.keys():
+            raise Http404
+
+        self.tab = tab or "following"
+        self.extra_context = {"tab": self.tab, "title": self.tabs.get(self.tab)}
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):

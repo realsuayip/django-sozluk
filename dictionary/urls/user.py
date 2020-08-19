@@ -17,6 +17,7 @@ urlpatterns_user = [
     # user related urls
     path("settings/", UserPreferences.as_view(), name="user_preferences"),
     path("people/", PeopleList.as_view(), name="people"),
+    path("people/<slug:tab>/", PeopleList.as_view(), name="people-tab"),
     path("activity/", ActivityList.as_view(), name="activity"),
     path("messages/", ConversationList.as_view(), name="messages"),
     path("messages/archive/", ConversationArchiveList.as_view(), name="messages-archive"),
