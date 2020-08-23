@@ -1,6 +1,84 @@
-/* global Popper */
-
+/* global Popper gettext  */
 "use strict";
+
+const lang = document.documentElement.lang;
+
+const entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+    "`": "&#x60;",
+    "=": "&#x3D;"
+};
+
+function notSafe (string) {
+    return String(string).replace(/[&<>"'`=/]/g, function (s) {
+        return entityMap[s];
+    });
+}
+
+function createTemplate (html) {
+    const template = document.createElement("template");
+    template.innerHTML = html.trim();
+    return template.content.firstChild;
+}
+
+function sleep (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+let toastQueue = 0;
+
+async function notify (message, level = "default", initialDelay = 1800, persistent = false) {
+    const toastHolder = document.querySelector(".toast-holder");
+    const delay = initialDelay + (toastQueue * 1000);
+    const toastTemplate = `
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast fade showing">
+            <div class="toast-body ${level}">
+                <div class="toast-content">
+                    <span>${message}</span>
+                    ${persistent ? `<button type="button" class="ml-2 close" data-dismiss="toast" aria-label="${gettext("Close")}"><span aria-hidden="true">&times;</span></button>` : ""}
+                </div>
+            </div>
+        </div>`;
+    const toast = createTemplate(toastTemplate);
+    toastHolder.prepend(toast);
+
+    if (persistent) {
+        toast.addEventListener("click", async event => {
+            if (event.target.closest("[data-dismiss=toast]")) {
+                toast.classList.remove("show");
+                await sleep(100);
+                toast.remove();
+            }
+        });
+    }
+
+    await sleep(0);
+    toast.classList.add("show");
+
+    if (!persistent) {
+        toastQueue += 1;
+        await sleep(delay);
+        toast.classList.remove("show");
+        toastQueue -= 1;
+        await sleep(100);
+        toast.remove();
+    }
+}
+
+function gqlc (data, failSilently = false, failMessage = gettext("something went wrong")) {
+    // GraphQL call, data -> { query, variables }
+    return $.post("/graphql/", JSON.stringify(data)).fail(function () {
+        if (!failSilently) {
+            notify(failMessage, "error");
+        }
+    });
+}
+
 (function () {
     const find = document.querySelectorAll.bind(document);
     const findOne = document.querySelector.bind(document);
@@ -11,6 +89,224 @@
     Element.prototype.hasClass = function (className) {
         return this.classList.contains(className);
     };
+
+    // eslint-disable-next-line no-extend-native
+    String.prototype.replaceAll = function (pattern, replacement) {
+        return this.replace(new RegExp(pattern.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&"), "g"), replacement);
+    };
+
+    class AutoComplete {
+        constructor (options) {
+            this.input = options.input;
+            this.lookup = options.lookup; // Takes name, returns a Promise that resolves into list of {name, value}s.
+            this.onSelect = options.onSelect; // Takes value.
+
+            this.popper = null;
+            this.selected = null;
+            this.showing = false;
+
+            const templateID = `id_${this.input.id}`;
+            this.template = createTemplate(`<ul role="listbox" class="autocomplete" id="${templateID}"></ul>`);
+            this.input.parentNode.append(this.template);
+
+            this.input.setAttribute("role", "combobox");
+            this.input.setAttribute("aria-owns", templateID);
+            this.input.setAttribute("aria-autocomplete", "list");
+            this.input.setAttribute("aria-expanded", "false");
+
+            this.input.on("input", () => {
+                const name = this.input.value.toLocaleLowerCase(lang).trim();
+                this.selected = null;
+
+                if (name) {
+                    this.suggest(name);
+                } else {
+                    if (this.showing) {
+                        this.destroy();
+                    }
+                }
+            });
+
+            this.input.on("focusout", () => {
+                setTimeout(() => {
+                    this.destroy();
+                }, 200);
+            });
+
+            this.input.on("keydown", event => {
+                if (!["ArrowUp", "ArrowDown", "Escape", "Enter", "Tab"].includes(event.key)) {
+                    return;
+                }
+
+                this.selected && this.selected.classList.remove("selected"); // Remove selected class.
+
+                switch (event.key) {
+                    case "ArrowUp": {
+                        const last = this.template.lastChild;
+                        this.selected = this.selected ? this.selected.previousElementSibling || last : last;
+                        if (!this.selected.hasClass("no-results")) {
+                            event.preventDefault(); // Prevents cursor from moving to beginning of the input.
+                        }
+                        break;
+                    }
+
+                    case "ArrowDown": {
+                        const first = this.template.firstChild;
+                        this.selected = this.selected ? this.selected.nextElementSibling || first : first;
+                        break;
+                    }
+
+                    case "Escape": {
+                        this.destroy();
+                        break;
+                    }
+
+                    case "Enter": {
+                        if (this.selected) {
+                            event.preventDefault(); // Prevents form submit.
+                            this.triggerOnSelect(this.selected);
+                        }
+                        break;
+                    }
+
+                    case "Tab": {
+                        if (this.selected) {
+                            this.triggerOnSelect(this.selected);
+                        }
+                        break;
+                    }
+                }
+
+                if (this.selected && !this.selected.hasClass("no-results")) {
+                    this.selected.classList.add("selected");
+                    this.input.value = this.selected.textContent;
+                    this.input.setAttribute("aria-activedescendant", this.selected.id);
+                }
+            });
+
+            this.template.on("click", event => {
+                event.stopPropagation();
+                this.triggerOnSelect(event.target);
+            });
+
+            this.template.on("mouseover", event => {
+                if (event.target.tagName === "LI" && !event.target.hasClass("no-results")) {
+                    Array.from(this.template.childNodes).forEach(el => el !== event.target && el.classList.remove("selected"));
+                    this.selected = event.target;
+                    this.selected.classList.add("selected");
+                }
+            });
+        }
+
+        suggest (name) {
+            this.lookup(name).then(suggestions => {
+                if (!this.popper) {
+                    this.popper = this.create();
+                }
+
+                // Notice: All suggestions are assumed to be in lowercase.
+                const items = suggestions.map(s => ({
+                    name: notSafe(s.name).replaceAll(name, `<mark>${notSafe(name)}</mark>`),
+                    value: notSafe(s.value)
+                }));
+
+                if (items.length) {
+                    this.template.innerHTML = "";
+                    for (const [index, item] of items.entries()) {
+                        this.template.innerHTML += `<li role="option" data-value="${item.value}" id="cb-opt-${index}">${item.name}</li>`;
+                    }
+                } else {
+                    if (!this.template.querySelector(".no-results")) {
+                        this.template.innerHTML = `<li role="alert" aria-live="assertive" class='no-results'>${gettext("-- no corresponding results --")}</li>`;
+                    }
+                }
+
+                this.showing = true;
+                this.template.style.display = "block";
+                this.input.setAttribute("aria-expanded", "true");
+            });
+        }
+
+        destroy () {
+            if (this.popper) {
+                this.input.setAttribute("aria-expanded", "false");
+                this.template.style.display = "none";
+                this.template.innerHTML = "";
+                this.selected = null;
+                this.showing = false;
+                this.popper.destroy();
+                this.popper = null;
+            }
+        }
+
+        create () {
+            return Popper.createPopper(this.input, this.template, { placement: "bottom-start" });
+        }
+
+        triggerOnSelect (selected) {
+            if (selected.hasClass("no-results")) {
+                return;
+            }
+
+            this.destroy();
+            this.input.value = selected.textContent;
+            const value = selected.getAttribute("data-value");
+            value && this.onSelect && this.onSelect(value);
+        }
+    }
+
+    new AutoComplete({ // eslint-disable-line no-new
+        input: findOne("#header_search"),
+        lookup (name) {
+            if (name.startsWith("@") && name.substr(1)) {
+                return gqlc({
+                    query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
+                    variables: { lookup: name.substr(1) }
+                }).then(response => {
+                    return response.data.autocomplete.authors.map(user => ({
+                        name: `@${user.username}`,
+                        value: `@${user.username}`
+                    }));
+                });
+            }
+
+            return gqlc({
+                query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
+                variables: { lookup: name }
+            }).then(response => {
+                const topicSuggestions = response.data.autocomplete.topics.map(topic => ({
+                    name: topic.title,
+                    value: topic.title
+                }));
+                const authorSuggestions = response.data.autocomplete.authors.map(user => ({
+                    name: `@${user.username}`,
+                    value: `@${user.username}`
+                }));
+                return topicSuggestions.concat(authorSuggestions);
+            });
+        },
+
+        onSelect (value) {
+            window.location = "/topic/?q=" + encodeURIComponent(value);
+        }
+    });
+
+    find(".author-search").forEach(input => {
+        new AutoComplete({ // eslint-disable-line no-new
+            input,
+            lookup (name) {
+                return gqlc({
+                    query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
+                    variables: { lookup: name }
+                }).then(response => {
+                    return response.data.autocomplete.authors.map(user => ({
+                        name: user.username,
+                        value: user.username
+                    }));
+                });
+            }
+        });
+    });
 
     const liveDropdowns = () => Array.from(find("[data-toggle=dropdown]")).filter(e => e._dropdownInstance && e._dropdownInstance.popper);
 
@@ -98,13 +394,11 @@
 
         if (dropdown) {
             const collapse = dropdown.menuElement.hasClass("no-collapse") && dropdown.menuElement === event.target.closest(".dropdown-menu");
-            if (event.target.classList.contains("dropdown-close") ||
-                    (dropdown.button !== event.target.closest("[data-toggle=dropdown]") && !collapse)) {
+            if (event.target.classList.contains("dropdown-close") || (dropdown.button !== event.target.closest("[data-toggle=dropdown]") && !collapse)) {
                 dropdown.destroy();
             }
         }
-    }
-    );
+    });
 
     class Modal {
         constructor (modal) {

@@ -3,9 +3,10 @@
 <div class="form-group">
     <label for="keywords_{{ source }}">{% trans "keywords" %}</label>
     <input form="search_form_extended_{{ source }}" name="keywords" type="text" class="form-control mb-2" id="keywords_{{ source }}" value="{{ request.GET.keywords }}">
-
-    <label for="author_nick_{{ source }}">{% trans "author" %}</label>
-    <input form="search_form_extended_{{ source }}" name="author_nick" type="text" class="form-control author-search" id="author_nick_{{ source }}" value="{{ request.GET.author_nick }}">
+    <div class="position-relative">
+        <label for="author_nick_{{ source }}">{% trans "author" %}</label>
+        <input form="search_form_extended_{{ source }}" name="author_nick" type="text" class="form-control author-search" id="author_nick_{{ source }}" value="{{ request.GET.author_nick }}">
+    </div>
 </div>
 
 <div class="form-group">

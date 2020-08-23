@@ -1,6 +1,5 @@
-/* global Cookies gettext pgettext ngettext interpolate Dropzone */
+/* global Cookies gettext pgettext ngettext interpolate Dropzone lang notSafe notify gqlc */
 (function () {
-    const lang = document.documentElement.lang;
     const cookies = Cookies.withConverter({
         read (value) {
             return decodeURIComponent(value);
@@ -22,82 +21,6 @@
 
     function isValidText (body) {
         return /^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join());
-    }
-
-    const entityMap = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-        "/": "&#x2F;",
-        "`": "&#x60;",
-        "=": "&#x3D;"
-    };
-
-    function notSafe (string) {
-        return String(string).replace(/[&<>"'`=/]/g, function (s) {
-            return entityMap[s];
-        });
-    }
-
-    function sleep (ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    function createTemplate (html) {
-        const template = document.createElement("template");
-        template.innerHTML = html.trim();
-        return template.content.firstChild;
-    }
-
-    let toastQueue = 0;
-
-    async function notify (message, level = "default", initialDelay = 1800, persistent = false) {
-        const toastHolder = document.querySelector(".toast-holder");
-        const delay = initialDelay + (toastQueue * 1000);
-        const toastTemplate = `
-        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast fade showing">
-            <div class="toast-body ${level}">
-                <div class="toast-content">
-                    <span>${message}</span>
-                    ${persistent ? `<button type="button" class="ml-2 close" data-dismiss="toast" aria-label="${gettext("Close")}"><span aria-hidden="true">&times;</span></button>` : ""}
-                </div>
-            </div>
-        </div>`;
-        const toast = createTemplate(toastTemplate);
-        toastHolder.prepend(toast);
-
-        if (persistent) {
-            toast.addEventListener("click", async event => {
-                if (event.target.closest("[data-dismiss=toast]")) {
-                    toast.classList.remove("show");
-                    await sleep(100);
-                    toast.remove();
-                }
-            });
-        }
-
-        await sleep(0);
-        toast.classList.add("show");
-
-        if (!persistent) {
-            toastQueue += 1;
-            await sleep(delay);
-            toast.classList.remove("show");
-            toastQueue -= 1;
-            await sleep(100);
-            toast.remove();
-        }
-    }
-
-    function gqlc (data, failSilently = false, failMessage = gettext("something went wrong")) {
-        // GraphQL call, data -> { query, variables }
-        return $.post("/graphql/", JSON.stringify(data)).fail(function () {
-            if (!failSilently) {
-                notify(failMessage, "error");
-            }
-        });
     }
 
     function dictToParameters (dict) {
@@ -199,56 +122,6 @@
             }
         }
     });
-
-    $("#header_search").autocomplete({
-        triggerSelectOnValidInput: false,
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: gettext("-- no corresponding results --"),
-        appendTo: ".header-search-form",
-
-        lookup (lookup, done) {
-            if (lookup.startsWith("@") && lookup.substr(1)) {
-                gqlc({
-                    query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
-                    variables: { lookup: lookup.substr(1) }
-                }).then(function (response) {
-                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` })) });
-                });
-            } else {
-                gqlc({
-                    query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
-                    variables: { lookup }
-                }).then(function (response) {
-                    const topicSuggestions = response.data.autocomplete.topics.map(topic => ({ value: topic.title }));
-                    const authorSuggestions = response.data.autocomplete.authors.map(user => ({ value: `@${user.username}` }));
-                    done({ suggestions: topicSuggestions.concat(authorSuggestions) });
-                });
-            }
-        },
-
-        onSelect (suggestion) {
-            window.location = "/topic/?q=" + suggestion.value;
-        }
-    });
-
-    for (const item of $(".author-search")) {
-        $(item).autocomplete({
-            appendTo: $(item).parent(".form-group"),
-
-            lookup (lookup, done) {
-                gqlc({
-                    query: `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`,
-                    variables: { lookup }
-                }).then(function (response) {
-                    done({ suggestions: response.data.autocomplete.authors.map(user => ({ value: user.username })) });
-                });
-            },
-
-            onSelect (suggestion) {
-                $(this).val(suggestion.value);
-            }
-        });
-    }
 
     function setExclusions (exclusions) {
         const cookieExclusions = JSON.parse(cookies.get("lfex") || "null");
@@ -634,19 +507,20 @@
         let fmt;
 
         switch (type) {
-        case "ref":
-            fmt = [gettext("target topic, #entry or @author to reference:"), text => `(${pgettext("editor", "see")}: ${text})`];
-            break;
-        case "thingy":
-            fmt = [gettext("target topic, #entry or @author to thingy:"), text => `\`${text}\``];
-            break;
-        case "swh":
-            fmt = [gettext("what should be referenced in asterisk?"), text => `\`:${text}\``];
-            break;
-        case "spoiler": {
-            const spoiler = gettext("spoiler");
-            fmt = [gettext("what to write between spoiler tags?"), text => `--\`${spoiler}\`--\n${text}\n--\`${spoiler}\`--`];
-            break; }
+            case "ref":
+                fmt = [gettext("target topic, #entry or @author to reference:"), text => `(${pgettext("editor", "see")}: ${text})`];
+                break;
+            case "thingy":
+                fmt = [gettext("target topic, #entry or @author to thingy:"), text => `\`${text}\``];
+                break;
+            case "swh":
+                fmt = [gettext("what should be referenced in asterisk?"), text => `\`:${text}\``];
+                break;
+            case "spoiler": {
+                const spoiler = gettext("spoiler");
+                fmt = [gettext("what to write between spoiler tags?"), text => `--\`${spoiler}\`--\n${text}\n--\`${spoiler}\`--`];
+                break;
+            }
         }
 
         return { label: fmt[0], format: fmt[1] };
