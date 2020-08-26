@@ -1261,6 +1261,11 @@ ul.exclusion-choices > li > a.active {
     width: 100%;
 }
 
+textarea.expandable {
+    height: 9rem;
+    transition: height .4s;
+}
+
 /** MEDIA QUERIES **/
 
 /** CONTAINER WIDTHS **/

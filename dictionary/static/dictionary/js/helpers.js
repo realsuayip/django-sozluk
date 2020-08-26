@@ -1,4 +1,4 @@
-/* global Popper gettext  */
+/* global Popper gettext Cookies */
 "use strict";
 
 const lang = document.documentElement.lang;
@@ -71,25 +71,39 @@ async function notify (message, level = "default", initialDelay = 1800, persiste
 }
 
 function gqlc (data, failSilently = false, failMessage = gettext("something went wrong")) {
-    // GraphQL call, data -> { query, variables }
-    return $.post("/graphql/", JSON.stringify(data)).fail(function () {
+    const headers = new Headers({
+        "Content-Type": "application/json",
+        "X-CSRFToken": Cookies.get("csrftoken")
+    });
+
+    const options = {
+        method: "POST",
+        headers,
+        mode: "same-origin",
+        body: JSON.stringify(data)
+    };
+
+    const errorHandler = () => {
         if (!failSilently) {
             notify(failMessage, "error");
         }
+        return { errors: [failMessage] };
+    };
+
+    return fetch("/graphql/", options).then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return errorHandler();
+    }).catch(() => {
+        return errorHandler();
     });
 }
 
+const find = document.querySelectorAll.bind(document);
+const findOne = document.querySelector.bind(document);
+
 (function () {
-    const find = document.querySelectorAll.bind(document);
-    const findOne = document.querySelector.bind(document);
-
-    Element.prototype.on = Element.prototype.addEventListener;
-    Document.prototype.on = Document.prototype.addEventListener;
-
-    Element.prototype.hasClass = function (className) {
-        return this.classList.contains(className);
-    };
-
     // eslint-disable-next-line no-extend-native
     String.prototype.replaceAll = function (pattern, replacement) {
         return this.replace(new RegExp(pattern.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&"), "g"), replacement);
@@ -114,7 +128,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
             this.input.setAttribute("aria-autocomplete", "list");
             this.input.setAttribute("aria-expanded", "false");
 
-            this.input.on("input", () => {
+            this.input.addEventListener("input", () => {
                 const name = this.input.value.toLocaleLowerCase(lang).trim();
                 this.selected = null;
 
@@ -127,13 +141,13 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
                 }
             });
 
-            this.input.on("focusout", () => {
+            this.input.addEventListener("focusout", () => {
                 setTimeout(() => {
                     this.destroy();
                 }, 200);
             });
 
-            this.input.on("keydown", event => {
+            this.input.addEventListener("keydown", event => {
                 if (!["ArrowUp", "ArrowDown", "Escape", "Enter", "Tab"].includes(event.key)) {
                     return;
                 }
@@ -144,7 +158,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
                     case "ArrowUp": {
                         const last = this.template.lastChild;
                         this.selected = this.selected ? this.selected.previousElementSibling || last : last;
-                        if (!this.selected.hasClass("no-results")) {
+                        if (!this.selected.classList.contains("no-results")) {
                             event.preventDefault(); // Prevents cursor from moving to beginning of the input.
                         }
                         break;
@@ -177,20 +191,20 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
                     }
                 }
 
-                if (this.selected && !this.selected.hasClass("no-results")) {
+                if (this.selected && !this.selected.classList.contains("no-results")) {
                     this.selected.classList.add("selected");
                     this.input.value = this.selected.textContent;
                     this.input.setAttribute("aria-activedescendant", this.selected.id);
                 }
             });
 
-            this.template.on("click", event => {
+            this.template.addEventListener("click", event => {
                 event.stopPropagation();
                 this.triggerOnSelect(event.target);
             });
 
-            this.template.on("mouseover", event => {
-                if (event.target.tagName === "LI" && !event.target.hasClass("no-results")) {
+            this.template.addEventListener("mouseover", event => {
+                if (event.target.tagName === "LI" && !event.target.classList.contains("no-results")) {
                     Array.from(this.template.childNodes).forEach(el => el !== event.target && el.classList.remove("selected"));
                     this.selected = event.target;
                     this.selected.classList.add("selected");
@@ -244,7 +258,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
         }
 
         triggerOnSelect (selected) {
-            if (selected.hasClass("no-results")) {
+            if (selected.classList.contains("no-results")) {
                 return;
             }
 
@@ -364,9 +378,9 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
         return element ? element._dropdownInstance : null;
     }
 
-    document.on("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
         find("[data-toggle=dropdown]").forEach(button => {
-            button.on("click", () => {
+            button.addEventListener("click", () => {
                 if (!button._dropdownInstance) {
                     button._dropdownInstance = new Dropdown(button);
                 }
@@ -375,7 +389,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
         });
     });
 
-    document.on("keydown", event => {
+    document.addEventListener("keydown", event => {
         if (event.key === "Escape") {
             const dropdown = getActiveDropdown();
             if (dropdown) {
@@ -389,11 +403,11 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
         }
     });
 
-    document.on("click", event => {
+    document.addEventListener("click", event => {
         const dropdown = getActiveDropdown();
 
         if (dropdown) {
-            const collapse = dropdown.menuElement.hasClass("no-collapse") && dropdown.menuElement === event.target.closest(".dropdown-menu");
+            const collapse = dropdown.menuElement.classList.contains("no-collapse") && dropdown.menuElement === event.target.closest(".dropdown-menu");
             if (event.target.classList.contains("dropdown-close") || (dropdown.button !== event.target.closest("[data-toggle=dropdown]") && !collapse)) {
                 dropdown.destroy();
             }
@@ -406,7 +420,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
             this.showing = false;
             this.lead = modal.querySelector(".lead");
 
-            modal.on("click", event => {
+            modal.addEventListener("click", event => {
                 if (!event.target.closest(".modal-content") || event.target.closest("[data-dismiss=modal]")) {
                     this.hide();
                 }
@@ -457,7 +471,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
             _modal.classList.remove("show");
 
             new Promise(resolve => {
-                _modal.on("transitionend", function _transitionend (event) {
+                _modal.addEventListener("transitionend", function _transitionend (event) {
                     if (event.target === _modal) {
                         resolve(_transitionend);
                     }
@@ -476,7 +490,7 @@ function gqlc (data, failSilently = false, failMessage = gettext("something went
     });
 
     find("[data-toggle=collapse]").forEach(collapse => {
-        collapse.on("click", () => {
+        collapse.addEventListener("click", () => {
             collapse.closest("div").parentNode.querySelector(".collapse").classList.toggle("show");
             if (collapse.getAttribute("aria-expanded") === "false") {
                 collapse.setAttribute("aria-expanded", "true");

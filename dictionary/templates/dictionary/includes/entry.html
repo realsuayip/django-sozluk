@@ -11,7 +11,7 @@
                 {% if not entry.author.is_private %}
                     <a class="username fw-600" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
                 {% else %}
-                    <span><i>{% trans "anonymous" %}</i></span>
+                    <span class="username"><i>{% trans "anonymous" %}</i></span>
                 {% endif %}
 
                 <a role="button" title="{% trans "entry actions" %}" tabindex="0" class="action" data-toggle="dropdown" aria-haspopup="true">
@@ -88,7 +88,7 @@
                 {% if not entry.author.is_private %}
                     <a class="username" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
                 {% else %}
-                    <span><i>{% trans "anonymous" %}</i></span>
+                    <span class="username"><i>{% trans "anonymous" %}</i></span>
                 {% endif %}
 
                 <a role="button" tabindex="0" title="{% trans "entry actions" %}" class="action" data-toggle="dropdown" aria-haspopup="true">

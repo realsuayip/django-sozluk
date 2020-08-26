@@ -1,4 +1,6 @@
-/* global Cookies gettext pgettext ngettext interpolate Dropzone lang notSafe notify gqlc */
+/* global Cookies gettext pgettext ngettext interpolate Dropzone notSafe notify gqlc findOne createTemplate */
+
+"use strict";
 (function () {
     const cookies = Cookies.withConverter({
         read (value) {
@@ -8,16 +10,6 @@
             return encodeURIComponent(value);
         }
     }).withAttributes({ sameSite: "Lax" });
-
-    $.ajaxSetup({
-        beforeSend (xhr, settings) {
-            xhr.setRequestHeader("Content-Type", "application/json");
-            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-                // Only send the token to relative URLs i.e. locally.
-                xhr.setRequestHeader("X-CSRFToken", Cookies.get("csrftoken"));
-            }
-        }
-    });
 
     function isValidText (body) {
         return /^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/",.!?*~`[\]{}<>^;\\|-]+$/g.test(body.split(/[\r\n]+/).join());
@@ -35,29 +27,47 @@
         return str.join("&");
     }
 
-    const userIsAuthenticated = $("body").is("#au");
+    function addEvent (node, type, callback, ...args) {
+        if (!node) {
+            return;
+        }
+
+        node.addEventListener(type, callback, ...args);
+    }
+
+    function addEvents (nodes, type, callback, ...args) {
+        nodes.forEach(node => {
+            addEvent(node, type, callback, ...args);
+        });
+    }
+
+    const userIsAuthenticated = findOne("body").id === "au";
+
     let userIsMobile = false;
     let lastScrollTop = 0;
 
     function hideRedundantHeader () {
         const delta = 30;
-        const st = $(this).scrollTop();
-        const header = $("header.page_header");
+        const st = window.pageYOffset;
+        const header = findOne("header.page_header");
+        const sub = findOne(".sub-nav");
+
         if (Math.abs(lastScrollTop - st) <= delta) {
             return;
         }
 
+        const reset = () => {
+            sub.style.marginTop = "0";
+            header.style.top = "0";
+        };
+
         if (st > lastScrollTop) {
-            // downscroll code
-            $(".sub-nav").css("margin-top", ".75em");
-            header.css("top", "-55px").hover(function () {
-                $(".sub-nav").css("margin-top", "0");
-                header.css("top", "0px");
-            });
+            // Down scroll code
+            sub.style.marginTop = ".75em";
+            header.style.top = "-55px";
+            header.addEventListener("mouseover", reset, { once: true });
         } else {
-            // upscroll code
-            $(".sub-nav").css("margin-top", "0");
-            header.css("top", "0px");
+            reset();
         }
         lastScrollTop = st;
     }
@@ -69,17 +79,17 @@
 
         // Find left frame scroll position.
         if (parseInt(localStorage.getItem("where")) > 0) {
-            $("#left-frame-nav").scrollTop(localStorage.getItem("where"));
+            findOne("#left-frame-nav").scroll(0, localStorage.getItem("where"));
         }
 
         // Restore header.
         window.removeEventListener("scroll", hideRedundantHeader);
-        $(".sub-nav").css("margin-top", "0");
-        $("header.page_header").css("top", "0px");
+        findOne(".sub-nav").style.marginTop = "0";
+        findOne("header.page_header").style.top = "0";
 
         // Code to render swh references properly (reverse)
-        $("a[data-sup]").each(function () {
-            $(this).html(`*`);
+        find("a[data-sup]").forEach(sup => {
+            sup.innerHTML = `*`;
         });
     }
 
@@ -89,8 +99,8 @@
         window.addEventListener("scroll", hideRedundantHeader);
 
         // Code to render swh references properly
-        $("a[data-sup]").each(function () {
-            $(this).html(`<sup>${$(this).attr("data-sup")}</sup>`);
+        find("a[data-sup]").forEach(sup => {
+            sup.innerHTML = `<sup>${sup.getAttribute("data-sup")}</sup>`;
         });
     }
 
@@ -107,19 +117,19 @@
     // to use deprecated addListener.
     mql.addListener(mqlsw);
 
-    $(function () {
+    document.addEventListener("DOMContentLoaded", () => {
         // DOM ready.
         mqlsw(mql);
 
         // Handles notifications passed by django's message framework.
-        const requestMessages = $("#request-messages");
-        if (requestMessages.attr("data-has-messages") === "true") {
+        const requestMessages = findOne("#request-messages");
+        if (requestMessages.getAttribute("data-has-messages") === "true") {
             let delay = 2000;
-            for (const message of requestMessages.children("li")) {
-                const isPersistent = $(message).attr("data-extra").includes("persistent");
-                notify($(message).attr("data-message"), $(message).attr("data-level"), delay, isPersistent);
+            requestMessages.childNodes.forEach(message => {
+                const isPersistent = message.getAttribute("data-extra").includes("persistent");
+                notify(message.getAttribute("data-message"), message.getAttribute("data-level"), delay, isPersistent);
                 delay += 1000;
-            }
+            });
         }
     });
 
@@ -155,7 +165,7 @@
             this.extra = extra;
 
             this.setCookies();
-            this.loadIndicator = $("#load_indicator");
+            this.loadIndicator = findOne("#load_indicator");
         }
 
         setCookies () {
@@ -194,7 +204,7 @@
         }
 
         call () {
-            this.loadIndicator.css("display", "inline");
+            this.loadIndicator.style.display = "inline";
             const variables = {
                 slug: this.slug,
                 year: this.year,
@@ -217,21 +227,19 @@
 
             const self = this;
 
-            gqlc({ query, variables }).then(function (response) {
+            gqlc({ query, variables }, true).then(response => {
                 if (response.errors) {
-                    self.loadIndicator.css("display", "none");
+                    self.loadIndicator.style.display = "none";
                     notify(gettext("something went wrong"), "error");
                 } else {
                     self.render(response.data.topics);
                 }
-            }, function () {
-                self.loadIndicator.css("display", "none");
             });
         }
 
         render (data) {
-            $("#left-frame-nav").scrollTop(0);
-            $("#current_category_name").text(data.safename);
+            findOne("#left-frame-nav").scroll({ top: 0, behavior: "smooth" });
+            findOne("#current_category_name").textContent = data.safename;
             this.renderRefreshButton(data.refreshCount);
             this.renderYearSelector(data.year, data.yearRange);
             this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number);
@@ -239,117 +247,123 @@
             this.renderShowMoreButton(data.page.number, data.page.hasOtherPages);
             this.renderTabs(data.tabs);
             this.renderExclusions(data.exclusions);
-            this.loadIndicator.css("display", "none");
+            this.loadIndicator.style.display = "none";
         }
 
         renderRefreshButton (count) {
-            const refreshButton = $("#refresh_bugun");
+            const refreshButton = findOne("#refresh_bugun");
             if (count) {
-                refreshButton.removeClass("dj-hidden");
-                $("span#new_content_count").text(`(${count})`);
+                refreshButton.classList.remove("dj-hidden");
+                findOne("span#new_content_count").textContent = `(${count})`;
             } else {
-                refreshButton.addClass("dj-hidden");
+                refreshButton.classList.add("dj-hidden");
             }
         }
 
         renderShowMoreButton (currentPage, isPaginated) {
-            const showMoreButton = $("a#show_more");
+            const showMoreButton = findOne("a#show_more");
 
             if (currentPage !== 1 || !isPaginated) {
-                showMoreButton.addClass("dj-hidden");
+                showMoreButton.classList.add("dj-hidden");
             } else {
-                showMoreButton.removeClass("dj-hidden");
+                showMoreButton.classList.remove("dj-hidden");
             }
         }
 
         renderTabs (tabData) {
-            const tabHolder = $("ul#left-frame-tabs");
+            const tabHolder = findOne("ul#left-frame-tabs");
             if (tabData) {
-                tabHolder.html("");
+                tabHolder.innerHTML = "";
                 const availableTabs = tabData.available;
                 const current = tabData.current;
                 for (const tab of availableTabs) {
-                    tabHolder.append(`<li class="nav-item"><a role="button" tabindex="0" data-lf-slug="${this.slug}" data-tab="${tab.name}" class="nav-link${current === tab.name ? " active" : ""}">${tab.safename}</a></li>`);
+                    tabHolder.innerHTML += `<li class="nav-item"><a role="button" tabindex="0" data-lf-slug="${this.slug}" data-tab="${tab.name}" class="nav-link${current === tab.name ? " active" : ""}">${tab.safename}</a></li>`;
                 }
-                tabHolder.removeClass("dj-hidden");
+                tabHolder.classList.remove("dj-hidden");
             } else {
-                tabHolder.addClass("dj-hidden");
+                tabHolder.classList.add("dj-hidden");
             }
         }
 
         renderExclusions (exclusions) {
-            const toggler = $("#popular_excluder");
-            const categoryHolder = $("#exclusion-choices");
-            const categoryList = categoryHolder.children("ul.exclusion-choices");
+            const toggler = findOne("#popular_excluder");
+            const categoryHolder = findOne("#exclusion-choices");
+            const categoryList = categoryHolder.querySelector("ul.exclusion-choices");
 
             if (exclusions) {
-                categoryList.empty();
-                toggler.removeClass("dj-hidden");
+                categoryList.innerHTML = "";
+                toggler.classList.remove("dj-hidden");
 
                 for (const category of exclusions.available) {
                     const isActive = exclusions.active.includes(category.slug);
-                    categoryList.append(`<li><a role="button" title="${category.description}" ${isActive ? `class="active"` : ""} tabindex="0" data-slug="${category.slug}">#${category.name}</a></li>`);
+                    categoryList.innerHTML += `<li><a role="button" title="${category.description}" ${isActive ? `class="active"` : ""} tabindex="0" data-slug="${category.slug}">#${category.name}</a></li>`;
                 }
                 if (exclusions.active.length) {
-                    toggler.addClass("active");
+                    toggler.classList.add("active");
                 } else {
-                    toggler.removeClass("active");
+                    toggler.classList.remove("active");
                 }
             } else {
-                toggler.addClass("dj-hidden");
-                categoryHolder.hide();
+                toggler.classList.add("dj-hidden");
+                categoryHolder.style.display = "none";
             }
         }
 
         renderYearSelector (currentYear, yearRange) {
-            const yearSelect = $("#year_select");
-            yearSelect.html("");
+            const yearSelect = findOne("#year_select");
+            yearSelect.innerHTML = "";
 
             if (this.slug === "today-in-history") {
-                yearSelect.css("display", "block");
+                yearSelect.style.display = "block";
                 for (const year of yearRange) {
-                    yearSelect.append(`<option ${year === currentYear ? "selected" : ""} id="${year}">${year}</option>`);
+                    yearSelect.innerHTML += `<option ${year === currentYear ? "selected" : ""} id="${year}">${year}</option>`;
                 }
             } else {
-                yearSelect.css("display", "none");
+                yearSelect.style.display = "none";
             }
         }
 
         renderTopicList (objectList, slugIdentifier, parameters) {
-            const topicList = $("ul#topic-list");
+            const topicList = findOne("ul#topic-list");
             if (objectList.length === 0) {
-                topicList.html(`<small>${gettext("nothing here")}</small>`);
+                topicList.innerHTML = `<small>${gettext("nothing here")}</small>`;
             } else {
-                topicList.empty();
+                topicList.innerHTML = "";
                 const params = parameters || "";
 
+                let topics = "";
+
                 for (const topic of objectList) {
-                    topicList.append(`<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${notSafe(topic.title)}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`);
+                    topics += `<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${notSafe(topic.title)}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`;
+                }
+
+                if (topics) {
+                    topicList.innerHTML = topics;
                 }
             }
         }
 
         renderPagination (isPaginated, pageRange, totalPages, currentPage) {
             // Pagination related selectors
-            const paginationWrapper = $("#lf_pagination_wrapper");
-            const pageSelector = $("select#left_frame_paginator");
-            const totalPagesButton = $("#lf_total_pages");
+            const paginationWrapper = findOne("#lf_pagination_wrapper");
+            const pageSelector = findOne("select#left_frame_paginator");
+            const totalPagesButton = findOne("#lf_total_pages");
 
             // Render pagination
             if (isPaginated && currentPage !== 1) {
                 // Render Page selector
-                pageSelector.empty();
+                pageSelector.innerHTML = "";
+                let options = "";
+
                 for (const page of pageRange) {
-                    pageSelector.append($("<option>", {
-                        value: page,
-                        text: page,
-                        selected: page === currentPage
-                    }));
+                    options += `<option ${page === currentPage ? "selected" : ""} value="${page}">${page}</option>`;
                 }
-                totalPagesButton.text(totalPages); // Last page
-                paginationWrapper.removeClass("dj-hidden"); // Show it
+
+                pageSelector.innerHTML += options;
+                totalPagesButton.textContent = totalPages;
+                paginationWrapper.classList.remove("dj-hidden");
             } else {
-                paginationWrapper.addClass("dj-hidden");
+                paginationWrapper.classList.add("dj-hidden");
             }
         }
 
@@ -368,59 +382,67 @@
 
     /* Start of LefFrame related triggers */
 
-    $("body").on("click", "[data-lf-slug]", function (event) {
+    findOne("body").addEventListener("click", event => {
         // Regular, slug-only
-        if (!userIsMobile) {
-            const slug = $(this).attr("data-lf-slug");
-            const tab = $(this).attr("data-tab") || null;
-            const extra = $(this).attr("data-lf-extra") || null;
+        const delegated = event.target.closest("[data-lf-slug]");
+
+        if (delegated && !userIsMobile) {
+            const slug = delegated.getAttribute("data-lf-slug");
+            const tab = delegated.getAttribute("data-tab") || null;
+            const extra = delegated.getAttribute("data-lf-extra") || null;
             LeftFrame.populate(slug, 1, null, null, false, tab, null, extra);
 
-            if ($(this).hasClass("dropdown-item")) {
+            if (delegated.classList.contains("dropdown-item")) {
                 // Prevents dropdown collapsing, good for accessibility.
-                return false;
-            } else {
-                event.preventDefault();
+                event.stopPropagation();
             }
+            event.preventDefault();
         }
     });
 
-    $("#year_select").on("change", function () {
-        // Year is changed
+    addEvent(findOne("#year_select"), "change", function () {
         const selectedYear = this.value;
         LeftFrame.populate("today-in-history", 1, selectedYear);
     });
 
-    $("select#left_frame_paginator").on("change", function () {
-        // Page is changed
+    addEvent(findOne("select#left_frame_paginator"), "change", function () {
         LeftFrame.populate(cookies.get("lfac"), this.value);
     });
 
-    $("#lf_total_pages").on("click", function () {
+    const selector = findOne("select#left_frame_paginator");
+    const totalPagesElement = findOne("#lf_total_pages");
+    const changeEvent = new Event("change");
+
+    addEvent(totalPagesElement, "click", function () {
         // Navigated to last page
-        $("select#left_frame_paginator").val($(this).text()).trigger("change");
+        if (selector.value === this.textContent) {
+            return;
+        }
+
+        selector.value = this.textContent;
+        selector.dispatchEvent(changeEvent);
     });
 
-    $("#lf_navigate_before").on("click", function () {
+    addEvent(findOne("#lf_navigate_before"), "click", () => {
         // Previous page
-        const lfSelect = $("select#left_frame_paginator");
-        const selected = parseInt(lfSelect.val());
+        const selected = parseInt(selector.value);
         if (selected - 1 > 0) {
-            lfSelect.val(selected - 1).trigger("change");
+            selector.value = selected - 1;
+            selector.dispatchEvent(changeEvent);
         }
     });
 
-    $("#lf_navigate_after").on("click", function () {
+    addEvent(findOne("#lf_navigate_after"), "click", () => {
         // Subsequent page
-        const lfSelect = $("select#left_frame_paginator");
-        const selected = parseInt(lfSelect.val());
-        const max = parseInt($("#lf_total_pages").text());
+        const selected = parseInt(selector.value);
+        const max = parseInt(totalPagesElement.textContent);
         if (selected + 1 <= max) {
-            lfSelect.val(selected + 1).trigger("change");
+            selector.value = selected + 1;
+            selector.dispatchEvent(changeEvent);
         }
     });
 
-    $("a#show_more").on("click", function () {
+    addEvent(findOne("a#show_more"), "click", function () {
         // Show more button event
         const slug = cookies.get("lfac");
 
@@ -428,34 +450,35 @@
             LeftFrame.populate(slug, 2);
         }
 
-        $(this).addClass("dj-hidden");
+        this.classList.add("dj-hidden");
     });
 
-    $("#refresh_bugun").on("click", function () {
-        LeftFrame.refreshPopulate();
+    addEvent(findOne("#refresh_bugun"), "click", LeftFrame.refreshPopulate);
+
+    addEvents(find(".exclusion-button"), "click", function () {
+        this.closest("div").parentNode.querySelector(".exclusion-settings").classList.toggle("dj-hidden");
     });
 
-    $(".exclusion-button").on("click", function () {
-        $(this).closest("div").siblings(".exclusion-settings").toggle(250);
+    addEvent(findOne("#exclusion-choices"), "click", event => {
+        if (event.target.tagName === "A") {
+            event.target.classList.toggle("active");
+            LeftFrame.populate("popular", 1, null, null, null, null, [event.target.getAttribute("data-slug")]);
+        }
     });
 
-    $("#exclusion-choices").on("click", "ul li a", function () {
-        $(this).toggleClass("active");
-        LeftFrame.populate("popular", 1, null, null, null, null, [$(this).attr("data-slug")]);
+    addEvent(findOne("#exclusion-settings-mobile"), "click", event => {
+        if (event.target.tagName === "A") {
+            setExclusions([event.target.getAttribute("data-slug")]);
+            window.location = location;
+        }
     });
 
-    $("#exclusion-settings-mobile").on("click", "ul li a", function () {
-        setExclusions([$(this).attr("data-slug")]);
-        window.location = location;
+    addEvents(find("[data-lf-slug]"), "click", function () {
+        find("[data-lf-slug]").forEach(el => el.classList.remove("active"));
+        find(`[data-lf-slug=${this.getAttribute("data-lf-slug")}]`).forEach(el => el.classList.add("active"));
     });
 
     /* End of LefFrame related triggers */
-
-    $("[data-lf-slug]").on("click", function () {
-        // Visual guidance for active category
-        $("[data-lf-slug]").removeClass("active");
-        $(`[data-lf-slug=${$(this).attr("data-lf-slug")}]`).addClass("active");
-    });
 
     // https://stackoverflow.com/questions/5999118/how-can-i-add-or-update-a-query-string-parameter
     function updateQueryStringParameter (uri, key, value) {
@@ -468,40 +491,30 @@
         }
     }
 
-    $("select.page-selector").on("change", function () {
+    addEvent(findOne("select.page-selector"), "change", function () {
         window.location = updateQueryStringParameter(location.href, "page", this.value);
     });
 
-    jQuery.fn.extend({
-        insertAtCaret (myValue) {
-            return this.each(function () {
-                if (document.selection) {
-                    // Internet Explorer
-                    this.focus();
-                    const sel = document.selection.createRange();
-                    sel.text = myValue;
-                    this.focus();
-                } else if (this.selectionStart || this.selectionStart === "0") {
-                    // For browsers like Firefox and Webkit based
-                    const startPos = this.selectionStart;
-                    const endPos = this.selectionEnd;
-                    const scrollTop = this.scrollTop;
-                    this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
-                    this.focus();
-                    this.selectionStart = startPos + myValue.length;
-                    this.selectionEnd = startPos + myValue.length;
-                    this.scrollTop = scrollTop;
-                } else {
-                    this.value += myValue;
-                    this.focus();
-                }
-            });
-        },
-        toggleText (a, b) {
-            return this.text(this.text() === b ? a : b);
+    function insertAtCaret (el, insertValue) {
+        const startPos = el.selectionStart;
+        if (startPos) {
+            console.log(insertValue);
+            const endPos = el.selectionEnd;
+            const scrollTop = el.scrollTop;
+            el.value = el.value.substring(0, startPos) + insertValue + el.value.substring(endPos, el.value.length);
+            el.focus();
+            el.selectionStart = startPos + insertValue.length;
+            el.selectionEnd = startPos + insertValue.length;
+            el.scrollTop = scrollTop;
+        } else {
+            el.value += insertValue;
+            el.focus();
         }
+    }
 
-    });
+    function toggleText (el, a, b) {
+        el.textContent = el.textContent === b ? a : b;
+    }
 
     function insertMeta (type) {
         let fmt;
@@ -527,10 +540,10 @@
     }
 
     function replaceText (elementId, type) {
-        const txtarea = document.getElementById(elementId);
-        const start = txtarea.selectionStart;
-        const finish = txtarea.selectionEnd;
-        const allText = txtarea.value;
+        const textArea = document.getElementById(elementId);
+        const start = textArea.selectionStart;
+        const finish = textArea.selectionEnd;
+        const allText = textArea.value;
         const sel = allText.substring(start, finish);
         if (!sel) {
             return false;
@@ -538,114 +551,124 @@
             if (type === "link") {
                 const linkText = prompt(gettext("which address to link?"), "http://");
                 if (linkText !== "http://") {
-                    txtarea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length);
+                    textArea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length);
                 }
             } else {
-                txtarea.value = allText.substring(0, start) + insertMeta(type).format(sel) + allText.substring(finish, allText.length);
+                textArea.value = allText.substring(0, start) + insertMeta(type).format(sel) + allText.substring(finish, allText.length);
             }
-            txtarea.focus();
+            textArea.focus();
             return true;
         }
     }
 
-    $("button#insert_image").on("click", function () {
-        $(".dropzone").toggle();
+    addEvent(findOne("button#insert_image"), "click", () => {
+        const dropzone = findOne(".dropzone");
+        dropzone.style.display = dropzone.style.display === "none" ? "" : "none";
     });
 
-    $("button.insert").on("click", function () {
-        const type = $(this).attr("data-type");
+    addEvents(find("button.insert"), "click", function () {
+        const type = this.getAttribute("data-type");
         if (!replaceText("user_content_edit", type)) {
             const meta = insertMeta(type);
             const text = prompt(meta.label);
             if (text) {
-                $("#user_content_edit").insertAtCaret(meta.format(text));
+                insertAtCaret(findOne("#user_content_edit"), meta.format(text));
             }
         }
     });
 
-    $("button#insert_link").on("click", function () {
+    addEvent(findOne("button#insert_link"), "click", () => {
         if (!replaceText("user_content_edit", "link")) {
             const linkText = prompt(gettext("which address to link?"), "http://");
             if (linkText && linkText !== "http://") {
                 const linkName = prompt(gettext("alias for the link?"));
                 if (linkName) {
-                    $("textarea#user_content_edit").insertAtCaret(`[${linkText} ${linkName}]`);
+                    insertAtCaret(findOne("#user_content_edit"), `[${linkText} ${linkName}]`);
                 }
             }
         }
     });
 
-    $("a.favorite[role='button']").on("click", function () {
-        const self = $(this);
-        const pk = $(self).parents(".entry-full").attr("data-id");
+    addEvents(find("a.favorite[role='button']"), "click", function () {
+        const pk = this.closest(".entry-full").getAttribute("data-id");
 
-        gqlc({ query: `mutation{entry{favorite(pk:"${pk}"){feedback count}}}` }).then(function (response) {
+        gqlc({ query: `mutation{entry{favorite(pk:"${pk}"){feedback count}}}` }).then(response => {
             const count = response.data.entry.favorite.count;
-            const countHolder = self.next();
+            const countHolder = this.nextElementSibling;
 
-            self.toggleClass("active");
+            this.classList.toggle("active");
 
             if (count === 0) {
-                countHolder.text("");
-                countHolder.attr("tabindex", "-1");
+                countHolder.textContent = "";
+                countHolder.setAttribute("tabindex", "-1");
             } else {
-                countHolder.text(count);
-                countHolder.attr("tabindex", "0");
+                countHolder.textContent = count;
+                countHolder.setAttribute("tabindex", "0");
             }
 
-            self.siblings("span.favorites-list").attr("data-loaded", "false");
+            this.parentNode.querySelector("span.favorites-list").setAttribute("data-loaded", "false");
         });
     });
 
-    $("a.fav-count[role='button']").on("click", function () {
-        const self = $(this);
-        const favoritesList = self.next();
+    addEvents(find("a.fav-count[role='button']"), "click", function () {
+        const favoritesList = this.nextElementSibling;
 
-        if (favoritesList.attr("data-loaded") === "true") {
+        if (favoritesList.getAttribute("data-loaded") === "true") {
             return;
         }
 
-        favoritesList.html("<div class='px-3 py-1'><div class='spinning'><span style='font-size: 1.25em'>&orarr;</span></div></div>");
+        favoritesList.innerHTML = "<div class='px-3 py-1'><div class='spinning'><span style='font-size: 1.25em'>&orarr;</span></div></div>";
 
-        const pk = self.closest(".entry-full").attr("data-id");
+        const pk = this.closest(".entry-full").getAttribute("data-id");
 
-        gqlc({ query: `{entry{favoriters(pk:${pk}){username slug isNovice}}}` }).then(function (response) {
+        gqlc({ query: `{entry{favoriters(pk:${pk}){username slug isNovice}}}` }).then(response => {
             const allUsers = response.data.entry.favoriters;
             const authors = allUsers.filter(user => user.isNovice === false);
             const novices = allUsers.filter(user => user.isNovice === true);
 
-            favoritesList.html("");
-            favoritesList.attr("data-loaded", "true");
+            favoritesList.innerHTML = "";
+            favoritesList.setAttribute("data-loaded", "true");
 
             if (!allUsers.length) {
-                favoritesList.html(`<span class='p-2'>${gettext("actually, nothing here.")}</span>`);
+                favoritesList.innerHTML = `<span class='p-2'>${gettext("actually, nothing here.")}</span>`;
                 return;
             }
 
+            let favList = "";
+
             if (authors.length > 0) {
                 for (const author of authors) {
-                    favoritesList.append(`<a class="author" href="/author/${author.slug}/">@${author.username}</a>`);
+                    favList += `<a class="author" href="/author/${author.slug}/">@${author.username}</a>`;
                 }
+                favoritesList.innerHTML = favList;
             }
 
             if (novices.length > 0) {
                 const noviceString = interpolate(ngettext("... %(count)s novice", "... %(count)s novices", novices.length), { count: novices.length }, true);
-                favoritesList.append(`<a id="show_novice_button" role="button" tabindex="0">${noviceString}</a><span class="dj-hidden" id="favorites_list_novices"></span>`);
+                const noviceToggle = createTemplate(`<a role="button" tabindex="0">${noviceString}</a>`);
+                const noviceList = createTemplate(`<span class="dj-hidden"></span>`);
 
-                $("a#show_novice_button").on("click", function () {
-                    $("#favorites_list_novices").toggleClass("dj-hidden");
+                favoritesList.append(noviceToggle);
+                noviceToggle.addEventListener("click", () => {
+                    noviceList.classList.toggle("dj-hidden");
                 });
 
+                favList = "";
+
                 for (const novice of novices) {
-                    $("#favorites_list_novices").append(`<a class="novice" href="/author/${novice.slug}/">@${novice.username}</a>`);
+                    favList += `<a class="novice" href="/author/${novice.slug}/">@${novice.username}</a>`;
                 }
+                noviceList.innerHTML = favList;
+                favoritesList.append(noviceList);
             }
         });
     });
 
-    $("a#message_history_show").on("click", function () {
-        $("ul#message_list li.bubble").css("display", "list-item");
-        $(this).toggle();
+    addEvent(findOne("a#message_history_show"), "click", function () {
+        find("ul#message_list li.bubble").forEach(item => {
+            item.style.display = "list-item";
+        });
+        this.classList.add("dj-hidden");
     });
 
     function userAction (type, recipient, loc = null, re = true) {
@@ -660,208 +683,225 @@
     }
 
     function showBlockDialog (recipient, redirect = true) {
-        $("#block_user").attr("data-username", recipient).attr("data-re", redirect);
-        $("#username-holder").text(recipient);
+        const button = findOne("#block_user");
+        button.setAttribute("data-username", recipient);
+        button.setAttribute("data-re", redirect);
+        findOne("#username-holder").textContent = recipient;
 
-        const modal = document.querySelector("#blockUserModal");
+        const modal = findOne("#blockUserModal");
         modal._modalInstance.show();
     }
 
     function showMessageDialog (recipient, extraContent) {
-        const msgModal = document.querySelector("#sendMessageModal");
-        $("#sendMessageModal span.username").text(recipient);
-        $("#sendMessageModal textarea#message_body").val(extraContent);
+        const msgModal = findOne("#sendMessageModal");
+        findOne("#sendMessageModal span.username").textContent = recipient;
+
+        if (extraContent) {
+            findOne("#sendMessageModal textarea#message_body").value = extraContent;
+        }
+
         msgModal.setAttribute("data-for", recipient);
         msgModal._modalInstance.show();
     }
 
-    $(".entry-actions").on("click", ".block-user-trigger", function () {
-        const target = $(this).parent().siblings(".username").text();
-        const re = $(".profile-username").text() === target;
-        showBlockDialog(target, re);
+    addEvents(find(".entry-actions"), "click", function (event) {
+        if (event.target.classList.contains("block-user-trigger")) {
+            const target = this.parentNode.querySelector(".username").textContent;
+            const profile = findOne(".profile-username");
+            const re = profile && profile.textContent === target;
+            showBlockDialog(target, re);
+        }
     });
 
-    $("#block_user").on("click", function () {
+    addEvent(findOne("#block_user"), "click", function () {
         // Modal button click event
-        const targetUser = $(this).attr("data-username");
-        const re = $(this).attr("data-re") === "true";
+        const targetUser = this.getAttribute("data-username");
+        const re = this.getAttribute("data-re") === "true";
         if (!re) {
-            $(".entry-full").each(function () {
-                if ($(this).find(".meta .username").text() === targetUser) {
-                    $(this).remove();
+            find(".entry-full").forEach(entry => {
+                if (entry.querySelector(".meta .username").textContent === targetUser) {
+                    entry.remove();
                 }
             });
         }
         userAction("block", targetUser, null, re);
     });
 
-    $(".unblock-user-trigger").on("click", function () {
+    addEvent(findOne(".unblock-user-trigger"), "click", function () {
         if (confirm(gettext("Are you sure?"))) {
             let loc;
-            if ($(this).hasClass("sync")) {
+            if (this.classList.contains("sync")) {
                 loc = location;
             } else {
-                $(this).hide();
+                this.classList.toggle("dj-hidden");
             }
-            userAction("block", $(this).attr("data-username"), loc);
+            userAction("block", this.getAttribute("data-username"), loc);
         }
     });
 
-    $(".follow-user-trigger").on("click", function () {
-        const targetUser = $(this).parent().attr("data-username");
+    addEvents(find(".follow-user-trigger"), "click", function () {
+        const targetUser = this.parentNode.getAttribute("data-username");
         userAction("follow", targetUser);
-        $(this).children("a").toggleText(gettext("follow"), gettext("unfollow"));
+        toggleText(this.querySelector("a"), gettext("follow"), gettext("unfollow"));
     });
 
     function entryAction (type, pk, redirect = false) {
         return gqlc({ query: `mutation{entry{${type}(pk:"${pk}"){feedback ${redirect ? "redirect" : ""}}}}` });
     }
 
-    $("a.twitter[role='button'], a.facebook[role='button']").on("click", function () {
-        const base = $(this).hasClass("twitter") ? "https://twitter.com/intent/tweet?text=" : "https://www.facebook.com/sharer/sharer.php?u=";
-        const entry = $(this).closest(".feedback").siblings(".meta").children("a.permalink").attr("href");
+    addEvents(find("a.twitter[role='button'], a.facebook[role='button']"), "click", function () {
+        const base = this.classList.contains("twitter") ? "https://twitter.com/intent/tweet?text=" : "https://www.facebook.com/sharer/sharer.php?u=";
+        const entry = this.closest(".entry-footer").querySelector(".meta .permalink").getAttribute("href");
         const windowReference = window.open();
         windowReference.opener = null;
         windowReference.location = `${base}${window.location.origin}${entry}`;
     });
 
-    $(".entry-vote .vote").on("click", function () {
-        const self = $(this);
-        const type = self.hasClass("upvote") ? "upvote" : "downvote";
-        const entryId = self.parents(".entry-full").attr("data-id");
-        entryAction(type, entryId).then(function (response) {
+    addEvents(find(".entry-vote .vote"), "click", function () {
+        const type = this.classList.contains("upvote") ? "upvote" : "downvote";
+        const entryId = this.closest(".entry-full").getAttribute("data-id");
+        entryAction(type, entryId).then(response => {
             const feedback = response.data.entry[type].feedback;
             if (feedback == null) {
-                self.siblings(".vote").removeClass("active");
-                self.toggleClass("active");
+                const sibling = this.nextElementSibling || this.previousElementSibling;
+                sibling.classList.remove("active");
+                this.classList.toggle("active");
             } else {
                 notify(feedback, "error", 4000);
             }
         });
     });
 
-    $(".comment-vote .vote").on("click", function () {
-        const self = $(this);
-        const action = self.hasClass("upvote") ? "upvote" : "downvote";
-        const pk = self.parent().attr("data-id");
+    addEvents(find(".comment-vote .vote"), "click", function () {
+        const action = this.classList.contains("upvote") ? "upvote" : "downvote";
+        const pk = this.parentNode.getAttribute("data-id");
         gqlc({
             query: "mutation($pk:ID!,$action:String!){entry{votecomment(pk:$pk,action:$action){count}}}",
             variables: { pk, action }
-        }).then(function (response) {
+        }).then(response => {
             if (response.errors) {
                 for (const error of response.errors) {
                     notify(error.message, "error");
                 }
                 return;
             }
-            self.siblings(".vote").removeClass("active");
-            self.toggleClass("active");
-            self.siblings(".rating").text(response.data.entry.votecomment.count);
+
+            this.parentNode.querySelectorAll(".vote").forEach(el => {
+                el !== this && el.classList.remove("active");
+            });
+
+            this.classList.toggle("active");
+            this.parentNode.querySelector(".rating").textContent = response.data.entry.votecomment.count;
         });
     });
 
-    $(".suggestion-vote button").on("click", function () {
-        const self = $(this);
-        const direction = self.hasClass("up") ? 1 : -1;
-        const topic = self.parent().attr("data-topic");
-        const category = self.parent().attr("data-category");
+    addEvents(find(".suggestion-vote button"), "click", function () {
+        const direction = this.classList.contains("up") ? 1 : -1;
+        const topic = this.parentNode.getAttribute("data-topic");
+        const category = this.parentNode.getAttribute("data-category");
 
         gqlc({
             query: "mutation($category:String!,$topic:String!,$direction:Int!){category{suggest(category:$category,topic:$topic,direction:$direction){feedback}}}",
             variables: { category, topic, direction }
-        }).then(function (response) {
+        }).then(response => {
             if (response.errors) {
                 for (const error of response.errors) {
                     notify(error.message, "error");
                 }
             } else {
-                self.toggleClass("btn-django-link");
-                self.siblings("button").removeClass("btn-django-link");
+                this.classList.toggle("btn-django-link");
+                const sibling = this.nextElementSibling || this.previousElementSibling;
+                sibling.classList.remove("btn-django-link");
             }
         });
     });
 
-    $(".entry-actions").on("click", ".delete-entry", function () {
-        if (confirm(gettext("are you sure to delete?"))) {
-            const entry = $(this).parents(".entry-full");
-            const redirect = $("ul.topic-view-entries li.entry-full").length === 1;
+    addEvents(find(".entry-actions"), "click", function (event) {
+        if (event.target.classList.contains("delete-entry")) {
+            if (confirm(gettext("are you sure to delete?"))) {
+                const entry = this.closest(".entry-full");
+                const redirect = find("ul.topic-view-entries li.entry-full").length === 1;
 
-            entryAction("delete", entry.attr("data-id"), redirect).then(function (response) {
-                const data = response.data.entry.delete;
-                if (redirect) {
-                    window.location = data.redirect;
-                } else {
-                    entry.remove();
-                    notify(data.feedback);
-                }
-            });
+                entryAction("delete", entry.getAttribute("data-id"), redirect).then(response => {
+                    const data = response.data.entry.delete;
+                    if (redirect) {
+                        window.location = data.redirect;
+                    } else {
+                        entry.remove();
+                        notify(data.feedback);
+                    }
+                });
+            }
         }
     });
 
-    $(".delete-entry-redirect").on("click", function () {
+    addEvent(findOne(".delete-entry-redirect"), "click", function () {
         if (confirm(gettext("are you sure to delete?"))) {
-            entryAction("delete", $(this).attr("data-target-entry"), true).then(function (response) {
+            entryAction("delete", this.getAttribute("data-target-entry"), true).then(response => {
                 window.location = response.data.entry.delete.redirect;
             });
         }
     });
 
-    $(".entry-actions").on("click", ".pin-entry", function () {
-        const entryID = $(this).parents(".entry-full").attr("data-id");
-        const body = $("body");
-        entryAction("pin", entryID).then(function (response) {
-            notify(response.data.entry.pin.feedback);
-            $("a.action[role='button']").removeClass("loaded");
-            if (body.attr("data-pin") === entryID) {
-                body.removeAttr("data-pin");
-            } else {
-                body.attr("data-pin", entryID);
-            }
-        });
+    addEvents(find(".entry-actions"), "click", function (event) {
+        if (event.target.classList.contains("pin-entry")) {
+            const entryID = this.closest(".entry-full").getAttribute("data-id");
+            const body = findOne("body");
+            entryAction("pin", entryID).then(response => {
+                find("a.action[role='button']").forEach(action => {
+                    action.classList.remove("loaded");
+                });
+
+                if (body.getAttribute("data-pin") === entryID) {
+                    body.removeAttribute("data-pin");
+                } else {
+                    body.setAttribute("data-pin", entryID);
+                }
+
+                notify(response.data.entry.pin.feedback);
+            });
+        }
     });
 
-    $(".pin-sync").on("click", function () {
-        entryAction("pin", $(this).attr("data-id")).then(function (response) {
+    addEvent(findOne(".pin-sync"), "click", function () {
+        entryAction("pin", this.getAttribute("data-id")).then(response => {
             notify(response.data.entry.pin.feedback);
             window.location = location;
         });
     });
 
     function topicAction (type, pk) {
-        return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(function (response) {
+        return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(response => {
             notify(response.data.topic[type].feedback);
         });
     }
 
-    $(".follow-topic-trigger").on("click", function () {
-        $(this).toggleText(gettext("unfollow"), gettext("follow"));
-        topicAction("follow", $(this).attr("data-topic-id"));
+    addEvent(findOne(".follow-topic-trigger"), "click", function () {
+        toggleText(this, gettext("unfollow"), gettext("follow"));
+        topicAction("follow", this.getAttribute("data-topic-id"));
     });
 
-    $("select#mobile_year_changer").on("change", function () {
+    addEvent(findOne("select#mobile_year_changer"), "change", function () {
         window.location = updateQueryStringParameter(location.href, "year", this.value);
     });
 
-    $.fn.overflown = function () {
-        const e = this[0];
-        return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
-    };
-
     function truncateEntryText () {
-        for (const element of $("article.entry p")) {
-            if ($(element).overflown()) {
-                $(element).parent().append(`<div role="button" tabindex="0" class="read_more">${gettext("continue reading")}</div>`);
+        const overflown = el => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+        find("article.entry p").forEach(el => {
+            if (overflown(el)) {
+                const readMore = createTemplate(`<div role="button" tabindex="0" class="read_more">${gettext("continue reading")}</div>`);
+                el.parentNode.append(readMore);
+                addEvent(readMore, "click", function () {
+                    el.style.maxHeight = "none";
+                    this.style.display = "none";
+                });
             }
-        }
+        });
     }
 
-    window.onload = function () {
-        if ($("body").hasClass("has-entries")) {
+    window.onload = () => {
+        if (findOne("body").classList.contains("has-entries")) {
             truncateEntryText();
-            $("div.read_more").on("click", function () {
-                $(this).siblings("p").css("max-height", "none");
-                $(this).hide();
-            });
         }
     };
 
@@ -878,14 +918,16 @@
         LeftFrame.populate(slug, 1, null, searchParameters);
     }
 
-    $("button#perform_advanced_search").on("click", function () {
-        const keywords = $("input#keywords_dropdown").val();
-        const authorNick = $("input#author_nick_dropdown").val();
-        const isNiceOnes = $("input#nice_ones_dropdown").is(":checked");
-        const isFavorites = $("input#in_favorites_dropdown").is(":checked");
-        const fromDate = $("input#date_from_dropdown").val();
-        const toDate = $("input#date_to_dropdown").val();
-        const ordering = $("select#ordering_dropdown").val();
+    addEvent(findOne("button#perform_advanced_search"), "click", () => {
+        const favoritesElement = findOne("input#in_favorites_dropdown");
+
+        const keywords = findOne("input#keywords_dropdown").value;
+        const authorNick = findOne("input#author_nick_dropdown").value;
+        const isNiceOnes = findOne("input#nice_ones_dropdown").checked;
+        const isFavorites = favoritesElement && favoritesElement.checked;
+        const fromDate = findOne("input#date_from_dropdown").value;
+        const toDate = findOne("input#date_to_dropdown").value;
+        const ordering = findOne("select#ordering_dropdown").value;
 
         const keys = {
             keywords,
@@ -911,17 +953,18 @@
         });
     }
 
-    $(".entry-actions").on("click", ".send-message-trigger", function () {
-        const recipient = $(this).parent().siblings(".username").text();
-        const entryInQuestion = $(this).parents(".entry-full").attr("data-id");
-        showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`);
+    addEvents(find(".entry-actions"), "click", function (event) {
+        if (event.target.classList.contains("send-message-trigger")) {
+            const recipient = this.parentNode.querySelector(".username").textContent;
+            const entryInQuestion = this.closest(".entry-full").getAttribute("data-id");
+            showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`);
+        }
     });
 
-    $("#send_message_btn").on("click", function () {
-        const self = $(this);
-        const textarea = $("#sendMessageModal textarea");
-        const msgModal = document.querySelector("#sendMessageModal");
-        const body = textarea.val();
+    addEvent(findOne("#send_message_btn"), "click", function () {
+        const textarea = findOne("#sendMessageModal textarea");
+        const msgModal = findOne("#sendMessageModal");
+        const body = textarea.value;
 
         if (body.length < 3) {
             // not strictly needed but written so as to reduce api calls.
@@ -934,39 +977,44 @@
             return;
         }
 
-        self.prop("disabled", true);
-        composeMessage(msgModal.getAttribute("data-for"), body).then(function () {
+        this.disabled = true;
+
+        composeMessage(msgModal.getAttribute("data-for"), body).then(() => {
             msgModal._modalInstance.hide();
-            textarea.val("");
-        }).always(function () {
-            self.prop("disabled", false);
+            textarea.value = "";
+        }).finally(() => {
+            this.disabled = false;
         });
     });
 
-    $("button.follow-category-trigger").on("click", function () {
-        const self = $(this);
-        categoryAction("follow", $(this).data("category-id")).then(function () {
-            self.toggleText(pgettext("category-list", "unfollow"), pgettext("category-list", "follow"));
-            self.toggleClass("faded");
+    addEvents(find("button.follow-category-trigger"), "click", function () {
+        categoryAction("follow", this.getAttribute("data-category-id")).then(() => {
+            toggleText(this, pgettext("category-list", "unfollow"), pgettext("category-list", "follow"));
+            this.classList.toggle("faded");
         });
     });
 
-    $("form.search_mobile, form.reporting-form").submit(function () {
-        const emptyFields = $(this).find(":input").filter(function () {
-            return $(this).val() === "";
+    addEvent(findOne("form.search_mobile, form.reporting-form"), "submit", function () {
+        Array.from(this.querySelectorAll("input")).filter(input => {
+            if (input.type === "checkbox" && !input.checked) {
+                return true;
+            }
+            return input.value === "";
+        }).forEach(input => {
+            input.disabled = true;
         });
-        emptyFields.prop("disabled", true);
-        return true;
+        return false;
     });
 
-    $("body").on("keypress", "[role=button], .key-clickable", function (e) {
-        if (e.key === " " || e.key === "Enter") { // space or enter
-            $(this)[0].click();
+    addEvent(findOne("body"), "keypress", event => {
+        if (event.target.matches("[role=button], .key-clickable") && (event.key === " " || event.key === "Enter")) {
+            event.preventDefault();
+            event.target.dispatchEvent(new Event("click"));
         }
     });
 
-    $("a[role=button].quicksearch").on("click", function () {
-        const term = $(this).attr("data-keywords");
+    addEvents(find("a[role=button].quicksearch"), "click", function () {
+        const term = this.getAttribute("data-keywords");
         let parameter;
         if (term.startsWith("@") && term.substr(1)) {
             parameter = `author_nick=${term.substr(1)}`;
@@ -977,56 +1025,57 @@
         populateSearchResults(searchParameters);
     });
 
-    $("#left-frame-nav").scroll(function () {
-        localStorage.setItem("where", $(this).scrollTop());
+    addEvent(findOne("#left-frame-nav"), "scroll", function () {
+        localStorage.setItem("where", this.scrollTop);
     });
 
-    $(".entry-full a.action[role='button']").on("click", function () {
-        const self = $(this);
-        if (self.hasClass("loaded")) {
+    addEvents(find(".entry-full a.action[role='button']"), "click", function () {
+        // todo-> move action events here?.
+        if (this.classList.contains("loaded")) {
             return;
         }
 
-        const entry = self.parents(".entry-full");
-        const entryID = entry.attr("data-id");
-        const topicTitle = encodeURIComponent(entry.closest("[data-topic]").attr("data-topic"));
-        const actions = self.siblings(".entry-actions");
-        const pinLabel = entryID === $("body").attr("data-pin") ? gettext("unpin from profile") : gettext("pin to profile");
+        const entry = this.closest(".entry-full");
+        const entryID = entry.getAttribute("data-id");
+        const topicTitle = encodeURIComponent(entry.closest("[data-topic]").getAttribute("data-topic"));
+        const actions = this.parentNode.querySelector(".entry-actions");
+        const pinLabel = entryID === findOne("body").getAttribute("data-pin") ? gettext("unpin from profile") : gettext("pin to profile");
 
-        actions.empty();
+        actions.innerHTML = "";
 
         if (userIsAuthenticated) {
-            if (entry.hasClass("commentable")) {
-                actions.append(`<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">${gettext("comment")}</a>`);
+            if (entry.classList.contains("commentable")) {
+                actions.innerHTML += `<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">${gettext("comment")}</a>`;
             }
-            if (entry.hasClass("owner")) {
-                actions.append(`<a role="button" tabindex="0" class="dropdown-item pin-entry">${pinLabel}</a>`);
-                actions.append(`<a role="button" tabindex="0" class="dropdown-item delete-entry">${gettext("delete")}</a>`);
-                actions.append(`<a href="/entry/update/${entryID}/" class="dropdown-item">${gettext("edit")}</a>`);
+            if (entry.classList.contains("owner")) {
+                actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item pin-entry">${pinLabel}</a>`;
+                actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item delete-entry">${gettext("delete")}</a>`;
+                actions.innerHTML += `<a href="/entry/update/${entryID}/" class="dropdown-item">${gettext("edit")}</a>`;
             } else {
-                if (!entry.hasClass("private")) {
-                    actions.append(`<a role="button" tabindex="0" class="dropdown-item send-message-trigger">${gettext("message")}</a>`);
-                    actions.append(`<a role="button" tabindex="0" class="dropdown-item block-user-trigger">${gettext("block")}</a>`);
+                if (!entry.classList.contains("private")) {
+                    actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item send-message-trigger">${gettext("message")}</a>`;
+                    actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item block-user-trigger">${gettext("block")}</a>`;
                 }
             }
         }
 
-        actions.append(`<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${gettext("report")}</a>`);
-        self.addClass("loaded");
+        actions.innerHTML += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${gettext("report")}</a>`;
+        this.classList.add("loaded");
     });
 
-    $("ul.user-links").on("click", "li.block-user a", function () {
-        const recipient = $(this).parents(".user-links").attr("data-username");
-        showBlockDialog(recipient);
-    });
+    addEvent(findOne("ul.user-links"), "click", function (event) {
+        let dialog;
 
-    $("ul.user-links").on("click", "li.send-message a", function () {
-        const recipient = $(this).parents(".user-links").attr("data-username");
-        showMessageDialog(recipient);
-    });
+        if (event.target.matches("li.block-user a")) {
+            dialog = showBlockDialog;
+        } else if (event.target.matches("li.send-message a")) {
+            dialog = showMessageDialog;
+        }
 
-    $(".block-user-trigger").on("click", function () {
-        showBlockDialog($(this).attr("data-username"));
+        if (dialog) {
+            const recipient = this.getAttribute("data-username");
+            dialog(recipient);
+        }
     });
 
     function wishTopic (title, hint = null) {
@@ -1035,75 +1084,93 @@
         return gqlc({ query, variables });
     }
 
-    $("a.wish-prepare[role=button]").on("click", function () {
-        $(this).siblings(":not(.wish-purge)").toggle();
-        $(this).toggleText(gettext("someone should populate this"), gettext("nevermind"));
+    addEvent(findOne("a.wish-prepare[role=button]"), "click", function () {
+        this.parentNode.querySelectorAll(":not(.wish-purge):not(.wish-prepare)").forEach(el => {
+            el.classList.toggle("dj-hidden");
+        });
+        toggleText(this, gettext("someone should populate this"), gettext("nevermind"));
     });
 
-    $("a.wish-send[role=button]").on("click", function () {
-        const self = $(this);
-        const textarea = self.siblings("textarea");
-        const hint = textarea.val();
+    addEvent(findOne("a.wish-send[role=button]"), "click", function () {
+        const textarea = this.parentNode.querySelector("textarea");
+        const hint = textarea.value;
 
         if (hint && !isValidText(hint)) {
             notify(gettext("this content includes forbidden characters."), "error");
             return;
         }
 
-        const title = self.parents("section").attr("data-topic");
-        wishTopic(title, hint).then(function (response) {
+        const title = this.parentNode.getAttribute("data-topic");
+        wishTopic(title, hint).then(response => {
             if (response.errors) {
                 for (const error of response.errors) {
                     notify(error.message, "error");
                 }
                 return;
             }
-            textarea.val("");
-            self.toggle();
-            self.siblings().toggle();
+            textarea.value = "";
+            Array.from(this.parentNode.children).forEach(child => {
+                child.classList.toggle("dj-hidden");
+            });
             const hintFormatted = response.data.topic.wish.hint;
-            $("ul#wish-list").show().prepend(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted}</i></p>` : ""}</li>`);
-            $(window).scrollTop(0);
+            const wishList = findOne("ul#wish-list");
+            wishList.classList.remove("dj-hidden");
+            wishList.prepend(createTemplate(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted}</i></p>` : ""}</li>`));
+            window.scrollTo({ top: 0, behavior: "smooth" });
             notify(response.data.topic.wish.feedback);
         });
     });
 
-    $("a.wish-purge[role=button]").on("click", function () {
-        const self = $(this);
-        const title = self.parents("section").attr("data-topic");
+    addEvent(findOne("a.wish-purge[role=button]"), "click", function () {
+        const title = this.parentNode.getAttribute("data-topic");
         if (confirm(gettext("are you sure to delete?"))) {
-            wishTopic(title).then(function (response) {
-                self.toggle();
-                self.siblings(".wish-prepare").text(gettext("someone should populate this")).toggle();
-                $("ul#wish-list").children("li.owner").hide();
+            wishTopic(title).then(response => {
+                this.classList.toggle("dj-hidden");
+                const wishList = findOne("ul#wish-list");
+                const popButton = this.parentNode.querySelector(".wish-prepare");
+
+                popButton.textContent = gettext("someone should populate this");
+                popButton.classList.toggle("dj-hidden");
+                wishList.querySelector("li.owner").remove();
+
+                if (!wishList.children.length) {
+                    wishList.classList.add("dj-hidden");
+                }
+
                 notify(response.data.topic.wish.feedback);
             });
         }
     });
 
-    $(".content-skipper").on("click", function () {
-        location.replace($(this).attr("data-href"));
+    addEvent(findOne(".content-skipper"), "click", function () {
+        location.replace(this.getAttribute("data-href"));
     });
 
-    $("input.is-invalid").on("input", function () {
-        $(this).removeClass("is-invalid");
+    addEvents(find("input.is-invalid"), "input", function () {
+        this.classList.remove("is-invalid");
     });
 
-    $("textarea#user_content_edit, textarea#message-body").on("input", function () {
+    addEvents(find("textarea#user_content_edit, textarea#message-body"), "input", function () {
         window.onbeforeunload = () => this.value || null;
     });
 
-    $("textarea.expandable").one("focus", function () {
-        $(this).animate({ height: "+=150px" }, 400);
-    });
+    addEvents(find("textarea.expandable"), "focus", function () {
+        this.style.height = `${this.offsetHeight + 150}px`;
+        addEvent(this, "transitionend", () => {
+            this.style.transition = "none";
+        });
+    }, { once: true });
 
-    $("form").submit(function () {
+    addEvents(find("form"), "submit", function (event) {
         window.onbeforeunload = null;
-        const userContent = $(this).children("#user_content_edit");
-        if (userContent.length) {
-            if (!isValidText(userContent.val())) {
+
+        const userInput = this.querySelector("#user_content_edit");
+
+        if (userInput && userInput.value) {
+            if (!isValidText(userInput.value)) {
                 notify(gettext("this content includes forbidden characters."), "error");
                 window.onbeforeunload = () => true;
+                event.preventDefault();
                 return false;
             }
         }
@@ -1111,21 +1178,21 @@
 
     // Conversation actions functionality
 
-    $("input.chat-selector").on("change", function () {
-        $(this).closest("li.chat").toggleClass("selected");
+    addEvents(find("input.chat-selector"), "change", function () {
+        this.closest("li.chat").classList.toggle("selected");
     });
 
-    $("a[role=button].chat-reverse").on("click", function () {
-        $("input.chat-selector").each(function () {
-            this.checked = !this.checked;
-            $(this).change();
+    addEvent(findOne("a[role=button].chat-reverse"), "click", () => {
+        find("input.chat-selector").forEach(input => {
+            input.checked = !input.checked;
+            input.dispatchEvent(new Event("change"));
         });
     });
 
     function getPkSet (selected) {
         const pkSet = [];
-        selected.each(function () {
-            pkSet.push($(this).attr("data-id"));
+        selected.forEach(el => {
+            pkSet.push(el.getAttribute("data-id"));
         });
         return pkSet;
     }
@@ -1133,8 +1200,8 @@
     function selectChat (init) {
         // inbox.html || conversation.html
         let chat = init.closest("li.chat");
-        if (!chat.length) {
-            chat = init.parent();
+        if (!chat) {
+            chat = init.parentNode;
         }
         return chat;
     }
@@ -1145,18 +1212,18 @@
         return gqlc({ query, variables });
     }
 
-    $("a[role=button].chat-delete-individual").on("click", function () {
+    addEvents(find("a[role=button].chat-delete-individual"), "click", function () {
         if (!confirm(gettext("are you sure to delete?"))) {
             return false;
         }
 
-        const chat = selectChat($(this));
-        const mode = $("ul.threads").attr("data-mode") || chat.attr("data-mode");
+        const chat = selectChat(this);
+        const mode = (findOne("ul.threads") || chat).getAttribute("data-mode");
 
-        deleteConversation(chat.attr("data-id"), mode).then(function (response) {
+        deleteConversation(chat.getAttribute("data-id"), mode).then(response => {
             const data = response.data.message.deleteConversation;
             if (data) {
-                if ($("li.chat").length > 1) {
+                if (find("li.chat").length > 1) {
                     chat.remove();
                     notify(gettext("deleted conversation"));
                 } else {
@@ -1166,15 +1233,15 @@
         });
     });
 
-    $("a[role=button].chat-delete").on("click", function () {
-        const selected = $("li.chat.selected");
+    addEvent(findOne("a[role=button].chat-delete"), "click", () => {
+        const selected = find("li.chat.selected");
 
         if (selected.length) {
             if (!confirm(gettext("are you sure to delete all selected conversations?"))) {
                 return false;
             }
 
-            deleteConversation(getPkSet(selected), $("ul.threads").attr("data-mode")).then(function (response) {
+            deleteConversation(getPkSet(selected), findOne("ul.threads").getAttribute("data-mode")).then(response => {
                 const data = response.data.message.deleteConversation;
                 if (data) {
                     window.location = data.redirect;
@@ -1191,15 +1258,15 @@
         return gqlc({ query, variables });
     }
 
-    $("a[role=button].chat-archive").on("click", function () {
-        const selected = $("li.chat.selected");
+    addEvent(findOne("a[role=button].chat-archive"), "click", () => {
+        const selected = find("li.chat.selected");
 
         if (selected.length) {
             if (!confirm(gettext("are you sure to archive all selected conversations?"))) {
                 return false;
             }
 
-            archiveConversation(getPkSet(selected)).then(function (response) {
+            archiveConversation(getPkSet(selected)).then(response => {
                 const data = response.data.message.archiveConversation;
                 if (data) {
                     window.location = data.redirect;
@@ -1210,17 +1277,17 @@
         }
     });
 
-    $("a[role=button].chat-archive-individual").on("click", function () {
+    addEvents(find("a[role=button].chat-archive-individual"), "click", function () {
         if (!confirm(gettext("are you sure to archive?"))) {
             return false;
         }
 
-        const chat = selectChat($(this));
+        const chat = selectChat(this);
 
-        archiveConversation(chat.attr("data-id")).then(function (response) {
+        archiveConversation(chat.getAttribute("data-id")).then(response => {
             const data = response.data.message.archiveConversation;
             if (data) {
-                if ($("li.chat").length > 1) {
+                if (find("li.chat").length > 1) {
                     chat.remove();
                     notify(gettext("archived conversation"));
                 } else {
@@ -1237,10 +1304,10 @@
         });
     }
 
-    $("a[role=button].delete-image").on("click", function () {
+    addEvents(find("a[role=button].delete-image"), "click", function () {
         if (confirm(gettext("Are you sure?"))) {
-            const img = $(this).parents(".image-detail");
-            deleteImage(img.attr("data-slug"));
+            const img = this.closest(".image-detail");
+            deleteImage(img.getAttribute("data-slug"));
             img.remove();
         }
     });
@@ -1260,48 +1327,59 @@
         dictCancelUploadConfirmation: gettext("Are you sure?"),
 
         success (file, response) {
-            $("#user_content_edit").insertAtCaret(`(${pgettext("editor", "image")}: ${response.slug})`);
+            insertAtCaret(findOne("#user_content_edit"), `(${pgettext("editor", "image")}: ${response.slug})`);
         },
 
         removedfile (file) {
             file.previewElement.remove();
-            const text = $("#user_content_edit")[0];
+            const text = findOne("#user_content_edit");
             const slug = JSON.parse(file.xhr.response).slug;
             text.value = text.value.replace(new RegExp(`\\(${pgettext("editor", "image")}: ${slug}\\)`, "g"), "");
             deleteImage(slug);
         }
     };
 
-    $(document).on("click", ".entry a[data-img], .text-formatted a[data-img]", function () {
-        const self = $(this);
-        if (!self.is("[data-loaded]")) {
-            const p = self.parent("p");
-            p.css("max-height", "none"); // Click "read more" button.
-            p.next(".read_more").hide();
-            const url = self.attr("data-img");
-            self.after(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3 position-relative" style="top: 3px;"></a>
-                        <img src="${url}" alt="image" class="img-thumbnail img-fluid" draggable="false"">`);
-        } else {
-            self.nextAll().slice(0, 2).toggle(); // Next 2 elements (expand button and image)
+    addEvent(document, "click", event => {
+        const self = event.target;
+        if (self.matches(".entry a[data-img], .text-formatted a[data-img]")) {
+            if (!self.hasAttribute("data-loaded")) {
+                const p = self.parentNode;
+                p.style.maxHeight = "none"; // Click "read more" button.
+                const readMore = p.querySelector(".read_more");
+
+                if (readMore) {
+                    readMore.style.display = "none";
+                }
+
+                const url = self.getAttribute("data-img");
+                const image = createTemplate(`<img src="${url}" alt="image" class="img-thumbnail img-fluid" draggable="false">`);
+                const expander = createTemplate(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3 position-relative" style="top: 3px;"></a>`);
+
+                self.after(expander);
+                expander.after(image);
+            } else {
+                self.nextElementSibling.classList.toggle("d-none");
+                self.nextElementSibling.nextElementSibling.classList.toggle("d-none");
+            }
+            self.setAttribute("data-loaded", "true");
         }
-        self.attr("data-loaded", "");
     });
 
     function draftEntry (content, pk = null, title = null) {
         return gqlc({
             query: "mutation($content:String!,$pk:ID,$title:String){entry{edit(content:$content,pk:$pk,title:$title){pk,content,feedback}}}",
             variables: { content, title, pk }
-        }).then(function (response) {
+        }).then(response => {
             if (response.errors) {
                 for (const error of response.errors) {
                     notify(error.message, "error");
                 }
             } else {
-                const btn = $("button.draft-async");
-                btn.text(gettext("save changes"));
-                if (!btn.is("[data-pk]")) {
+                const btn = findOne("button.draft-async");
+                btn.textContent = gettext("save changes");
+                if (!btn.hasAttribute("data-pk")) {
                     // ^^ Only render delete button once.
-                    btn.after(`<button type="button" class="btn btn-django-link fs-90 ml-3 draft-del">${gettext("delete")}</button>`);
+                    btn.after(createTemplate(`<button type="button" class="btn btn-django-link fs-90 ml-3 draft-del">${gettext("delete")}</button>`));
                 }
                 window.onbeforeunload = null;
                 notify(response.data.entry.edit.feedback, "info");
@@ -1310,77 +1388,57 @@
         });
     }
 
-    $("button.draft-async").on("click", function () {
-        const self = $(this);
-        const title = self.attr("data-title");
-        const pk = self.attr("data-pk");
-        const content = $("#user_content_edit").val();
+    addEvent(findOne("button.draft-async"), "click", function () {
+        const title = this.getAttribute("data-title");
+        const pk = this.getAttribute("data-pk");
+        const content = findOne("#user_content_edit").value;
 
-        if (!$.trim(content)) {
+        if (!content.trim()) {
             notify(gettext("if only you could write down something"), "error");
             return;
         }
 
         if (pk) {
-            draftEntry(content, pk).then(function (response) {
+            draftEntry(content, pk).then(response => {
                 if (response) {
-                    $("p.pw-text").html(response.data.entry.edit.content);
+                    findOne("p.pw-text").innerHTML = response.data.entry.edit.content;
                 }
             });
             return; // Don't check title.
         }
 
         if (title) {
-            draftEntry(content, null, title).then(function (response) {
+            draftEntry(content, null, title).then(response => {
                 if (response) {
-                    $(".user-content").prepend(`<section class="pw-area"><h2 class="h5 text-muted">${gettext("preview")}</h2><p class="text-formatted pw-text">${response.data.entry.edit.content}</p></section>`);
+                    findOne(".user-content").prepend(createTemplate(`<section class="pw-area"><h2 class="h5 text-muted">${gettext("preview")}</h2><p class="text-formatted pw-text">${response.data.entry.edit.content}</p></section>`));
                     const pk = response.data.entry.edit.pk;
-                    self.attr("data-pk", pk);
-                    $("#content-form").prepend(`<input type="hidden" name="pub_draft_pk" value="${pk}" />`);
+                    this.setAttribute("data-pk", pk);
+                    findOne("#content-form").prepend(createTemplate(`<input type="hidden" name="pub_draft_pk" value="${pk}" />`));
                 }
             });
         }
     });
 
-    $(document).on("click", "button.draft-del", function () {
-        if (confirm(gettext("Are you sure?"))) {
-            const self = $(this);
-            const btn = $("button.draft-async");
-            entryAction("delete", btn.attr("data-pk")).then(function (response) {
-                $("section.pw-area").remove();
-                $("#user_content_edit").val("");
-                $("[name=pub_draft_pk]").remove();
-                btn.text(gettext("keep this as draft"));
-                btn.removeAttr("data-pk");
-                self.remove();
+    addEvent(document, "click", event => {
+        if (event.target.matches("button.draft-del") && confirm(gettext("Are you sure?"))) {
+            const btn = findOne("button.draft-async");
+            entryAction("delete", btn.getAttribute("data-pk")).then(response => {
+                findOne("section.pw-area").remove();
+                findOne("#user_content_edit").value = "";
+                findOne("[name=pub_draft_pk]").remove();
+                btn.textContent = gettext("keep this as draft");
+                btn.removeAttribute("data-pk");
+                event.target.remove();
                 notify(response.data.entry.delete.feedback, "info");
             });
         }
     });
 
-    $(".allowsave").keydown(function (e) {
-        if (e.ctrlKey || e.metaKey) {
-            if (String.fromCharCode(e.which).toLowerCase() === "s") {
-                e.preventDefault();
-                $("button.draft-async").click();
-            }
-        }
-    });
-
-    $(".p-search").on("input", function () {
-        const ulID = $(this).attr("data-for");
-        const term = $(this).val().toLocaleLowerCase(lang);
-        for (const element of $(`#${ulID} li`)) {
-            const self = $(element);
-            if (!term) {
-                self.removeAttr("style");
-            } else {
-                const value = self.children("a[href]").text().toLocaleLowerCase(lang);
-                if (!value.includes(term)) {
-                    self.attr("style", "display: none !important;");
-                } else {
-                    self.removeAttr("style");
-                }
+    addEvent(findOne(".allowsave"), "keydown", event => {
+        if (event.ctrlKey || event.metaKey) {
+            if (String.fromCharCode(event.which).toLowerCase() === "s") {
+                event.preventDefault();
+                findOne("button.draft-async").dispatchEvent(new Event("click"));
             }
         }
     });
