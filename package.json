@@ -1,0 +1,14 @@
+{
+  "name": "djdict",
+  "version": "1.0.0",
+  "browserslist": [
+    "since 2017-06"
+  ],
+  "devDependencies": {
+    "@popperjs/core": "^2.4.4",
+    "dropzone": "^5.7.2",
+    "js-cookie": "^3.0.0-rc.0",
+    "standard": "^14.3.4"
+  },
+  "dependencies": {}
+}

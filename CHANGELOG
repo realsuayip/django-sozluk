@@ -1,3 +1,14 @@
+[0.10.0-alpha](2020.08.28)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Split javascript logic into multiple
+files.
+
+--Deletions--
+None
+
 [0.9.0-alpha](2020.08.26)(compatible)
 --Additions--
 None

@@ -14,13 +14,8 @@
     <link rel="stylesheet" href="{% static "dictionary/css/style.css" %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
 
-    <script defer src="https://unpkg.com/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
-    <script defer src="{% static 'dictionary/js/helpers.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
     <script defer src="{% url 'javascript-catalog' %}"></script>
-    <script defer src="{% static 'dictionary/js/djdict.js' %}"></script>
-
+    <script defer src="{% static 'dictionary/js/dist/main.min.js' %}"></script>
     <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
 </head>
 <body {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
@@ -40,7 +35,7 @@
                 <a aria-label="{% trans "Dictionary home page" %}" href="{% url 'home' %}"></a>
             </div>
 
-            {# HAYVAN-ARA #}
+            {# Advanced search #}
             <form method="GET" class="header-search-form" action="{% url 'topic-search' %}" id="header_search_form">
                 <div class="input-group searchbox">
                     <input name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
@@ -68,7 +63,7 @@
                     </div>
                 </div>
             </form>
-            {# HAYVAN-ARA #}
+            {# Advanced search #}
 
             {# <!--- user navigation --> #}
 
