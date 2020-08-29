@@ -148,6 +148,9 @@ CELERY_EMAIL_TASK_CONFIG = {"default_retry_delay": 40}
 
 
 LANGUAGE_COOKIE_NAME = "langcode"
+LANGUAGE_COOKIE_AGE = 180 * 86400
+# LANGUAGE_COOKIE_SAMESITE = "Lax" (>Django 3.0)
+
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

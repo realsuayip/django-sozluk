@@ -18,7 +18,7 @@
     <section class="mt-3">
         <form method="get" action="{{ request.path }}">
             <div class="input-group">
-                <input name="search" type="text" class="form-control border-0 bg-light p-search" placeholder="{% trans "search" %}" aria-label="{% trans "search" %}" value="{% firstof request.GET.search.strip %}">
+                <input name="search" type="text" class="form-control border-0 bg-light" placeholder="{% trans "search" %}" aria-label="{% trans "search" %}" value="{% firstof request.GET.search.strip %}">
                 <div class="input-group-append">
                     <button class="btn btn-django-link" type="submit">{% trans "go" %}</button>
                 </div>

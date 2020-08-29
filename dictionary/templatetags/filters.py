@@ -1,5 +1,8 @@
 import re
 
+from html import unescape
+from urllib.parse import quote_plus
+
 from django import template
 from django.template import defaultfilters
 from django.utils import timezone
@@ -8,7 +11,7 @@ from django.utils.translation import gettext as _, gettext_lazy, pgettext_lazy
 
 from dateutil.parser import parse
 
-from ..utils import RE_WEBURL
+from ..utils import RE_WEBURL, RE_WEBURL_NC
 from ..utils.settings import DOMAIN
 
 
@@ -27,7 +30,7 @@ def addstr(arg1, arg2):
 
 
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"
-RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü&()_+='%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
+RE_TOPIC_CHARSET = r"(?!\s)([a-z0-9 ğçıöşü&#()_+='%/\",.!?~\[\]{}<>^;\\|-]+)(?<!\s)"
 
 # For each new language append to these expressions.
 SEE_EXPR = r"(?:bkz|see)"
@@ -46,6 +49,11 @@ ENTRY_DATE_FORMAT = gettext_lazy("M j, Y")
 
 # Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
 ENTRY_TIME_FORMAT = gettext_lazy("g:i a")
+
+
+def q_unescape(string):
+    """Convert *escaped* string fragment into valid URI."""
+    return quote_plus(unescape(string))
 
 
 @register.filter
@@ -84,13 +92,19 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\({SEE_EXPR}: (@?{RE_TOPIC_CHARSET})\)", fr'({SEE}: <a href="/topic/?q=\1">\1</a>)'),
         (fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
+        (
+            fr"\({SEE_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
+            lambda m: fr'({SEE}: <a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>)',
+        ),
         # Swh
-        (fr"`:{RE_TOPIC_CHARSET}`", fr'<a data-sup="({SEE}: \1)" href="/topic/?q=\1" title="({SEE}: \1)">*</a>',),
+        (
+            fr"`:{RE_TOPIC_CHARSET}`",
+            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',
+        ),
         # Reference with no indicator
-        (fr"`(@?{RE_TOPIC_CHARSET})`", r'<a href="/topic/?q=\1">\1</a>'),
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
+        (fr"`(@?{RE_TOPIC_CHARSET})`", lambda m: fr'<a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>'),
         # Search
         (
             fr"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
@@ -103,7 +117,7 @@ def formatted(raw_entry):
         # link. Then we find all other links which don't have " at the start.
         # Users can't send " character, they send the escaped version: &quot;
         (
-            fr"\[{RE_WEBURL} (?!\s)([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
+            fr"\[{RE_WEBURL} (?!\s|{RE_WEBURL_NC})([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
             r'<a rel="ugc nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
         (fr"(?<!\"){RE_WEBURL}", linkify,),

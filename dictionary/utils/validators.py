@@ -10,7 +10,7 @@ from .settings import NON_DB_CATEGORIES
 
 
 user_text_re = _lazy_re_compile(r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$")
-topic_title_re = _lazy_re_compile(r"^[a-z0-9 ğçıöşü&()_+='%/\",.!?~\[\]{}<>^;\\|-]+$")
+topic_title_re = _lazy_re_compile(r"^[a-z0-9 ğçıöşü&#()_+='%/\",.!?~\[\]{}<>^;\\|-]+$")
 
 
 def validate_topic_title(value, exctype=ValidationError):
@@ -20,7 +20,7 @@ def validate_topic_title(value, exctype=ValidationError):
     if len(value) > 50:
         raise exctype(_("this title is too long"))
 
-    if re.fullmatch(topic_title_re, value) is None:
+    if topic_title_re.fullmatch(value) is None:
         raise exctype(_("the definition of this topic includes forbidden characters"))
 
 
@@ -28,7 +28,7 @@ def validate_user_text(value, exctype=ValidationError):
     if len(value.strip()) < 1:
         raise exctype(_("my dear, just write your entry, how hard could it be?"))
 
-    if re.fullmatch(user_text_re, "".join(value.splitlines())) is None:
+    if user_text_re.fullmatch("".join(value.splitlines())) is None:
         args, kwargs = [_("this content includes forbidden characters.")], {}
 
         if exctype == ValidationError:

@@ -303,7 +303,6 @@ header.entry_header .pagination a:hover {
 header.entry_header .pagination select,
 .lf_pagination select {
     background: #fff;
-    margin-left: 4px;
     min-width: 50px;
     max-width: 65px;
     padding: 2px;
@@ -595,6 +594,9 @@ article.entry a[target="_blank"]::after,
 article.entry a[target="_blank"]::after,
 .text-formatted a[target="_blank"]::after {
     background-image: url('data:image/svg+xml, <svg fill="%2316784f" xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16"><path fill-rule="evenodd" d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg>');
+    top: 1px;
+    left: 1px;
+    position: relative;
 }
 
 article.entry a[data-img]::after,
@@ -619,9 +621,13 @@ section.user-comments .editor-buttons button.add-code {
     background: #fff;
     color: #444;
     border-radius: 4px;
-    border: 1px solid #fff;
-    margin-bottom: .25rem;
-    padding: 0 .25em;
+    border: none;
+    margin-bottom: .5rem;
+    padding: .1em .4em;
+}
+
+.editor-buttons .add-code:not(:last-child) {
+    margin-right: .25em;
 }
 
 section.user-comments .editor-buttons button.add-code:hover {
@@ -915,10 +921,12 @@ section.user_entries ul.profile li {
 }
 
 a.expand::after {
+    vertical-align: baseline;
     position: relative;
-    top: 1px;
-    content: '\25BE';
-    color: #999;
+    left: 2px;
+    content: '\23F7';
+    color: inherit;
+    padding: 2px;
 }
 
 .topic-dropdown a.dropdown-item {
@@ -950,17 +958,13 @@ ul.category-list-all li {
     padding: 1em;
 }
 
-ul.category-list-all li div {
+ul.category-list-all li article {
     flex: 1;
     margin-right: .75rem;
 }
 
 ul.category-list-all li:hover {
     background: #eee;
-}
-
-ul.category-list-all li h2 {
-    font-weight: 700;
 }
 
 .lf_pagination {
@@ -1264,6 +1268,11 @@ ul.exclusion-choices > li > a.active {
 textarea.expandable {
     height: 9rem;
     transition: height .4s;
+}
+
+.svg-group {
+    display: inline-flex;
+    align-items: center;
 }
 
 /** MEDIA QUERIES **/

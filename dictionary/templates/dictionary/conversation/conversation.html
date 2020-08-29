@@ -10,8 +10,8 @@
     </h1>
 
     {% with messages=conversation.collection %}
-        <div class="chat-quick-links d-flex justify-content-between mb-1">
-            <div>
+        <div class="chat-quick-links d-flex justify-content-between align-items-center mb-1">
+            <div class="svg-group">
                 <a href="{% url 'messages' %}" class="mr-2" title="{% trans "enough lingering here" %}">
                     <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                         <use href="#arrow-left"></use>
@@ -22,20 +22,20 @@
             </div>
 
             <div data-mode="present" data-id="{{ conversation.pk }}">
-                <a role="button" tabindex="0" class="mr-3 chat-delete-individual">
+                <a role="button" tabindex="0" class="mr-3 chat-delete-individual svg-group">
                     <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                         <use href="#trash"></use>
                         <title>{% trans "delete" %}</title>
                     </svg>
-                    <span class="ml-1 d-none d-sm-inline-block">{% trans "delete" %}</span>
+                    <span class="ml-2 d-none d-sm-inline-block">{% trans "delete" %}</span>
                 </a>
                 {% if messages|length > 0 %}
-                    <a role="button" tabindex="0" class="chat-archive-individual">
+                    <a role="button" tabindex="0" class="chat-archive-individual svg-group">
                         <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                             <use href="#archive"></use>
                             <title>{% trans "archive" context "verb" %}</title>
                         </svg>
-                        <span class="ml-1 d-none d-sm-inline-block">{% trans "archive" context "verb" %}</span>
+                        <span class="ml-2 d-none d-sm-inline-block">{% trans "archive" context "verb" %}</span>
                     </a>
                 {% endif %}
             </div>

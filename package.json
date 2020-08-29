@@ -5,10 +5,13 @@
     "since 2017-06"
   ],
   "devDependencies": {
+    "standard": "^14.3.4",
+    "stylelint": "^13.6.1",
+    "stylelint-config-standard": "^20.0.0"
+  },
+  "dependencies": {
     "@popperjs/core": "^2.4.4",
     "dropzone": "^5.7.2",
-    "js-cookie": "^3.0.0-rc.0",
-    "standard": "^14.3.4"
-  },
-  "dependencies": {}
+    "js-cookie": "^3.0.0-rc.0"
+  }
 }

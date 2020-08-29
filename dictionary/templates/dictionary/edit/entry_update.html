@@ -25,7 +25,10 @@
 
             <form method="post" class="content-form">
                 {% csrf_token %}
-                {% blocktrans asvar text_placeholder with title=entry.topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
+                {% autoescape off %}
+                    {# Notice: This string gets escaped in render_field! #}
+                    {% blocktrans asvar text_placeholder with title=entry.topic.title %}express your thoughts on {{ title }}..{% endblocktrans %}
+                {% endautoescape %}
                 {% trans "Entry content area" as area_label %}
                 {% render_field form.content|attr:"autofocus" placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave" rows="20" spellcheck="true" aria-label=area_label %}
 

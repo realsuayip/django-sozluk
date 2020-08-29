@@ -1,4 +1,4 @@
-import { many, one, notify } from "./utils"
+import { many, one, notify, notSafe } from "./utils"
 
 let userIsMobile = false
 let lastScrollTop = 0
@@ -57,7 +57,7 @@ function mobileView () {
 
     // Code to render swh references properly
     many("a[data-sup]").forEach(sup => {
-        sup.innerHTML = `<sup>${sup.getAttribute("data-sup")}</sup>`
+        sup.innerHTML = `<sup>${notSafe(sup.getAttribute("data-sup"))}</sup>`
     })
 }
 

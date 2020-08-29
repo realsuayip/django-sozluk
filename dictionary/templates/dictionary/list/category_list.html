@@ -17,12 +17,12 @@
     <ul class="category-list-all p-0">
         {% for category in categories %}
             <li class="d-flex justify-content-between">
-                <div>
-                    <h2 class="h5">
+                <article>
+                    <h2 class="h5 font-weight-bold">
                         <a data-lf-slug="{{ category.slug }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
                     </h2>
                     <p>{{ category.description }}</p>
-                </div>
+                </article>
                 {% if user.is_authenticated %}
                     {% trans "unfollow,follow" context "category-list" as state %}
                     <button type="button" class="btn btn-django-link float-right follow-category-trigger{{ category.is_followed|yesno:" faded," }}" data-category-id="{{ category.pk }}">{{ category.is_followed|yesno:state }}</button>

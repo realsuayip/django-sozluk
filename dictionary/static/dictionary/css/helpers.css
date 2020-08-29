@@ -233,6 +233,12 @@ input[type="checkbox"] {
     padding: 0;
 }
 
+input[type="date"].form-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
 textarea {
     overflow: auto;
     resize: vertical;
@@ -759,7 +765,12 @@ textarea.form-control {
     margin-bottom: 0;
 }
 
-.form-control:focus {
+.shadow-focus,
+[role=button] {
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control:focus, .shadow-focus:focus {
     color: #495057;
     background-color: #fff;
     border-color: #80bdff;
@@ -893,14 +904,6 @@ textarea.form-control.is-invalid {
 .input-group-append .input-group-text + .input-group-text,
 .input-group-append .input-group-text + .btn {
     margin-left: -1px;
-}
-
-.input-group > .input-group-append:not(:last-child) > .btn,
-.input-group > .input-group-append:not(:last-child) > .input-group-text,
-.input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
-.input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
 }
 
 .input-group > .input-group-append > .btn,

@@ -6,10 +6,10 @@
 
         <div class="{{ classlist|default:"lf_pagination" }}{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
             {% if page_obj.has_previous %}
-                <a title="{% trans "previous page" %}" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
+                <a class="shadow-focus mr-1" title="{% trans "previous page" %}" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
             {% endif %}
 
-            <select class="page-selector" aria-label="{% trans "Page selector" %}">
+            <select class="page-selector shadow-focus" aria-label="{% trans "Page selector" %}">
                 {% for page in page_obj.paginator.page_range %}
                     {% if page == page_obj.number %}
                         <option selected>{{ page }}</option>
@@ -20,10 +20,10 @@
             </select>
 
             <span class="mx-1" style="line-height: 25px">&sol;</span>
-            <a class="number" title="{% trans "last page" %}" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+            <a class="number shadow-focus" title="{% trans "last page" %}" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
 
             {% if page_obj.has_next %}
-                <a title="{% trans "subsequent page" %}" href="?{% url_replace request 'page' page_obj.next_page_number %}" style="margin-left:4px;">»</a>
+                <a class="shadow-focus ml-1" title="{% trans "subsequent page" %}" href="?{% url_replace request 'page' page_obj.next_page_number %}" style="margin-left:4px;">»</a>
             {% endif %}
         </div>
     {% endif %}

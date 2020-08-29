@@ -32,27 +32,27 @@
 
     {% if conversations %}
         <div class="mb-3 border rounded p-3 bg-light d-flex justify-content-between">
-            <div>
-                <a role="button" tabindex="0" class="mr-3 chat-delete">
+            <div class="d-flex justify-content-center">
+                <a role="button" tabindex="0" class="mr-3 chat-delete svg-group">
                     <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                         <use href="#trash"></use>
                     </svg>
-                    <span class="ml-1">{% trans "delete" %}</span>
+                    <span class="ml-2">{% trans "delete" %}</span>
                 </a>
                 {% if request.path == messages %}
-                    <a role="button" tabindex="0" class="chat-archive">
+                    <a role="button" tabindex="0" class="chat-archive svg-group">
                         <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                             <use href="#archive"></use>
                         </svg>
-                        <span class="ml-1">{% trans "archive" context "verb" %}</span>
+                        <span class="ml-2">{% trans "archive" context "verb" %}</span>
                     </a>
                 {% endif %}
             </div>
-            <a role="button" tabindex="0" class="chat-reverse">
+            <a role="button" tabindex="0" class="chat-reverse svg-group">
                 <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                     <use href="#layers"></use>
                 </svg>
-                <span class="ml-1">{% trans "invert" %}</span>
+                <span class="ml-2">{% trans "invert" %}</span>
             </a>
         </div>
     {% endif %}

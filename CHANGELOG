@@ -1,3 +1,31 @@
+[0.10.1-alpha](2020.08.29)(compatible)
+--Additions--
+1) Add LANGUAGE_COOKIE_AGE to prevent the loss of language
+preference when users close the browser.
+
+-- Changes --
+1) Fixed some minor UI issues.
+2) Reduced javascript bundle size.
+3) Fixed a major XSS vulnerability, caused
+by 'swh' tag, in mobile views.
+4) Fixed an issue which caused faulty
+representation of textarea placeholders.
+5) When clicked, pseudo categories now redirect
+to related topic instead of giving an error (in topic
+suggestion list).
+6) Fixed an issue which caused the site to crash
+when unauthenticated users visited the favorite authors
+of an user.
+7) In favorite authors list, removed "self-follow" button.
+8) Hash char (#), is now a valid char in topic titles.
+9) Editor:
+    1) Single quote (') char will now work with tags.
+    2) Fixed a possible error in linkifying behaviour.
+    3) Tags with links encode to valid URI.
+
+--Deletions--
+None
+
 [0.10.0-alpha](2020.08.28)(compatible)
 --Additions--
 None

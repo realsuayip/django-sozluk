@@ -77,7 +77,7 @@
     <div id="lf_pagination_wrapper" class="lf_pagination index{% if lf.page.number == 1 or not lf.page.has_other_pages %} dj-hidden{% endif %}">
         <a title="{% trans "previous page" %}" id="lf_navigate_before" role="button" tabindex="0">«</a>
 
-        <select id="left_frame_paginator" aria-label="{% trans "Page selector" %}">
+        <select class="shadow-focus" id="left_frame_paginator" aria-label="{% trans "Page selector" %}">
             {% for page in lf.page.paginator.page_range %}
                 <option value="{{ page }}" {% if page == lf.page.number %}selected{% endif %}>{{ page }}</option>
             {% endfor %}

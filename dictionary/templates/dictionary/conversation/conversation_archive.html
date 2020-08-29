@@ -11,20 +11,22 @@
         {% endblocktrans %}
     </h1>
 
-    <div class="chat-quick-links d-flex justify-content-between mb-1">
-        <a href="{% url 'messages-archive' %}" class="mr-2" title="{% trans "enough lingering here" %}">
-            <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                <use href="#arrow-left"></use>
-            </svg>
-            <span>{% trans "back to messages" %}</span>
-        </a>
+    <div class="chat-quick-links d-flex justify-content-between align-items-center mb-1">
+        <div class="svg-group">
+            <a href="{% url 'messages-archive' %}" class="mr-2" title="{% trans "enough lingering here" %}">
+                <svg fill="currentColor" width="24" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <use href="#arrow-left"></use>
+                </svg>
+                <span>{% trans "back to messages" %}</span>
+            </a>
+        </div>
 
         <div data-mode="archived" data-id="{{ object.pk }}">
-            <a role="button" tabindex="0" class="mr-3 chat-delete-individual">
+            <a role="button" tabindex="0" class="mr-3 chat-delete-individual svg-group">
                 <svg fill="currentColor" viewBox="0 0 16 16" width="16" height="16">
                     <use href="#trash"></use>
                 </svg>
-                <span class="ml-1">{% trans "delete" %}</span>
+                <span class="ml-2">{% trans "delete" %}</span>
             </a>
         </div>
     </div>

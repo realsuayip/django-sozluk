@@ -146,10 +146,14 @@
             {% if tab.type == "author" %}
                 <ul class="list-group">
                     {% for author in object_list %}
-                        {% check_follow_user user author as is_following_stat %}
                         <li class="list-group-item d-flex justify-content-between" data-username="{{ author.username }}">
                             <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
-                            <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:_("unfollow,follow") }}</a></span>
+                            {% if user.is_authenticated %}
+                                {% check_follow_user user author as is_following_stat %}
+                                {% if author != user %}
+                                    <span class="follow-user-trigger"><a role="button" tabindex="0">{{ is_following_stat|yesno:_("unfollow,follow") }}</a></span>
+                                {% endif %}
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>
