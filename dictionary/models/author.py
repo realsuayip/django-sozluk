@@ -84,7 +84,7 @@ class Author(AbstractUser):
 
     # Base auth related fields, notice: username field will be used for nicknames
     username = models.CharField(
-        "nick",
+        _("nickname"),
         max_length=35,
         unique=True,
         help_text=_(

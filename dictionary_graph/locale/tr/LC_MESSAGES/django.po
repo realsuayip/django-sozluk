@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-02 20:14+0300\n"
-"PO-Revision-Date: 2020-08-02 20:16+0156\n"
+"POT-Creation-Date: 2020-08-29 16:59+0300\n"
+"PO-Revision-Date: 2020-08-29 17:14+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -20,19 +20,33 @@ msgstr ""
 msgid "Dictionary API"
 msgstr "Sözlük API"
 
-#: .\category\action.py:25
+#: .\category\action.py:27
 msgid "the channel is no longer followed"
 msgstr "kanal takibi bırakıldı"
 
-#: .\category\action.py:28
+#: .\category\action.py:30
 msgid "the channel is now followed"
 msgstr "bu kanal takipte"
 
-#: .\entry\action.py:26 .\entry\action.py:84 .\entry\action.py:104
-#: .\entry\action.py:108 .\entry\edit.py:56 .\topic\action.py:51
-#: .\user\action.py:21 .\user\action.py:57
+#: .\category\action.py:55 .\entry\action.py:26 .\entry\action.py:84
+#: .\entry\action.py:104 .\entry\action.py:108 .\entry\edit.py:58
+#: .\topic\action.py:51 .\user\action.py:21 .\user\action.py:61
 msgid "we couldn't handle your request. try again later."
 msgstr "işleminizi gerçekleştiremedik. daha sonra tekrar deneyin."
+
+#: .\category\action.py:62
+msgid ""
+"you have used up all the suggestion claims you have today. try again later."
+msgstr ""
+"bugün kanal önerme haklarınızın hepsini kullandınız. daha sonra tekrar "
+"deneyin."
+
+#: .\category\action.py:78
+#, python-format
+msgid "you can only suggest %(count)d channel per topic."
+msgid_plural "you can only suggest %(count)d channels per topic."
+msgstr[0] "başlık başına en fazla %(count)d kanal önerebilirsiniz."
+msgstr[1] "başlık başına en fazla %(count)d kanal önerebilirsiniz."
 
 #: .\entry\action.py:55
 msgid "your entry has been deleted"
@@ -62,8 +76,7 @@ msgstr "değişiklikleriniz kenara kaydedildi"
 msgid "no, no i don't think i will."
 msgstr "olmaz ki canım... hürrüpü"
 
-#: .\entry\edit.py:53
-#| msgid "your entry has been deleted"
+#: .\entry\edit.py:55
 msgid "your entry has been saved as draft"
 msgstr "entry'niz kenara kaydedildi."
 
@@ -113,11 +126,11 @@ msgstr "engeller ortadan kalktı"
 msgid "the person is now blocked"
 msgstr "engelledim gitti"
 
-#: .\user\action.py:61
+#: .\user\action.py:65
 msgid "you no longer follow this person"
 msgstr "takipten çıkıldı"
 
-#: .\user\action.py:64
+#: .\user\action.py:68
 msgid "you are now following this user"
 msgstr "takiptesin"
 
