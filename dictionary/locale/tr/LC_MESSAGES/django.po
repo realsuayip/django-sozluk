@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-29 16:58+0300\n"
-"PO-Revision-Date: 2020-08-29 17:12+0156\n"
+"POT-Creation-Date: 2020-08-29 17:30+0300\n"
+"PO-Revision-Date: 2020-08-29 17:31+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -635,7 +635,6 @@ msgid "badges"
 msgstr "rozetler"
 
 #: .\models\category.py:20
-#| msgid "channel"
 msgid "Pseudo channel"
 msgstr "Sözde kanal"
 
@@ -647,7 +646,11 @@ msgstr ""
 "Sözde kanallar kullanıcılar tarafından gezilemez fakat başlıklara "
 "atanabilir. Bu kanalları gündem filtresine de ekleyebilirsiniz."
 
-#: .\models\category.py:29
+#: .\models\category.py:28
+msgid "Default"
+msgstr "Varsayılan"
+
+#: .\models\category.py:30
 msgid ""
 "When checked, this channel will be present in the following channels of "
 "newly registered users. (Pseudo channels are excluded.)"
@@ -655,25 +658,24 @@ msgstr ""
 "İşaretlendiği takdirde bu kanal siteye yeni kayıt olan kullanıcıların takip "
 "edilen kanallar listesine eklenecek. (Sözde kanallar buna dahil değildir.)"
 
-#: .\models\category.py:33 .\models\flatpages.py:12 .\models\flatpages.py:23
+#: .\models\category.py:34 .\models\flatpages.py:12 .\models\flatpages.py:23
 msgid "Weight"
 msgstr "Sıra"
 
-#: .\models\category.py:50
+#: .\models\category.py:51
 msgid "channel"
 msgstr "kanal"
 
-#: .\models\category.py:51 .\templates\dictionary\base.html:116
+#: .\models\category.py:52 .\templates\dictionary\base.html:116
 #: .\templates\dictionary\base.html:159
 msgid "channels"
 msgstr "kanallar"
 
-#: .\models\category.py:57
+#: .\models\category.py:58
 msgid "Positive"
 msgstr "Pozitif"
 
-#: .\models\category.py:57
-#| msgid "active"
+#: .\models\category.py:58
 msgid "Negative"
 msgstr "Negatif"
 
@@ -817,9 +819,6 @@ msgid "Allow suggestions"
 msgstr "Kanal önerileri açık"
 
 #: .\models\topic.py:46
-#| msgid ""
-#| "When checked, users will get a notification when the announcement gets "
-#| "released."
 msgid "When checked, users will be able to suggest channels to this topic."
 msgstr ""
 "İşaretlendiği takdirde kullanıcılar bu başlığa kanal önerisi yapabilecek."
@@ -1894,7 +1893,6 @@ msgid "most liked entries of all time"
 msgstr "tüm zamanların en beğenilen entry'leri"
 
 #: .\templates\dictionary\list\entry_list.html:51
-#| msgid "all"
 msgctxt "nicefilter"
 msgid "all"
 msgstr "tümü"
@@ -1996,7 +1994,6 @@ msgid "this topic is yet to be classified"
 msgstr "bu başlık henüz sınıflandırılmamış"
 
 #: .\templates\dictionary\list\entry_list.html:266
-#| msgid "channels"
 msgid "suggest channels"
 msgstr "kanal öner"
 
@@ -2031,24 +2028,20 @@ msgid "following/blocked"
 msgstr "takip/engellenmiş"
 
 #: .\templates\dictionary\list\people_list.html:11
-#| msgid "following:"
 msgctxt "people"
 msgid "following"
 msgstr "takip"
 
 #: .\templates\dictionary\list\people_list.html:14
-#| msgid "blocked:"
 msgctxt "people"
 msgid "blocked"
 msgstr "engellenmiş"
 
 #: .\templates\dictionary\list\people_list.html:35
-#| msgid "followups"
 msgid "unfollow"
 msgstr "takip etme"
 
 #: .\templates\dictionary\list\people_list.html:42
-#| msgid "remove block,block this guy"
 msgid "remove block"
 msgstr "engeli kaldır"
 
@@ -3019,12 +3012,10 @@ msgid "this file is too large. (%.1f> MB)"
 msgstr "bu dosya çok büyük (%.1f> MB)"
 
 #: .\views\list.py:93
-#| msgid "following topics"
 msgid "following list"
 msgstr "takip edilenler"
 
 #: .\views\list.py:93
-#| msgid "blocked:"
 msgid "blocked list"
 msgstr "engellenenler"
 

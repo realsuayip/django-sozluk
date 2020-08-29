@@ -25,6 +25,7 @@ class Category(models.Model):
     )
     is_default = models.BooleanField(
         default=True,
+        verbose_name=_("Default"),
         help_text=_(
             "When checked, this channel will be present in the following"
             " channels of newly registered users. (Pseudo channels are excluded.)"
