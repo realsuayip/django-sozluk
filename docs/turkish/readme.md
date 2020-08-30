@@ -4,6 +4,7 @@ Kategoriler:
 * [Ayarlar](settings.md)
     * [GENERIC_SUPERUSER_USERNAME](settings.md#generic_superuser_username)
     * [GENERIC_PRIVATEUSER_USERNAME](settings.md#generic_privateuser_username)
+* [Çeviri](translation.md)
 * [Güvenlik](security.md)
     * [Bildirimler](security.md#bildirimler)
 * [Sunucuya kurulum yapacaklar için notlar](deployment.md)

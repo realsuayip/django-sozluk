@@ -5,7 +5,7 @@ import { Handle, Handler, isValidText, notify } from "./utils"
 Handle("body", "keypress", event => {
     if (event.target.matches("[role=button], .key-clickable") && (event.key === " " || event.key === "Enter")) {
         event.preventDefault()
-        event.target.dispatchEvent(new Event("click"))
+        event.target.dispatchEvent(new Event("click", { bubbles: true }))
     }
 })
 

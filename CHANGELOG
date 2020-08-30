@@ -1,3 +1,17 @@
+[0.10.2-alpha](2020.08.30)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed header behaviour in iOS Safari.
+2) Exclusion button was not working
+properly, fixed that.
+3) Fixed an issue with accessibility.
+4) Add docs about translation.
+
+--Deletions--
+None
+
 [0.10.1-alpha](2020.08.29)(compatible)
 --Additions--
 1) Add LANGUAGE_COOKIE_AGE to prevent the loss of language

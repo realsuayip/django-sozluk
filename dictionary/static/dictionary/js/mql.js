@@ -5,9 +5,13 @@ let lastScrollTop = 0
 
 function hideRedundantHeader () {
     const delta = 30
-    const st = window.pageYOffset
+    let st = window.pageYOffset
     const header = one("header.page_header")
     const sub = one(".sub-nav")
+
+    if (st < 0) {
+        st = 0 // Reset negative offset (iOS Safari)
+    }
 
     if (Math.abs(lastScrollTop - st) <= delta) {
         return

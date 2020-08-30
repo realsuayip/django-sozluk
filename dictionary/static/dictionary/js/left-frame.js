@@ -173,7 +173,7 @@ class LeftFrame {
             }
         } else {
             toggler.classList.add("dj-hidden")
-            categoryHolder.style.display = "none"
+            categoryHolder.classList.add("dj-hidden")
         }
     }
 
