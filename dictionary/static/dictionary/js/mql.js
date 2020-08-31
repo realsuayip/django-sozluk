@@ -1,4 +1,4 @@
-import { many, one, notify, notSafe } from "./utils"
+import { many, one, notify, notSafe, Handle, userIsAuthenticated, gqlc, cookies } from "./utils"
 
 let userIsMobile = false
 let lastScrollTop = 0
@@ -93,5 +93,44 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 })
+
+// Theme
+
+const themeExpires = 90
+
+function setTheme (theme) {
+    const body = one("body")
+    const icon = one("[data-toggle=theme]").querySelector("use")
+    body.style.transition = "background-color .5s ease"
+
+    if (theme === "dark") {
+        body.classList.add("dark")
+        icon.setAttribute("href", "#sun")
+    } else {
+        body.classList.remove("dark")
+        icon.setAttribute("href", "#moon")
+    }
+}
+
+Handle("[data-toggle=theme]", "click", function () {
+    if (userIsAuthenticated) {
+        gqlc({ query: "mutation{user{toggleTheme{theme}}}" }).then(response => {
+            setTheme(response.data.user.toggleTheme.theme)
+        })
+    } else {
+        if (cookies.get("theme") === "dark") {
+            cookies.set("theme", "light", { expires: themeExpires })
+            setTheme("light")
+        } else {
+            cookies.set("theme", "dark", { expires: themeExpires })
+            setTheme("dark")
+        }
+    }
+})
+
+if (!userIsAuthenticated && !cookies.get("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    cookies.set("theme", "dark", { expires: themeExpires })
+    setTheme("dark")
+}
 
 export { userIsMobile }

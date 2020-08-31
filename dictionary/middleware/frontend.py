@@ -9,9 +9,16 @@ class MobileDetectionMiddleware:
         self.get_response = get_response  # One-time configuration and initialization.
 
     def __call__(self, request):
+        if request.user.is_authenticated:
+            theme = request.user.theme
+        else:
+            theme = request.COOKIES.get("theme", "light")
+
         ua_string = request.headers.get("User-Agent")
         user_agent = parse(ua_string)
+
         request.is_mobile = user_agent.is_mobile
+        request.theme = theme
 
         # Code to be executed for each request before
         # the view (and later middleware) are called.

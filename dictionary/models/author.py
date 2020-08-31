@@ -82,6 +82,11 @@ class Author(AbstractUser):
         (FOLLOWING_ONLY, _("people who i follow")),
     )
 
+    # Themes
+    LIGHT = "light"
+    DARK = "dark"
+    THEMES = ((LIGHT, _("Light")), (DARK, _("Dark")))
+
     # Base auth related fields, notice: username field will be used for nicknames
     username = models.CharField(
         _("nickname"),
@@ -153,6 +158,7 @@ class Author(AbstractUser):
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
     pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
     allow_receipts = models.BooleanField(default=True)
+    theme = models.CharField(choices=THEMES, default=LIGHT, max_length=10)
 
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)

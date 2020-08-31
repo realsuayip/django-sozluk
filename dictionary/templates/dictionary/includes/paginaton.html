@@ -19,7 +19,7 @@
                 {% endfor %}
             </select>
 
-            <span class="mx-1" style="line-height: 25px">&sol;</span>
+            <span class="mx-2" style="line-height: 25px">&sol;</span>
             <a class="number shadow-focus" title="{% trans "last page" %}" href="?{% url_replace request 'page' page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
 
             {% if page_obj.has_next %}

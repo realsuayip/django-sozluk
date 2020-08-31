@@ -94,7 +94,7 @@ def formatted(raw_entry):
         # Reference
         (fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
         (
-            fr"\({SEE_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
+            fr"\({SEE_EXPR}: (?!<)(@?{RE_TOPIC_CHARSET})\)",
             lambda m: fr'({SEE}: <a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>)',
         ),
         # Swh

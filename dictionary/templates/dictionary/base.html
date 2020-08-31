@@ -10,7 +10,6 @@
     {# In production, some static files should be served together. #}
     <link rel="shortcut icon" type="image/png" href="{% static 'dictionary/img/favicon.ico' %}"/>
     <link rel="stylesheet" href="{% static "dictionary/css/helpers.css" %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.css">
     <link rel="stylesheet" href="{% static "dictionary/css/style.css" %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
 
@@ -18,7 +17,7 @@
     <script defer src="{% static 'dictionary/js/dist/main.min.js' %}"></script>
     <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
 </head>
-<body {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
+<body class="{{ request.theme }} {% block bodyclass %}{% endblock %}" {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
 {% include "dictionary/includes/icons.svg" %}
 
 <header class="page_header">
@@ -38,7 +37,7 @@
             {# Advanced search #}
             <form method="GET" class="header-search-form" action="{% url 'topic-search' %}" id="header_search_form">
                 <div class="input-group searchbox">
-                    <input name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
+                    <input autocomplete="off" name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
                     <div class="input-group-append">
 
                         <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -107,7 +106,7 @@
 
                     <li class="desktop-only">
                         <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}" id="user-dropdown">
-                            <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                            <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <use href="#more"></use>
                             </svg>
                         </a>
@@ -149,7 +148,7 @@
 
                 {% if user.is_authenticated %}
                     <li id="usermenu_mobile" data-toggle="dropdown">
-                        <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#more"></use>
                             <title>{% trans "Account Menu" %}</title>
                         </svg>
@@ -200,7 +199,7 @@
                 {% endfor %}
 
                 <li class="key-clickable" id="category-expand" data-toggle="dropdown" tabindex="0" aria-haspopup="true" aria-label="{% trans "Other Channels" %}">
-                    <svg width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                         <use href="#more"></use>
                     </svg>
                 </li>
@@ -246,13 +245,21 @@
     <aside class="right-frame" id="right-frame">
         {% block rightframe %}{% endblock %}
 
-        {% cache None footer user.is_authenticated LANGUAGE_CODE %}
+        {% cache None footer user.is_authenticated LANGUAGE_CODE request.theme %}
             {% load flatpages %}
             {% get_flatpages for user as flatpages %}
             {% get_external_urls as external_urls %}
 
             <footer class="body-footer">
-                <h2 class="h5">{{ request.site.name }}</h2>
+                <header class="d-flex align-items-start justify-content-between mb-2">
+                    <h2 class="h5 m-0">{{ request.site.name }}</h2>
+                    <button class="btn btn-sm m-0 p-0" data-toggle="theme">
+                        <svg fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#{% if request.theme == "dark" %}sun{% else %}moon{% endif %}"></use>
+                            <title>{% trans "Toggle dark mode" %}</title>
+                        </svg>
+                    </button>
+                </header>
                 <ul>
                     <li><a href="{% url 'general-report' %}">{% trans "contact" %}</a></li>
                     <li><a href="{% url 'announcements-index' %}">{% trans "announcements" %}</a></li>

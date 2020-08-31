@@ -66,3 +66,21 @@ class Follow(Action, Mutation):
 
         sender.following.add(subject)
         return Follow(feedback=_("you are now following this user"))
+
+
+class ToggleTheme(Mutation):
+    """Toggles theme for logged in users."""
+    theme = String()
+
+    @staticmethod
+    @login_required
+    def mutate(_root, info):
+        user = info.context.user
+        if user.theme == Author.DARK:
+            user.theme = Author.LIGHT
+            user.save()
+            return ToggleTheme(user.theme)
+
+        user.theme = Author.DARK
+        user.save()
+        return ToggleTheme(user.theme)

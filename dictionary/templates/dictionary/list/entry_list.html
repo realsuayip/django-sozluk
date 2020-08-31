@@ -4,7 +4,8 @@
 {% block title %}{% print_topic_title %}{% endblock %}
 
 {# Remove has-entries for permalinks to show full content right away #}
-{% block bodyattr %}{% if not entry_permalink %}class="has-entries"{% endif %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
+{% block bodyclass %}{% if not entry_permalink %}has-entries{% endif %}{% endblock %}
+{% block bodyattr %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 {% block content %}
 
     {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}

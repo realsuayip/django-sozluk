@@ -3,7 +3,8 @@
 {% load i18n %}
 
 {% block supertitle %}{{ request.site.name }} - özgür bilgi kaynağı{% endblock %}
-{% block bodyattr %}class="has-entries"{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
+{% block bodyclass %}has-entries{% endblock %}
+{% block bodyattr %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
 {% block content %}
     {% if entries %}
         <section class="user_entries">
