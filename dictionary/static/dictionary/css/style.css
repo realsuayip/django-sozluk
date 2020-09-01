@@ -386,7 +386,7 @@ header.entry_header .pagination select,
     box-shadow: var(--dark-box-shadow);
 }
 
-section.user_entries ul {
+section.user_entries ul.entries {
     padding: 0;
     margin: 0;
 }
@@ -395,14 +395,14 @@ section.user_entries ul.home li h2 {
     font-size: 1.5em;
 }
 
-section.user_entries ul li h2 {
+section.user_entries ul.entries li h2 {
     font-size: 1.3em;
     font-weight: 700;
     padding: 0;
     margin: 0;
 }
 
-section.user_entries ul li {
+section.user_entries ul.entries li {
     padding: .75em 0;
     list-style: none;
     height: auto;
@@ -730,6 +730,7 @@ section.user-comments textarea.entry_editor {
     margin: .5em 0 1em;
     width: 100%;
     padding: .5em;
+    font-size: 16px;
 }
 
 .topic-categories-list {
@@ -1381,7 +1382,6 @@ ul.exclusion-choices > li > a.active {
 }
 
 textarea.expandable {
-    font-size: 16px;
     height: 9rem;
     transition: height .4s;
 }

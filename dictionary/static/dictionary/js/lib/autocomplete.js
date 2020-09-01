@@ -11,6 +11,7 @@ class AutoComplete {
         this.input = options.input
         this.lookup = options.lookup // Takes name, returns a Promise that resolves into a list of {name, value}s.
         this.onSelect = options.onSelect // Takes value.
+        this.silent = options.silent === true // Set this to true to disable no suggestions notice.
 
         this.popper = null
         this.selected = null
@@ -49,7 +50,10 @@ class AutoComplete {
                 return
             }
 
-            this.selected && this.selected.classList.remove("selected") // Remove selected class.
+            const changeSelected = ["ArrowUp", "ArrowDown"].includes(event.key)
+
+            // Remove selected class from previously selected item.
+            changeSelected && this.selected && this.selected.classList.remove("selected", "mouseover")
 
             switch (event.key) {
                 case "ArrowUp": {
@@ -73,7 +77,7 @@ class AutoComplete {
                 }
 
                 case "Enter": {
-                    if (this.selected) {
+                    if (this.selected && !this.selected.classList.contains("mouseover")) {
                         event.preventDefault() // Prevents form submit.
                         this.triggerOnSelect(this.selected)
                     }
@@ -81,14 +85,14 @@ class AutoComplete {
                 }
 
                 case "Tab": {
-                    if (this.selected) {
-                        this.triggerOnSelect(this.selected)
+                    if (this.selected && !event.shiftKey) {
+                        this.input.value = this.selected.textContent
                     }
                     break
                 }
             }
 
-            if (this.selected && !this.selected.classList.contains("no-results")) {
+            if (changeSelected && this.selected && !this.selected.classList.contains("no-results")) {
                 this.selected.classList.add("selected")
                 this.input.value = this.selected.textContent
                 this.input.setAttribute("aria-activedescendant", this.selected.id)
@@ -102,9 +106,9 @@ class AutoComplete {
 
         this.template.addEventListener("mouseover", event => {
             if (event.target.tagName === "LI" && !event.target.classList.contains("no-results")) {
-                Array.from(this.template.childNodes).forEach(el => el !== event.target && el.classList.remove("selected"))
+                Array.from(this.template.childNodes).forEach(el => el !== event.target && el.classList.remove("selected", "mouseover"))
                 this.selected = event.target
-                this.selected.classList.add("selected")
+                this.selected.classList.add("selected", "mouseover")
             }
         })
     }
@@ -127,6 +131,11 @@ class AutoComplete {
                     this.template.innerHTML += `<li role="option" data-value="${item.value}" id="cb-opt-${index}">${item.name}</li>`
                 }
             } else {
+                if (this.silent) {
+                    this.destroy()
+                    return
+                }
+
                 if (!this.template.querySelector(".no-results")) {
                     this.template.innerHTML = `<li role="alert" aria-live="assertive" class='no-results'>${gettext("-- no corresponding results --")}</li>`
                 }
@@ -170,19 +179,24 @@ class AutoComplete {
 
 const authorQuery = `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`
 
+function authorAt (name) {
+    // name => @username
+    return gqlc({
+        query: authorQuery,
+        variables: { lookup: name.substr(1) }
+    }).then(response => {
+        return response.data.autocomplete.authors.map(user => ({
+            name: `@${user.username}`,
+            value: `@${user.username}`
+        }))
+    })
+}
+
 new AutoComplete({ // eslint-disable-line no-new
     input: one("#header_search"),
     lookup (name) {
         if (name.startsWith("@") && name.substr(1)) {
-            return gqlc({
-                query: authorQuery,
-                variables: { lookup: name.substr(1) }
-            }).then(response => {
-                return response.data.autocomplete.authors.map(user => ({
-                    name: `@${user.username}`,
-                    value: `@${user.username}`
-                }))
-            })
+            return authorAt(name)
         }
 
         return gqlc({
@@ -205,6 +219,24 @@ new AutoComplete({ // eslint-disable-line no-new
         window.location = "/topic/?q=" + encodeURIComponent(value)
     }
 })
+
+const inTopicSearch = one("#in_topic_search")
+
+if (inTopicSearch) {
+    new AutoComplete({ // eslint-disable-line no-new
+        input: inTopicSearch,
+        silent: true,
+        lookup (name) {
+            if (name.startsWith("@") && name.substr(1)) {
+                return authorAt(name)
+            }
+            return new Promise(resolve => resolve)
+        },
+        onSelect () {
+            inTopicSearch.closest("form").submit()
+        }
+    })
+}
 
 many(".author-search").forEach(input => {
     new AutoComplete({ // eslint-disable-line no-new

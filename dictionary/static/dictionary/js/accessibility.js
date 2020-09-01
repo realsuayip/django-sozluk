@@ -31,6 +31,11 @@ Handler("textarea#user_content_edit, textarea#message-body", "input", function (
 Handler("form", "submit", function (event) {
     window.onbeforeunload = null
 
+    if (this.id === "header_search_form" && !new FormData(this).get("q").trim()) {
+        event.preventDefault()
+        window.location = "/threads/search/"
+    }
+
     const userInput = this.querySelector("#user_content_edit")
 
     if (userInput && userInput.value) {

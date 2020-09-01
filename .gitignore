@@ -125,6 +125,7 @@ dmypy.json
 # node stuff
 node_modules
 package-lock.json
+.parcel-cache
 
 # datadump
 datadump.json

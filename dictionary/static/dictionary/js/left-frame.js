@@ -16,7 +16,7 @@ function setExclusions (exclusions) {
                 }
             }
         }
-        cookies.set("lfex", JSON.stringify(exclusions))
+        cookies.set("lfex", JSON.stringify(exclusions), { expires: 90 })
         return exclusions
     } else {
         return cookieExclusions

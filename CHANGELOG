@@ -1,4 +1,20 @@
-[0.11.0-alpha](2020.08.30)(incompatible)
+[0.11.1-alpha](2020.09.01)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Improved/optimized autocomplete library.
+2) The search input in entry list search dropdown
+now autocompletes for author names.
+3) User will be redirected to advanced search page when
+they search with empty input in header search.
+4) Exclusion preferences now won't flush on
+browser close.
+
+--Deletions--
+None
+
+[0.11.0-alpha](2020.08.31)(incompatible)
 --Additions--
 1) Add dark mode feature. **incompatible**
 run makemigrations+migrate for dictionary app.

@@ -37,7 +37,7 @@
                 {% if mirrors %}
                     <div class="mirror-list border bg-light rounded p-3 mb-2">
                      <span>{% trans "topics with the same title:" %}</span>
-                        <ul class="pl-3">
+                        <ul class="pl-3 mb-0 list-unstyled">
                             {% for mirror in mirrors %}
                                <li class="p-0"><a href="{{ mirror.get_absolute_url }}">{{ mirror.title }}</a></li>
                             {% endfor %}
@@ -72,7 +72,7 @@
                                 <form method="GET" action="{{ topic.get_absolute_url }}">
                                     <div class="input-group">
                                         <input type="hidden" name="a" value="search">
-                                        <input name="keywords" class="searchbox-text form-control" type="text" placeholder="{% trans "words or @author" %}" aria-label="{% trans "words or @author" %}" required>
+                                        <input name="keywords" id="in_topic_search" class="searchbox-text form-control" type="text" placeholder="{% trans "words or @author" %}" aria-label="{% trans "words or @author" %}" required>
                                         <div class="input-group-append">
                                             {# Translators: Small search button text. #}
                                             <input class="btn btn-django-link" type="submit" value="{% trans "go" %}">
@@ -105,7 +105,7 @@
                     {# end of previous entries button #}
 
                     {# list of entries #}
-                    <ul class="topic-view-entries">
+                    <ul class="topic-view-entries entries">
                         {% if entry_permalink %}
                             {% for entry in entries %}
                                 {% include "dictionary/includes/entry.html" with permalink="yes" show_comments=topic.is_ama %}

@@ -137,7 +137,7 @@
 
             {% if tab.type == "entry" %}
                 <section class="user_entries">
-                    <ul class="profile">
+                    <ul class="profile entries">
                         {% for entry in object_list %}
                             {% include "dictionary/includes/entry.html" with show_title="yes" %}
                         {% endfor %}

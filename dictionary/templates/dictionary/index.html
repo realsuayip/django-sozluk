@@ -8,7 +8,7 @@
 {% block content %}
     {% if entries %}
         <section class="user_entries">
-            <ul class="home">
+            <ul class="home entries">
                 {% for entry in entries %}
                     {% include "dictionary/includes/entry.html" with show_title="yes" gap="3" %}
                 {% endfor %}
