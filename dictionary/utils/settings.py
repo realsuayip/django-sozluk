@@ -328,3 +328,9 @@ XSENDFILE_HEADER_NAME = "X-Accel-Redirect"
 """
 Nginx only. Apache counterpart is 'X-Sendfile' which requires mod_xsendfile.
 """
+
+MESSAGE_PURGE_THRESHOLD = 300  # 5 minutes
+"""
+After this many seconds, the message will be deleted for the sender
+only (instead of both users).
+"""

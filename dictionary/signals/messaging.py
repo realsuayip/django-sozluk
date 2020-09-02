@@ -5,11 +5,15 @@ from ..models.messaging import Conversation, Message
 
 
 @receiver(post_save, sender=Message, dispatch_uid="deliver_message")
-def deliver_message(instance, **kwargs):
+def deliver_message(instance, created, **kwargs):
     """
     Creates a conversation if user messages the other for the first time.
     Adds messages to conversation.
     """
+
+    if not created:
+        return
+
     holder, _ = instance.sender.conversations.get_or_create(target=instance.recipient)
     target, _ = instance.recipient.conversations.get_or_create(target=instance.sender)
 

@@ -705,11 +705,11 @@ section.user-comments {
     border-radius: 4px;
 }
 
-body.dark section.user-comments .editor-buttons button.add-code {
+body.dark .editor-buttons button.add-code {
     background: var(--d-inner-dark);
 }
 
-section.user-comments .editor-buttons button.add-code {
+.editor-buttons button.add-code {
     background: var(--light-0);
     color: var(--dark-0);
     border-radius: 4px;
@@ -722,7 +722,7 @@ section.user-comments .editor-buttons button.add-code {
     margin-right: .25em;
 }
 
-section.user-comments .editor-buttons button.add-code:hover {
+.editor-buttons button.add-code:hover {
     background: var(--light-2);
 }
 
@@ -910,7 +910,7 @@ ul.threads li {
 }
 
 ul.threads li > a {
-    color: var(--dark-0);
+    color: var(--text-light);
     text-decoration: none;
     display: block;
 }
@@ -980,6 +980,7 @@ section.chat-reply form textarea {
     width: inherit;
     flex-grow: 1;
     padding: .5em;
+    font-size: 16px;
 }
 
 .people-list {

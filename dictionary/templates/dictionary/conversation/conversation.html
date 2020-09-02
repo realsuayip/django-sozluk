@@ -52,17 +52,17 @@
                         <li class="bubble sent">
                             <p class="text-formatted">{{ message.body|formatted|linebreaksbr }}</p>
                             <span class="date-info">
-                            <time>{{ message.sent_at|naturaltime }}</time>
+                            <time role="button" tabindex="0" data-toggle="dropdown" data-id="{{ message.pk }}">{{ message.sent_at|naturaltime }}</time>
                                 {% if message.has_receipt and message.read_at %}
                                     {% blocktrans asvar read_receipt with read_at=message.read_at|naturaltime %}seen, {{ read_at }}{% endblocktrans %}
                                     <span title="{{ read_receipt }}">
-                                        <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                        <svg fill="currentColor" width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                             <use href="#msgread"></use>
                                         </svg>
                                     </span>
                                 {% else %}
                                     <span title="{% trans "sent" %}">
-                                        <svg width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                        <svg fill="currentColor" width="28" height="14" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                             <use href="#msgsent"></use>
                                         </svg>
                                     </span>
@@ -72,7 +72,7 @@
                     {% else %}
                         <li class="bubble received">
                             <p class="text-formatted">{{ message.body|formatted|linebreaksbr }}</p>
-                            <time>{{ message.sent_at|naturaltime }}</time>
+                            <time role="button" tabindex="0" data-toggle="dropdown" data-id="{{ message.pk }}">{{ message.sent_at|naturaltime }}</time>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -86,17 +86,18 @@
     {% if not can_send_message %}
         <p class="text-center">{% trans "you are not allowed to send messages to this user." %}</p>
     {% else %}
-        <label for="message-body">
-            <h2 class="h4">
-                <span class="mr-2">{% trans "write message" %}</span>
-                <small style="font-size: 55%">{% trans "(entry formatting options are available)" %}</small>
-            </h2>
-        </label>
-        <section class="chat-reply mb-3">
+        {% trans "write message" as label %}
+
+        {% if not user.is_novice %}
+            <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
+        {% endif %}
+
+        <section class="chat-reply bg-light rounded p-4 mb-3">
+            {% include "dictionary/includes/editor_buttons.html" %}
             {% load widget_tweaks %}
-            <form method="POST">
+            <form method="POST" class="mt-2">
                 {% csrf_token %}
-                {% render_field form.body|attr:"autofocus" id="message-body" class="mr-2 form-control" rows="5" spellcheck="true" %}
+                {% render_field form.body|attr:"autofocus" id="user_content_edit" class="mr-2 form-control" rows="5" spellcheck="true" placeholder=label aria-label=label %}
                 <button type="submit" class="btn btn-django">{% trans "send" %}</button>
             </form>
         </section>

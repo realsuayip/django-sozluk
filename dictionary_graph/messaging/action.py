@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from graphene import ID, List, Mutation, String
 
 from dictionary.models import Author, Conversation, ConversationArchive, Message
+from dictionary.utils.settings import MESSAGE_PURGE_THRESHOLD
 from dictionary.utils.validators import validate_user_text
 
 from ..utils import login_required
@@ -81,3 +82,32 @@ class ComposeMessage(Mutation):
             return ComposeMessage(feedback=_("we couldn't send your message"))
 
         return ComposeMessage(feedback=_("your message has been successfully sent"))
+
+
+class DeleteMessage(Mutation):
+    class Arguments:
+        pk = ID()
+
+    immediate = String()
+
+    @staticmethod
+    @login_required
+    def mutate(_root, info, pk):
+        immediate = False
+        message = Message.objects.get(pk=pk)
+        conversation = message.conversation_set.get(holder=info.context.user)
+
+        if (
+            message.sender == info.context.user
+            and (timezone.now() - message.sent_at).total_seconds() < MESSAGE_PURGE_THRESHOLD
+        ):
+            # Sender deleted message immediately, remove message content for target user.
+            # Translators: Include an emoji
+            message.body = _("this message was deleted 🤷‍")
+            message.save(update_fields=["body"])
+            immediate = True
+
+        # Delete for this user.
+        conversation.messages.remove(message)
+
+        return DeleteMessage(immediate=immediate)

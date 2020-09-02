@@ -1,6 +1,6 @@
 /* global gettext */
 
-import { Handle, Handler, many, one, gqlc, notify } from "./utils"
+import { Handle, Handler, many, one, gqlc, notify, template } from "./utils"
 
 Handle("a#message_history_show", "click", function () {
     many("ul#message_list li.bubble").forEach(item => {
@@ -130,4 +130,33 @@ Handler("a[role=button].chat-archive-individual", "click", function () {
             }
         }
     })
+})
+
+// Individual message deleting
+
+many("#message_list time[data-id]").forEach(el => {
+    el.parentNode.append(template(`<div data-orientation="bottom" class="dropdown-menu"><a role="button" tabindex="0" class="dropdown-item">${gettext("delete")}</a></div>`))
+})
+
+Handler("#message_list .dropdown-menu", "click", function (event) {
+    if (event.target.classList.contains("dropdown-item") && confirm(gettext("Are you sure?"))) {
+        const pk = this.parentNode.querySelector("time[data-id]").getAttribute("data-id")
+
+        gqlc({
+            variables: { pk },
+            query: "mutation($pk:ID!){message{delete(pk:$pk){immediate}}}"
+        }).then(response => {
+            if (response.errors) {
+                return
+            }
+            this.closest("li.bubble").remove()
+            if (!document.querySelector("li.bubble")) {
+                window.location = location // Refresh the page if no messages left.
+                return
+            }
+            if (response.data.message.delete.immediate === "true") {
+                notify(gettext("hopefully they didn't see that one."), "info")
+            }
+        })
+    }
 })

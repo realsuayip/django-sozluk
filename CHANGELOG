@@ -1,3 +1,17 @@
+[0.11.2-alpha](2020.09.02)(compatible)
+--Additions--
+1) Individual messages can now be deleted. Users
+may also delete a message immediately (this can be specified
+in MESSAGE_PURGE_THRESHOLD setting) to hide the message
+content from the recipient.
+2) Add editor buttons in conversation view.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.11.1-alpha](2020.09.01)(compatible)
 --Additions--
 None
