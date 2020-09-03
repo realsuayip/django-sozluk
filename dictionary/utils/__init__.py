@@ -110,5 +110,14 @@ def get_generic_privateuser():
     return get_user_model().objects.get(username=GENERIC_PRIVATEUSER_USERNAME)
 
 
+def get_theme_from_cookie(request):
+    themes = ("dark", "light")
+
+    if (theme := request.COOKIES.get("theme", "light")) in themes:
+        return theme
+
+    return "light"
+
+
 class InputNotInDesiredRangeError(Exception):
     pass

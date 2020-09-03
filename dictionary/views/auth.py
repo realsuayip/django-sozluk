@@ -14,7 +14,7 @@ from django.views.generic.edit import FormView
 
 from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
 from ..models import AccountTerminationQueue, Author, PairedSession, UserVerification
-from ..utils import time_threshold
+from ..utils import get_theme_from_cookie, time_threshold
 from ..utils.email import send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
 from ..utils.settings import DISABLE_NOVICE_QUEUE, FROM_EMAIL
@@ -59,6 +59,7 @@ class SignUp(FormView):
         user.username = form.cleaned_data.get("username").lower()
         user.birth_date = form.cleaned_data.get("birth_date")
         user.gender = form.cleaned_data.get("gender")
+        user.theme = get_theme_from_cookie(self.request)
 
         if DISABLE_NOVICE_QUEUE:
             # Make the user an actual author

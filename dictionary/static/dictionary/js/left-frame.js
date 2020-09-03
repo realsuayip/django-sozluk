@@ -314,6 +314,7 @@ Handle("a#show_more", "click", function () {
 
     if (slug) {
         LeftFrame.populate(slug, 2)
+        one("#left-frame-nav").scroll(0, 0)
     }
 
     this.classList.add("dj-hidden")

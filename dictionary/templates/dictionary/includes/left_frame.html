@@ -6,7 +6,7 @@
     {# CATEGORY NAME AND DATA OPTIONS @formatter:off #}
     <div class="m-0" id="category_holder" style="min-height: 35px; align-items: center;">
 
-        <h2 class="p-0" id="top">
+        <h2 class="p-0">
 
             {# CATEGORY SAFENAME #}
             <span id="current_category_name" style="vertical-align: sub;">{{ lf.safename }}</span>
@@ -106,6 +106,6 @@
     {# TOPIC LIST END #}
 
     {# SHOW MORE LINK  #}
-    <a href="#top" id="show_more" {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>{% trans "show more" %}</a>
+    <a role="button" tabindex="0" id="show_more" {% if lf.page.number != 1 or not lf.page.has_other_pages %}class="dj-hidden"{% endif %}>{% trans "show more" %}</a>
     {# SHOW MORE LINK  #}
 {% endwith %}

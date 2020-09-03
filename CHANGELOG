@@ -1,3 +1,19 @@
+[0.11.3-alpha](2020.09.03)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Themes now respect user's preference
+when logging in or out.
+2) Fixed an error in autocomplete behaviour.
+3) Minor changes to some frontend logic.
+4) Birth date widgets were missing labels for screen
+readers, fixed that.
+5) Add documentation on compiling javascript files.
+
+--Deletions--
+None
+
 [0.11.2-alpha](2020.09.02)(compatible)
 --Additions--
 1) Individual messages can now be deleted. Users

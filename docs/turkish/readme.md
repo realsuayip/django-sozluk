@@ -7,6 +7,8 @@ Kategoriler:
 * [Çeviri](translation.md)
 * [Güvenlik](security.md)
     * [Bildirimler](security.md#bildirimler)
+* [Javascript](javascript.md)
+    * [Dosyaların derlenmesi](javascript.md#Dosyaların derlenmesi)
 * [Sunucuya kurulum yapacaklar için notlar](deployment.md)
     
 

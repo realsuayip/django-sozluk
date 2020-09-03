@@ -101,7 +101,7 @@ class AutoComplete {
 
         this.template.addEventListener("click", event => {
             event.stopPropagation()
-            this.triggerOnSelect(event.target)
+            this.triggerOnSelect(event.target.closest("li"))
         })
 
         this.template.addEventListener("mouseover", event => {

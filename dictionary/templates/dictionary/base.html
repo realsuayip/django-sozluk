@@ -17,7 +17,7 @@
     <script defer src="{% static 'dictionary/js/dist/main.min.js' %}"></script>
     <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
 </head>
-<body class="{{ request.theme }} {% block bodyclass %}{% endblock %}" {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
+<body class="{{ request.theme }}{% block bodyclass %}{% endblock %}" {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
 {% include "dictionary/includes/icons.svg" %}
 
 <header class="page_header">

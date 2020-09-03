@@ -63,7 +63,10 @@
                     {% render_field form.gender class="form-control" id="signup_gender" %}
                 </div>
                 <div class="form-group">
-                    <label class="d-block" for="id_birth_date_day">{{ form.birth_date.label }}</label>
+                    <label class="d-block">{{ form.birth_date.label }}</label>
+                    <label class="sr-only" for="id_birth_date_day">{% trans "Day of birth" %}</label>
+                    <label class="sr-only" for="id_birth_date_month">{% trans "Month of birth" %}</label>
+                    <label class="sr-only" for="id_birth_date_year">{% trans "Year of birth" %}</label>
                     <div class="datepick d-grid grid-gap-1 grid-col-3">
                         {% render_field form.birth_date class="form-control" %}
                     </div>
@@ -78,6 +81,6 @@
             </div>
         {% endwith %}
 
-        <button onclick="window.location.href='#top';" type="submit" class="btn btn-django stretch my-3">{% trans "register" %}</button>
+        <button onclick="window.scrollTo(0,0);" type="submit" class="btn btn-django stretch my-3">{% trans "register" %}</button>
     </form>
 {% endblock %}
