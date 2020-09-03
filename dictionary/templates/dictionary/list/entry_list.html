@@ -56,7 +56,7 @@
 
                         <a data-toggle="dropdown" class="expand mr-2 topic-search-expander" role="button" tabindex="0">{% trans "search in topic" %}</a>
 
-                        <div class="dropdown-menu no-collapse topic-dropdown p-0" data-orientation="bottom-start">
+                        <div class="dropdown-menu no-arrows no-collapse topic-dropdown p-0" data-orientation="bottom-start">
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=today">{% trans "today" %}</a>
                             <a class="dropdown-item" href="{{ topic.get_absolute_url }}?a=links">{% trans "links" %}</a>
                             {% if topic.is_ama %}
@@ -265,7 +265,7 @@
                     {% if not user.is_novice and perms.dictionary.can_suggest_categories and topic.allow_suggestions %}
                         <div class="dropdown mt-2">
                             <a role="button" tabindex="0" id="suggestDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "suggest channels" %}</a>
-                            <div class="dropdown-menu no-collapse tinybar" data-orientation="bottom-start" aria-labelledby="suggestDrop" style="max-height: 400px; overflow-y: scroll">
+                            <div class="dropdown-menu no-collapse no-arrows tinybar" data-orientation="bottom-start" aria-labelledby="suggestDrop" style="max-height: 400px; overflow-y: scroll">
                                 <ul class="list-group pl-3 pr-2" style="min-width: 200px;">
                                     {% get_topic_suggestions user topic as categories_with_suggestions %}
                                     {% for category in categories_with_suggestions %}
