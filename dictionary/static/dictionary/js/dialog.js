@@ -3,14 +3,14 @@
 import { Handle, many, one, gqlc, isValidText, notify } from "./utils"
 import { userAction } from "./user"
 
-function showBlockDialog (recipient, redirect = true) {
+function showBlockDialog (recipient, redirect = true, returnTo = null) {
     const button = one("#block_user")
     button.setAttribute("data-username", recipient)
     button.setAttribute("data-re", redirect)
     one("#username-holder").textContent = recipient
 
     const modal = one("#blockUserModal")
-    modal._modalInstance.show()
+    modal._modalInstance.show(returnTo)
 }
 
 Handle("#block_user", "click", function () {
@@ -27,7 +27,7 @@ Handle("#block_user", "click", function () {
     userAction("block", targetUser, null, re)
 })
 
-function showMessageDialog (recipient, extraContent) {
+function showMessageDialog (recipient, extraContent, returnTo = null) {
     const msgModal = one("#sendMessageModal")
     one("#sendMessageModal span.username").textContent = recipient
 
@@ -36,7 +36,7 @@ function showMessageDialog (recipient, extraContent) {
     }
 
     msgModal.setAttribute("data-for", recipient)
-    msgModal._modalInstance.show()
+    msgModal._modalInstance.show(returnTo)
 }
 
 function composeMessage (recipient, body) {

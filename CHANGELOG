@@ -1,3 +1,19 @@
+[0.11.5-alpha](2020.09.03)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Modals now return to last focused element
+when they are closed.
+2) Escape key wouldn't hide the modals due
+to a regression introduced in the previous update,
+fixed that.
+3) In people list, unblock buttons wouldn't work
+properly, fixed that.
+
+--Deletions--
+None
+
 [0.11.4-alpha](2020.09.03)(compatible)
 --Additions--
 None

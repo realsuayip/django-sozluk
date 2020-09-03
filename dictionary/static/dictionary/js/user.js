@@ -14,7 +14,7 @@ function userAction (type, recipient, loc = null, re = true) {
     })
 }
 
-Handle(".unblock-user-trigger", "click", function () {
+Handler(".unblock-user-trigger", "click", function () {
     if (confirm(gettext("Are you sure?"))) {
         let loc
         if (this.classList.contains("sync")) {
@@ -33,17 +33,11 @@ Handler(".follow-user-trigger", "click", function () {
 })
 
 Handle("ul.user-links", "click", function (event) {
-    let dialog
-
+    const recipient = this.getAttribute("data-username")
     if (event.target.matches("li.block-user a")) {
-        dialog = showBlockDialog
+        showBlockDialog(recipient, true, event.target)
     } else if (event.target.matches("li.send-message a")) {
-        dialog = showMessageDialog
-    }
-
-    if (dialog) {
-        const recipient = this.getAttribute("data-username")
-        dialog(recipient)
+        showMessageDialog(recipient, null, event.target)
     }
 })
 

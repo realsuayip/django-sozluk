@@ -135,7 +135,7 @@ Handler(".entry-actions", "click", function (event) {
         case "message" : {
             const recipient = this.parentNode.querySelector(".username").textContent
             const entryInQuestion = this.closest(".entry-full").getAttribute("data-id")
-            showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`)
+            showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`, this.previousElementSibling)
             break
         }
 
@@ -162,7 +162,7 @@ Handler(".entry-actions", "click", function (event) {
             const target = this.parentNode.querySelector(".username").textContent
             const profile = one(".profile-username")
             const re = profile && profile.textContent === target
-            showBlockDialog(target, re)
+            showBlockDialog(target, re, this.previousElementSibling)
             break
         }
 

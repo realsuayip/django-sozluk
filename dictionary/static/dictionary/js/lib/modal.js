@@ -37,7 +37,8 @@ class Modal {
         })
     }
 
-    show () {
+    show (returnTo) {
+        this.returnTo = returnTo
         this.showing = true
         this.modal.removeAttribute("aria-hidden")
         this.modal.classList.add("showing")
@@ -67,6 +68,7 @@ class Modal {
             _modal.style.display = "none"
             _modal.classList.remove("showing")
             _modal.setAttribute("aria-hidden", "true")
+            this.returnTo && this.returnTo.focus()
         })
     }
 }
