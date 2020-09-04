@@ -797,6 +797,7 @@ ul.autocomplete {
 ul.autocomplete li {
     padding: .3em 1em;
     white-space: nowrap;
+    cursor: default;
 }
 
 ul.autocomplete li.selected {

@@ -273,14 +273,14 @@ class TopicQueryHandler:
         nice_only = search_keys.get("is_nice_ones") == "true"
         from_date = search_keys.get("from_date")
         to_date = search_keys.get("to_date")
-        orderding = search_keys.get("ordering")
+        ordering = search_keys.get("ordering")
 
         # Input validation
         from_date = parse_date_or_none(from_date, dayfirst=False)
         to_date = parse_date_or_none(to_date, dayfirst=False)
 
-        if orderding not in ("alpha", "newer", "popular"):
-            orderding = "newer"
+        if ordering not in ("alpha", "newer", "popular"):
+            ordering = "newer"
 
         # Provide a default search term if none present
         if not keywords and not author_nick and not (favorites_only and user.is_authenticated):
@@ -312,7 +312,7 @@ class TopicQueryHandler:
 
         qs = Topic.objects.filter(**self.base_filter, **filters).annotate(count=Count("entries", distinct=True))
         ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
-        result = qs.order_by(*ordering_map.get(orderding)).values(*self.values)[:TOPICS_PER_PAGE_DEFAULT]
+        result = qs.order_by(*ordering_map.get(ordering)).values(*self.values)[:TOPICS_PER_PAGE_DEFAULT]
         return result
 
     def generic_category(self, slug):
