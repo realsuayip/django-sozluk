@@ -316,15 +316,23 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         sets created_by field of the topic.
         """
 
-        if (self.topic.exists and self.topic.is_banned) or self.request.user.is_suspended:
+        if self.topic.exists and self.topic.is_banned:
             # Cannot check is_banned before checking its existence.
             # Translators: Not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, _("no, no i don't think i will."))
             return self.form_invalid(form)
 
         draft_pk = self.request.POST.get("pub_draft_pk")
+        publishing_draft = draft_pk and draft_pk.isdigit()
+        status = self.request.user.entry_publishable_status
 
-        if draft_pk and draft_pk.isdigit():
+        if status is not None:
+            notifications.error(self.request, status, extra_tags="persistent")
+            if publishing_draft:
+                return redirect(reverse("entry_update", kwargs={"pk": int(draft_pk)}))
+            return self.form_invalid(form)
+
+        if publishing_draft:
             # Publishing previously draft entry.
             try:
                 entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))

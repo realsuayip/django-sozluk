@@ -5,8 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.translation import gettext
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import CreateView, UpdateView
 
 from ..forms.edit import EntryForm, PreferencesForm
@@ -38,14 +37,20 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         entry = form.save(commit=False)
 
         if self.request.user.is_suspended or entry.topic.is_banned:
-            notifications.error(self.request, gettext(_("no, no i don't think i will.")))
+            notifications.error(self.request, gettext("you lack the required permissions."))
             return super().form_invalid(form)
 
         if entry.is_draft:
+            status = self.request.user.entry_publishable_status
+
+            if status is not None:
+                notifications.error(self.request, status, extra_tags="persistent")
+                return super().form_invalid(form)
+
             entry.is_draft = False
             entry.date_created = timezone.now()
             entry.date_edited = None
-            notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
+            notifications.info(self.request, gettext("the entry was successfully launched into stratosphere"))
         else:
             entry.date_edited = timezone.now()
 

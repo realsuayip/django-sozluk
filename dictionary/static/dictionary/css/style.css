@@ -314,6 +314,12 @@ ul.topic-list li.active {
     padding: 0 1em;
     background: var(--primary);
     transition: background-color ease .5s;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+ul.topic-list li.active:not(:first-child) {
+    border-radius: 0;
 }
 
 ul.topic-list li.active:hover {

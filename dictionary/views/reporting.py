@@ -22,10 +22,20 @@ class GeneralReportView(CreateView):
     def form_valid(self, form):
         instance = form.save(commit=False)
 
-        # User is already logged in, no verification required.
         if self.request.user.is_authenticated:
             instance.reporter_email = self.request.user.email
             instance.is_verified = True
+
+        if GeneralReport.objects.filter(
+            reporter_email=instance.reporter_email, date_created__gte=time_threshold(minutes=15)
+        ).exists():
+            notifications.error(
+                self.request, _("it hasn't been long since you last sent a report."), extra_tags="persistent"
+            )
+            return self.form_invalid(form)
+
+        # User is already logged in, no verification required.
+        if self.request.user.is_authenticated:
             notifications.success(
                 self.request, _("your report request has been successfully sent."), extra_tags="persistent"
             )

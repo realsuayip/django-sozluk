@@ -79,6 +79,7 @@ class Conversation(models.Model):
     target = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="targeted_conversations")
 
     messages = models.ManyToManyField(Message)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     objects = ConversationManager()
 

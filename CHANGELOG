@@ -1,3 +1,19 @@
+[0.12.0-alpha](2020.09.05)(incompatible)
+--Additions--
+1) Add some throttling mechanisms for
+entry sending, report sending, and
+unauthenticated voting.
+2) Add field date_created to conversation.
+**incompatible** run makemigrations+migrate
+for dictionary, provide timezone.now as the
+default value.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.11.6-alpha](2020.09.04)(compatible)
 --Additions--
 1) Add a screenshot with dark mode enabled.

@@ -334,3 +334,9 @@ MESSAGE_PURGE_THRESHOLD = 300  # 5 minutes
 After this many seconds, the message will be deleted for the sender
 only (instead of both users).
 """
+
+AUTHOR_ENTRY_INTERVAL = 0
+"""Time interval for publishing entries (seconds)."""
+
+NOVICE_ENTRY_INTERVAL = 0
+"""Same with above, but for novices."""

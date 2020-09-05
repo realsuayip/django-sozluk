@@ -73,4 +73,5 @@ class AnonymousUserStorage:
         return False
 
     def has_exceeded_vote_limit(self, **kwargs):
-        return False, None
+        # 14 = Max allowed votes - 1
+        return len(self.upvoted_entries.items) + len(self.downvoted_entries.items) > 14, None

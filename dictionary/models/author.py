@@ -14,21 +14,24 @@ from django.db.models.functions import Coalesce
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
 from uuslug import uuslug
 
 from ..models.m2m import DownvotedEntries, UpvotedEntries
-from ..utils import get_generic_superuser, parse_date_or_none, time_threshold
+from ..utils import parse_date_or_none, time_threshold
 from ..utils.settings import (
+    AUTHOR_ENTRY_INTERVAL,
     DAILY_VOTE_LIMIT,
     DAILY_VOTE_LIMIT_PER_USER,
     DISABLE_GENERATIONS,
     FIRST_GENERATION_DATE,
     GENERATION_GAP_DAYS,
+    GENERIC_SUPERUSER_USERNAME,
     KARMA_BOUNDARY_LOWER,
     KARMA_BOUNDARY_UPPER,
     KARMA_EXPRESSIONS,
+    NOVICE_ENTRY_INTERVAL,
     OVERWHELMING_KARMA_EXPRESSION,
     TOTAL_VOTE_LIMIT_PER_USER,
     UNDERWHELMING_KARMA_EXPRESSION,
@@ -269,7 +272,7 @@ class Author(AbstractUser):
         if self == recipient:
             return False
 
-        if self == get_generic_superuser():
+        if self.username == GENERIC_SUPERUSER_USERNAME:
             return True
 
         if (
@@ -285,6 +288,28 @@ class Author(AbstractUser):
             return False
 
         return True
+
+    @property
+    def entry_publishable_status(self):
+        """:return None if can publish new entries, else return apt error message."""
+
+        if not self.is_accessible:
+            return gettext("you lack the required permissions.")
+
+        latest_entry_date = self.last_entry_date
+
+        if latest_entry_date is not None:
+            interval = NOVICE_ENTRY_INTERVAL if self.is_novice else AUTHOR_ENTRY_INTERVAL
+            delta = timezone.now() - latest_entry_date
+            if delta <= timezone.timedelta(seconds=interval):
+                remaining = interval - delta.seconds
+                return ngettext(
+                    "you are sending entries too frequently. try again in a second.",
+                    "you are sending entries too frequently. try again in %(remaining)d seconds.",
+                    remaining,
+                ) % {"remaining": remaining}
+
+        return None
 
     @property
     def generation(self):
