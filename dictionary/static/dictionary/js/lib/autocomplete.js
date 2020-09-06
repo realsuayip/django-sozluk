@@ -21,6 +21,7 @@ class AutoComplete {
         this.template = template(`<ul role="listbox" class="autocomplete" id="${templateID}"></ul>`)
         this.input.parentNode.append(this.template)
 
+        this.input.setAttribute("autocomplete", "off")
         this.input.setAttribute("role", "combobox")
         this.input.setAttribute("aria-owns", templateID)
         this.input.setAttribute("aria-autocomplete", "list")

@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700&display=swap">
 
     <script defer src="{% url 'javascript-catalog' %}"></script>
-    <script defer src="{% static 'dictionary/js/dist/main.min.js' %}"></script>
+    <script defer src="{% static 'dictionary/js/dist/index.js' %}"></script>
     <title>{% block supertitle %}{% block title %}{% endblock %} - {{ request.site.name }}{% endblock %}</title>
 </head>
 <body class="{{ request.theme }}{% block bodyclass %}{% endblock %}" {% block bodyattr %}{% endblock %} id="{{ user.is_authenticated|yesno:"au,ua" }}">
@@ -37,7 +37,7 @@
             {# Advanced search #}
             <form method="GET" class="header-search-form" action="{% url 'topic-search' %}" id="header_search_form">
                 <div class="input-group searchbox">
-                    <input autocomplete="off" name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
+                    <input name="q" type="text" placeholder="{% trans "topic, #entry or @author" %}" class="searchbox-text form-control" id="header_search" form="header_search_form" aria-label="{% trans "Search term" %}">
                     <div class="input-group-append">
 
                         <button type="button" class="btn dropbtn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -65,7 +65,7 @@ header.page_header {
     right: 0;
     z-index: 1025;
     background: var(--light-0);
-    transition: .5s ease;
+    transition: top .5s ease;
 }
 
 .logo {
@@ -161,7 +161,7 @@ nav.sub-nav ul li {
     text-align: center;
     flex-grow: 1;
     border-bottom: 6px solid transparent;
-    transition: all .2s ease-in-out;
+    transition: border-bottom-color .2s ease-in-out;
 }
 
 nav.sub-nav ul li.active {
@@ -169,7 +169,7 @@ nav.sub-nav ul li.active {
 }
 
 nav.sub-nav ul li:hover {
-    transition: all .2s ease-in-out;
+    transition: border-bottom-color .2s ease-in-out;
     border-color: var(--primary);
     cursor: pointer;
 }
@@ -187,7 +187,7 @@ nav.sub-nav ul li svg {
 }
 
 .content {
-    margin-top: 88px;
+    margin-top: 94px;
     padding-top: 1.5em;
     display: flex;
 }
@@ -221,12 +221,18 @@ nav.sub-nav ul .more_tags_dropdown,
 }
 
 .left-frame {
-    height: calc(100% - 9rem);
+    height: calc(100% - 94px - 1.5em);
     overflow-y: auto;
     overflow-x: hidden;
     position: fixed;
     width: 250px;
     padding: 0 .5em;
+}
+
+#show_more {
+    display: inline-block;
+    margin-top: .4em;
+    margin-bottom: 1.25em;
 }
 
 .tinybar {
@@ -280,6 +286,10 @@ body.dark .tinybar {
 
 .right-frame {
     width: 250px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(94px + 1.5em);
+    height: max-content;
 }
 
 .right-frame > * + footer {
@@ -1359,7 +1369,7 @@ ul.exclusion-choices > li > a.active {
     max-width: 300px;
     background: var(--light-0);
     border: 2px solid var(--primary-light);
-    transition: .3s ease-in-out;
+    transition: transform .3s ease-in-out;
     color: inherit;
 }
 

@@ -132,9 +132,9 @@ class LeftFrame {
         const showMoreButton = one("a#show_more")
 
         if (currentPage !== 1 || !isPaginated) {
-            showMoreButton.classList.add("dj-hidden")
+            showMoreButton.classList.add("d-none")
         } else {
-            showMoreButton.classList.remove("dj-hidden")
+            showMoreButton.classList.remove("d-none")
         }
     }
 
@@ -317,7 +317,7 @@ Handle("a#show_more", "click", function () {
         one("#left-frame-nav").scroll(0, 0)
     }
 
-    this.classList.add("dj-hidden")
+    this.classList.add("d-none")
 })
 
 Handle("#refresh_bugun", "click", LeftFrame.refreshPopulate)

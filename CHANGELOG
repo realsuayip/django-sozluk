@@ -1,3 +1,15 @@
+[0.12.1-alpha](2020.09.06)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Renamed main.min.js to index.js.
+2) Right frame is now sticky.
+3) Some other minor UI optimizations.
+
+--Deletions--
+None
+
 [0.12.0-alpha](2020.09.05)(incompatible)
 --Additions--
 1) Add some throttling mechanisms for
