@@ -64,31 +64,48 @@ function replaceText (textarea, type) {
     }
 }
 
+let meta
+let label
+const doneButton = one("#editor_done")
+const input = one("#editor_input")
+const modal = one("#editorModal")
+
+if (modal) {
+    label = modal.querySelector("label")
+}
+
+const userContent = one("#user_content_edit")
+const dropzone = one(".dropzone")
+
 Handle("button#insert_image", "click", () => {
-    const dropzone = one(".dropzone")
     dropzone.style.display = dropzone.style.display === "none" ? "" : "none"
 })
 
 Handle("button#insert_link", "click", () => {
-    if (!replaceText(one("#user_content_edit"), "link")) {
+    if (!replaceText(userContent, "link")) {
         const linkText = prompt(gettext("which address to link?"), "http://")
         if (linkText && linkText !== "http://") {
             const linkName = prompt(gettext("alias for the link?"))
-            if (linkName) {
-                insertAtCaret(one("#user_content_edit"), `[${linkText} ${linkName}]`)
-            }
+            linkName && insertAtCaret(userContent, `[${linkText} ${linkName}]`)
         }
     }
 })
 
+Handle(doneButton, "click", () => {
+    input.value.trim() && insertAtCaret(userContent, meta.format(input.value.trim()))
+})
+
+Handle(input, "keydown", event => {
+    event.key === "Enter" && doneButton.dispatchEvent(new Event("click", { bubbles: true }))
+})
+
 Handler("button.insert", "click", function () {
     const type = this.getAttribute("data-type")
-    if (!replaceText(one("#user_content_edit"), type)) {
-        const meta = insertMeta(type)
-        const text = prompt(meta.label)
-        if (text) {
-            insertAtCaret(one("#user_content_edit"), meta.format(text))
-        }
+    if (!replaceText(userContent, type)) {
+        meta = insertMeta(type)
+        label.textContent = meta.label
+        input.value = ""
+        modal._modalInstance.show(null)
     }
 })
 
@@ -107,14 +124,13 @@ Dropzone.options.userImageUpload = {
     dictCancelUploadConfirmation: gettext("Are you sure?"),
 
     success (file, response) {
-        insertAtCaret(one("#user_content_edit"), `(${pgettext("editor", "image")}: ${response.slug})`)
+        insertAtCaret(userContent, `(${pgettext("editor", "image")}: ${response.slug})`)
     },
 
     removedfile (file) {
         file.previewElement.remove()
-        const text = one("#user_content_edit")
         const slug = JSON.parse(file.xhr.response).slug
-        text.value = text.value.replace(new RegExp(`\\(${pgettext("editor", "image")}: ${slug}\\)`, "g"), "")
+        userContent.value = userContent.value.replace(new RegExp(`\\(${pgettext("editor", "image")}: ${slug}\\)`, "g"), "")
         deleteImage(slug)
     }
 }

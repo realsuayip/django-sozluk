@@ -193,33 +193,45 @@ function authorAt (name) {
     })
 }
 
+function fullLookup (name) {
+    if (name.startsWith("@") && name.substr(1)) {
+        return authorAt(name)
+    }
+
+    return gqlc({
+        query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
+        variables: { lookup: name }
+    }).then(response => {
+        const topicSuggestions = response.data.autocomplete.topics.map(topic => ({
+            name: topic.title,
+            value: topic.title
+        }))
+        const authorSuggestions = response.data.autocomplete.authors.map(user => ({
+            name: `@${user.username}`,
+            value: `@${user.username}`
+        }))
+        return topicSuggestions.concat(authorSuggestions)
+    })
+}
+
 new AutoComplete({ // eslint-disable-line no-new
     input: one("#header_search"),
-    lookup (name) {
-        if (name.startsWith("@") && name.substr(1)) {
-            return authorAt(name)
-        }
-
-        return gqlc({
-            query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
-            variables: { lookup: name }
-        }).then(response => {
-            const topicSuggestions = response.data.autocomplete.topics.map(topic => ({
-                name: topic.title,
-                value: topic.title
-            }))
-            const authorSuggestions = response.data.autocomplete.authors.map(user => ({
-                name: `@${user.username}`,
-                value: `@${user.username}`
-            }))
-            return topicSuggestions.concat(authorSuggestions)
-        })
-    },
+    lookup: fullLookup,
 
     onSelect (value) {
         window.location = "/topic/?q=" + encodeURIComponent(value)
     }
 })
+
+const inEditorSearch = one("#editor_input")
+
+if (inEditorSearch) {
+    new AutoComplete({ // eslint-disable-line no-new
+        input: inEditorSearch,
+        silent: true,
+        lookup: fullLookup
+    })
+}
 
 const inTopicSearch = one("#in_topic_search")
 
