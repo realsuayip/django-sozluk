@@ -80,7 +80,7 @@ async function notify (message, level = "default", initialDelay = 1800, persiste
         })
     }
 
-    await sleep(0)
+    await sleep(50)
     toast.classList.add("show")
 
     if (!persistent) {

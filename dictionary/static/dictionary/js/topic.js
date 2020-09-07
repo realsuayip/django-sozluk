@@ -1,6 +1,15 @@
 /* global gettext */
 
-import { Handle, Handler, template, one, gqlc, isValidText, notify, toggleText } from "./utils"
+import {
+    Handle,
+    Handler,
+    template,
+    one,
+    gqlc,
+    isValidText,
+    notify,
+    toggleText
+} from "./utils"
 
 function topicAction (type, pk) {
     return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(response => {
@@ -101,3 +110,13 @@ Handle("a.wish-purge[role=button]", "click", function () {
         })
     }
 })
+
+const topicView = one(".topic-view-entries")
+const pagination = one(".pagination")
+
+if (topicView && pagination) {
+    const paginationClone = pagination.cloneNode(true)
+    paginationClone.style.justifyContent = "flex-end"
+    paginationClone.classList.add("mt-2")
+    topicView.after(paginationClone)
+}

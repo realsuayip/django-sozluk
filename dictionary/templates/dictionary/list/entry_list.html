@@ -35,7 +35,7 @@
 
             {% with mirrors=topic.mirrors.all %}
                 {% if mirrors %}
-                    <div class="mirror-list border bg-light rounded p-3 mb-2">
+                    <div class="mirror-list border bg-light rounded p-3 mb-3">
                      <span>{% trans "topics with the same title:" %}</span>
                         <ul class="pl-3 mb-0 list-unstyled">
                             {% for mirror in mirrors %}

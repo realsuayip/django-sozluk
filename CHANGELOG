@@ -1,3 +1,16 @@
+[0.12.3-alpha](2020.09.07)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fix toast animation in Firefox.
+2) Search tag now works properly in preview.
+3) In topic entry list pagination is now also
+available at the bottom of the page.
+
+--Deletions--
+None
+
 [0.12.2-alpha](2020.09.06)(compatible)
 --Additions--
 None

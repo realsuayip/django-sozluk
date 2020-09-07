@@ -50,14 +50,16 @@ Handle("button#perform_advanced_search", "click", () => {
     populateSearchResults(dictToParameters(keys))
 })
 
-Handler("a[role=button].quicksearch", "click", function () {
-    const term = this.getAttribute("data-keywords")
-    let parameter
-    if (term.startsWith("@") && term.substr(1)) {
-        parameter = `author_nick=${term.substr(1)}`
-    } else {
-        parameter = `keywords=${term}`
+Handler("body", "click", event => {
+    if (event.target.matches("a[role=button].quicksearch")) {
+        const term = event.target.getAttribute("data-keywords")
+        let parameter
+        if (term.startsWith("@") && term.substr(1)) {
+            parameter = `author_nick=${term.substr(1)}`
+        } else {
+            parameter = `keywords=${term}`
+        }
+        const searchParameters = parameter + "&ordering=newer"
+        populateSearchResults(searchParameters)
     }
-    const searchParameters = parameter + "&ordering=newer"
-    populateSearchResults(searchParameters)
 })

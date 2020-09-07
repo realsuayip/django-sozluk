@@ -1,7 +1,9 @@
 import { Handle, Handler, updateQueryStringParameter } from "./utils"
 
-Handle("select.page-selector", "change", function () {
-    window.location = updateQueryStringParameter(location.href, "page", this.value)
+Handle("body", "change", event => {
+    if (event.target.matches("select.page-selector")) {
+        window.location = updateQueryStringParameter(location.href, "page", event.target.value)
+    }
 })
 
 Handle("form.search_mobile, form.reporting-form", "submit", function () {

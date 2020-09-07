@@ -376,7 +376,7 @@ header.entry_header .lower a:not(.active) {
     color: var(--dark-0);
 }
 
-header.entry_header .pagination a {
+.pagination a {
     display: block;
     text-decoration: none;
     padding: 1px 8px;
@@ -385,11 +385,11 @@ header.entry_header .pagination a {
     box-shadow: var(--dark-box-shadow);
 }
 
-header.entry_header .pagination a:hover {
+.pagination a:hover {
     background: var(--light-2);
 }
 
-header.entry_header .pagination select,
+.pagination select,
 .lf_pagination select {
     background: var(--light-0);
     min-width: 50px;
@@ -1559,8 +1559,8 @@ textarea.expandable {
         background-size: 40px 40px;
     }
 
-    header.entry_header .pagination a,
-    header.entry_header .pagination select {
+    .pagination a,
+    .pagination select {
         max-height: 26px;
     }
 
