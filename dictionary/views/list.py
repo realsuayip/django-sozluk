@@ -518,6 +518,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # Find subsequent and previous entries
             # Get current page's first and last entry, and find the number of entries before and after by date.
             # Using these count data, find what page next entry is located on.
+            first_entry = entries[0] if not self.entry else self.entry
 
             previous_entries_count, previous_entries_page = 0, 0
             subsequent_entries_count, subsequent_entries_page = 0, 0
@@ -540,7 +541,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 show_subsequent = True
 
             if show_subsequent or show_previous:
-                first_entry_date = entries[0].date_created if not self.entry else self.entry.date_created
+                first_entry_date = first_entry.date_created
 
                 previous_entries_count = self._qs_filter(
                     self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
@@ -569,6 +570,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             context["previous_entries_page"] = previous_entries_page
             context["subsequent_entries_count"] = subsequent_entries_count
             context["subsequent_entries_page"] = subsequent_entries_page
+            context["first_entry"] = first_entry
 
         else:
             # Parameters returned no corresponding entries, show ALL entries count to guide the user

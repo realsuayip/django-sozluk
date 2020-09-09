@@ -6,6 +6,19 @@
 {# Remove has-entries for permalinks to show full content right away #}
 {% block bodyclass %}{% if not entry_permalink %} has-entries{% endif %}{% endblock %}
 {% block bodyattr %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
+
+{% block description %}{{ first_entry.content|truncatechars:150 }}{% endblock %}
+{% block metatags %}
+    {% with desc=first_entry.content|truncatechars:150 %}
+        <meta property="og:description" content="{{ desc }}">
+        <meta property="twitter:description" content="{{ desc }}">
+    {% endwith %}
+    <meta property="og:title" content="{{ topic.title }}">
+    <meta property="og:type" content="article">
+    <meta property="twitter:title" content="{{ topic.title }}">
+    <meta property="twitter:card" content="summary">
+{% endblock %}
+
 {% block content %}
 
     {% with valid=topic.valid populated=topic.has_entries banned=topic.is_banned %}
