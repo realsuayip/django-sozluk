@@ -1,0 +1,32 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&display=swap">
+    <style>
+        body {
+            font-family: "Source Sans Pro", sans-serif;
+            padding: 1em;
+            background: #272727;
+            color: rgba(255, 255, 255, .9);
+            text-align: justify;
+            font-size: 16px;
+        }
+    </style>
+    <title>{% trans "server error" context "titleblock" %}</title>
+</head>
+<body>
+<h1 style="margin: 0;">{% trans "server error" context "titleblock" %}</h1>
+<p style="max-width: 500px;">
+    {% blocktrans trimmed %}
+        sorry, an unexpected error occurred while processing your request. this error has
+        been recorded and will be revised by the system admins. meanwhile, you may return to
+        home page as if nothing happened. if you are seeing this error continuously, please
+        try again in a few moments.
+    {% endblocktrans %}
+</p>
+</body>
+</html>

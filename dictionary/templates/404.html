@@ -1,0 +1,36 @@
+{% extends "dictionary/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "page not found" context "titleblock" %}{% endblock %}
+
+{% block content %}
+    {% url "home" as home_url %}
+    {% url "topic_list" "search" as search_url %}
+
+    {% autoescape off %}
+        {% blocktrans asvar navigation_message trimmed %}
+            you may return to
+            <a href="{{ home_url }}">home page</a> or keep looking using
+            <a href="{{ search_url }}">advanced search</a>.
+        {% endblocktrans %}
+
+        {% if request.resolver_match.view_name == "entry-permalink" %}
+            <h1 class="h4"><strong>{% trans "entry not found" %}</strong></h1>
+            <p style="font-size: 16px">
+                {% blocktrans trimmed with entry_id=request.resolver_match.kwargs.entry_id %}
+                    entry with identity <strong>(#{{ entry_id }})</strong> was not found.
+                    it might have been deleted and could be lurking in the limbo now, who knows?
+                    {{ navigation_message }}
+                {% endblocktrans %}
+            </p>
+        {% else %}
+            <h1 class="h4"><strong>{% trans "page not found" context "titleblock" %}</strong></h1>
+            <p style="font-size: 16px">
+                {% blocktrans trimmed %}
+                    the page you requested was not found.
+                    {{ navigation_message }}
+                {% endblocktrans %}
+            </p>
+        {% endif %}
+    {% endautoescape %}
+{% endblock %}

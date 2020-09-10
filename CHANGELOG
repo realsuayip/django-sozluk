@@ -1,3 +1,15 @@
+[0.12.5-alpha](2020.09.10)(compatible)
+--Additions--
+1) Add custom templates for error pages
+(500 server error and 404 not found).
+Notice: Only available with DEBUG=False.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.12.4-alpha](2020.09.10)(compatible)
 --Additions--
 1) Add some meta tags to improve seo.
