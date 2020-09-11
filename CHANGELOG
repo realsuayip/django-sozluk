@@ -1,3 +1,15 @@
+[0.12.7-alpha](2020.09.12)(compatible)
+--Additions--
+1) None
+
+-- Changes --
+1) Removed debugging fields from admin.
+Improved admin pages for end users and
+add some missing translation strings.
+
+--Deletions--
+None
+
 [0.12.6-alpha](2020.09.11)(compatible)
 --Additions--
 1) Add redirect by reference feature.

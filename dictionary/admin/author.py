@@ -1,7 +1,10 @@
 from django.contrib import admin
+from django.contrib.admin import DateFieldListFilter, SimpleListFilter
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Q
 from django.urls import path
-from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from django.utils.translation import gettext, gettext_lazy as _
 
 from ..models import Author
 from ..utils.admin import intermediate
@@ -9,38 +12,70 @@ from .views.author import SuspendUser, UnsuspendUser
 from .views.novices import NoviceList, NoviceLookup
 
 
+class SuspensionFilter(SimpleListFilter):
+    title = _("Suspension status")
+    parameter_name = "suspended"
+
+    def lookups(self, request, model_admin):
+        return [("yes", gettext("Suspended")), ("no", gettext("Not suspended"))]
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(suspended_until__gt=timezone.now())
+        if self.value() == "no":
+            return queryset.filter(Q(suspended_until__lt=timezone.now()) | Q(suspended_until__isnull=True))
+
+        return None
+
+
 @admin.register(Author)
 class AuthorAdmin(UserAdmin):
-    model = Author
-    raw_id_fields = ["following", "blocked", "pinned_entry"]
-    search_fields = ["username"]
+    search_fields = ("username",)
+    autocomplete_fields = ("badges",)
     list_display = ("username", "email", "is_active", "is_novice", "date_joined")
+    ordering = ("-date_joined",)
 
-    fieldsets = UserAdmin.fieldsets + (
-        (
-            "DEBUG FIELDS",
-            {
-                "fields": (
-                    "is_novice",
-                    "application_status",
-                    "application_date",
-                    "queue_priority",
-                    "last_activity",
-                    "suspended_until",
-                    "birth_date",
-                    "gender",
-                    "following",
-                    "blocked",
-                    "pinned_entry",
-                    "following_categories",
-                    "is_frozen",
-                    "is_private",
-                    "karma",
-                    "badges",
-                )
-            },
-        ),
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+        SuspensionFilter,
+        "is_frozen",
+        "is_private",
+        "gender",
+        "badges",
+        "is_novice",
+        "application_status",
+        ("date_joined", DateFieldListFilter),
     )
+
+    fieldsets = (
+        (None, {"fields": ("username", "karma", "badges")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "gender", "birth_date")},),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (_("Accessibility details"), {"fields": ("is_frozen", "is_private", "suspended_until")}),
+        (
+            _("Novice status"),
+            {"fields": ("is_novice", "application_status", "application_date", "last_activity", "queue_priority")},
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+
+    readonly_fields = (
+        "email",
+        "gender",
+        "birth_date",
+        "application_date",
+        "last_activity",
+        "last_login",
+        "date_joined",
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return []
+        return self.readonly_fields
 
     add_fieldsets = ((None, {"fields": ("email",)}),) + UserAdmin.add_fieldsets
     actions = ("suspend_user", "unsuspend_user")

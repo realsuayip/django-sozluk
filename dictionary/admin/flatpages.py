@@ -13,3 +13,4 @@ class FlatPageAdmin(_FlatPageAdmin):
         (None, {"fields": ("url", "title", "content", "html_only", "weight", "sites")}),
         (_("Advanced options"), {"classes": ("collapse",), "fields": ("registration_required", "template_name")}),
     )
+    list_filter = ("sites", "registration_required", "html_only")

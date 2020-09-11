@@ -37,3 +37,4 @@ class AnnouncementAdmin(admin.ModelAdmin):
         ("date_created", DateFieldListFilter),
     )
     list_display = ("title", "date_created")
+    ordering = ("-date_created",)

@@ -118,16 +118,22 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ["username", "is_active"]
 
     # Novice application related fields
-    is_novice = models.BooleanField(default=True, verbose_name=_("novice"))
-    application_status = models.CharField(max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD)
-    application_date = models.DateTimeField(null=True, blank=True, default=None)
-    last_activity = models.DateTimeField(null=True, blank=True, default=None)
-    queue_priority = models.PositiveSmallIntegerField(default=0)
+    is_novice = models.BooleanField(default=True, verbose_name=_("Novice status"))
+    application_status = models.CharField(
+        max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD, verbose_name=_("Application status")
+    )
+    application_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Application date"))
+    last_activity = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Last activity as novice"))
+    queue_priority = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name=_("Queue priority"),
+        help_text=_("Novices with high priority are more likely to appear on the top of the novice list."),
+    )
 
     # Accessibility details
-    suspended_until = models.DateTimeField(null=True, blank=True, default=None)
-    is_frozen = models.BooleanField(default=False, verbose_name=_("Frozen"))
-    is_private = models.BooleanField(default=False, verbose_name=_("Anonymous"))
+    suspended_until = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Suspended until"))
+    is_frozen = models.BooleanField(default=False, verbose_name=_("Frozen status"))
+    is_private = models.BooleanField(default=False, verbose_name=_("Anonymous status"))
 
     # User-user relations
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
@@ -152,8 +158,8 @@ class Author(AbstractUser):
     following_topics = models.ManyToManyField("Topic", through="TopicFollowing", related_name="followers", blank=True)
 
     # Personal info
-    birth_date = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN)
+    birth_date = models.DateField(blank=True, null=True, verbose_name=_("Birth date"))
+    gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN, verbose_name=_("Gender"))
 
     # Preferences
     entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
@@ -164,8 +170,8 @@ class Author(AbstractUser):
     theme = models.CharField(choices=THEMES, default=LIGHT, max_length=10)
 
     # Other
-    karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2)
-    badges = models.ManyToManyField("Badge", blank=True)
+    karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2, verbose_name=_("Karma points"))
+    badges = models.ManyToManyField("Badge", blank=True, verbose_name=_("Badges"))
 
     announcement_read = models.DateTimeField(auto_now_add=True)
 
@@ -175,7 +181,7 @@ class Author(AbstractUser):
     in_novice_list = InNoviceList()
 
     def __str__(self):
-        return f"{self.username}:{self.id}"
+        return str(self.username)
 
     class Meta:
         permissions = (

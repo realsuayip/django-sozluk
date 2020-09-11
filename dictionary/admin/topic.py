@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import DateFieldListFilter
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
@@ -36,8 +37,9 @@ class TopicAdmin(admin.ModelAdmin):
     )
 
     list_display = ("title", "created_by", "is_censored", "is_banned", "date_created")
-    list_filter = ("category", "is_pinned", "is_censored", "is_banned", "is_ama")
+    list_filter = ("category", "is_pinned", "is_censored", "is_banned", "is_ama", ("date_created", DateFieldListFilter))
     search_fields = ("title",)
+    ordering = ("-date_created",)
     autocomplete_fields = ("category", "mirrors")
     actions = ("move_topic",)
 
