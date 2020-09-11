@@ -1,6 +1,7 @@
 import datetime
 import math
 import random
+import re
 import json
 
 from contextlib import suppress
@@ -26,7 +27,7 @@ from uuslug import slugify
 
 from ..forms.edit import EntryForm, StandaloneMessageForm
 from ..models import Author, Category, Comment, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
-from ..templatetags.filters import IMAGE_REGEX
+from ..templatetags.filters import IMAGE_REGEX, SEE_EXPR, RE_TOPIC_CHARSET
 from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
 from ..utils.decorators import cached_context
 from ..utils.managers import TopicListManager, entry_prefetch
@@ -520,6 +521,17 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             # Using these count data, find what page next entry is located on.
             first_entry = entries[0] if not self.entry else self.entry
 
+            # Redirect to reference?
+            if all((self.view_mode == "regular", queryset_size == 1, self.request.GET.get("nr") != "true")) and (
+                reference := re.fullmatch(fr"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content)
+            ):
+                title = reference.group(1)  # noqa
+                with suppress(Topic.DoesNotExist):
+                    topic = Topic.objects_published.get(title=title)
+                    # Reference needs to have at least 2 entries to hinder mirror references.
+                    if topic.entry_count > 1:
+                        return {"referrer": self.topic, "referent": topic}
+
             previous_entries_count, previous_entries_page = 0, 0
             subsequent_entries_count, subsequent_entries_page = 0, 0
             show_subsequent, show_previous = False, False
@@ -607,6 +619,19 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return self.request.user.entries_per_page if self.request.user.is_authenticated else ENTRIES_PER_PAGE_DEFAULT
 
     def render_to_response(self, context, **response_kwargs):
+        if (referent := context.get("referent")) is not None:
+            referrer = context["referrer"]
+            notifications.info(
+                self.request,
+                _(
+                    "you have been redirected by a reference,"
+                    " <a href='%(url)s'>click here</a> to return to the original topic."
+                )
+                % {"url": referrer.get_absolute_url() + "?nr=true"},
+                extra_tags="persistent",
+            )
+            return redirect(referent.get_absolute_url())
+
         # This redirect is done here because we initially want to get the queryset first to decide if redirect is needed
         return super().render_to_response(context, **response_kwargs) if not self.redirect else self._redirect_to_self()
 
