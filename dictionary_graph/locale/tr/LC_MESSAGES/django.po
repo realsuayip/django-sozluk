@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-29 16:59+0300\n"
-"PO-Revision-Date: 2020-08-29 17:14+0156\n"
+"POT-Creation-Date: 2020-09-12 00:27+0300\n"
+"PO-Revision-Date: 2020-09-12 00:28+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -80,21 +80,26 @@ msgstr "olmaz ki canım... hürrüpü"
 msgid "your entry has been saved as draft"
 msgstr "entry'niz kenara kaydedildi."
 
-#: .\messaging\action.py:68
+#: .\messaging\action.py:69
 msgid "can't you write down something more?"
 msgstr "çeşke bi şeyler yazsaydın"
 
-#: .\messaging\action.py:74
+#: .\messaging\action.py:75
 msgid "no such person though"
 msgstr "öyle biri yok"
 
-#: .\messaging\action.py:81
+#: .\messaging\action.py:82
 msgid "we couldn't send your message"
 msgstr "mesajınızı gönderemedik ne yazık ki"
 
-#: .\messaging\action.py:83
+#: .\messaging\action.py:84
 msgid "your message has been successfully sent"
 msgstr "mesajınız sağ salim gönderildi"
+
+#. Translators: Include an emoji
+#: .\messaging\action.py:106
+msgid "this message was deleted 🤷‍"
+msgstr "bu mesaj silinmiş 🤷‍"
 
 #: .\topic\action.py:29
 msgid "you no longer follow this topic"

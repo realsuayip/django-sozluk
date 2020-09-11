@@ -63,6 +63,6 @@ class Command(BaseDebugCommand):
                     % {"username": guser.username, "user_type": user_type, "email": guser.email}
                 )
             except IntegrityError:
-                self.stdout.write(_("Error: either there is a existing user with given username or e-mail is in use."))
+                self.stdout.write(_("Error: either there is an existing user with given username or e-mail is in use."))
         else:
             self.stdout.write(_("Command aborted."))
