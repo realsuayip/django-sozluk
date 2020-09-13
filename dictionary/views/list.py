@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import connection
-from django.db.models import Exists, Max, Min, OuterRef, Q
+from django.db.models import Exists, Max, Min, OuterRef, Prefetch, Q
 from django.http import HttpResponseBadRequest, Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -155,7 +155,11 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
     def get_queryset(self):
         query_term = i18n_lower(self.request.GET.get("search_term", "")).strip() or None
-        return Conversation.objects.list_for_user(self.request.user, query_term)
+        return (
+            Conversation.objects.list_for_user(self.request.user, query_term)
+            .select_related("target")
+            .prefetch_related(Prefetch("messages", queryset=Message.objects.select_related("recipient")))
+        )
 
 
 class ConversationArchiveList(ConversationList):
@@ -163,7 +167,7 @@ class ConversationArchiveList(ConversationList):
     template_name = "dictionary/conversation/inbox_archive.html"
 
     def get_queryset(self):
-        return ConversationArchive.objects.filter(holder=self.request.user)
+        return ConversationArchive.objects.filter(holder=self.request.user).select_related("holder")
 
 
 class ActivityList(LoginRequiredMixin, ListView):
@@ -184,6 +188,12 @@ class ActivityList(LoginRequiredMixin, ListView):
         notifications.info(self.request, _("the topics were mark read"))
         return redirect(self.request.path)
 
+    def dispatch(self, request, *args, **kwargs):
+        # Make sure that unread item data is always fresh for this page.
+        if request.user.is_authenticated:
+            self.request.user.invalidate_unread_topic_count()
+        return super().dispatch(request, *args, **kwargs)
+
 
 class CategoryList(ListView):
     model = Category
@@ -200,7 +210,7 @@ class CategoryList(ListView):
                     )
                 )
             )
-        return queryset
+        return queryset.defer("is_pseudo", "is_default", "weight")
 
 
 class TopicList(UserPassesTestMixin, TemplateView):
@@ -455,6 +465,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if queryset is not None and queryset.exists():
             following.read_at = timezone.now()
             following.save()
+            self.request.user.invalidate_unread_topic_count()
             return queryset
 
         notifications.info(self.request, _("honestly, there was nothing new. so i listed them all."))

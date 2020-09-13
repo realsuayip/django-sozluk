@@ -1,3 +1,21 @@
+[0.12.8-alpha](2020.09.13)(compatible)
+--Additions--
+1) Add utility function flush_all_sessions
+for session backends. Check docstring.
+
+-- Changes --
+1) Optimized some database queries.
+2) Following topic notification is
+now cached for 60 seconds.
+3) Add backend for cached sessions,
+also changed folder structure of
+backends.
+4) Fix unnecessary cache hit in
+TopicListHandler.
+
+--Deletions--
+None
+
 [0.12.7-alpha](2020.09.12)(compatible)
 --Additions--
 1) None

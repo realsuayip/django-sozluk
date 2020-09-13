@@ -9,6 +9,9 @@ class AnnouncementMixin:
     date_field = "date_created"
     paginate_by = 10
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("discussion")
+
 
 class AnnouncementIndex(AnnouncementMixin, ArchiveIndexView):
     template_name = "dictionary/announcements/index.html"
@@ -20,6 +23,7 @@ class AnnouncementIndex(AnnouncementMixin, ArchiveIndexView):
         if request.user.is_authenticated and request.user.unread_topic_count["announcements"] > 0:
             request.user.announcement_read = timezone.now()
             request.user.save()
+            self.request.user.invalidate_unread_topic_count()
             del request.user.unread_topic_count  # reset cached_property
 
         return super().dispatch(request, *args, **kwargs)

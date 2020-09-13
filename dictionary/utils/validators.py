@@ -1,5 +1,3 @@
-import re
-
 from django.core.validators import ValidationError, _lazy_re_compile
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _

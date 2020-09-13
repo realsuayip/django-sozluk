@@ -55,9 +55,13 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["recipient"] = self.object.target
-        context["can_send_message"] = self.request.user.can_send_message(self.object.target)
-        context["is_blocked"] = self.request.user.blocked.filter(pk=self.object.target.pk).exists()
+        recipient = self.object.target
+        is_blocked = self.request.user.blocked.filter(pk=recipient.pk).exists()  # causes 1 duplicate query
+        can_send_message = False if is_blocked else self.request.user.can_send_message(recipient)
+
+        context["recipient"] = recipient
+        context["can_send_message"] = can_send_message
+        context["is_blocked"] = is_blocked
         return context
 
 

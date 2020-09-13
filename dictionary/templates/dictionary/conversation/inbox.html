@@ -13,7 +13,7 @@
     {% if conversations %}
         <ul class="threads" data-mode="present">
             {% for chat in conversations %}
-                {% with lastmsg=chat.last_message %}
+                {% with lastmsg=chat.messages.latest %}
                     <li class="chat{% if lastmsg.recipient == user and not lastmsg.read_at %} unread{% endif %}" data-id="{{ chat.pk }}">
                         <a href="{{ chat.get_absolute_url }}">
                             <header class="d-flex justify-content-between">

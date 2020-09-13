@@ -10,4 +10,4 @@ from .reporting import GeneralReport
 from .topic import Topic, Wish
 
 
-from ..backends.session_backend import PairedSession  # isort:skip
+from ..backends.sessions.db import PairedSession  # isort:skip

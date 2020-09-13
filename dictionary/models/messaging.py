@@ -26,6 +26,7 @@ class Message(models.Model):
 
     class Meta:
         ordering = ["sent_at"]
+        get_latest_by = ("sent_at",)
 
     def __str__(self):
         return str(self.pk)

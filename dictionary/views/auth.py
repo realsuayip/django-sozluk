@@ -12,8 +12,9 @@ from django.utils.translation import gettext as _
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
+from ..backends.sessions.utils import flush_all_sessions
 from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
-from ..models import AccountTerminationQueue, Author, PairedSession, UserVerification
+from ..models import AccountTerminationQueue, Author, UserVerification
 from ..utils import get_theme_from_cookie, time_threshold
 from ..utils.email import send_email_confirmation
 from ..utils.mixins import PasswordConfirmMixin
@@ -185,6 +186,6 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
         termination_choice = form.cleaned_data.get("state")
         AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
         # Unlike logout(), this invalidates ALL sessions across devices.
-        PairedSession.objects.filter(user=self.request.user).delete()
+        flush_all_sessions(self.request.user)
         notifications.info(self.request, _("your request was taken. farewell."))
         return super().form_valid(form)

@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -20,6 +21,7 @@ from uuslug import uuslug
 
 from ..models.m2m import DownvotedEntries, UpvotedEntries
 from ..utils import parse_date_or_none, time_threshold
+from ..utils.decorators import cached_context
 from ..utils.settings import (
     AUTHOR_ENTRY_INTERVAL,
     DAILY_VOTE_LIMIT,
@@ -411,18 +413,33 @@ class Author(AbstractUser):
 
     @cached_property
     def unread_topic_count(self):
-        """Find counts for unread topics and announcements."""
-        unread_announcements = (
-            apps.get_model("dictionary.Announcement")
-            .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=self.announcement_read)
-            .count()
-        )
-        unread_topics = self.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
-        return {
-            "sum": unread_announcements + unread_topics,
-            "announcements": unread_announcements,
-            "topics": unread_topics,
-        }
+        """
+        Find counts for unread topics and announcements (displayed in header when apt).
+
+        This query seems to be too expensive to be called in every request. So it is called
+        every <timeout> seconds. In following topic list, the cache gets invalidated each
+        request, making that page fresh every time. Actions which might change this data
+        also invalidates this cache. e.g. reading an unread topic/announcement.
+        """
+
+        @cached_context(vary_on_user=True, timeout=60)
+        def _unread_topic_count(user=None):
+            unread_announcements = (
+                apps.get_model("dictionary.Announcement")
+                .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=user.announcement_read)
+                .count()
+            )
+            unread_topics = user.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
+            return {
+                "sum": unread_announcements + unread_topics,
+                "announcements": unread_announcements,
+                "topics": unread_topics,
+            }
+        return _unread_topic_count(user=self)
+
+    def invalidate_unread_topic_count(self):
+        """Invalidates cache of unread_topic_count, set by cached_context."""
+        return cache.delete(f"default_context___unread_topic_count_usr{self.pk}")
 
     @cached_property
     def novice_queue(self):

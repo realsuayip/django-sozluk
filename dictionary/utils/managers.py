@@ -570,6 +570,9 @@ class TopicListHandler:
             else:
                 self.cache_exists = True
 
+        if self.cache_exists:
+            self._cached_data = cached_data.get("data")
+
     def delete_cache(self, flush=False, delimiter=False):
         """
         Deletes cached data and initiates new data using _get_data.
@@ -593,10 +596,6 @@ class TopicListHandler:
 
             return True
         return False
-
-    @property
-    def _cached_data(self):
-        return cache.get(self.cache_key).get("data")
 
     @property
     def serialized(self):

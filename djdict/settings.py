@@ -132,7 +132,10 @@ LANGUAGE_CODE = "tr-tr"
 TIME_ZONE = "Europe/Istanbul"
 
 SESSION_COOKIE_AGE = 1209600
-SESSION_ENGINE = "dictionary.backends.session_backend"
+
+# WARNING: Use "dictionary.backends.sessions.cached_db" engine for improved
+# performance if you have the cache server (memcached etc.) set up and running.
+SESSION_ENGINE = "dictionary.backends.sessions.db"
 
 
 # In development environment, use Python's local mail server.
