@@ -163,6 +163,9 @@ class Topic(models.Model):
             return wishes.delete()
         return None
 
+    def wish_collection(self):
+        return self.wishes.select_related("author")
+
     @property
     def exists(self):
         return True

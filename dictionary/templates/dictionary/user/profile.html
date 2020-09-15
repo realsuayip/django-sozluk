@@ -67,6 +67,10 @@
                     <a class="badge-item" href="{% url 'topic-unicode-url' unicode_string=_("cursed") %}" title="{{ curse_time }}">{% trans "cursed" %}</a>
                 {% endif %}
 
+                {% if profile.entry_count >= 1000 %}
+                    <a class="badge-item" href="{% url "topic-unicode-url" unicode_string=_("zealous") %}" title="{% trans "has at least 1000 entries" %}">{% trans "zealous" %}</a>
+                {% endif %}
+
                 {% for badge in profile.badges.all %}
                     <a title="{{ badge.description }}" class="badge-item" {% if badge.url %} href="{{ badge.url }}" target="_blank" {% else %}href="{% url 'topic-unicode-url' unicode_string=badge.name %}"{% endif %}>{{ badge.name }}</a>
                 {% endfor %}
@@ -83,11 +87,11 @@
                 {% include "dictionary/includes/profile_entry_pinned.html" %}
             {% endwith %}
         {% else %}
-            {% if profile.entry_nice %}
-                {% with profile.entry_nice as entry %}
+            {% with profile.entry_nice as entry %}
+                {% if entry %}
                     {% include "dictionary/includes/profile_entry_pinned.html" %}
-                {% endwith %}
-            {% endif %}
+                {% endif %}
+            {% endwith %}
         {% endif %}
 
     </section>

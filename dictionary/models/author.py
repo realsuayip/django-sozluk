@@ -2,6 +2,7 @@ import math
 
 from contextlib import suppress
 from decimal import Decimal
+from functools import wraps
 
 from django.apps import apps
 from django.contrib.auth.models import AbstractUser, UserManager
@@ -41,6 +42,27 @@ from ..utils.settings import (
 from ..utils.validators import validate_username_partial
 from .category import Category
 from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
+
+
+def usercache(initial_func=None, *, timeout=86400):
+    """
+    Caches model method, uses model instance in cache key.
+    Basically a wrapper around cached_context.
+    """
+
+    def inner(method):
+        @wraps(method)
+        def wrapped(self, *args, **kwargs):
+            return cached_context(prefix="usercache_" + method.__name__, vary_on_user=True, timeout=timeout)(
+                lambda user=None: method(self, *args, **kwargs)
+            )(user=self)
+
+        return wrapped
+
+    if initial_func:
+        return inner(initial_func)
+
+    return inner
 
 
 class AuthorNickValidator(UnicodeUsernameValidator):
@@ -353,28 +375,39 @@ class Author(AbstractUser):
         """Eligible users will be able to influence other users' karma points by voting."""
         return not (self.is_novice or self.is_suspended or self.karma <= KARMA_BOUNDARY_LOWER)
 
-    @property
+    @cached_property
+    @usercache
     def entry_count(self):
         return self.entry_set(manager="objects_published").count()
 
-    @property
+    @cached_property
+    @usercache
     def entry_count_month(self):
         return self.get_entry_count_by_threshold(days=30)
 
-    @property
+    @cached_property
+    @usercache
     def entry_count_week(self):
         return self.get_entry_count_by_threshold(days=7)
 
-    @property
+    @cached_property
+    @usercache
     def entry_count_day(self):
         return self.get_entry_count_by_threshold(days=1)
 
-    @property
+    @cached_property
+    @usercache
     def last_entry_date(self):
         with suppress(ObjectDoesNotExist):
             return self.entry_set(manager="objects_published").latest("date_created").date_created
 
         return None
+
+    def invalidate_entry_counts(self):
+        names = ("entry_count", "entry_count_month", "entry_count_week", "entry_count_day", "last_entry_date")
+        for name in names:
+            key = f"usercache_{name}_context__<lambda>_usr{self.pk}"
+            cache.delete(key)
 
     @property
     def followers(self):
@@ -435,6 +468,7 @@ class Author(AbstractUser):
                 "announcements": unread_announcements,
                 "topics": unread_topics,
             }
+
         return _unread_topic_count(user=self)
 
     def invalidate_unread_topic_count(self):

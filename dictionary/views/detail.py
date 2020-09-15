@@ -2,10 +2,12 @@ from contextlib import suppress
 
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
@@ -72,6 +74,21 @@ class ChatArchive(LoginRequiredMixin, DetailView):
         return get_object_or_404(ConversationArchive, holder=self.request.user, slug=self.kwargs["slug"])
 
 
+class LatestEntriesPaginator(Paginator):
+    """
+    Count of entries may have already been calculated. This
+    means 1 less count(*) query, which is really slow.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.cached_count = kwargs.pop("cached_count")
+        super().__init__(*args, **kwargs)
+
+    @cached_property
+    def count(self):
+        return self.cached_count
+
+
 class UserProfile(IntegratedFormMixin, ListView):
     model = Entry
     paginate_by = ENTRIES_PER_PAGE_PROFILE
@@ -123,6 +140,13 @@ class UserProfile(IntegratedFormMixin, ListView):
                 kwargs.update({"data": {"body": memento.body}})
         return kwargs
 
+    def get_paginator(self, *args, **kwargs):
+        if self.tab == "latest":
+            kwargs["cached_count"] = self.profile.entry_count
+            return LatestEntriesPaginator(*args, **kwargs)
+
+        return super().get_paginator(*args, **kwargs)
+
     def get_queryset(self):
         handler = UserStatsQueryHandler(self.profile, requester=self.request.user, order=True)
         qs = getattr(handler, self.tab)()
@@ -147,15 +171,15 @@ class UserProfile(IntegratedFormMixin, ListView):
         self.profile = get_object_or_404(Author, slug=self.kwargs.get("slug"), is_active=True)
 
         # Check accessibility
-        if (
-            self.profile.is_frozen
-            or self.profile.is_private
-            or (
+        if self.profile != self.request.user and any(
+            (
+                self.profile.is_frozen,
+                self.profile.is_private,
                 self.request.user.is_authenticated
                 and (
                     self.profile.blocked.filter(pk=self.request.user.pk).exists()
                     or self.request.user.blocked.filter(pk=self.profile.pk).exists()
-                )
+                ),
             )
         ):
             raise Http404

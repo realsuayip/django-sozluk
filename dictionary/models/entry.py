@@ -34,7 +34,12 @@ class Entry(models.Model):
         verbose_name_plural = _("entries")
 
     def save(self, *args, **kwargs):
+        created = self.pk is None
         self.content = smart_lower(self.content)
+
+        if created:
+            self.author.invalidate_entry_counts()
+
         super().save(*args, **kwargs)
 
         # Check if the user has written 10 entries, If so make them available for novice lookup
@@ -69,6 +74,7 @@ class Entry(models.Model):
             self.save()
             return
 
+        self.author.invalidate_entry_counts()
         super().delete(*args, **kwargs)
 
         if self.author.is_novice and self.author.application_status == "PN" and self.author.entry_count < 10:

@@ -27,7 +27,6 @@ urlpatterns_user = [
     path("author/<slug:slug>/<slug:tab>/", UserProfile.as_view(), name="user-profile-stats"),
     path("myimages/", ImageList.as_view(), name="image-list"),
     path("upload/", ImageUpload.as_view(), name="image-upload"),
-    path("img/<slug:slug>", ImageDetailDevelopment.as_view(), name="image-detail"),
 ]
 
 urlpatterns_user += [path("img/<slug:slug>", ImageDetailView.as_view(), name="image-detail")]

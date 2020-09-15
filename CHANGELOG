@@ -1,3 +1,19 @@
+[0.12.9-alpha](2020.09.16)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) In profile page, entry count stats are now
+cached. Latest entries (paginator) also makes
+use of this. This should improve performance
+dramatically.
+2) Add badge "zealous" for authors with entry
+count >= 1000.
+3) Improved query for wish listing in TopicEntryList.
+
+--Deletions--
+None
+
 [0.12.8-alpha](2020.09.13)(compatible)
 --Additions--
 1) Add utility function flush_all_sessions
