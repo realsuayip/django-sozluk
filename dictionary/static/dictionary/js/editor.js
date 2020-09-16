@@ -53,7 +53,7 @@ function replaceText (textarea, type) {
     } else {
         if (type === "link") {
             const linkText = prompt(gettext("which address to link?"), "http://")
-            if (linkText !== "http://") {
+            if (linkText && linkText !== "http://") {
                 textarea.value = allText.substring(0, start) + `[${linkText} ${sel}]` + allText.substring(finish, allText.length)
             }
         } else {

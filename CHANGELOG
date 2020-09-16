@@ -1,3 +1,21 @@
+[0.12.10-alpha](2020.09.17)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Paginator (template) selector values are
+now evaluated lazily, this should improve
+performance for large topics.
+2) Fixed autocomplete library highlighting
+behaviour.
+3) Fixed cancel button behaviour for link
+tag when used with text selection.
+4) Add aria-expanded property to image button
+for improved accessibility.
+
+--Deletions--
+None
+
 [0.12.9-alpha](2020.09.16)(compatible)
 --Additions--
 None

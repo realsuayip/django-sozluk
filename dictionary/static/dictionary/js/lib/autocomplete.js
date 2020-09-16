@@ -2,8 +2,27 @@
 
 import { many, one, gqlc, notSafe, lang, template, createPopper } from "../utils"
 
-function replaceAll (str, pattern, replacement) {
-    return str.replace(new RegExp(pattern.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&"), "g"), replacement)
+function escapeRegExChars (value) {
+    return value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&")
+}
+
+function formatResult (suggestion, value) {
+    /**
+     *  formatResult function source:
+     *  Ajax Autocomplete for jQuery, version 1.4.11
+     *  (c) 2017 Tomas Kirda
+     *  https://github.com/devbridge/jQuery-Autocomplete
+     *  MIT
+     */
+
+    if (!value) {
+        return notSafe(suggestion)
+    }
+
+    const pattern = "(" + escapeRegExChars(value) + ")"
+
+    return notSafe(suggestion.replace(new RegExp(pattern, "gi"), "<mark>$1</mark>"))
+        .replace(/&lt;(\/?mark)&gt;/g, "<$1>")
 }
 
 class AutoComplete {
@@ -122,7 +141,7 @@ class AutoComplete {
 
             // Notice: All suggestions are assumed to be in lowercase.
             const items = suggestions.map(s => ({
-                name: replaceAll(notSafe(s.name), name, `<mark>${notSafe(name)}</mark>`),
+                name: formatResult(s.name, name),
                 value: notSafe(s.value)
             }))
 

@@ -83,7 +83,7 @@ def formatted(raw_entry):
                 return f'({SEE}: <a href="{path}">{guess}</a>)'
 
             if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
-                return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}">{IMAGE}</a>'
+                return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'  # noqa
 
         path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
         url = domain + path
@@ -101,7 +101,7 @@ def formatted(raw_entry):
         # Swh
         (
             fr"`:{RE_TOPIC_CHARSET}`",
-            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',
+            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',  # noqa
         ),
         # Reference with no indicator
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
@@ -112,7 +112,7 @@ def formatted(raw_entry):
             fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Image
-        (IMAGE_REGEX, fr'<a role="button" tabindex="0" data-img="/img/\1">{IMAGE}</a>'),
+        (IMAGE_REGEX, fr'<a role="button" tabindex="0" data-img="/img/\1" aria-expanded="false">{IMAGE}</a>'),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
         # Find links with label, then encapsulate them in anchor tag, which adds " character before the
         # link. Then we find all other links which don't have " at the start.

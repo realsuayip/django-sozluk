@@ -1,8 +1,25 @@
-import { Handle, Handler, updateQueryStringParameter } from "./utils"
+import { Handle, Handler, template, updateQueryStringParameter } from "./utils"
 
 Handle("body", "change", event => {
     if (event.target.matches("select.page-selector")) {
         window.location = updateQueryStringParameter(location.href, "page", event.target.value)
+    }
+})
+
+Handle("body", "focusin", event => {
+    // Load pages for paginator select
+    const select = event.target
+    if (select.matches("select.page-selector") && !select.hasAttribute("data-loaded")) {
+        const max = parseInt(select.getAttribute("data-max"), 10)
+        const current = parseInt(select.value, 10)
+        select.firstElementChild.remove()
+
+        for (let i = 1; i <= max; i++) {
+            const option = template(`<option ${i === current ? "selected" : ""}>${i}</option>`)
+            select.append(option)
+        }
+
+        select.setAttribute("data-loaded", "")
     }
 })
 

@@ -1,7 +1,6 @@
-{% load i18n %}
+{% load i18n functions %}
 {% with paginator as page_obj %}
     {% if page_obj.paginator.num_pages > 1 %}
-        {% load functions %}
         {% if hr == "yes" %}<hr>{% endif %}
 
         <div class="{{ classlist|default:"lf_pagination" }}{% if stretch == "yes" %} stretch{% endif %}{{ index|yesno:" index," }}">
@@ -9,14 +8,8 @@
                 <a class="shadow-focus mr-1" title="{% trans "previous page" %}" href="?{% url_replace request 'page' page_obj.previous_page_number %}">«</a>
             {% endif %}
 
-            <select class="page-selector shadow-focus" aria-label="{% trans "Page selector" %}">
-                {% for page in page_obj.paginator.page_range %}
-                    {% if page == page_obj.number %}
-                        <option selected>{{ page }}</option>
-                    {% else %}
-                        <option>{{ page }}</option>
-                    {% endif %}
-                {% endfor %}
+            <select class="page-selector shadow-focus" aria-label="{% trans "Page selector" %}" data-max="{{ page_obj.paginator.num_pages }}">
+                <option selected>{{ page_obj.number}}</option>
             </select>
 
             <span class="mx-2" style="line-height: 25px">&sol;</span>
