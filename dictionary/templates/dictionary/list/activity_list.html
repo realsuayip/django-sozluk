@@ -6,23 +6,24 @@
     <div class="left-frame-in">
         <h1 class="h4 description"><strong>{% trans "activity" context "titleblock" %}</strong></h1>
 
-        <ul class="list-group topic-list">
-            <li class="list-group-item{% if user.unread_topic_count.announcements > 0 %} active{% endif %}">
-                <a href="{% url 'announcements-index' %}">
-                    <div class="d-flex align-items-center">
-                        <svg class="mr-2" fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                            <use href="#pin"></use>
-                        </svg>
-                        <span>{% trans "site announcements" %}</span>
-                    </div>
-                    {% if user.unread_topic_count.announcements > 0 %}
-                        <small class="total_entries">{{ user.unread_topic_count.announcements }}</small>
-                    {% endif %}
-                </a>
-            </li>
-        </ul>
-
-        <hr class="mt-0">
+        {% if user.allow_site_announcements %}
+            <ul class="list-group topic-list">
+                <li class="list-group-item{% if user.unread_topic_count.announcements > 0 %} active{% endif %}">
+                    <a href="{% url 'announcements-index' %}">
+                        <div class="d-flex align-items-center">
+                            <svg class="mr-2" fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#pin"></use>
+                            </svg>
+                            <span>{% trans "site announcements" %}</span>
+                        </div>
+                        {% if user.unread_topic_count.announcements > 0 %}
+                            <small class="total_entries">{{ user.unread_topic_count.announcements }}</small>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+            <hr class="mt-0">
+        {% endif %}
 
         {% if topics.exists %}
             <small class="mb-2 d-flex justify-content-between align-items-center fs-90">

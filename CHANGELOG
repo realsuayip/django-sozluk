@@ -1,3 +1,15 @@
+[0.13.0-alpha](2020.09.18)(incompatible)
+--Additions--
+1) Added option for users to enable/disable
+site announcements in activity. **incompatible**
+run makemigrations+migrate for dictionary app.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.12.11-alpha](2020.09.17)(compatible)
 --Additions--
 None

@@ -176,6 +176,7 @@ class Author(AbstractUser):
     message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
     pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
     allow_receipts = models.BooleanField(default=True)
+    allow_site_announcements = models.BooleanField(default=True)
     theme = models.CharField(choices=THEMES, default=LIGHT, max_length=10)
 
     # Other
@@ -443,9 +444,15 @@ class Author(AbstractUser):
         @cached_context(vary_on_user=True, timeout=60)
         def _unread_topic_count(user=None):
             unread_announcements = (
-                apps.get_model("dictionary.Announcement")
-                .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=user.announcement_read)
-                .count()
+                (
+                    apps.get_model("dictionary.Announcement")
+                    .objects.filter(
+                        notify=True, date_created__lte=timezone.now(), date_created__gte=user.announcement_read
+                    )
+                    .count()
+                )
+                if self.allow_site_announcements
+                else 0
             )
             unread_topics = user.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
             return {
