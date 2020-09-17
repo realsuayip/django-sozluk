@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 
-from ..models import Image
+from dictionary.models import Image
 
 
 @admin.register(Image)

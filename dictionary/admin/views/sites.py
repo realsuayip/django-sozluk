@@ -6,7 +6,7 @@ from django.shortcuts import redirect, reverse
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
-from ...utils.admin import log_admin
+from dictionary.utils.admin import log_admin
 
 
 class ClearCache(PermissionRequiredMixin, TemplateView):

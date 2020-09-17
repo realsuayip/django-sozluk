@@ -7,7 +7,7 @@ from graphene import Mutation, String
 
 from dictionary.models import Author
 
-from ..utils import login_required
+from dictionary_graph.utils import login_required
 
 
 def useraction(mutator):

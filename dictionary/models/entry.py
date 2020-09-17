@@ -6,10 +6,10 @@ from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
-from ..models.messaging import Message
-from ..utils import get_generic_superuser, get_generic_privateuser, smart_lower
-from ..utils.validators import validate_user_text
-from .managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
+from dictionary.models.managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
+from dictionary.models.messaging import Message
+from dictionary.utils import get_generic_privateuser, get_generic_superuser, smart_lower
+from dictionary.utils.validators import validate_user_text
 
 
 class Entry(models.Model):

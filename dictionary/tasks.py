@@ -5,9 +5,9 @@ from django.db.models import Count, Q
 
 from djdict import celery_app
 
-from .models import AccountTerminationQueue, Author, GeneralReport, Image, UserVerification
-from .utils import time_threshold
-from .utils.settings import SUGGESTIONS_ENTRY_REQUIREMENT
+from dictionary.conf import settings
+from dictionary.models import AccountTerminationQueue, Author, GeneralReport, Image, UserVerification
+from dictionary.utils import time_threshold
 
 
 @celery_app.on_after_finalize.connect
@@ -55,7 +55,7 @@ def grant_perm_suggestion():
     authors = (
         Author.objects_accessible.exclude(Q(user_permissions__in=[perm]) | Q(is_novice=True))
         .annotate(count=Count("entry", filter=Q(entry__is_draft=False)))
-        .filter(count__gte=SUGGESTIONS_ENTRY_REQUIREMENT)
+        .filter(count__gte=settings.SUGGESTIONS_ENTRY_REQUIREMENT)
     )
 
     for author in authors:

@@ -9,7 +9,7 @@ from dictionary.models import Topic, Wish
 from dictionary.templatetags.filters import formatted
 from dictionary.utils import smart_lower
 
-from ..utils import login_required
+from dictionary_graph.utils import login_required
 
 
 class FollowTopic(Mutation):
@@ -55,7 +55,7 @@ class WishTopic(Mutation):
         try:
             wish.full_clean()
         except ValidationError as error:
-            raise ValueError(", ".join(error.messages))
+            raise ValueError(", ".join(error.messages)) from error
 
         if not topic.exists:
             topic = Topic.objects.create_topic(title=title)

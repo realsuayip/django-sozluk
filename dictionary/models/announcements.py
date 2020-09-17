@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from uuslug import uuslug
 
-from ..templatetags.filters import entrydate
+from dictionary.templatetags.filters import entrydate
 
 
 class Announcement(models.Model):

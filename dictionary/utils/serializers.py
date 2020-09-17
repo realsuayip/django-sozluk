@@ -4,17 +4,9 @@ from django.core.paginator import Paginator
 from django.core.serializers.json import Serializer
 from django.utils.functional import cached_property
 
-from ..models import Category
-from .decorators import cached_context
-from .settings import (
-    EXCLUDABLE_CATEGORIES,
-    NON_DB_CATEGORIES,
-    NON_DB_CATEGORIES_META,
-    TABBED_CATEGORIES,
-    TOPICS_PER_PAGE_DEFAULT,
-    YEAR_RANGE,
-)
-
+from dictionary.conf import settings
+from dictionary.models import Category
+from dictionary.utils.decorators import cached_context
 
 JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)
 
@@ -110,7 +102,7 @@ class LeftFrame(PlainSerializer):
 
     @cached_property
     def year_range(self):
-        return YEAR_RANGE if self.slug == "today-in-history" else None
+        return settings.YEAR_RANGE if self.slug == "today-in-history" else None
 
     @cached_property
     def year(self):
@@ -121,8 +113,8 @@ class LeftFrame(PlainSerializer):
         if overridden := self.extra.get("safename"):
             return overridden
 
-        if self.slug in NON_DB_CATEGORIES:
-            return NON_DB_CATEGORIES_META[self.slug][0]
+        if self.slug in settings.NON_DB_CATEGORIES:
+            return settings.NON_DB_CATEGORIES_META[self.slug][0]
 
         with suppress(Category.DoesNotExist):
             return Category.objects.get(slug=self.slug).name
@@ -159,11 +151,12 @@ class LeftFrame(PlainSerializer):
 
         key = (
             (
-                param_tab
-                if self.slug in TABBED_CATEGORIES and (param_tab := f"{self.slug}_{self._manager.tab}") in pairs
+                param_tab  # noqa
+                if self.slug in settings.TABBED_CATEGORIES
+                and (param_tab := f"{self.slug}_{self._manager.tab}") in pairs
                 else self.slug
             )
-            if self.slug in NON_DB_CATEGORIES
+            if self.slug in settings.NON_DB_CATEGORIES
             else "generic"
         )
 
@@ -173,7 +166,7 @@ class LeftFrame(PlainSerializer):
     def page(self):
         """Get current page_obj via Paginator and serialize it using PageSerializer"""
         user = self._manager.user
-        paginate_by = user.topics_per_page if user.is_authenticated else TOPICS_PER_PAGE_DEFAULT
+        paginate_by = user.topics_per_page if user.is_authenticated else settings.TOPICS_PER_PAGE_DEFAULT
         paginator = Paginator(self._manager.serialized, paginate_by)
         return PageSerializer(paginator.get_page(self._page)).get_serialized()
 
@@ -184,13 +177,13 @@ class LeftFrame(PlainSerializer):
 
         tab = self._manager.tab
         if tab is not None:
-            available = NON_DB_CATEGORIES_META.get(self.slug)[2][0]
+            available = settings.NON_DB_CATEGORIES_META.get(self.slug)[2][0]
             return {"current": tab, "available": available}
         return None
 
     @cached_context
     def _get_available_exclusions(self):
-        return list(Category.objects_all.filter(slug__in=EXCLUDABLE_CATEGORIES))
+        return list(Category.objects_all.filter(slug__in=settings.EXCLUDABLE_CATEGORIES))
 
     @cached_property
     def exclusions(self):

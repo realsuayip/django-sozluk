@@ -1,8 +1,8 @@
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase
 
-from ..models import Author, Entry, Conversation, Message, Topic
-from ..utils.settings import GENERIC_SUPERUSER_USERNAME
+from dictionary.conf import settings
+from dictionary.models import Author, Entry, Conversation, Message, Topic
 
 
 class EntryModelManagersTests(TestCase):
@@ -50,7 +50,9 @@ class EntryModelManagersTests(TestCase):
 class ConversationModelManagersTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.generic_superuser = Author.objects.create(username=GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True)
+        cls.generic_superuser = Author.objects.create(
+            username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
+        )
         cls.author_1 = Author.objects.create(username="a1", email="1", is_active=True)
         cls.author_2 = Author.objects.create(username="a2", email="2", is_active=True)
         cls.author_3 = Author.objects.create(username="a3", email="3", is_active=True)

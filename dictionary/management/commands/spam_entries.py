@@ -2,9 +2,8 @@ import random
 
 from django.utils import timezone
 
-from ...models import Author, Entry, Topic
-from . import BaseDebugCommand
-
+from dictionary.management.commands import BaseDebugCommand
+from dictionary.models import Author, Entry, Topic
 
 # spam random entries, by random users to (random) topics
 

@@ -2,10 +2,9 @@ from django.core.validators import validate_email
 from django.db.utils import IntegrityError
 from django.utils.translation import gettext as _
 
-from ...models import Author
-from ...utils.settings import GENERIC_PRIVATEUSER_USERNAME, GENERIC_SUPERUSER_USERNAME
-from . import BaseDebugCommand
-
+from dictionary.conf import settings
+from dictionary.management.commands import BaseDebugCommand
+from dictionary.models import Author
 
 # Creates generic users.
 
@@ -31,7 +30,7 @@ class Command(BaseDebugCommand):
             raise ValueError(f"({_('Invalid user type, available types:')} {available_types}.")
 
         is_private = user_type == "private"
-        username = GENERIC_PRIVATEUSER_USERNAME if is_private else GENERIC_SUPERUSER_USERNAME
+        username = settings.GENERIC_PRIVATEUSER_USERNAME if is_private else settings.GENERIC_SUPERUSER_USERNAME
 
         confirmation = input(
             _(

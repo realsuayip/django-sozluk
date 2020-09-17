@@ -9,7 +9,7 @@ from dictionary.models import Entry, Topic
 from dictionary.templatetags.filters import formatted
 from dictionary.utils.validators import validate_user_text
 
-from ..utils import login_required
+from dictionary_graph.utils import login_required
 
 
 class DraftEdit(Mutation):

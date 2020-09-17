@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.views.generic.dates import ArchiveIndexView, DateDetailView, MonthArchiveView
 
-from ..models import Announcement
+from dictionary.models import Announcement
 
 
 class AnnouncementMixin:

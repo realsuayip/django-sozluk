@@ -1,10 +1,10 @@
-from django.core.validators import ValidationError, _lazy_re_compile
+from django.core.validators import ValidationError, _lazy_re_compile  # noqa
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
 from uuslug import slugify
 
-from .settings import NON_DB_CATEGORIES
+from dictionary.conf import settings
 
 
 user_text_re = _lazy_re_compile(r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$")
@@ -36,13 +36,13 @@ def validate_user_text(value, exctype=ValidationError):
 
 
 def validate_category_name(value):
-    if slugify(value) in NON_DB_CATEGORIES:
+    if slugify(value) in settings.NON_DB_CATEGORIES:
         message = _(
             "The channel couldn't be created as the name of this channel"
             " clashes with a reserved category lister. The complete list"
             " of forbidden names follows:"
         )
-        raise ValidationError(mark_safe(f"<strong>{message}</strong><br>{'<br>'.join(NON_DB_CATEGORIES)}"))
+        raise ValidationError(mark_safe(f"<strong>{message}</strong><br>{'<br>'.join(settings.NON_DB_CATEGORIES)}"))
 
 
 def validate_username_partial(value):

@@ -3,7 +3,7 @@ from functools import wraps
 from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext as _
 
-from dictionary.utils.settings import VOTE_RATES
+from dictionary.conf import settings
 
 
 def login_required(func):
@@ -62,11 +62,11 @@ class AnonymousUserStorage:
 
     @property
     def upvoted_entries(self):
-        return VoteStorage(self.request, name="upvoted_entries", rate=VOTE_RATES["anonymous"])
+        return VoteStorage(self.request, name="upvoted_entries", rate=settings.VOTE_RATES["anonymous"])
 
     @property
     def downvoted_entries(self):
-        return VoteStorage(self.request, name="downvoted_entries", rate=VOTE_RATES["anonymous"] * -1)
+        return VoteStorage(self.request, name="downvoted_entries", rate=settings.VOTE_RATES["anonymous"] * -1)
 
     @property
     def is_karma_eligible(self):

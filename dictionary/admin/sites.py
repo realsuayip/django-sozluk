@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path
 
-from .views.sites import ClearCache
+from dictionary.admin.views.sites import ClearCache
 
 
 class SiteAdmin(admin.ModelAdmin):

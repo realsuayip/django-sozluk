@@ -3,7 +3,7 @@ from graphene import Mutation, String
 
 from dictionary.models import Image
 
-from .utils import login_required
+from dictionary_graph.utils import login_required
 
 
 class DeleteImage(Mutation):

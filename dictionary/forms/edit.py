@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.forms.widgets import SelectDateWidget
 from django.utils.translation import gettext, gettext_lazy as _
 
-from ..models import Author, Entry, Memento, Message
+from dictionary.models import Author, Entry, Memento, Message
 
 
 class PreferencesForm(UserChangeForm):

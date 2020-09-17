@@ -7,10 +7,10 @@ from django.utils.translation import gettext as _
 
 from graphene import ID, Int, Mutation, String
 
+from dictionary.conf import settings
 from dictionary.models import Entry, Comment
-from dictionary.utils.settings import DISABLE_ANONYMOUS_VOTING, KARMA_RATES
 
-from ..utils import AnonymousUserStorage, login_required
+from dictionary_graph.utils import AnonymousUserStorage, login_required
 
 # pylint: disable=too-many-arguments
 
@@ -104,7 +104,7 @@ def voteaction(mutator):
             raise PermissionDenied(_("we couldn't handle your request. try again later."))
 
         if not sender.is_authenticated:
-            if DISABLE_ANONYMOUS_VOTING:
+            if settings.DISABLE_ANONYMOUS_VOTING:
                 raise PermissionDenied(_("we couldn't handle your request. try again later."))
 
             sender = AnonymousUserStorage(info.context)
@@ -115,9 +115,9 @@ def voteaction(mutator):
 
         constants = (
             F("karma"),
-            KARMA_RATES["cost"],
-            KARMA_RATES["downvote"],
-            KARMA_RATES["upvote"],
+            settings.KARMA_RATES["cost"],
+            settings.KARMA_RATES["downvote"],
+            settings.KARMA_RATES["upvote"],
         )
 
         return mutator(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants, exceeded, reason)

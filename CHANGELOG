@@ -1,3 +1,17 @@
+[0.12.11-alpha](2020.09.17)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Removed dictionary.utils.settings module
+and moved settings to to dictionary.apps for
+improved code readability.
+2) Converted relative imports to absolute
+import for improved code readability.
+
+--Deletions--
+None
+
 [0.12.10-alpha](2020.09.17)(compatible)
 --Additions--
 None

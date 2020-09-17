@@ -8,10 +8,10 @@ from django.utils.functional import cached_property
 
 from uuslug import slugify
 
-from ..utils import smart_lower
-from ..utils.serializers import ArchiveSerializer
-from ..utils.validators import validate_user_text
-from .managers.messaging import ConversationManager, MessageManager
+from dictionary.models.managers.messaging import ConversationManager, MessageManager
+from dictionary.utils import smart_lower
+from dictionary.utils.serializers import ArchiveSerializer
+from dictionary.utils.validators import validate_user_text
 
 
 class Message(models.Model):

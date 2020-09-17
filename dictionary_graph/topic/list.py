@@ -6,7 +6,7 @@ from dictionary.templatetags.filters import humanize_count
 from dictionary.utils.managers import TopicListManager
 from dictionary.utils.serializers import LeftFrame
 
-from ..types import CategoryType
+from dictionary_graph.types import CategoryType
 
 
 class Topic(ObjectType):

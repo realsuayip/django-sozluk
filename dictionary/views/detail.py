@@ -11,12 +11,12 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
-from ..forms.edit import MementoForm, SendMessageForm
-from ..models import Author, Conversation, ConversationArchive, Entry, Memento, Message
-from ..utils.decorators import cached_context
-from ..utils.managers import UserStatsQueryHandler, entry_prefetch
-from ..utils.mixins import IntegratedFormMixin
-from ..utils.settings import ENTRIES_PER_PAGE_PROFILE
+from dictionary.conf import settings
+from dictionary.forms.edit import MementoForm, SendMessageForm
+from dictionary.models import Author, Conversation, ConversationArchive, Entry, Memento, Message
+from dictionary.utils.decorators import cached_context
+from dictionary.utils.managers import UserStatsQueryHandler, entry_prefetch
+from dictionary.utils.mixins import IntegratedFormMixin
 
 
 class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
@@ -91,7 +91,7 @@ class LatestEntriesPaginator(Paginator):
 
 class UserProfile(IntegratedFormMixin, ListView):
     model = Entry
-    paginate_by = ENTRIES_PER_PAGE_PROFILE
+    paginate_by = settings.ENTRIES_PER_PAGE_PROFILE
     form_class = MementoForm
     template_name = "dictionary/user/profile.html"
 

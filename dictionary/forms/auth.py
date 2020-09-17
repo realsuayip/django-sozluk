@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.forms.widgets import SelectDateWidget
 from django.utils.translation import gettext, gettext_lazy as _
 
-from ..models import Author, AccountTerminationQueue
+from dictionary.models import Author, AccountTerminationQueue
 
 
 class LoginForm(AuthenticationForm):
@@ -49,8 +49,8 @@ class ResendEmailForm(forms.Form):
                 author = Author.objects.get(email=self.cleaned_data.get("email"))
                 if author.is_active:
                     raise forms.ValidationError(gettext("this e-mail has already been confirmed."))
-            except Author.DoesNotExist:
-                raise forms.ValidationError(gettext("no such e-mail, never heard of it."))
+            except Author.DoesNotExist as exc:
+                raise forms.ValidationError(gettext("no such e-mail, never heard of it.")) from exc
 
         super().clean()
 

@@ -6,13 +6,13 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from uuslug import uuslug
 
-from ..utils import get_generic_superuser, i18n_lower
-from ..utils.validators import validate_topic_title, validate_user_text
-from .author import Author
-from .category import Category
-from .m2m import TopicFollowing
-from .managers.topic import TopicManager, TopicManagerPublished
-from .messaging import Message
+from dictionary.models.author import Author
+from dictionary.models.category import Category
+from dictionary.models.m2m import TopicFollowing
+from dictionary.models.managers.topic import TopicManager, TopicManagerPublished
+from dictionary.models.messaging import Message
+from dictionary.utils import get_generic_superuser, i18n_lower
+from dictionary.utils.validators import validate_topic_title, validate_user_text
 
 
 class Topic(models.Model):

@@ -8,11 +8,11 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.functional import LazyObject, cached_property
 
-from ..models import Category
-from .decorators import cached_context
-from .managers import TopicListManager
-from .serializers import LeftFrame
-from .settings import DEFAULT_CATEGORY, DEFAULT_EXCLUSIONS
+from dictionary.conf import settings
+from dictionary.models import Category
+from dictionary.utils.decorators import cached_context
+from dictionary.utils.managers import TopicListManager
+from dictionary.utils.serializers import LeftFrame
 
 
 def lf_proxy(request, response=None):
@@ -52,7 +52,7 @@ class LeftFrameProcessor:
     @cached_property
     def slug(self):
         _slug = self.get_cookie("lfac")
-        return _slug if _slug else DEFAULT_CATEGORY
+        return _slug if _slug else settings.DEFAULT_CATEGORY
 
     @cached_property
     def _page(self):
@@ -85,7 +85,7 @@ class LeftFrameProcessor:
                 raise ValueError
 
         # Returning None, handler will hit DEFAULT_EXCLUSIONS
-        self.set_cookie("lfex", json.dumps(DEFAULT_EXCLUSIONS))
+        self.set_cookie("lfex", json.dumps(settings.DEFAULT_EXCLUSIONS))
         return None
 
     @cached_property
@@ -107,8 +107,8 @@ class LeftFrameProcessor:
             )
             context = LeftFrame(handler, page=self._page).as_context()
         except (Http404, PermissionDenied):
-            self.set_cookie("lfac", DEFAULT_CATEGORY)
-            return self._get_context(manager=TopicListManager(DEFAULT_CATEGORY))
+            self.set_cookie("lfac", settings.DEFAULT_CATEGORY)
+            return self._get_context(manager=TopicListManager(settings.DEFAULT_CATEGORY))
 
         return context
 

@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db.models import Exists, Max, Min, OuterRef, Prefetch, Q
-from django.http import HttpResponseBadRequest, Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -25,27 +25,31 @@ from django.views.generic import ListView, TemplateView
 from dateutil.relativedelta import relativedelta
 from uuslug import slugify
 
-from ..forms.edit import EntryForm, StandaloneMessageForm
-from ..models import Author, Category, Comment, Conversation, ConversationArchive, Entry, Message, Topic, TopicFollowing
-from ..templatetags.filters import IMAGE_REGEX, SEE_EXPR, RE_TOPIC_CHARSET
-from ..utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
-from ..utils.decorators import cached_context
-from ..utils.managers import TopicListManager, entry_prefetch
-from ..utils.mixins import IntegratedFormMixin
-from ..utils.serializers import LeftFrame
-from ..utils.settings import (
-    DEFAULT_EXCLUSIONS,
-    ENTRIES_PER_PAGE_DEFAULT,
-    INDEX_TYPE,
-    LOGIN_REQUIRED_CATEGORIES,
-    YEAR_RANGE,
+from dictionary.conf import settings
+from dictionary.forms.edit import EntryForm, StandaloneMessageForm
+from dictionary.models import (
+    Author,
+    Category,
+    Comment,
+    Conversation,
+    ConversationArchive,
+    Entry,
+    Message,
+    Topic,
+    TopicFollowing,
 )
+from dictionary.templatetags.filters import IMAGE_REGEX, RE_TOPIC_CHARSET, SEE_EXPR
+from dictionary.utils import RE_WEBURL, i18n_lower, proceed_or_404, time_threshold
+from dictionary.utils.decorators import cached_context
+from dictionary.utils.managers import TopicListManager, entry_prefetch
+from dictionary.utils.mixins import IntegratedFormMixin
+from dictionary.utils.serializers import LeftFrame
 
 
 class Index(ListView):
     template_name = "dictionary/index.html"
     context_object_name = "entries"
-    extra_context = {"index_type": INDEX_TYPE}
+    extra_context = {"index_type": settings.INDEX_TYPE}
 
     size = 15
     nice_bound = 100
@@ -56,7 +60,7 @@ class Index(ListView):
 
     @method_decorator(cached_context(timeout=20, prefix="index_view"))
     def get_pk_set(self):
-        records = getattr(self, INDEX_TYPE)()
+        records = getattr(self, settings.INDEX_TYPE)()
         return list(records)
 
     def random_records(self):
@@ -234,7 +238,7 @@ class TopicList(UserPassesTestMixin, TemplateView):
                 exclusions = None
 
         if exclusions is None:
-            self.cookies = {"lfex": json.dumps(DEFAULT_EXCLUSIONS)}
+            self.cookies = {"lfex": json.dumps(settings.DEFAULT_EXCLUSIONS)}
 
         query = (
             self.kwargs.get("slug"),
@@ -257,7 +261,7 @@ class TopicList(UserPassesTestMixin, TemplateView):
         return response
 
     def test_func(self):
-        if self.kwargs.get("slug") in LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
+        if self.kwargs.get("slug") in settings.LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
             notifications.info(self.request, _("actually, you may benefit from this feature by logging in."))
             return False
         return True
@@ -398,7 +402,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def history(self):
         year = self.request.GET.get("year", "")
 
-        if year.isdigit() and int(year) in YEAR_RANGE:
+        if year.isdigit() and int(year) in settings.YEAR_RANGE:
             now = timezone.now()
             diff = now.year - int(year)
             delta = timezone.localtime(now - relativedelta(years=diff))
@@ -627,7 +631,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return super().dispatch(request)
 
     def get_paginate_by(self, *args):
-        return self.request.user.entries_per_page if self.request.user.is_authenticated else ENTRIES_PER_PAGE_DEFAULT
+        return (
+            self.request.user.entries_per_page
+            if self.request.user.is_authenticated
+            else settings.ENTRIES_PER_PAGE_DEFAULT
+        )
 
     def render_to_response(self, context, **response_kwargs):
         if (referent := context.get("referent")) is not None:

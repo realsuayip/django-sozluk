@@ -6,9 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 from uuslug import uuslug
 
-from ..utils.settings import SUGGESTIONS_QUALIFY_RATE
-from ..utils.validators import validate_category_name
-from .managers.category import CategoryManager, CategoryManagerAll
+from dictionary.conf import settings
+from dictionary.models.managers.category import CategoryManager, CategoryManagerAll
+from dictionary.utils.validators import validate_category_name
 
 
 class Category(models.Model):
@@ -71,10 +71,10 @@ class Suggestion(models.Model):
 
         exists = self.topic.category.filter(pk=self.category.pk).exists()
 
-        if not exists and rate >= SUGGESTIONS_QUALIFY_RATE:
+        if not exists and rate >= settings.SUGGESTIONS_QUALIFY_RATE:
             self.topic.category.add(self.category)
 
-        if exists and rate < SUGGESTIONS_QUALIFY_RATE:
+        if exists and rate < settings.SUGGESTIONS_QUALIFY_RATE:
             self.topic.category.remove(self.category)
 
     def save(self, *args, **kwargs):

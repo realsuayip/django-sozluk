@@ -2,8 +2,8 @@ from django.utils import timezone
 
 from user_agents import parse
 
-from ..utils import get_theme_from_cookie
-from ..utils.context_processors import lf_proxy
+from dictionary.utils import get_theme_from_cookie
+from dictionary.utils.context_processors import lf_proxy
 
 
 class MobileDetectionMiddleware:

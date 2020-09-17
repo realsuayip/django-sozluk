@@ -5,8 +5,8 @@ from django.db import models
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 
-from ...models import Entry
-from ...utils import i18n_lower
+from dictionary.models import Entry
+from dictionary.utils import i18n_lower
 
 
 class TopicManager(models.Manager):

@@ -5,10 +5,10 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
-from ...models import Author, Message
-from ...utils import get_generic_superuser, parse_date_or_none
-from ...utils.admin import logentry_bulk_create, logentry_instance
-from ...utils.views import IntermediateActionView
+from dictionary.models import Author, Message
+from dictionary.utils import get_generic_superuser, parse_date_or_none
+from dictionary.utils.admin import logentry_bulk_create, logentry_instance
+from dictionary.utils.views import IntermediateActionView
 
 
 class SuspendUser(IntermediateActionView):

@@ -10,7 +10,7 @@ from django.utils.translation import get_language
 
 from dateutil.parser import parse
 
-from .settings import GENERIC_PRIVATEUSER_USERNAME, GENERIC_SUPERUSER_USERNAME
+from dictionary.conf import settings
 
 # General utilities module. DO NOT IMPORT FROM models. Use: apps.get_model("app_name", "model_name")
 
@@ -103,11 +103,11 @@ def time_threshold(**timedelta_kwargs):
 
 
 def get_generic_superuser():
-    return get_user_model().objects.get(username=GENERIC_SUPERUSER_USERNAME)
+    return get_user_model().objects.get(username=settings.GENERIC_SUPERUSER_USERNAME)
 
 
 def get_generic_privateuser():
-    return get_user_model().objects.get(username=GENERIC_PRIVATEUSER_USERNAME)
+    return get_user_model().objects.get(username=settings.GENERIC_PRIVATEUSER_USERNAME)
 
 
 def get_theme_from_cookie(request):

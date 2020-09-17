@@ -5,8 +5,8 @@ from django.db.models import Exists, OuterRef
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
-from ..models import Category, ExternalURL, Suggestion, Topic
-from ..utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES_META
+from dictionary.conf import settings
+from dictionary.models import Category, ExternalURL, Suggestion, Topic
 
 register = template.Library()
 
@@ -117,12 +117,12 @@ def print_entry_class(context):
 @register.inclusion_tag("dictionary/includes/header_link.html", takes_context=True)
 def render_header_link(context, slug):
     """
-    Renders non-database header links. (Renders nothing if the given cateogry does not exist.)
+    Renders non-database header links (renders nothing if given category does not exist.)
     """
 
-    details = NON_DB_CATEGORIES_META.get(slug)
+    details = settings.NON_DB_CATEGORIES_META.get(slug)
 
-    if (slug in LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated) or details is None:
+    if (slug in settings.LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated) or details is None:
         return {"unauthorized": True}
 
     frame = context.get("left_frame") or context.get("left_frame_fallback")

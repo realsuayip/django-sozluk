@@ -3,11 +3,11 @@ from django.utils.translation import gettext as _, ngettext
 
 from graphene import ID, Int, Mutation, String
 
+from dictionary.conf import settings
 from dictionary.models import Category, Suggestion, Topic
 from dictionary.utils import time_threshold
-from dictionary.utils.settings import SUGGESTIONS_PER_DAY, SUGGESTIONS_PER_TOPIC
 
-from ..utils import login_required
+from dictionary_graph.utils import login_required
 
 
 class FollowCategory(Mutation):
@@ -58,7 +58,7 @@ class SuggestCategory(Mutation):
             author=info.context.user, date_created__gte=time_threshold(hours=24)
         ).count()
 
-        if suggestion_count_today >= SUGGESTIONS_PER_DAY:
+        if suggestion_count_today >= settings.SUGGESTIONS_PER_DAY:
             raise ValueError(_("you have used up all the suggestion claims you have today. try again later."))
 
         category = get_object_or_404(Category.objects_all, slug=category)
@@ -71,15 +71,15 @@ class SuggestCategory(Mutation):
             obj, created = Suggestion.objects.update_or_create(defaults={"direction": direction}, **kwargs)
 
             kwargs.pop("category")
-            if created and Suggestion.objects.filter(**kwargs).count() > SUGGESTIONS_PER_TOPIC:
+            if created and Suggestion.objects.filter(**kwargs).count() > settings.SUGGESTIONS_PER_TOPIC:
                 obj.delete()
                 raise ValueError(
                     ngettext(
                         "you can only suggest %(count)d channel per topic.",
                         "you can only suggest %(count)d channels per topic.",
-                        SUGGESTIONS_PER_TOPIC,
+                        settings.SUGGESTIONS_PER_TOPIC,
                     )
-                    % {"count": SUGGESTIONS_PER_TOPIC}
+                    % {"count": settings.SUGGESTIONS_PER_TOPIC}
                 )
 
         return SuggestCategory()

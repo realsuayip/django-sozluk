@@ -7,7 +7,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import FormMixin
 
-from . import InputNotInDesiredRangeError
+from dictionary.utils import InputNotInDesiredRangeError
 
 
 class PasswordConfirmMixin:

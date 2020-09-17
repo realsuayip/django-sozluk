@@ -8,9 +8,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, View
 
-from ..models import GeneralReport
-from ..utils import time_threshold
-from ..utils.settings import DOMAIN, FROM_EMAIL, PROTOCOL
+from dictionary.conf import settings
+from dictionary.models import GeneralReport
+from dictionary.utils import time_threshold
 
 
 class GeneralReportView(CreateView):
@@ -43,7 +43,7 @@ class GeneralReportView(CreateView):
 
         # Prepare and send a verification email.
         key = instance.key
-        link = f"{PROTOCOL}://{DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
+        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
 
         message = _(
             "in order reporting form to reach us, you need to follow the link given below."
@@ -54,7 +54,7 @@ class GeneralReportView(CreateView):
         body = f'<p>{message}</p><a href="{link}">{link}</a>'
 
         try:
-            email = EmailMessage(_("confirmation of reporting"), body, FROM_EMAIL, [instance.reporter_email])
+            email = EmailMessage(_("confirmation of reporting"), body, settings.FROM_EMAIL, [instance.reporter_email])
             email.content_subtype = "html"
             email.send()
             notifications.info(

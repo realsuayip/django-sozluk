@@ -3,9 +3,9 @@ from django.contrib.admin import DateFieldListFilter
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
-from ..admin.views.topic import TopicMove
-from ..models import Topic
-from ..utils.admin import intermediate
+from dictionary.admin.views.topic import TopicMove
+from dictionary.models import Topic
+from dictionary.utils.admin import intermediate
 
 
 @admin.register(Topic)

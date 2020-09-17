@@ -1,8 +1,8 @@
 from django.db.models import F
 from django.utils import timezone
 
-from ..models import Author
-from ..utils import time_threshold
+from dictionary.models import Author
+from dictionary.utils import time_threshold
 
 
 class NoviceActivityMiddleware:

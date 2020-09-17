@@ -1,7 +1,7 @@
 from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
-from ..models.messaging import Conversation, Message
+from dictionary.models.messaging import Conversation, Message
 
 
 @receiver(post_save, sender=Message, dispatch_uid="deliver_message")

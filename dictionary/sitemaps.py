@@ -3,9 +3,8 @@ from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Announcement, Author, Category, Entry, Topic
-from .utils.settings import LOGIN_REQUIRED_CATEGORIES, NON_DB_CATEGORIES
-
+from dictionary.conf import settings
+from dictionary.models import Announcement, Author, Category, Entry, Topic
 
 # https://docs.djangoproject.com/en/3.0/ref/contrib/sitemaps/#pinging-google
 
@@ -66,8 +65,8 @@ class StaticCategorySiteMap(CategorySiteMap):
     def items(self):
         return [
             category
-            for category in NON_DB_CATEGORIES
-            if category not in LOGIN_REQUIRED_CATEGORIES and category != "userstats"
+            for category in settings.NON_DB_CATEGORIES
+            if category not in settings.LOGIN_REQUIRED_CATEGORIES and category != "userstats"
         ]
 
     def location(self, item):

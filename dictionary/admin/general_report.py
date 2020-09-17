@@ -1,7 +1,7 @@
 from django.contrib import admin, messages as notifications
 from django.utils.translation import gettext, gettext_lazy as _
 
-from ..models import GeneralReport
+from dictionary.models import GeneralReport
 
 
 @admin.register(GeneralReport)

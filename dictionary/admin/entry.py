@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Entry, Comment
+from dictionary.models import Entry, Comment
 
 
 @admin.register(Entry)

@@ -4,10 +4,10 @@ from django.db.models import F
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
-from ..models.author import Author
-from ..models.entry import Entry
-from ..models.topic import Topic
-from ..utils.settings import VOTE_RATES
+from dictionary.conf import settings
+from dictionary.models.author import Author
+from dictionary.models.entry import Entry
+from dictionary.models.topic import Topic
 
 
 def entrym2m(m2msignal):
@@ -28,7 +28,7 @@ def entrym2m(m2msignal):
 def update_vote_rate_favorite(action, entries, **kwargs):
     """Signal to update vote rate of an entry after the user favorites it."""
 
-    rate = VOTE_RATES["favorite"]
+    rate = settings.VOTE_RATES["favorite"]
 
     if action == "post_add":
         entries.update(vote_rate=F("vote_rate") + rate)
@@ -41,7 +41,7 @@ def update_vote_rate_favorite(action, entries, **kwargs):
 def update_vote_rate_upvote(action, entries, **kwargs):
     """Signal to update vote rate of an entry after the user upvotes it."""
 
-    rate = VOTE_RATES["vote"]
+    rate = settings.VOTE_RATES["vote"]
 
     if action == "post_add":
         entries.update(vote_rate=F("vote_rate") + rate)
@@ -54,7 +54,7 @@ def update_vote_rate_upvote(action, entries, **kwargs):
 def update_vote_rate_downvote(action, entries, **kwargs):
     """Signal to update vote rate of an entry after the user downvotes it."""
 
-    rate = VOTE_RATES["vote"]
+    rate = settings.VOTE_RATES["vote"]
 
     if action == "post_add":
         entries.update(vote_rate=F("vote_rate") - rate)

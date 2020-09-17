@@ -8,8 +8,8 @@ from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import CreateView, UpdateView
 
-from ..forms.edit import EntryForm, PreferencesForm
-from ..models import Author, Comment, Entry
+from dictionary.forms.edit import EntryForm, PreferencesForm
+from dictionary.models import Author, Comment, Entry
 
 
 class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

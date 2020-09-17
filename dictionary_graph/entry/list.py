@@ -4,8 +4,8 @@ from graphene import Int, List, ObjectType
 
 from dictionary.models import Entry
 
-from ..types import AuthorType
-from ..utils import login_required
+from dictionary_graph.types import AuthorType
+from dictionary_graph.utils import login_required
 
 
 class EntryFavoritesQuery(ObjectType):

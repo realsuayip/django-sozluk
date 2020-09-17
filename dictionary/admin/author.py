@@ -6,10 +6,10 @@ from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
-from ..models import Author
-from ..utils.admin import intermediate
-from .views.author import SuspendUser, UnsuspendUser
-from .views.novices import NoviceList, NoviceLookup
+from dictionary.admin.views.author import SuspendUser, UnsuspendUser
+from dictionary.admin.views.novices import NoviceList, NoviceLookup
+from dictionary.models import Author
+from dictionary.utils.admin import intermediate
 
 
 class SuspensionFilter(SimpleListFilter):

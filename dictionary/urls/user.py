@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.urls import path
 
-from ..views.detail import Chat, ChatArchive, UserProfile
-from ..views.edit import UserPreferences
-from ..views.images import ImageList, ImageUpload, ImageDetailProduction, ImageDetailDevelopment
-from ..views.list import ActivityList, ConversationArchiveList, ConversationList, PeopleList
+from dictionary.views.detail import Chat, ChatArchive, UserProfile
+from dictionary.views.edit import UserPreferences
+from dictionary.views.images import ImageList, ImageUpload, ImageDetailProduction, ImageDetailDevelopment
+from dictionary.views.list import ActivityList, ConversationArchiveList, ConversationList, PeopleList
 
 
 ImageDetailView = ImageDetailDevelopment if settings.DEBUG else ImageDetailProduction

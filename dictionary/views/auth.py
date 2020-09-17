@@ -12,13 +12,13 @@ from django.utils.translation import gettext as _
 from django.views.generic import View
 from django.views.generic.edit import FormView
 
-from ..backends.sessions.utils import flush_all_sessions
-from ..forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
-from ..models import AccountTerminationQueue, Author, UserVerification
-from ..utils import get_theme_from_cookie, time_threshold
-from ..utils.email import send_email_confirmation
-from ..utils.mixins import PasswordConfirmMixin
-from ..utils.settings import DISABLE_NOVICE_QUEUE, FROM_EMAIL
+from dictionary.backends.sessions.utils import flush_all_sessions
+from dictionary.conf import settings
+from dictionary.forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
+from dictionary.models import AccountTerminationQueue, Author, UserVerification
+from dictionary.utils import get_theme_from_cookie, time_threshold
+from dictionary.utils.email import send_email_confirmation
+from dictionary.utils.mixins import PasswordConfirmMixin
 
 
 class Login(LoginView):
@@ -62,7 +62,7 @@ class SignUp(FormView):
         user.gender = form.cleaned_data.get("gender")
         user.theme = get_theme_from_cookie(self.request)
 
-        if DISABLE_NOVICE_QUEUE:
+        if settings.DISABLE_NOVICE_QUEUE:
             # Make the user an actual author
             user.application_status = Author.APPROVED
             user.is_novice = False
@@ -140,7 +140,7 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            self.request.user.email_user(_("your password has been changed."), message, FROM_EMAIL)
+            self.request.user.email_user(_("your password has been changed."), message, settings.FROM_EMAIL)
         except SMTPException:
             notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return super().form_invalid(form)
@@ -178,7 +178,7 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
 
         # Send a message to ensure security.
         try:
-            self.request.user.email_user(_("your account is now frozen"), message, FROM_EMAIL)
+            self.request.user.email_user(_("your account is now frozen"), message, settings.FROM_EMAIL)
         except SMTPException:
             notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return super().form_invalid(form)

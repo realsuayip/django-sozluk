@@ -17,26 +17,10 @@ from django.utils.translation import gettext as _
 
 from dateutil.relativedelta import relativedelta
 
-from ..models import Author, Category, Comment, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
-from ..utils import parse_date_or_none, time_threshold
-from ..utils.decorators import for_public_methods
-from ..utils.settings import (
-    DEFAULT_EXCLUSIONS,
-    DEFAULT_CACHE_TIMEOUT,
-    DISABLE_CATEGORY_CACHING,
-    EXCLUDABLE_CATEGORIES,
-    EXCLUSIVE_TIMEOUTS,
-    LOGIN_REQUIRED_CATEGORIES,
-    NON_DB_CATEGORIES,
-    NON_DB_CATEGORIES_META,
-    PARAMETRIC_CATEGORIES,
-    REFRESH_TIMEOUT,
-    TABBED_CATEGORIES,
-    TOPICS_PER_PAGE_DEFAULT,
-    UNCACHED_CATEGORIES,
-    USER_EXCLUSIVE_CATEGORIES,
-    YEAR_RANGE,
-)
+from dictionary.conf import settings
+from dictionary.models import Author, Category, Comment, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
+from dictionary.utils import parse_date_or_none, time_threshold
+from dictionary.utils.decorators import for_public_methods
 
 
 class TopicQueryHandler:
@@ -111,7 +95,7 @@ class TopicQueryHandler:
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
             .values(*self.values_entry)
-        )[:TOPICS_PER_PAGE_DEFAULT]
+        )[: settings.TOPICS_PER_PAGE_DEFAULT]
 
     def drafts(self, user):
         return (
@@ -167,7 +151,7 @@ class TopicQueryHandler:
             .order_by("-latest")
         ).values(*self.values)
 
-    def followups(self, user):
+    def followups(self, user):  # noqa
         """
         Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
 
@@ -312,7 +296,7 @@ class TopicQueryHandler:
 
         qs = Topic.objects.filter(**self.base_filter, **filters).annotate(count=Count("entries", distinct=True))
         ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
-        result = qs.order_by(*ordering_map.get(ordering)).values(*self.values)[:TOPICS_PER_PAGE_DEFAULT]
+        result = qs.order_by(*ordering_map.get(ordering)).values(*self.values)[: settings.TOPICS_PER_PAGE_DEFAULT]
         return result
 
     def generic_category(self, slug):
@@ -392,7 +376,7 @@ class TopicListHandler:
         :param extra: Any other metadata about the slug.
         """
 
-        if not user.is_authenticated and slug in LOGIN_REQUIRED_CATEGORIES:
+        if not user.is_authenticated and slug in settings.LOGIN_REQUIRED_CATEGORIES:
             raise PermissionDenied(_("actually, you may benefit from this feature by logging in."))
 
         self.slug = slug
@@ -426,7 +410,7 @@ class TopicListHandler:
         }
 
         # Convert today-in-history => today_in_history
-        slug_method = self.slug.replace("-", "_") if self.slug in NON_DB_CATEGORIES else "generic_category"
+        slug_method = self.slug.replace("-", "_") if self.slug in settings.NON_DB_CATEGORIES else "generic_category"
 
         # Get the method from TopicQueryHandler.
         return getattr(self, slug_method)(*arg_map.get(slug_method, []))
@@ -434,15 +418,15 @@ class TopicListHandler:
     def _validate_exclusions(self, exclusions):
         if self.slug == "popular":
             if exclusions is None:
-                return DEFAULT_EXCLUSIONS
+                return settings.DEFAULT_EXCLUSIONS
 
-            return tuple(slug for slug in exclusions if slug in EXCLUDABLE_CATEGORIES)
+            return tuple(slug for slug in exclusions if slug in settings.EXCLUDABLE_CATEGORIES)
 
         return ()
 
     def _validate_tab(self, tab):
-        if self.slug in TABBED_CATEGORIES:
-            tab_meta = NON_DB_CATEGORIES_META.get(self.slug)[2]
+        if self.slug in settings.TABBED_CATEGORIES:
+            tab_meta = settings.NON_DB_CATEGORIES_META.get(self.slug)[2]
             avaiable_tabs, default_tab = tab_meta[0].keys(), tab_meta[1]
             return tab if tab in avaiable_tabs else default_tab
         return None
@@ -450,7 +434,7 @@ class TopicListHandler:
     def _validate_year(self, year):
         """Validates and sets the year."""
         if self.slug == "today-in-history":
-            default = YEAR_RANGE[0]
+            default = settings.YEAR_RANGE[0]
             if year is not None:
 
                 if not isinstance(year, (str, int)):
@@ -459,7 +443,7 @@ class TopicListHandler:
                 if isinstance(year, str):
                     year = int(year) if year.isdigit() else default
 
-                return year if year in YEAR_RANGE else default
+                return year if year in settings.YEAR_RANGE else default
 
             return default
         return None
@@ -467,7 +451,7 @@ class TopicListHandler:
     def _validate_extra(self, extra):
         return (
             {key: value for key, value in extra.items() if key in self._available_extras and isinstance(value, str)}
-            if extra and self.slug in PARAMETRIC_CATEGORIES
+            if extra and self.slug in settings.PARAMETRIC_CATEGORIES
             else {}
         )
 
@@ -501,15 +485,15 @@ class TopicListHandler:
             else:
                 self.extra.pop("channel", None)  # so as not to interfere with cache key
 
-            self.extra["safename"] = NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
+            self.extra["safename"] = settings.NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
             self.extra["hidetabs"] = "yes"
 
     @property
     def _caching_allowed(self):
         return not (
-            self.slug in UNCACHED_CATEGORIES
-            or f"{self.slug}_{self.tab}" in UNCACHED_CATEGORIES
-            or DISABLE_CATEGORY_CACHING
+            self.slug in settings.UNCACHED_CATEGORIES
+            or f"{self.slug}_{self.tab}" in settings.UNCACHED_CATEGORIES
+            or settings.DISABLE_CATEGORY_CACHING
         )
 
     def _cache_data(self, data):
@@ -517,7 +501,7 @@ class TopicListHandler:
             cache.set(
                 self.cache_key,
                 {"data": data, "set_at": timezone.now()},
-                EXCLUSIVE_TIMEOUTS.get(self.slug, DEFAULT_CACHE_TIMEOUT),
+                settings.EXCLUSIVE_TIMEOUTS.get(self.slug, settings.DEFAULT_CACHE_TIMEOUT),
             )
         return data
 
@@ -525,7 +509,7 @@ class TopicListHandler:
         private = f"private_uid_{self.user.id}"
         public = "public"
 
-        scope = private if self.slug in USER_EXCLUSIVE_CATEGORIES else public
+        scope = private if self.slug in settings.USER_EXCLUSIVE_CATEGORIES else public
         year = self.year or ""
         tab = ":t:" + self.tab if self.tab else ""
         search_keys = ""
@@ -584,7 +568,8 @@ class TopicListHandler:
         if self.cache_exists:
             if (
                 delimiter
-                and (timezone.now() - cache.get(self.cache_key).get("set_at")).total_seconds() < REFRESH_TIMEOUT
+                and (timezone.now() - cache.get(self.cache_key).get("set_at")).total_seconds()
+                < settings.REFRESH_TIMEOUT
             ):
                 return False
 
@@ -614,7 +599,7 @@ class TopicListHandler:
         if self.cache_exists and self.slug == "today":
             set_at = cache.get(self.cache_key).get("set_at")
 
-            if (timezone.now() - set_at).total_seconds() < REFRESH_TIMEOUT:
+            if (timezone.now() - set_at).total_seconds() < settings.REFRESH_TIMEOUT:
                 # Too soon, check out delete_cache delimiter.
                 return 0
 

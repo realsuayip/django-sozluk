@@ -5,11 +5,12 @@ from django.utils.translation import gettext as _
 
 from graphene import ID, List, Mutation, String
 
+from dictionary.conf import settings
+
 from dictionary.models import Author, Conversation, ConversationArchive, Message
-from dictionary.utils.settings import MESSAGE_PURGE_THRESHOLD
 from dictionary.utils.validators import validate_user_text
 
-from ..utils import login_required
+from dictionary_graph.utils import login_required
 
 
 class DeleteConversation(Mutation):
@@ -99,7 +100,7 @@ class DeleteMessage(Mutation):
 
         if (
             message.sender == info.context.user
-            and (timezone.now() - message.sent_at).total_seconds() < MESSAGE_PURGE_THRESHOLD
+            and (timezone.now() - message.sent_at).total_seconds() < settings.MESSAGE_PURGE_THRESHOLD
         ):
             # Sender deleted message immediately, remove message content for target user.
             # Translators: Include an emoji

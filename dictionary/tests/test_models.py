@@ -9,26 +9,28 @@ from django.shortcuts import reverse
 from django.test import TestCase, TransactionTestCase
 from django.utils import timezone
 
-from ..models import (
+from dictionary.conf import settings
+from dictionary.models import (
     Author,
-    Entry,
-    Topic,
-    Message,
     Category,
-    Memento,
-    UserVerification,
-    EntryFavorites,
     Conversation,
+    Entry,
+    EntryFavorites,
     GeneralReport,
+    Memento,
+    Message,
+    Topic,
     TopicFollowing,
+    UserVerification,
 )
-from ..utils.settings import GENERIC_SUPERUSER_USERNAME
 
 
 class AuthorModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.generic_superuser = Author.objects.create(username=GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True)
+        cls.generic_superuser = Author.objects.create(
+            username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
+        )
         cls.author = Author.objects.create(username="user", email="0", is_active=True)
         cls.topic = Topic.objects.create_topic("test_topic")
         cls.entry_base = {"topic": cls.topic, "author": cls.author}
@@ -349,7 +351,9 @@ class EntryFavoritesModelTests(TestCase):
 class MessageModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.generic_superuser = Author.objects.create(username=GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True)
+        cls.generic_superuser = Author.objects.create(
+            username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
+        )
         cls.author_1 = Author.objects.create(username="user1", email="1", is_active=True)
         cls.author_2 = Author.objects.create(username="user2", email="2", is_active=True)
 
@@ -367,7 +371,9 @@ class MessageModelTests(TestCase):
 class ConversationModelTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.generic_superuser = Author.objects.create(username=GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True)
+        cls.generic_superuser = Author.objects.create(
+            username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
+        )
         cls.author_1 = Author.objects.create(username="user1", email="1", is_active=True)
         cls.author_2 = Author.objects.create(username="user2", email="2", is_active=True)
 

@@ -5,7 +5,7 @@ from graphene import Int, List, ObjectType, String
 
 from dictionary.models import Author, Topic
 
-from .types import AuthorType, TopicType
+from dictionary_graph.types import AuthorType, TopicType
 
 
 def autocompleter(resolver):

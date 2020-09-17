@@ -11,8 +11,8 @@ from django.utils.translation import gettext as _, gettext_lazy, pgettext_lazy
 
 from dateutil.parser import parse
 
-from ..utils import RE_WEBURL, RE_WEBURL_NC
-from ..utils.settings import DOMAIN
+from dictionary.conf import settings
+from dictionary.utils import RE_WEBURL, RE_WEBURL_NC
 
 
 register = template.Library()
@@ -70,7 +70,7 @@ def formatted(raw_entry):
         """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
         domain, path = weburl_match.group(1), weburl_match.group(2) or ""
 
-        if domain.endswith(DOMAIN) and len(path) > 7:
+        if domain.endswith(settings.DOMAIN) and len(path) > 7:
             # Internal links (entries and topics)
 
             if permalink := re.match(r"^/entry/([0-9]+)/?$", path):

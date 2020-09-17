@@ -20,28 +20,13 @@ from django.utils.translation import gettext, gettext_lazy as _, ngettext
 
 from uuslug import uuslug
 
-from ..models.m2m import DownvotedEntries, UpvotedEntries
-from ..utils import parse_date_or_none, time_threshold
-from ..utils.decorators import cached_context
-from ..utils.settings import (
-    AUTHOR_ENTRY_INTERVAL,
-    DAILY_VOTE_LIMIT,
-    DAILY_VOTE_LIMIT_PER_USER,
-    DISABLE_GENERATIONS,
-    FIRST_GENERATION_DATE,
-    GENERATION_GAP_DAYS,
-    GENERIC_SUPERUSER_USERNAME,
-    KARMA_BOUNDARY_LOWER,
-    KARMA_BOUNDARY_UPPER,
-    KARMA_EXPRESSIONS,
-    NOVICE_ENTRY_INTERVAL,
-    OVERWHELMING_KARMA_EXPRESSION,
-    TOTAL_VOTE_LIMIT_PER_USER,
-    UNDERWHELMING_KARMA_EXPRESSION,
-)
-from ..utils.validators import validate_username_partial
-from .category import Category
-from .managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
+from dictionary.conf import settings
+from dictionary.models.category import Category
+from dictionary.models.m2m import DownvotedEntries, UpvotedEntries
+from dictionary.models.managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
+from dictionary.utils import parse_date_or_none, time_threshold
+from dictionary.utils.decorators import cached_context
+from dictionary.utils.validators import validate_username_partial
 
 
 def usercache(initial_func=None, *, timeout=86400):
@@ -278,7 +263,7 @@ class Author(AbstractUser):
 
         daily_vote_count = upvoted.filter(**h24).count() + downvoted.filter(**h24).count()
 
-        if daily_vote_count >= DAILY_VOTE_LIMIT:
+        if daily_vote_count >= settings.DAILY_VOTE_LIMIT:
             return True, gettext("you have used up all the vote claims you have today. try again later.")
 
         if against:
@@ -286,14 +271,14 @@ class Author(AbstractUser):
             downvoted_against = downvoted.filter(entry__author=against).count()
             total_votes_against = upvoted_against + downvoted_against
 
-            if total_votes_against >= TOTAL_VOTE_LIMIT_PER_USER:
+            if total_votes_against >= settings.TOTAL_VOTE_LIMIT_PER_USER:
                 return True, gettext("sorry, you have been haunting this person for a long time.")
 
             daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
             daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
             daily_votes_against = daily_upvoted_against + daily_downvoted_against
 
-            if daily_votes_against >= DAILY_VOTE_LIMIT_PER_USER:
+            if daily_votes_against >= settings.DAILY_VOTE_LIMIT_PER_USER:
                 return True, gettext("this person has taken enough of your votes today, maybe try other users?")
 
         return False, None
@@ -302,7 +287,7 @@ class Author(AbstractUser):
         if self == recipient:
             return False
 
-        if self.username == GENERIC_SUPERUSER_USERNAME:
+        if self.username == settings.GENERIC_SUPERUSER_USERNAME:
             return True
 
         if (
@@ -329,7 +314,7 @@ class Author(AbstractUser):
         latest_entry_date = self.last_entry_date
 
         if latest_entry_date is not None:
-            interval = NOVICE_ENTRY_INTERVAL if self.is_novice else AUTHOR_ENTRY_INTERVAL
+            interval = settings.NOVICE_ENTRY_INTERVAL if self.is_novice else settings.AUTHOR_ENTRY_INTERVAL
             delta = timezone.now() - latest_entry_date
             if delta <= timezone.timedelta(seconds=interval):
                 remaining = interval - delta.seconds
@@ -343,37 +328,37 @@ class Author(AbstractUser):
 
     @property
     def generation(self):
-        if DISABLE_GENERATIONS:
+        if settings.DISABLE_GENERATIONS:
             return None
 
-        gen_start_date = parse_date_or_none(FIRST_GENERATION_DATE)
+        gen_start_date = parse_date_or_none(settings.FIRST_GENERATION_DATE)
 
         if gen_start_date is None:
             raise ValueError("Invalid configuration for 'FIRST_GENERATION_DATE'. Please provide a valid date.")
 
         delta = self.date_joined - gen_start_date
-        return math.ceil((delta.days / GENERATION_GAP_DAYS) or 1)
+        return math.ceil((delta.days / settings.GENERATION_GAP_DAYS) or 1)
 
     @cached_property
     def karma_flair(self):
         karma = round(self.karma)
 
-        if karma <= KARMA_BOUNDARY_LOWER:
-            return f"{UNDERWHELMING_KARMA_EXPRESSION} ({karma})"
+        if karma <= settings.KARMA_BOUNDARY_LOWER:
+            return f"{settings.UNDERWHELMING_KARMA_EXPRESSION} ({karma})"
 
-        if karma >= KARMA_BOUNDARY_UPPER:
-            return f"{OVERWHELMING_KARMA_EXPRESSION} ({karma})"
+        if karma >= settings.KARMA_BOUNDARY_UPPER:
+            return f"{settings.OVERWHELMING_KARMA_EXPRESSION} ({karma})"
 
-        for key in KARMA_EXPRESSIONS:
+        for key in settings.KARMA_EXPRESSIONS:
             if karma in key:
-                return f"{KARMA_EXPRESSIONS[key]} ({karma})"
+                return f"{settings.KARMA_EXPRESSIONS[key]} ({karma})"
 
         return None
 
     @property
     def is_karma_eligible(self):
         """Eligible users will be able to influence other users' karma points by voting."""
-        return not (self.is_novice or self.is_suspended or self.karma <= KARMA_BOUNDARY_LOWER)
+        return not (self.is_novice or self.is_suspended or self.karma <= settings.KARMA_BOUNDARY_LOWER)
 
     @cached_property
     @usercache

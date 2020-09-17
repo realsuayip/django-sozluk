@@ -3,10 +3,10 @@ from django.db.models import Count
 from django.shortcuts import redirect
 from django.utils.translation import gettext, gettext_lazy as _, ngettext, pgettext
 
-from ...models import Author, Entry, Topic
-from ...utils import get_generic_superuser, parse_date_or_none
-from ...utils.admin import log_admin
-from ...utils.views import IntermediateActionView
+from dictionary.models import Author, Entry, Topic
+from dictionary.utils import get_generic_superuser, parse_date_or_none
+from dictionary.utils.admin import log_admin
+from dictionary.utils.views import IntermediateActionView
 
 
 class TopicMove(IntermediateActionView):
