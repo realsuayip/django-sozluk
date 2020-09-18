@@ -36,7 +36,9 @@ class Announcement(models.Model):
 
     date_edited = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(
-        verbose_name=_("Publication date"), help_text=_("You can set future dates for the publication date."),
+        db_index=True,
+        verbose_name=_("Publication date"),
+        help_text=_("You can set future dates for the publication date."),
     )
 
     def __str__(self):

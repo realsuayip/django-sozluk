@@ -116,8 +116,8 @@ class LeftFrame(PlainSerializer):
         if self.slug in settings.NON_DB_CATEGORIES:
             return settings.NON_DB_CATEGORIES_META[self.slug][0]
 
-        with suppress(Category.DoesNotExist):
-            return Category.objects.get(slug=self.slug).name
+        category = self.extra.get("generic_category")
+        return category.name if hasattr(category, "name") else None
 
     @cached_property
     def slug_identifier(self):

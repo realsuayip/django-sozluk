@@ -41,8 +41,7 @@ class TopicQueryHandler:
     latest = {"latest": Max("entries__date_created")}  # to order_by("-latest")
 
     # Queryset values
-    values = ("title", "slug", "count")
-    values_entry = ("title", "slug")  # values with count excluded (used for entry listing)
+    values = ("title", "slug")
 
     def today(self, user):
         categories = Q(category__in=user.following_categories.all())
@@ -51,11 +50,12 @@ class TopicQueryHandler:
             categories |= Q(category=None)
 
         return (
-            Topic.objects.filter(categories, **self.base_filter, **self.day_filter)
-            .order_by("-latest")
-            .annotate(**self.latest, count=Count("entries", distinct=True))
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter, **self.day_filter)
+            .filter(categories)
             .exclude(created_by__in=user.blocked.all())
-            .values(*self.values)
+            .annotate(**self.latest, count=Count("entries", distinct=True))
+            .order_by("-latest")
         )
 
     def today_in_history(self, year):
@@ -65,10 +65,10 @@ class TopicQueryHandler:
         delta = timezone.localtime(now - relativedelta(years=diff))
 
         return (
-            Topic.objects.filter(**self.base_filter, entries__date_created__date=delta.date())
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter, entries__date_created__date=delta.date())
             .annotate(count=Count("entries"))
             .order_by("-count")
-            .values(*self.values)
         )
 
     def popular(self, exclusions):
@@ -76,13 +76,13 @@ class TopicQueryHandler:
             return Count("entries", filter=Q(entries__date_created__gte=time_threshold(hours=hours)))
 
         return (
-            Topic.objects.filter(**self.base_filter)
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter)
             .annotate(count=Count("entries", filter=Q(**self.day_filter)))
             .filter(Q(count__gte=10) | Q(is_pinned=True))
             .exclude(category__slug__in=exclusions)
             .annotate(q1=counter(3), q2=counter(6), q3=counter(12), **self.latest)
             .order_by("-is_pinned", "-q1", "-q2", "-q3", "-count", "-latest")
-            .values(*self.values)
         )
 
     def top(self, tab):
@@ -94,7 +94,7 @@ class TopicQueryHandler:
             Entry.objects.filter(**filters.get(tab), topic__is_censored=False)
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
-            .values(*self.values_entry)
+            .values(*self.values)
         )[: settings.TOPICS_PER_PAGE_DEFAULT]
 
     def drafts(self, user):
@@ -102,7 +102,7 @@ class TopicQueryHandler:
             Entry.objects_all.filter(author=user, is_draft=True)
             .order_by("-date_created")
             .annotate(title=F("topic__title"), slug=F("pk"))
-            .values(*self.values_entry)
+            .values(*self.values)
         )
 
     def acquaintances(self, user, tab):
@@ -110,27 +110,27 @@ class TopicQueryHandler:
 
     def acquaintances_entries(self, user):
         return (
-            Topic.objects.filter(
+            Topic.objects.values(*self.values)
+            .filter(
                 entries__is_draft=False,
                 entries__date_created__gte=time_threshold(hours=120),
                 entries__author__in=user.following.all(),
             )
             .annotate(latest=Max("entries__date_created"), count=Count("entries"))
             .order_by("-latest")
-        ).values(*self.values)
+        )
 
     def acquaintances_favorites(self, user):
         return (
-            Entry.objects_published.filter(
-                favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24)
-            )
+            Entry.objects_published.values("topic")
+            .filter(favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24))
             .annotate(
                 title=Concat(F("topic__title"), Value(" (#"), F("pk"), Value(")"), output_field=CharField()),
                 slug=F("pk"),
                 latest=Max("entryfavorites__date_created"),
             )
             .order_by("-latest")
-            .values(*self.values_entry)
+            .values(*self.values)
         )
 
     def wishes(self, user, tab):
@@ -138,18 +138,20 @@ class TopicQueryHandler:
 
     def wishes_all(self, user):
         return (
-            Topic.objects.exclude(wishes__author__in=user.blocked.all())
+            Topic.objects.values(*self.values)
+            .exclude(wishes__author__in=user.blocked.all())
             .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
             .filter(is_censored=False, count__gte=1)
             .order_by("-count", "-latest")
-        ).values(*self.values)
+        )
 
     def wishes_owned(self, user):
         return (
-            Topic.objects.filter(wishes__author=user)
+            Topic.objects.values(*self.values)
+            .filter(wishes__author=user)
             .annotate(count=Count("wishes"), latest=Max("wishes__date_created"))
             .order_by("-latest")
-        ).values(*self.values)
+        )
 
     def followups(self, user):  # noqa
         """
@@ -236,12 +238,10 @@ class TopicQueryHandler:
 
     def novices(self):
         return (
-            Topic.objects.filter(
-                **self.day_filter, entries__author__is_novice=True, entries__is_draft=False, is_censored=False
-            )
-            .order_by("-latest")
+            Topic.objects.values(*self.values)
+            .filter(**self.day_filter, entries__author__is_novice=True, entries__is_draft=False, is_censored=False)
             .annotate(**self.latest, count=Count("entries"))
-            .values(*self.values)
+            .order_by("-latest")
         )
 
     def search(self, user, search_keys):
@@ -280,7 +280,7 @@ class TopicQueryHandler:
         # Originally this would sum up all the entries' rates, but in new implementation it considers only one entry
         # Summing up all entries requires SubQueries and it complicates things a lot. This filter is decent anyway.
         if nice_only:
-            filters["entries__vote_rate__gte"] = Decimal("489")
+            filters["entries__vote_rate__gte"] = Decimal("100")
 
         if author_nick:
             filters["entries__author__username"] = author_nick
@@ -294,26 +294,30 @@ class TopicQueryHandler:
         if to_date:
             filters["entries__date_created__lte"] = to_date
 
-        qs = Topic.objects.filter(**self.base_filter, **filters).annotate(count=Count("entries", distinct=True))
+        qs = (
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter, **filters)
+            .annotate(count=Count("entries", distinct=True))
+        )
         ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
-        result = qs.order_by(*ordering_map.get(ordering)).values(*self.values)[: settings.TOPICS_PER_PAGE_DEFAULT]
+        result = qs.order_by(*ordering_map.get(ordering))[: settings.TOPICS_PER_PAGE_DEFAULT]
         return result
 
-    def generic_category(self, slug):
-        category = get_object_or_404(Category.objects, slug=slug)
+    def generic_category(self, category):
         return (
-            Topic.objects.filter(**self.base_filter, **self.day_filter, category=category)
-            .order_by("-latest")
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter, **self.day_filter, category=category)
             .annotate(**self.latest, count=Count("entries"))
-            .values(*self.values)
+            .order_by("-latest")
         )
 
     def uncategorized(self):
         return (
-            Topic.objects.filter(**self.base_filter, **self.day_filter, category=None)
-            .order_by("-latest")
+            Topic.objects.values(*self.values)
+            .filter(**self.base_filter, **self.day_filter)
+            .filter(category=None)
             .annotate(**self.latest, count=Count("entries"))
-            .values(*self.values)
+            .order_by("-latest")
         )
 
     def userstats(self, requester, user, channel, tab):
@@ -325,15 +329,15 @@ class TopicQueryHandler:
             getattr(handler, tab)()
             .annotate(title=F("topic__title"), slug=F("pk"))
             .order_by(*handler.order_map.get(tab))
-            .values(*self.values_entry)
+            .values(*self.values)
         )
 
     def userstats_channels(self, user, channel):
         return (
-            Topic.objects.filter(entries__author=user, entries__is_draft=False, category=channel)
+            Topic.objects.values(*self.values)
+            .filter(entries__author=user, entries__is_draft=False, category=channel)
             .annotate(latest=Max("entries__date_created"), count=Count("entries"))
             .order_by("-latest")
-            .values(*self.values)
         )
 
 
@@ -402,7 +406,7 @@ class TopicListHandler:
             **dict.fromkeys(("today", "drafts", "followups"), [self.user]),
             **dict.fromkeys(("acquaintances", "wishes"), [self.user, self.tab]),
             "today_in_history": [self.year],
-            "generic_category": [self.slug],
+            "generic_category": [self.extra.get("generic_category")],
             "search": [self.user, self.search_keys],
             "popular": [self.exclusions],
             "top": [self.tab],
@@ -458,7 +462,7 @@ class TopicListHandler:
     def _set_internal_extra(self):
         """
         Set internal extras to change the default behaviour.
-        The slug (category) doesn't need to be in parameteric categories.
+        The slug (category) doesn't need to be in parametric categories.
         """
 
         if self.slug == "userstats":
@@ -487,6 +491,9 @@ class TopicListHandler:
 
             self.extra["safename"] = settings.NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
             self.extra["hidetabs"] = "yes"
+
+        elif self.slug not in settings.NON_DB_CATEGORIES:
+            self.extra["generic_category"] = get_object_or_404(Category.objects, slug=self.slug)
 
     @property
     def _caching_allowed(self):

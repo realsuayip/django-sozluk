@@ -127,7 +127,7 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ["username", "is_active"]
 
     # Novice application related fields
-    is_novice = models.BooleanField(default=True, verbose_name=_("Novice status"))
+    is_novice = models.BooleanField(db_index=True, default=True, verbose_name=_("Novice status"))
     application_status = models.CharField(
         max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD, verbose_name=_("Application status")
     )

@@ -15,11 +15,11 @@ from dictionary.utils.validators import validate_user_text
 class Entry(models.Model):
     topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries", verbose_name=_("Topic"))
     author = models.ForeignKey("Author", on_delete=models.CASCADE, verbose_name=_("Author"))
-    content = models.TextField(validators=[validate_user_text], verbose_name=_("Content"))
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    content = models.TextField(db_index=True, validators=[validate_user_text], verbose_name=_("Content"))
+    date_created = models.DateTimeField(db_index=True, auto_now_add=True, verbose_name=_("Date created"))
     date_edited = models.DateTimeField(blank=True, null=True, default=None, verbose_name=_("Date edited"))
     vote_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal(0), verbose_name=_("Vote rate"))
-    is_draft = models.BooleanField(default=False, verbose_name=_("Draft status"))
+    is_draft = models.BooleanField(db_index=True, default=False, verbose_name=_("Draft status"))
 
     objects_all = EntryManagerAll()
     objects_published = EntryManagerOnlyPublished()

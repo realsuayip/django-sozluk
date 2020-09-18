@@ -1,3 +1,15 @@
+[0.14.0-alpha](2020.09.18)(incompatible)
+--Additions--
+1) Add some database indices for improved lookups.
+**incompatible** run makemigrations+migrate for
+dictionary app.
+
+-- Changes --
+1) Improved performance for left frame queries.
+
+--Deletions--
+None
+
 [0.13.0-alpha](2020.09.18)(incompatible)
 --Additions--
 1) Added option for users to enable/disable

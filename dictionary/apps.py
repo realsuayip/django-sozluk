@@ -144,6 +144,7 @@ class DictionaryConfig(AppConfig):
     Available internal extras:
         safename (overrides safename of the category)
         hidetabs (hides tabs for tabbed categories if set to 'yes')
+        generic_category (Category object -when user requests a generic category-)
 
     Available external extras (cacheable):
         user    (slug)
