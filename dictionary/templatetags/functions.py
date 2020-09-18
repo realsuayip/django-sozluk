@@ -1,12 +1,10 @@
 from django import template
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db import connection
 from django.db.models import Exists, OuterRef
 from django.utils.html import mark_safe
 from django.utils.translation import gettext as _
 
 from dictionary.conf import settings
-from dictionary.models import Category, ExternalURL, Suggestion, Topic
+from dictionary.models import Category, ExternalURL, Suggestion
 
 register = template.Library()
 
@@ -128,19 +126,3 @@ def render_header_link(context, slug):
     frame = context.get("left_frame") or context.get("left_frame_fallback")
     is_active = slug == frame.slug if hasattr(frame, "slug") else False
     return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}
-
-
-@register.inclusion_tag("dictionary/includes/topic_suggestions.html")
-def render_topic_suggestions(title):
-    suggestions = None
-
-    if connection.vendor == "postgresql":
-        suggestions = tuple(
-            Topic.objects_published.annotate(
-                rank=SearchRank(SearchVector("title", weight="A"), SearchQuery(title), weights=[0.3, 0.4, 0.5, 0.6])
-            )
-            .filter(rank__gte=0.4)
-            .order_by("-rank")[:5]
-        )
-
-    return {"suggestions": suggestions}

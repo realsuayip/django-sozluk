@@ -165,10 +165,7 @@
 
                 {% else %}
                     {# Topic does exist but has no entries #}
-                    <p>
-                        <span>{% trans "no such thing known to humankind." %}</span>
-                        {% render_topic_suggestions topic.title %}
-                    </p>
+                    <p>{% trans "no such thing known to humankind." %}</p>
 
                     {% if not banned %}
                         {% include "dictionary/includes/forms/wish.html" %}
@@ -181,10 +178,7 @@
                     <h1 class="topic-title"><a href="{% url 'topic-search' %}?q={{ topic.title }}">{{ topic.title }}</a></h1>
                 </header>
 
-                <p>
-                    <span>{% trans "no such thing known to humankind." %}</span>
-                    {% render_topic_suggestions topic.title %}
-                </p>
+                <p>{% trans "no such thing known to humankind." %}</p>
 
                 {% if not valid %}
                     <p>{% trans "curses to such a topic anyway." %}</p>

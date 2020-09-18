@@ -234,7 +234,7 @@ class DictionaryConfig(AppConfig):
     anonymous: Same with vote, but for anonymous users.
 
     Notice: Decimal places larger than 2 is not allowed. e.g. 0.125 is not
-    valid. (Likewise in KARMA_RATES) 
+    valid. (Likewise in KARMA_RATES)
     """
 
     # Karma related settings

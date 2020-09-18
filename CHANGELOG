@@ -1,3 +1,16 @@
+[0.14.1-alpha](2020.09.18)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed create_generic_user raising false
+error message.
+
+--Deletions--
+1) Removed topic suggestions (aka: did you mean?)
+feature due to bad implementation/unacceptable
+performance.
+
 [0.14.0-alpha](2020.09.18)(incompatible)
 --Additions--
 1) Add some database indices for improved lookups.

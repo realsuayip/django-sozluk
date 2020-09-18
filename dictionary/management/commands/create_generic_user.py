@@ -56,7 +56,7 @@ class Command(BaseDebugCommand):
                 self.stdout.write(
                     _(
                         "generic_%(user_type)s has been created with the username"
-                        " %(username) and email %(email)s. You can edit the details"
+                        " %(username)s and email %(email)s. You can edit the details"
                         " of this user via admin page if you wish."
                     )
                     % {"username": guser.username, "user_type": user_type, "email": guser.email}
