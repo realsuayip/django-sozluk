@@ -2,6 +2,7 @@
 
 import { Handle, Handler, template, many, one, gqlc, notify, userIsAuthenticated } from "./utils"
 import { showMessageDialog, showBlockDialog } from "./dialog"
+import { isTouchDevice } from "./mql"
 
 function entryAction (type, pk, redirect = false) {
     return gqlc({ query: `mutation{entry{${type}(pk:"${pk}"){feedback ${redirect ? "redirect" : ""}}}}` })
@@ -129,7 +130,7 @@ Handler(".comment-vote .vote", "click", function () {
 })
 
 Handler(".entry-actions", "click", function (event) {
-    const [action] = ["message", "pin", "block", "delete"].filter(action => event.target.classList.contains(action))
+    const [action] = ["message", "pin", "block", "delete", "copy"].filter(action => event.target.classList.contains(action))
 
     switch (action) {
         case "message" : {
@@ -183,6 +184,13 @@ Handler(".entry-actions", "click", function (event) {
             }
             break
         }
+
+        case "copy": {
+            const link = this.parentNode.querySelector(".permalink").href
+            navigator.clipboard.writeText(link).then(() => {
+                notify(gettext("link copied to clipboard."), "info")
+            })
+        }
     }
 })
 
@@ -215,6 +223,12 @@ Handler(".entry-full a.action[role='button']", "click", function () {
                 actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item block">${gettext("block")}</a>`
             }
         }
+    }
+
+    this._dropdownInstance.popper.update()
+
+    if (isTouchDevice) {
+        actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item copy">${gettext("copy link")}</a>`
     }
 
     actions.innerHTML += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${gettext("report")}</a>`

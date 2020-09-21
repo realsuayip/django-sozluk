@@ -24,8 +24,27 @@ Handler("textarea.expandable", "focus", function () {
     })
 }, { once: true })
 
+const irregularCharMap = {
+    "\u201C": `"`,
+    "\u201D": `"`,
+    "\u2018": `'`,
+    "\u2019": `'`,
+    "\u02C6": `^` // eslint-disable-line
+}
+
+function normalizeChars (string) {
+    return String(string).replace(/[\u201C\u201D\u2018\u2019\u02C6]/g, function (s) {
+        return irregularCharMap[s]
+    })
+}
+
 Handler("textarea#user_content_edit, textarea#message-body", "input", function () {
     window.onbeforeunload = () => this.value || null
+    this.value = normalizeChars(this.value)
+})
+
+Handler("textarea.normalize", "input", function () {
+    this.value = normalizeChars(this.value)
 })
 
 Handler("form", "submit", function (event) {

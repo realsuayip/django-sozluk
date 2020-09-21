@@ -1,5 +1,6 @@
 import { many, one, notify, notSafe, Handle, userIsAuthenticated, gqlc, cookies } from "./utils"
 
+const isTouchDevice = matchMedia("(hover: none)").matches
 let userIsMobile = false
 let lastScrollTop = 0
 
@@ -35,6 +36,16 @@ function hideRedundantHeader () {
 
 const mql = window.matchMedia("(max-width: 810px)")
 
+const swhRender = verbose => {
+    many("a[data-sup]").forEach(sup => {
+        if (verbose) {
+            sup.innerHTML = `<sup>${notSafe(sup.getAttribute("data-sup"))}</sup>`
+        } else {
+            sup.innerHTML = `*`
+        }
+    })
+}
+
 function desktopView () {
     userIsMobile = false
 
@@ -48,10 +59,12 @@ function desktopView () {
     one(".sub-nav").style.marginTop = "0"
     one("header.page_header").style.top = "0"
 
-    // Code to render swh references properly (reverse)
-    many("a[data-sup]").forEach(sup => {
-        sup.innerHTML = `*`
-    })
+    // Code to render swh references properly (reverse) if not touch device (tablet)
+    if (isTouchDevice) {
+        swhRender(true)
+    } else {
+        swhRender(false)
+    }
 }
 
 function mobileView () {
@@ -60,9 +73,7 @@ function mobileView () {
     window.addEventListener("scroll", hideRedundantHeader)
 
     // Code to render swh references properly
-    many("a[data-sup]").forEach(sup => {
-        sup.innerHTML = `<sup>${notSafe(sup.getAttribute("data-sup"))}</sup>`
-    })
+    swhRender(true)
 }
 
 function mqlsw (mql) {
@@ -133,4 +144,4 @@ if (!userIsAuthenticated && !cookies.get("theme") && window.matchMedia("(prefers
     setTheme("dark")
 }
 
-export { userIsMobile }
+export { userIsMobile, isTouchDevice }

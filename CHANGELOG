@@ -1,3 +1,18 @@
+[0.14.2-alpha](2020.09.21)(compatible)
+--Additions--
+1) Add isTouchDevice check in javascript.
+
+-- Changes --
+1) Fixed the issue in editors caused by iPhone
+devices using Apple smart quotes.
+2) Swh references are now fully rendered in
+touch devices.
+3) In touch devices, entry actions now have
+copy link button.
+
+--Deletions--
+None
+
 [0.14.1-alpha](2020.09.18)(compatible)
 --Additions--
 None

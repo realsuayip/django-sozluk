@@ -16,7 +16,7 @@
 
 {% if user.is_authenticated %}
     <div class="wish" data-topic="{{ topic.title }}">
-        <textarea class="form-control dj-hidden" rows="3" placeholder="{% trans "hints (optional)" %}" aria-label="{% trans "Wish hint" %}"></textarea>
+        <textarea class="form-control normalize dj-hidden" rows="3" placeholder="{% trans "hints (optional)" %}" aria-label="{% trans "Wish hint" %}"></textarea>
         <a role="button" tabindex="0" class="wish-send mr-2 fw-600 dj-hidden">{% trans "someone should populate this" %}</a>
         {% with wished=topic|wished_by:user %}
             <a role="button" tabindex="0" class="wish-purge{{ wished|yesno:', dj-hidden' }}">{% trans "remove the wish i asked" %}</a>
