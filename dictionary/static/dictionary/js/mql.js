@@ -1,8 +1,17 @@
-import { many, one, notify, notSafe, Handle, userIsAuthenticated, gqlc, cookies } from "./utils"
+/* global gettext */
+import { many, one, notify, notSafe, Handle, userIsAuthenticated, gqlc, cookies, template } from "./utils"
 
 const isTouchDevice = matchMedia("(hover: none)").matches
 let userIsMobile = false
 let lastScrollTop = 0
+
+let hasScrollTopButton = false
+const scrollTopButton = template(`<a role="button" tabindex="0" class="bg-light rounded border-0 w-100 p-2 d-none scrolltop text-center" style="display: block">${gettext("scroll to top")}</a>`)
+
+Handle(scrollTopButton, "click", function () {
+    window.scrollTo(0, 0)
+    this.classList.add("d-none")
+})
 
 function hideRedundantHeader () {
     const delta = 30
@@ -12,6 +21,10 @@ function hideRedundantHeader () {
 
     if (st < 0) {
         st = 0 // Reset negative offset (iOS Safari)
+    }
+
+    if (st > 0) {
+        scrollTopButton.classList.remove("d-none")
     }
 
     if (Math.abs(lastScrollTop - st) <= delta) {
@@ -65,6 +78,11 @@ function desktopView () {
     } else {
         swhRender(false)
     }
+
+    if (hasScrollTopButton) {
+        scrollTopButton.remove()
+        hasScrollTopButton = false
+    }
 }
 
 function mobileView () {
@@ -74,6 +92,12 @@ function mobileView () {
 
     // Code to render swh references properly
     swhRender(true)
+
+    if (!hasScrollTopButton) {
+        const footer = one("footer.body-footer")
+        footer.parentNode.insertBefore(scrollTopButton, footer)
+        hasScrollTopButton = true
+    }
 }
 
 function mqlsw (mql) {

@@ -1,3 +1,16 @@
+[0.14.3-alpha](2020.09.21)(compatible)
+--Additions--
+1) Add button in topic header that skips
+to entry content area for improved accessibility.
+2) In mobile, add button before footer that scrolls
+to top of the page for improved accessibility.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.14.2-alpha](2020.09.21)(compatible)
 --Additions--
 1) Add isTouchDevice check in javascript.

@@ -111,6 +111,10 @@ Handle("a.wish-purge[role=button]", "click", function () {
     }
 })
 
+Handle(".snap-user-content", "click", () => {
+    one("#user_content_edit").focus()
+})
+
 const topicView = one(".topic-view-entries")
 const pagination = one(".pagination")
 

@@ -292,7 +292,8 @@ body.dark .tinybar {
     height: max-content;
 }
 
-.right-frame > * + footer {
+.right-frame > * + footer,
+.right-frame > * + .scrolltop {
     margin-top: 1em;
 }
 
@@ -1075,6 +1076,10 @@ a.expand::after {
     font-size: 14px;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
+}
+
+.nice-filter .sep {
+    color: var(--dark-0);
 }
 
 .nice-filter a.active {

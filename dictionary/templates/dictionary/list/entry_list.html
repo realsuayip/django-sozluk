@@ -63,7 +63,7 @@
                     <div class="lower d-flex justify-content-between">
                     <div class="title_sub">
                     <span class="mr-2 nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" context "nicefilter" %}</a>
-                        <span>|</span>
+                        <span class="sep">|</span>
                         <a title="{% trans "most liked entries of today" %}" href="{{ topic.get_absolute_url }}{% if mode != "nicetoday" %}?a=nicetoday{% endif %}" {% if mode == "nicetoday" %}class="active" {% endif %}>{% trans "today" %}</a>
                     </span>
 
@@ -93,11 +93,16 @@
                                     </div>
                                 </form>
                             </a>
-
                         </div>
                         {% if user.is_authenticated %}
                             {% check_follow_status user topic as status %}
                             <a role="button" tabindex="0" class="follow-topic-trigger" data-topic-id="{{ topic.id }}">{{ status|yesno:_("unfollow,follow") }}</a>
+                            <a role="button" tabindex="0" class="position-relative ml-2 snap-user-content" style="top: -2px">
+                                <svg fill="currentColor" width="16" height="16" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#edit"></use>
+                                    <title>{% trans "Skip to entry content area" %}</title>
+                                </svg>
+                            </a>
                         {% endif %}
                     </div>
                     {% include "dictionary/includes/paginaton.html" with paginator=page_obj classlist="pagination" %}
