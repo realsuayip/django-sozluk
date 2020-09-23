@@ -431,6 +431,7 @@ class Author(AbstractUser):
         )["count"]
 
     @cached_property
+    @usercache(timeout=60)
     def unread_topic_count(self):
         """
         Find counts for unread topics and announcements (displayed in header when apt).
@@ -441,31 +442,25 @@ class Author(AbstractUser):
         also invalidates this cache. e.g. reading an unread topic/announcement.
         """
 
-        @cached_context(vary_on_user=True, timeout=60)
-        def _unread_topic_count(user=None):
-            unread_announcements = (
-                (
-                    apps.get_model("dictionary.Announcement")
-                    .objects.filter(
-                        notify=True, date_created__lte=timezone.now(), date_created__gte=user.announcement_read
-                    )
-                    .count()
-                )
-                if self.allow_site_announcements
-                else 0
+        unread_announcements = (
+            (
+                apps.get_model("dictionary.Announcement")
+                .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=self.announcement_read)
+                .count()
             )
-            unread_topics = user.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
-            return {
-                "sum": unread_announcements + unread_topics,
-                "announcements": unread_announcements,
-                "topics": unread_topics,
-            }
-
-        return _unread_topic_count(user=self)
+            if self.allow_site_announcements
+            else 0
+        )
+        unread_topics = self.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
+        return {
+            "sum": unread_announcements + unread_topics,
+            "announcements": unread_announcements,
+            "topics": unread_topics,
+        }
 
     def invalidate_unread_topic_count(self):
         """Invalidates cache of unread_topic_count, set by cached_context."""
-        return cache.delete(f"default_context___unread_topic_count_usr{self.pk}")
+        return cache.delete(f"usercache_unread_topic_count_context__<lambda>_usr{self.pk}")
 
     @cached_property
     def novice_queue(self):

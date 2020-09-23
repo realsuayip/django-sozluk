@@ -91,7 +91,7 @@ class TopicQueryHandler:
             "week": {"date_created__lte": time_threshold(days=7), "date_created__gte": time_threshold(days=14)},
         }
         return (
-            Entry.objects.filter(**filters.get(tab), topic__is_censored=False)
+            Entry.objects.filter(**filters.get(tab), vote_rate__gt=0, topic__is_censored=False)
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
             .values(*self.values)

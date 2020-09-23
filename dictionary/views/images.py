@@ -90,6 +90,6 @@ class ImageDetailProduction(ImageDetailBase):
 
     def get(self, request, *args, **kwargs):
         image = self.get_object()
-        response = HttpResponse(content_type="image_png")
+        response = HttpResponse(content_type="image/png")
         response[settings.XSENDFILE_HEADER_NAME] = image.file.url
         return response

@@ -1,3 +1,23 @@
+[0.14.4-alpha](2020.09.23)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Use usercache decorator for
+unread_topic_count method in Author.
+2) Fix ImageDetailProduction mime type
+and url definition.
+3) Entries now required to have vote rate
+bigger than 0 in order to show up in top
+entries.
+4) Add cache for calculating all nice
+entries in Index view. Also add some comments
+along with page_timeout and nice_cache_timeout
+properties.
+
+--Deletions--
+None
+
 [0.14.3-alpha](2020.09.21)(compatible)
 --Additions--
 1) Add button in topic header that skips

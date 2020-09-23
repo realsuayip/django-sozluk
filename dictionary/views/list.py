@@ -52,13 +52,34 @@ class Index(ListView):
     extra_context = {"index_type": settings.INDEX_TYPE}
 
     size = 15
+    """
+    Number of entries that will show up in homepage.
+    """
+
+    page_timeout = 20
+    """
+    This many seconds need to passed to collect new
+    set of random entries.
+    """
+
     nice_bound = 100
+    """
+    Minimum vote rate an entry needs to have in order to
+    show up in homepage. (nice_records)
+    """
+
+    nice_cache_timeout = 86400
+    """
+    Refresh list of nice entries (from which a specified
+    number of entries will be randomly selected) after this
+    many seconds. (nice_records)
+    """
 
     def get_queryset(self):
         queryset = Entry.objects.filter(pk__in=self.get_pk_set())
         return entry_prefetch(queryset, self.request.user)
 
-    @method_decorator(cached_context(timeout=20, prefix="index_view"))
+    @method_decorator(cached_context(timeout=page_timeout, prefix="index_view"))
     def get_pk_set(self):
         records = getattr(self, settings.INDEX_TYPE)()
         return list(records)
@@ -86,7 +107,9 @@ class Index(ListView):
                 yield next_pk
 
     def nice_records(self):
-        nice_pk_set = tuple(Entry.objects.filter(vote_rate__gte=self.nice_bound).values_list("pk", flat=True))
+        nice_pk_set = cached_context(prefix="index_nice_pk_set", timeout=self.nice_cache_timeout)(
+            lambda: tuple(Entry.objects.filter(vote_rate__gte=self.nice_bound).values_list("pk", flat=True).order_by())
+        )()  # Generated cache key: index_nice_pk_set_context__<lambda>
         return random.sample(nice_pk_set, self.size) if len(nice_pk_set) > self.size else nice_pk_set
 
 
