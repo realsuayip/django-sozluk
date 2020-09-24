@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 def user_directory_path(instance, filename):
     ext = filename.split(".")[-1]
-    return f"{instance.author.pk}/{uuid.uuid4().hex}.{ext}"
+    return f"images/{instance.author.pk}/{uuid.uuid4().hex}.{ext}"
 
 
 def image_slug():

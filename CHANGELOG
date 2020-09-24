@@ -1,3 +1,26 @@
+[0.14.5-alpha](2020.09.24)(compatible)
+--Additions--
+1) Flair "assorter" is now visible
+for authors who have the permission
+to suggest categories for topics.
+2) Add template tag has_perm to
+check permissions for given user
+instance.
+3) Add non-db category "ama" to
+list Topics with is_ama=True.
+4) Add helpful exception message for
+unimplemented non-db categories.
+
+-- Changes --
+1) Images are now stored in "images"
+sub folder (below media folder).
+2) Users with "view_image" permission
+now can browse images even if they are
+marked for deletion.
+
+--Deletions--
+None
+
 [0.14.4-alpha](2020.09.23)(compatible)
 --Additions--
 None

@@ -40,6 +40,11 @@ def check_follow_user(user, target):
 
 
 @register.simple_tag
+def has_perm(user, perm):
+    return user.has_perm(perm)
+
+
+@register.simple_tag
 def get_external_urls():
     return ExternalURL.objects.all()
 

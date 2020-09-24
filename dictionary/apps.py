@@ -90,11 +90,20 @@ class DictionaryConfig(AppConfig):
                 "latest",
             ),
         ),
+        "ama": (_("ama"), _("question-and-answer themed interactive interviews")),
     }
     """
     Category related settings. Notice: Some keys of NON_DB_CATEGORIES_META are
     hard-coded. Structure: dict{str:tuple(str, str, tuple(dict{str:str}, str))}
     Semantic: {key: (safename, description, ({"tab_slug": "tab_safename", ...}, "default_tab_slug"))...}
+
+    Notice: In default setup, "ama" is accessible with links but there is no
+    reference in header (or in any of the templates). You need to adjust that
+    yourself in templates.
+
+    If you want some category to be inaccessible in the website, you can safely
+    remove it from NON_DB_CATEGORIES_META (some template references might
+    need to be removed as well depending on the category).
     """
 
     NON_DB_CATEGORIES = NON_DB_CATEGORIES_META.keys()

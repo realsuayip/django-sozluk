@@ -144,6 +144,7 @@ class LeftFrame(PlainSerializer):
             "followups": "?a=recent",
             "today-in-history": f"?a=history&year={self.year}",
             "acquaintances_entries": "?a=acquaintances&recent",
+            "ama": "?a=answered",
         }
 
         if hasattr(self.extra.get("user_object"), "username"):

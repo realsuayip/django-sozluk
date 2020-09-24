@@ -69,6 +69,10 @@ class ImageDetailBase(SingleObjectMixin, View):
     model = Image
 
     def get_queryset(self):
+        # Notice: AnonymousUser has "has_perm" property.
+        if self.request.user.has_perm("dictionary.view_image"):
+            return super().get_queryset()
+
         return self.model.objects.filter(is_deleted=False)
 
 

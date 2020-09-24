@@ -71,6 +71,12 @@
                     <a class="badge-item" href="{% url "topic-unicode-url" unicode_string=_("zealous") %}" title="{% trans "has at least 1000 entries" %}">{% trans "zealous" %}</a>
                 {% endif %}
 
+                {% has_perm profile "dictionary.can_suggest_categories" as can_suggest_categories %}
+
+                {% if can_suggest_categories %}
+                    <a class="badge-item" href="{% url "topic-unicode-url" unicode_string=_("assorter") %}" title="{% trans "can suggest categories to topics" %}">{% trans "assorter" %}</a>
+                {% endif %}
+
                 {% for badge in profile.badges.all %}
                     <a title="{{ badge.description }}" class="badge-item" {% if badge.url %} href="{{ badge.url }}" target="_blank" {% else %}href="{% url 'topic-unicode-url' unicode_string=badge.name %}"{% endif %}>{{ badge.name }}</a>
                 {% endfor %}

@@ -340,6 +340,14 @@ class TopicQueryHandler:
             .order_by("-latest")
         )
 
+    def ama(self):
+        return (
+            Topic.objects.values(*self.values)
+            .filter(is_ama=True, is_censored=False)
+            .annotate(count=Count("entries__comments"))
+            .order_by("-date_created")
+        )
+
 
 class TopicListHandler:
     """
@@ -417,7 +425,14 @@ class TopicListHandler:
         slug_method = self.slug.replace("-", "_") if self.slug in settings.NON_DB_CATEGORIES else "generic_category"
 
         # Get the method from TopicQueryHandler.
-        return getattr(self, slug_method)(*arg_map.get(slug_method, []))
+        try:
+            return getattr(self, slug_method)(*arg_map.get(slug_method, []))
+        except AttributeError as exc:
+            raise NotImplementedError(
+                f"Could not find the query method ({slug_method}) for given slug.\n"
+                "You need to define a method for non-database"
+                f" category '{self.slug}' in 'TopicQueryHandler'"
+            ) from exc
 
     def _validate_exclusions(self, exclusions):
         if self.slug == "popular":
