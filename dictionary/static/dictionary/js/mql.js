@@ -63,7 +63,7 @@ function desktopView () {
     userIsMobile = false
 
     // Find left frame scroll position.
-    if (parseInt(localStorage.getItem("where")) > 0) {
+    if (parseInt(localStorage.getItem("where"), 10) > 0) {
         one("#left-frame-nav").scroll(0, localStorage.getItem("where"))
     }
 

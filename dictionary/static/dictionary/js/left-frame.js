@@ -7,14 +7,14 @@ function setExclusions (exclusions) {
     const cookieExclusions = JSON.parse(cookies.get("lfex") || "null")
     if (exclusions) {
         if (cookieExclusions) {
-            for (const exclusion of exclusions) {
+            exclusions.forEach(exclusion => {
                 if (cookieExclusions.includes(exclusion)) {
                     exclusions = cookieExclusions.filter(item => item !== exclusion)
                 } else {
                     cookieExclusions.push(exclusion)
                     exclusions = cookieExclusions
                 }
-            }
+            })
         }
         cookies.set("lfex", JSON.stringify(exclusions), { expires: 90 })
         return exclusions
@@ -142,11 +142,11 @@ class LeftFrame {
         const tabHolder = one("ul#left-frame-tabs")
         if (tabData) {
             tabHolder.innerHTML = ""
-            const availableTabs = tabData.available
-            const current = tabData.current
-            for (const tab of availableTabs) {
-                tabHolder.innerHTML += `<li class="nav-item"><a role="button" tabindex="0" data-lf-slug="${this.slug}" data-tab="${tab.name}" class="nav-link${current === tab.name ? " active" : ""}">${tab.safename}</a></li>`
-            }
+
+            tabData.available.forEach(tab => {
+                tabHolder.innerHTML += `<li class="nav-item"><a role="button" tabindex="0" data-lf-slug="${this.slug}" data-tab="${tab.name}" class="nav-link${tabData.current === tab.name ? " active" : ""}">${tab.safename}</a></li>`
+            })
+
             tabHolder.classList.remove("dj-hidden")
         } else {
             tabHolder.classList.add("dj-hidden")
@@ -162,10 +162,11 @@ class LeftFrame {
             categoryList.innerHTML = ""
             toggler.classList.remove("dj-hidden")
 
-            for (const category of exclusions.available) {
+            exclusions.available.forEach(category => {
                 const isActive = exclusions.active.includes(category.slug)
                 categoryList.innerHTML += `<li><a role="button" title="${category.description}" ${isActive ? `class="active"` : ""} tabindex="0" data-slug="${category.slug}">#${category.name}</a></li>`
-            }
+            })
+
             if (exclusions.active.length) {
                 toggler.classList.add("active")
             } else {
@@ -183,9 +184,9 @@ class LeftFrame {
 
         if (this.slug === "today-in-history") {
             yearSelect.style.display = "block"
-            for (const year of yearRange) {
+            yearRange.forEach(year => {
                 yearSelect.innerHTML += `<option ${year === currentYear ? "selected" : ""} id="${year}">${year}</option>`
-            }
+            })
         } else {
             yearSelect.style.display = "none"
         }
@@ -201,9 +202,9 @@ class LeftFrame {
 
             let topics = ""
 
-            for (const topic of objectList) {
+            objectList.forEach(topic => {
                 topics += `<li class="list-group-item"><a href="${slugIdentifier}${topic.slug}/${params}">${notSafe(topic.title)}<small class="total_entries">${topic.count && topic.count !== "0" ? topic.count : ""}</small></a></li>`
-            }
+            })
 
             if (topics) {
                 topicList.innerHTML = topics
@@ -223,9 +224,9 @@ class LeftFrame {
             pageSelector.innerHTML = ""
             let options = ""
 
-            for (const page of pageRange) {
+            pageRange.forEach(page => {
                 options += `<option ${page === currentPage ? "selected" : ""} value="${page}">${page}</option>`
-            }
+            })
 
             pageSelector.innerHTML += options
             totalPagesButton.textContent = totalPages
@@ -291,7 +292,7 @@ Handle(totalPagesElement, "click", function () {
 
 Handle("#lf_navigate_before", "click", () => {
     // Previous page
-    const selected = parseInt(selector.value)
+    const selected = parseInt(selector.value, 10)
     if (selected - 1 > 0) {
         selector.value = selected - 1
         selector.dispatchEvent(changeEvent)
@@ -300,8 +301,8 @@ Handle("#lf_navigate_before", "click", () => {
 
 Handle("#lf_navigate_after", "click", () => {
     // Subsequent page
-    const selected = parseInt(selector.value)
-    const max = parseInt(totalPagesElement.textContent)
+    const selected = parseInt(selector.value, 10)
+    const max = parseInt(totalPagesElement.textContent, 10)
     if (selected + 1 <= max) {
         selector.value = selected + 1
         selector.dispatchEvent(changeEvent)
@@ -353,4 +354,4 @@ Handle("#left-frame-nav", "scroll", function () {
     localStorage.setItem("where", this.scrollTop)
 })
 
-export { LeftFrame, setExclusions }
+export { LeftFrame }

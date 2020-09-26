@@ -34,9 +34,9 @@ Handler(".suggestion-vote button", "click", function () {
         variables: { category, topic, direction }
     }).then(response => {
         if (response.errors) {
-            for (const error of response.errors) {
+            response.errors.forEach(error => {
                 notify(error.message, "error")
-            }
+            })
         } else {
             this.classList.toggle("btn-django-link")
             const sibling = this.nextElementSibling || this.previousElementSibling
@@ -72,9 +72,9 @@ Handle("a.wish-send[role=button]", "click", function () {
     const title = this.parentNode.getAttribute("data-topic")
     wishTopic(title, hint).then(response => {
         if (response.errors) {
-            for (const error of response.errors) {
+            response.errors.forEach(error => {
                 notify(error.message, "error")
-            }
+            })
             return
         }
         textarea.value = ""

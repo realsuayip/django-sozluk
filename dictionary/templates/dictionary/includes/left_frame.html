@@ -57,6 +57,7 @@
     {# GUNDEM FILTER END #}
 
     {# TABS #}
+    {% spaceless %}
     <ul class="nav nav-tabs nav-fill{% if not lf.tabs %} dj-hidden{% endif %}" id="left-frame-tabs">
     {% if lf.tabs %}
         {% for name, safename in lf.tabs.available.items %}
@@ -66,6 +67,7 @@
         {% endfor %}
     {% endif %}
     </ul>
+    {% endspaceless %}
     {# TABS #}
 
 

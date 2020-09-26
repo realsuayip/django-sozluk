@@ -56,9 +56,10 @@ Handler("a.fav-count[role='button']", "click", function () {
         let favList = ""
 
         if (authors.length > 0) {
-            for (const author of authors) {
+            authors.forEach(author => {
                 favList += `<a class="author" href="/author/${author.slug}/">@${author.username}</a>`
-            }
+            })
+
             favoritesList.innerHTML = favList
         }
 
@@ -74,9 +75,10 @@ Handler("a.fav-count[role='button']", "click", function () {
 
             favList = ""
 
-            for (const novice of novices) {
+            novices.forEach(novice => {
                 favList += `<a class="novice" href="/author/${novice.slug}/">@${novice.username}</a>`
-            }
+            })
+
             noviceList.innerHTML = favList
             favoritesList.append(noviceList)
         }
@@ -114,9 +116,9 @@ Handler(".comment-vote .vote", "click", function () {
         variables: { pk, action }
     }).then(response => {
         if (response.errors) {
-            for (const error of response.errors) {
+            response.errors.forEach(error => {
                 notify(error.message, "error")
-            }
+            })
             return
         }
 
@@ -282,9 +284,9 @@ function draftEntry (content, pk = null, title = null) {
         variables: { content, title, pk }
     }).then(response => {
         if (response.errors) {
-            for (const error of response.errors) {
+            response.errors.forEach(error => {
                 notify(error.message, "error")
-            }
+            })
         } else {
             const btn = one("button.draft-async")
             btn.textContent = gettext("save changes")

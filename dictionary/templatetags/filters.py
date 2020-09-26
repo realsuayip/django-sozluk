@@ -57,6 +57,32 @@ def q_unescape(string):
     return quote_plus(unescape(string))
 
 
+def linkify(weburl_match):
+    """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
+    domain, path = weburl_match.group(1), weburl_match.group(2) or ""
+
+    if domain.endswith(settings.DOMAIN) and len(path) > 7:
+        # Internal links (entries and topics)
+
+        if permalink := re.match(r"^/entry/([0-9]+)/?$", path):
+            return f'({SEE}: <a href="{path}">#{permalink.group(1)}</a>)'
+
+        if topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path):
+            # Notice as we convert slug to title, this doesn't optimally translate
+            # into original title, especially in non-English languages.
+            slug = topic.group(1)
+            guess = slug.replace("-", " ").strip()
+            return f'({SEE}: <a href="{path}">{guess}</a>)'
+
+        if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
+            return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'  # noqa
+
+    path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
+    url = domain + path
+
+    return f'<a rel="ugc nofollow noopener" target="_blank" title="{url}" href="{url}">{domain}{path_repr}</a>'
+
+
 @register.filter
 def formatted(raw_entry):
     """
@@ -65,30 +91,6 @@ def formatted(raw_entry):
 
     if not raw_entry:
         return ""
-
-    def linkify(weburl_match):
-        """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
-        domain, path = weburl_match.group(1), weburl_match.group(2) or ""
-
-        if domain.endswith(settings.DOMAIN) and len(path) > 7:
-            # Internal links (entries and topics)
-
-            if permalink := re.match(r"^/entry/([0-9]+)/?$", path):
-                return f'({SEE}: <a href="{path}">#{permalink.group(1)}</a>)'
-
-            if topic := re.match(r"^/topic/([-a-zA-Z0-9]+)/?$", path):
-                # todo: When topic auto-redirect feature gets implemented, add redirect flag to this url.
-                slug = topic.group(1)
-                guess = slug.replace("-", " ").strip()
-                return f'({SEE}: <a href="{path}">{guess}</a>)'
-
-            if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
-                return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'  # noqa
-
-        path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
-        url = domain + path
-
-        return f'<a rel="ugc nofollow noopener" target="_blank" title="{url}" href="{url}">{domain}{path_repr}</a>'
 
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
