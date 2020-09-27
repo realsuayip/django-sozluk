@@ -18,7 +18,7 @@ class TopicMove(IntermediateActionView):
     max_input = 15
     permission_required = ("dictionary.move_topic", "dictionary.change_topic")
     model = Topic
-    template_name = "dictionary/admin/actions/topic_move.html"
+    template_name = "admin/actions/topic_move.html"
     page_title = _("Topic transfer")
 
     def get_queryset(self):

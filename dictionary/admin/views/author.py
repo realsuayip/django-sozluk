@@ -22,7 +22,7 @@ class SuspendUser(IntermediateActionView):
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
     page_title = _("Suspend authors")
-    template_name = "dictionary/admin/actions/suspend_user.html"
+    template_name = "admin/actions/suspend_user.html"
     max_input = 100
 
     def post(self, request):
@@ -84,7 +84,7 @@ class UnsuspendUser(IntermediateActionView):
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
     page_title = _("Unsuspend authors")
-    template_name = "dictionary/admin/actions/unsuspend_user.html"
+    template_name = "admin/actions/unsuspend_user.html"
 
     def get_queryset(self):
         # Select only suspended users.

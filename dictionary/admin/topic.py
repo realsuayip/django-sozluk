@@ -1,29 +1,11 @@
 from django.contrib import admin
-from django.contrib.admin import DateFieldListFilter, SimpleListFilter
-from django.db.models import Q
+from django.contrib.admin import DateFieldListFilter, EmptyFieldListFilter
 from django.urls import path
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from dictionary.admin.views.topic import TopicMove
 from dictionary.models import Topic
 from dictionary.utils.admin import intermediate
-
-
-class MediaFilter(SimpleListFilter):
-    title = _("Media links")
-    parameter_name = "has_media"
-
-    def lookups(self, request, model_admin):
-        return [("yes", gettext("Yes")), ("no", gettext("No"))]
-
-    def queryset(self, request, queryset):
-        if self.value() == "yes":
-            return queryset.exclude(Q(media="") | Q(media=None))
-
-        if self.value() == "no":
-            return queryset.filter(Q(media="") | Q(media=None))
-
-        return None
 
 
 @admin.register(Topic)
@@ -61,7 +43,7 @@ class TopicAdmin(admin.ModelAdmin):
         "is_censored",
         "is_banned",
         "is_ama",
-        MediaFilter,
+        ("media", EmptyFieldListFilter),
         ("date_created", DateFieldListFilter),
     )
     search_fields = ("title",)

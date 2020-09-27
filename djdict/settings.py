@@ -36,7 +36,6 @@ SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -50,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     # Main apps
     "dictionary",
+    "django.contrib.admin",
     "dictionary_graph",
     # Third Party
     "graphene_django",
@@ -152,7 +152,7 @@ CELERY_EMAIL_TASK_CONFIG = {"default_retry_delay": 40}
 
 LANGUAGE_COOKIE_NAME = "langcode"
 LANGUAGE_COOKIE_AGE = 180 * 86400
-# LANGUAGE_COOKIE_SAMESITE = "Lax" (>Django 3.0)
+LANGUAGE_COOKIE_SAMESITE = "Lax"
 
 USE_I18N = True
 USE_L10N = True
@@ -163,7 +163,7 @@ LANGUAGES = (
 )
 
 
-PASSWORD_RESET_TIMEOUT_DAYS = 1  # deprecated in django 3.1
+PASSWORD_RESET_TIMEOUT = 86400
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 

@@ -18,7 +18,7 @@ from .sites import SiteAdmin
 from .topic import TopicAdmin
 
 admin.site.site_header = admin.site.site_title = _("Administration")
-admin.site.index_template = "dictionary/admin/index.html"
+
 admin.site.login = RedirectView.as_view(url=reverse_lazy("login"))
 admin.site.logout = RedirectView.as_view(url=reverse_lazy("logout"))
 

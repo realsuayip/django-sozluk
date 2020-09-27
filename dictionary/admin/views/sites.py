@@ -10,7 +10,7 @@ from dictionary.utils.admin import log_admin
 
 
 class ClearCache(PermissionRequiredMixin, TemplateView):
-    template_name = "dictionary/admin/sites/clear_cache.html"
+    template_name = "admin/sites/clear_cache.html"
     permission_required = "dictionary.can_clear_cache"
 
     def get_context_data(self, **kwargs):

@@ -15,7 +15,7 @@ class NoviceList(PermissionRequiredMixin, ListView):
     """View to list top 100 novices."""
 
     model = Author
-    template_name = "dictionary/admin/novices.html"
+    template_name = "admin/novices.html"
     permission_required = "dictionary.can_activate_user"
 
     def get_queryset(self):
@@ -36,7 +36,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     """
 
     model = Entry
-    template_name = "dictionary/admin/novice_lookup.html"
+    template_name = "admin/novice_lookup.html"
     permission_required = "dictionary.can_activate_user"
     context_object_name = "entries"
 

@@ -19,7 +19,7 @@ class EntryAdmin(admin.ModelAdmin):
 
     readonly_fields = ("author", "content", "vote_rate", "is_draft", "date_created", "date_edited")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
@@ -33,5 +33,5 @@ class CommentAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False

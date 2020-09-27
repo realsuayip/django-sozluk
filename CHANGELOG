@@ -1,3 +1,26 @@
+[0.15.0-alpha](2020.09.27)(incompatible)
+--Additions--
+None
+
+-- Changes --
+1) Upgrade Django from 2.2.16 to 3.1.1
+**incompatible** You need to upgrade to Django
+3.1, Django 2.2.x and 3.0.x are incompatible.
+You also need to apply migrations. (due to increased
+max char size in the first and last name of User model
+in Django 3.1)
+
+2) Changed some deprecated apis.
+3) Admin templates are now located in
+templates directory (formerly templates/dictionary)
+4) Removed index.html admin template and used app_list.html
+instead (to support Django 3 changes).
+5) django.contrib.admin is now located under the dictionary
+in INSTALLED_APPS due to template overriding.
+
+--Deletions--
+None
+
 [0.14.7-alpha](2020.09.27)(compatible)
 --Additions--
 None
