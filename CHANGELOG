@@ -1,3 +1,19 @@
+[0.14.7-alpha](2020.09.27)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) When the number of entries dropped
+below 10, novices wouldn't be kicked out
+of the novice list, fixed that.
+2) Fixed incorrect argument for date_created
+field of Conversation. (run makemigrations+migrate
+for dictionary)
+3) Reduced entry deletion karma penalty by 1.
+
+--Deletions--
+None
+
 [0.14.6-alpha](2020.09.26)(compatible)
 --Additions--
 1) Add filtering by media in Topic

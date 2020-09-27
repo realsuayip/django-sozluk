@@ -46,7 +46,7 @@ class ConversationArchive(models.Model):
     slug = models.SlugField()
 
     messages = models.TextField()  # json text
-    date_created = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.__class__.__name__} holder -> {self.holder.username} target -> {self.target}"

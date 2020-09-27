@@ -84,7 +84,7 @@ class Entry(models.Model):
             self.author.application_status = "OH"
             self.author.application_date = None
             self.author.queue_priority = 0
-            self.author.save()
+            self.author.save(update_fields=["application_status", "application_date", "queue_priority"])
 
     def update_vote(self, rate, change=False):
         k = Decimal("2") if change else Decimal("1")

@@ -49,8 +49,8 @@ class DeleteEntry(Action, Mutation):
 
         if not entry.is_draft:
             # Deduct some karma upon entry deletion.
-            info.context.user.karma = F("karma") - 2
-            info.context.user.save()
+            entry.author.karma = F("karma") - 1
+            entry.author.save(update_fields=["karma"])
 
         return DeleteEntry(feedback=_("your entry has been deleted"), redirect=redirect_url)
 
