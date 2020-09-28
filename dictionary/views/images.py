@@ -7,7 +7,7 @@ from django.utils.translation import gettext
 from django.views.generic import CreateView, ListView, View
 from django.views.generic.detail import SingleObjectMixin
 
-from PIL import Image as PIL_Image
+from PIL import Image as PIL_Image, ImageOps
 
 from dictionary.conf import settings
 from dictionary.models import Image
@@ -16,7 +16,8 @@ from dictionary.utils import time_threshold
 
 def compress(file):
     img, img_io = PIL_Image.open(file), BytesIO()
-    img.save(img_io, img.format, quality=settings.COMPRESS_QUALITY)
+    transposed = ImageOps.exif_transpose(img)
+    transposed.save(img_io, img.format, quality=settings.COMPRESS_QUALITY)
     return File(img_io, name=file.name)
 
 
