@@ -84,7 +84,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     def accept_application(self):
         # Alter the user status
         user = self.novice
-        user.application_status = Author.APPROVED
+        user.application_status = Author.Status.APPROVED
         user.is_novice = False
         user.save()
 
@@ -108,7 +108,7 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         # Alter the user status & delete entries
         user = self.novice
         Entry.objects_published.filter(author=user).delete()  # does not trigger model's delete()
-        user.application_status = Author.ON_HOLD
+        user.application_status = Author.Status.ON_HOLD
         user.application_date = None
         user.save()
 

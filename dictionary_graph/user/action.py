@@ -76,11 +76,11 @@ class ToggleTheme(Mutation):
     @login_required
     def mutate(_root, info):
         user = info.context.user
-        if user.theme == Author.DARK:
-            user.theme = Author.LIGHT
+        if user.theme == Author.Theme.DARK:
+            user.theme = Author.Theme.LIGHT
             user.save()
             return ToggleTheme(user.theme)
 
-        user.theme = Author.DARK
+        user.theme = Author.Theme.DARK
         user.save()
         return ToggleTheme(user.theme)

@@ -25,7 +25,7 @@ class SignUpForm(UserCreationForm):
         help_text=_("required. in order to complete registration, provide a valid e-mail address."),
         label=_("e-mail"),
     )
-    gender = forms.ChoiceField(choices=Author.GENDERS, label=_("gender"))
+    gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
     birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date"))
     terms_conditions = forms.BooleanField(required=True)
 

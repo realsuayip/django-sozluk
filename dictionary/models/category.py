@@ -53,15 +53,15 @@ class Category(models.Model):
 
 
 class Suggestion(models.Model):
-    POSITIVE = 1
-    NEGATIVE = -1
-    DIRECTIONS = ((POSITIVE, _("Positive")), (NEGATIVE, _("Negative")))
+    class Direction(models.IntegerChoices):
+        POSITIVE = 1
+        NEGATIVE = -1
 
     author = models.ForeignKey("Author", on_delete=models.CASCADE)
     topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="category_suggestions")
     category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="+")
 
-    direction = models.SmallIntegerField(choices=DIRECTIONS)
+    direction = models.SmallIntegerField(choices=Direction.choices)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def register(self):

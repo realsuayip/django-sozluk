@@ -64,7 +64,7 @@ class SignUp(FormView):
 
         if settings.DISABLE_NOVICE_QUEUE:
             # Make the user an actual author
-            user.application_status = Author.APPROVED
+            user.application_status = Author.Status.APPROVED
             user.is_novice = False
 
         user.save()

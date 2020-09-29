@@ -5,16 +5,17 @@ from django.utils.translation import gettext_lazy as _
 
 
 class GeneralReport(models.Model):
-    CONTENT = "CNT"
-    OTHER = "ETC"
-    CATEGORIES = (
-        (CONTENT, _("about the some content published")),
-        (OTHER, _("about other subjects")),
-    )
+    class CategoryPref(models.TextChoices):
+        CONTENT = "CNT", _("about the some content published")
+        OTHER = "ETC", _("about other subjects")
 
     reporter_email = models.EmailField(verbose_name=_("e-mail"))
     category = models.CharField(
-        max_length=3, choices=CATEGORIES, verbose_name=_("category"), blank=False, default=CONTENT
+        max_length=3,
+        choices=CategoryPref.choices,
+        verbose_name=_("category"),
+        blank=False,
+        default=CategoryPref.CONTENT,
     )
     subject = models.CharField(max_length=160, verbose_name=_("Subject"))
     content = models.TextField(verbose_name=_("Content"))

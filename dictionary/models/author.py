@@ -56,48 +56,38 @@ class AuthorNickValidator(UnicodeUsernameValidator):
 
 
 class Author(AbstractUser):
-    # Gender options
-    MAN = "MN"
-    WOMAN = "WM"
-    OTHER = "OT"
-    UNKNOWN = "NO"
-    GENDERS = ((UNKNOWN, _("forget it")), (MAN, _("male")), (WOMAN, _("female")), (OTHER, _("other")))
+    class Gender(models.TextChoices):
+        MAN = "MN", _("male")
+        WOMAN = "WM", _("female")
+        OTHER = "OT", _("other")
+        UNKNOWN = "NO", _("forget it")
 
-    # Entry/topic per page preference options
-    TEN = 10
-    THIRTY = 30
-    FIFTY = 50
-    SEVENTYFIVE = 75
-    ONEHUNDRED = 100
-    ENTRY_COUNTS = ((TEN, "10"), (THIRTY, "30"), (FIFTY, "50"), (ONEHUNDRED, "100"))
-    TOPIC_COUNTS = ((THIRTY, "30"), (FIFTY, "50"), (SEVENTYFIVE, "75"), (ONEHUNDRED, "100"))
+    class Status(models.TextChoices):
+        PENDING = "PN", _("in novice list")
+        ON_HOLD = "OH", _("waiting for first ten entries")
+        APPROVED = "AP", _("authorship approved")
 
-    # Status of author queue
-    PENDING = "PN"
-    ON_HOLD = "OH"
-    APPROVED = "AP"
-    APPLICATION_STATUS = (
-        (PENDING, _("in novice list")),
-        (ON_HOLD, _("waiting for first ten entries")),
-        (APPROVED, _("authorship approved")),
-    )
+    class MessagePref(models.TextChoices):
+        DISABLED = "DS", _("nobody")
+        ALL_USERS = "AU", _("authors and novices")
+        AUTHOR_ONLY = "AO", _("authors")
+        FOLLOWING_ONLY = "FO", _("people who i follow")
 
-    # Receiving messages options
-    DISABLED = "DS"
-    ALL_USERS = "AU"
-    AUTHOR_ONLY = "AO"
-    FOLLOWING_ONLY = "FO"
-    MESSAGE_PREFERENCE = (
-        (DISABLED, _("nobody")),
-        (ALL_USERS, _("authors and novices")),
-        (AUTHOR_ONLY, _("authors")),
-        (FOLLOWING_ONLY, _("people who i follow")),
-    )
+    class Theme(models.TextChoices):
+        LIGHT = "light", _("Light")
+        DARK = "dark", _("Dark")
 
-    # Themes
-    LIGHT = "light"
-    DARK = "dark"
-    THEMES = ((LIGHT, _("Light")), (DARK, _("Dark")))
+    class EntryCount(models.IntegerChoices):
+        TEN = 10, "10"
+        THIRTY = 30, "30"
+        FIFTY = 50, "50"
+        HUNDRED = 100, "100"
+
+    class TopicCount(models.IntegerChoices):
+        THIRTY = 30, "30"
+        FIFTY = 50, "50"
+        SEVENTY_FIVE = 75, "75"
+        HUNDRED = 100, "100"
 
     # Base auth related fields, notice: username field will be used for nicknames
     username = models.CharField(
@@ -129,7 +119,7 @@ class Author(AbstractUser):
     # Novice application related fields
     is_novice = models.BooleanField(db_index=True, default=True, verbose_name=_("Novice status"))
     application_status = models.CharField(
-        max_length=2, choices=APPLICATION_STATUS, default=ON_HOLD, verbose_name=_("Application status")
+        max_length=2, choices=Status.choices, default=Status.ON_HOLD, verbose_name=_("Application status")
     )
     application_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Application date"))
     last_activity = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Last activity as novice"))
@@ -168,16 +158,16 @@ class Author(AbstractUser):
 
     # Personal info
     birth_date = models.DateField(blank=True, null=True, verbose_name=_("Birth date"))
-    gender = models.CharField(max_length=2, choices=GENDERS, default=UNKNOWN, verbose_name=_("Gender"))
+    gender = models.CharField(max_length=2, choices=Gender.choices, default=Gender.UNKNOWN, verbose_name=_("Gender"))
 
     # Preferences
-    entries_per_page = models.IntegerField(choices=ENTRY_COUNTS, default=TEN)
-    topics_per_page = models.IntegerField(choices=TOPIC_COUNTS, default=FIFTY)
-    message_preference = models.CharField(max_length=2, choices=MESSAGE_PREFERENCE, default=ALL_USERS)
+    entries_per_page = models.IntegerField(choices=EntryCount.choices, default=EntryCount.TEN)
+    topics_per_page = models.IntegerField(choices=TopicCount.choices, default=TopicCount.FIFTY)
+    message_preference = models.CharField(max_length=2, choices=MessagePref.choices, default=MessagePref.ALL_USERS)
     pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
     allow_receipts = models.BooleanField(default=True)
     allow_site_announcements = models.BooleanField(default=True)
-    theme = models.CharField(choices=THEMES, default=LIGHT, max_length=10)
+    theme = models.CharField(choices=Theme.choices, default=Theme.LIGHT, max_length=10)
 
     # Other
     karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2, verbose_name=_("Karma points"))
@@ -293,10 +283,10 @@ class Author(AbstractUser):
 
         if (
             (recipient.is_frozen or recipient.is_private or (not recipient.is_active))
-            or (recipient.message_preference == Author.DISABLED)
-            or (self.is_novice and recipient.message_preference == Author.AUTHOR_ONLY)
+            or (recipient.message_preference == Author.MessagePref.DISABLED)
+            or (self.is_novice and recipient.message_preference == Author.MessagePref.AUTHOR_ONLY)
             or (
-                recipient.message_preference == Author.FOLLOWING_ONLY
+                recipient.message_preference == Author.MessagePref.FOLLOWING_ONLY
                 and not recipient.following.filter(pk=self.pk).exists()
             )
             or (recipient.blocked.filter(pk=self.pk).exists() or self.blocked.filter(pk=recipient.pk).exists())
@@ -514,17 +504,13 @@ class UserVerification(models.Model):
 
 
 class AccountTerminationQueue(models.Model):
-    NO_TRACE = "NT"
-    LEGACY = "LE"
-    FROZEN = "FZ"
-    STATES = (
-        (NO_TRACE, _("delete account completely")),
-        (LEGACY, _("delete account with legacy")),
-        (FROZEN, _("freeze account")),
-    )
+    class State(models.TextChoices):
+        NO_TRACE = "NT", _("delete account completely")
+        LEGACY = "LE", _("delete account with legacy")
+        FROZEN = "FZ", _("freeze account")
 
     author = models.OneToOneField(Author, on_delete=models.CASCADE)
-    state = models.CharField(max_length=2, choices=STATES, default=FROZEN, verbose_name=_("last words?"))
+    state = models.CharField(max_length=2, choices=State.choices, default=State.FROZEN, verbose_name=_("last words?"))
     termination_date = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -540,7 +526,7 @@ class AccountTerminationQueue(models.Model):
             self.author.is_frozen = True
             self.author.save()
 
-            if self.state != self.FROZEN:
+            if self.state != self.State.FROZEN:
                 self.termination_date = timezone.now() + timezone.timedelta(hours=120)
 
         super().save(*args, **kwargs)

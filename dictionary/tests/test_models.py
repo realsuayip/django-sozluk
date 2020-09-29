@@ -80,7 +80,7 @@ class AuthorModelTests(TestCase):
         """
 
         # Initial status
-        self.assertEqual(self.author.application_status, Author.ON_HOLD)
+        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
         self.assertIsNone(self.author.application_date)
 
         # Add NINE entries
@@ -91,18 +91,18 @@ class AuthorModelTests(TestCase):
         Entry.objects.create(**self.entry_base, is_draft=True)
 
         # There are 10 PUBLISHED entries required, 9 present, so everything should be the same
-        self.assertEqual(self.author.application_status, Author.ON_HOLD)
+        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
         self.assertIsNone(self.author.application_date)
 
         # add 10th entry (user joins the novice list)
         final_entry = Entry.objects.create(**self.entry_base)
 
-        self.assertEqual(self.author.application_status, Author.PENDING)
+        self.assertEqual(self.author.application_status, Author.Status.PENDING)
         self.assertIsNotNone(self.author.application_date)
 
         final_entry.delete()  # delete 10th entry to retreat from novice list
 
-        self.assertEqual(self.author.application_status, Author.ON_HOLD)
+        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
         self.assertIsNone(self.author.application_date)
 
     def test_message_preferences(self):
@@ -119,7 +119,7 @@ class AuthorModelTests(TestCase):
         self.assertNotEqual(can_msg_sent_by_novice_public, False)
 
         # Disabled
-        self.author.message_preference = Author.DISABLED
+        self.author.message_preference = Author.MessagePref.DISABLED
         can_msg_sent_by_novice_disabled = Message.objects.compose(some_novice, self.author, "test-")
         can_msg_sent_by_author_disabled = Message.objects.compose(some_author, self.author, "test-")
         can_msg_sent_by_gsuper_disabled = Message.objects.compose(self.generic_superuser, self.author, "test")
@@ -128,7 +128,7 @@ class AuthorModelTests(TestCase):
         self.assertNotEqual(can_msg_sent_by_gsuper_disabled, False)
 
         # Authors (non-novices) only
-        self.author.message_preference = Author.AUTHOR_ONLY
+        self.author.message_preference = Author.MessagePref.AUTHOR_ONLY
         msg_sent_by_novice = Message.objects.compose(some_novice, self.author, "test")
         msg_sent_by_author = Message.objects.compose(some_author, self.author, "test")
         msg_sent_by_gsuper = Message.objects.compose(self.generic_superuser, self.author, "test")
@@ -137,7 +137,7 @@ class AuthorModelTests(TestCase):
         self.assertNotEqual(msg_sent_by_gsuper, False)
 
         # Following only
-        self.author.message_preference = Author.FOLLOWING_ONLY
+        self.author.message_preference = Author.MessagePref.FOLLOWING_ONLY
         msg_sent_by_non_follower = Message.objects.compose(some_author, self.author, "test")
         msg_sent_by_gsuper = Message.objects.compose(self.generic_superuser, self.author, "test")
         self.assertEqual(msg_sent_by_non_follower, False)
@@ -147,7 +147,7 @@ class AuthorModelTests(TestCase):
         self.assertNotEqual(msg_sent_by_follower, False)
 
         # Blocking tests
-        self.author.message_preference = Author.ALL_USERS
+        self.author.message_preference = Author.MessagePref.ALL_USERS
         self.author.blocked.add(some_author)
         can_recieve_msg_from_blocked_user = Message.objects.compose(some_author, self.author, "test")
         self.assertEqual(can_recieve_msg_from_blocked_user, False)
