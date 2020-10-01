@@ -9,7 +9,7 @@ from ..models import ExternalURL, MetaFlatPage
 from .announcements import AnnouncementAdmin
 from .author import AuthorAdmin
 from .badge import BadgeAdmin
-from .category import CategoryAdmin
+from .category import CategoryAdmin, SuggestionAdmin
 from .entry import CommentAdmin, EntryAdmin
 from .flatpages import FlatPageAdmin
 from .general_report import GeneralReportAdmin

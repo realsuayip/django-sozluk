@@ -1,3 +1,14 @@
+[0.16.1-alpha](2020.10.01)(compatible)
+--Additions--
+1) Add admin interface for topic
+suggestions.
+
+-- Changes --
+1) Upgrade django to 3.1.2 from 3.1.1
+
+--Deletions--
+None
+
 [0.16.0-alpha](2020.10.01)(incompatible)
 --Additions--
 1) Add backup feature; users now can take

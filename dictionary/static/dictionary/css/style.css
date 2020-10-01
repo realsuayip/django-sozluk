@@ -1404,6 +1404,10 @@ ul.exclusion-choices > li > a.active {
     width: 100%;
 }
 
+.image-detail span {
+    user-select: all;
+}
+
 textarea.expandable {
     height: 9rem;
     transition: height .4s;

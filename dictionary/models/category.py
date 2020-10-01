@@ -54,15 +54,17 @@ class Category(models.Model):
 
 class Suggestion(models.Model):
     class Direction(models.IntegerChoices):
-        POSITIVE = 1
-        NEGATIVE = -1
+        POSITIVE = 1, _("Positive")
+        NEGATIVE = -1, _("Negative")
 
-    author = models.ForeignKey("Author", on_delete=models.CASCADE)
-    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="category_suggestions")
-    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="+")
+    author = models.ForeignKey("Author", on_delete=models.CASCADE, verbose_name=_("Author"))
+    topic = models.ForeignKey(
+        "Topic", on_delete=models.CASCADE, related_name="category_suggestions", verbose_name=_("Topic")
+    )
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="+", verbose_name=_("Channel"))
 
-    direction = models.SmallIntegerField(choices=Direction.choices)
-    date_created = models.DateTimeField(auto_now_add=True)
+    direction = models.SmallIntegerField(choices=Direction.choices, verbose_name=_("Direction"))
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
 
     def register(self):
         rate = self.__class__.objects.filter(topic=self.topic, category=self.category).aggregate(
@@ -86,6 +88,8 @@ class Suggestion(models.Model):
         self.register()
 
     class Meta:
+        verbose_name = _("suggestion")
+        verbose_name_plural = _("suggestions")
         constraints = [
             UniqueConstraint(fields=["author", "topic", "category"], name="unique_category_suggestion"),
         ]
