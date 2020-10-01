@@ -3,6 +3,8 @@
 Aksini yapmak için spesifik bir sebebiniz yok ise sunucuya kurulum yaparken şu adımları takip etmenizi öneriyoruz:
 
 * Web server için `Nginx` kullanın.
+* Medya dizinini `internal` olarak işaretleyin, medya dosyalarının direkt olarak görüntülenmemesi gerekiyor. Bu dosyalar
+`XSendfile` yoluyla servis ediliyor. 
 * Veritabanı için `PostgreSQL` kullanın.
 * Sunucunuza bir önbellekleme sistemi kurmanız veya önbellekleme için ayrı bir sunucu açmanız gerekiyor. Önbellekleme
 sistemi için `memcached` test edildi, fakat Django'da önbellek sistemi ortak bir arayüz kullandığı için herhangi bir

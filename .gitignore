@@ -133,5 +133,6 @@ datadump.json
 #virtual environment
 
 venv/
+venv-linux/
 
 # End of https://www.gitignore.io/api/django

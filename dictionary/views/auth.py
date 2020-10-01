@@ -6,16 +6,16 @@ from smtplib import SMTPException
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.http import FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.views.generic import View
-from django.views.generic.edit import FormView
+from django.views.generic import CreateView, FormView, View
 
 from dictionary.backends.sessions.utils import flush_all_sessions
 from dictionary.conf import settings
 from dictionary.forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
-from dictionary.models import AccountTerminationQueue, Author, UserVerification
+from dictionary.models import AccountTerminationQueue, Author, BackUp, UserVerification
 from dictionary.utils import get_theme_from_cookie, time_threshold
 from dictionary.utils.email import send_email_confirmation
 from dictionary.utils.mixins import PasswordConfirmMixin
@@ -189,3 +189,54 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
         flush_all_sessions(self.request.user)
         notifications.info(self.request, _("your request was taken. farewell."))
         return super().form_valid(form)
+
+
+class CreateBackup(LoginRequiredMixin, CreateView):
+    template_name = "dictionary/user/preferences/backup.html"
+    model = BackUp
+    success_url = reverse_lazy("user_preferences_backup")
+    fields = ()
+
+    def form_valid(self, form):
+        previous_backup_exists = BackUp.objects.filter(
+            author=self.request.user, date_created__gte=time_threshold(hours=24)
+        ).exists()
+
+        if previous_backup_exists:
+            notifications.error(
+                self.request, _("you have already requested a backup file today."), extra_tags="persistent"
+            )
+            return self.form_invalid(form)
+
+        # Delete previous backup.
+        for backup in BackUp.objects.filter(author=self.request.user):
+            backup.delete()
+
+        backup = form.save(commit=False)
+        backup.author = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        with suppress(BackUp.DoesNotExist):
+            context["last_backup"] = BackUp.objects.get(author=self.request.user)
+
+        return context
+
+    def get_success_url(self):
+        self.object.process_async()
+        return super().get_success_url()
+
+
+class DownloadBackup(LoginRequiredMixin, View):
+    http_method_names = ["get"]
+    raise_exception = True
+
+    def get(self, request):
+        with suppress(BackUp.DoesNotExist):
+            backup = BackUp.objects.get(author=self.request.user, is_ready=True)
+            response = FileResponse(backup.file, as_attachment=True)
+            return response
+
+        self.handle_no_permission()

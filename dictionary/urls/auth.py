@@ -11,6 +11,8 @@ from dictionary.views.auth import (
     ChangeEmail,
     ChangePassword,
     ConfirmEmail,
+    CreateBackup,
+    DownloadBackup,
     Login,
     Logout,
     ResendEmailConfirmation,
@@ -55,5 +57,7 @@ urlpatterns_auth = urlpatterns_password_reset + [
     path("settings/password/", ChangePassword.as_view(), name="user_preferences_password"),
     path("settings/email/", ChangeEmail.as_view(), name="user_preferences_email"),
     path("settings/account-termination/", TerminateAccount.as_view(), name="user_preferences_terminate"),
+    path("settings/backup/", CreateBackup.as_view(), name="user_preferences_backup"),
+    path("settings/backup/download/", DownloadBackup.as_view(), name="user_preferences_backup_download"),
     path("contact/confirm/<uuid:key>", VerifyReport.as_view(), name="verify-report"),
 ]

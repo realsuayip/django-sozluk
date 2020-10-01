@@ -1,0 +1,31 @@
+{% extends "dictionary/user/preferences/index.html" %}
+{% load humanize i18n %}
+
+{% block title %}{% translate "backup" context "titleblock" %}{% endblock %}
+{% block content_preferences %}
+    <p>
+        {% blocktranslate trimmed %}
+            you can request a backup file that will include all of your published entries
+            and archived conversations. the output file will be in JSON format. you can only
+            create one backup file per day.
+        {% endblocktranslate %}
+    </p>
+
+    {% if last_backup %}
+        <p class="bg-light border rounded p-3">
+            {% if last_backup.is_ready %}
+                {% url "user_preferences_backup_download" as download_url %}
+                {% blocktranslate with date=last_backup.date_created %}click <a href="{{ download_url }}">here</a> to download the backup file you requested on {{ date }}{% endblocktranslate %}
+            {% else %}
+                {% translate "you have a pending backup. you will be notified when its ready." %}
+            {% endif %}
+        </p>
+    {% else %}
+        <p>{% translate "you have yet to request a backup." %}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-django-link">{% translate "create a new backup file" %}</button>
+    </form>
+{% endblock %}

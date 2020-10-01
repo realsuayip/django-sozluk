@@ -5,8 +5,9 @@ from django.core.serializers.json import Serializer
 from django.utils.functional import cached_property
 
 from dictionary.conf import settings
-from dictionary.models import Category
 from dictionary.utils.decorators import cached_context
+
+# Do not directly import models here
 
 JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)
 
@@ -184,7 +185,7 @@ class LeftFrame(PlainSerializer):
 
     @cached_context
     def _get_available_exclusions(self):
-        return list(Category.objects_all.filter(slug__in=settings.EXCLUDABLE_CATEGORIES))
+        return list(settings.get_model("Category").objects_all.filter(slug__in=settings.EXCLUDABLE_CATEGORIES))
 
     @cached_property
     def exclusions(self):

@@ -8,6 +8,7 @@
     {% url 'user_preferences_password' as password %}
     {% url 'user_preferences_email' as email %}
     {% url 'user_preferences_terminate' as terminate %}
+    {% url 'user_preferences_backup' as backup %}
 
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -19,9 +20,11 @@
         <li class="nav-item">
             <a class="nav-link {% if request.path == email %}active{% endif %}" href="{{ email }}">{% trans "e-mail" %}</a>
         </li>
-
         <li class="nav-item">
             <a class="nav-link {% if request.path == terminate %}active{% endif %}" href="{{ terminate }}">{% trans "account deletion" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == backup %}active{% endif %}" href="{{ backup }}">{% trans "backup" %}</a>
         </li>
     </ul>
 

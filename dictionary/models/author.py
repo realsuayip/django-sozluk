@@ -9,11 +9,13 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import BooleanField, Case, Count, F, Q, Sum, When
 from django.db.models.functions import Coalesce
 from django.shortcuts import reverse
+from django.template import defaultfilters
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext, gettext_lazy as _, ngettext
@@ -24,8 +26,9 @@ from dictionary.conf import settings
 from dictionary.models.category import Category
 from dictionary.models.m2m import DownvotedEntries, UpvotedEntries
 from dictionary.models.managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
-from dictionary.utils import parse_date_or_none, time_threshold
+from dictionary.utils import get_generic_superuser, parse_date_or_none, time_threshold
 from dictionary.utils.decorators import cached_context
+from dictionary.utils.serializers import ArchiveSerializer
 from dictionary.utils.validators import validate_username_partial
 
 
@@ -555,3 +558,51 @@ class Badge(models.Model):
     class Meta:
         verbose_name = _("badge")
         verbose_name_plural = _("badges")
+
+
+def user_directory_backup(instance, _filename):
+    date_str = defaultfilters.date(timezone.localtime(timezone.now()), "Y-m-d")
+    return f"backup/{instance.author.pk}/backup-{date_str}.json"
+
+
+class BackUp(models.Model):
+    author = models.ForeignKey("Author", on_delete=models.CASCADE)
+    file = models.FileField(upload_to=user_directory_backup)
+    is_ready = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def process(self):
+        if self.is_ready:
+            return
+
+        serializer = ArchiveSerializer()
+        entries = self.author.entry_set(manager="objects_published").select_related("topic")
+        conversations = self.author.conversationarchive_set.all()
+
+        entries_text = serializer.serialize(entries, fields=("topic__title", "content", "date_created", "date_edited"))
+        conversations_text = (
+            "[%s]"
+            % "".join('{"target": "%s", "messages": %s},' % (item.target, item.messages) for item in conversations)[:-1]
+        )  # Formatting already-serialized data ([:-1] removes the trailing comma).
+
+        content = '{"entries": %s, "conversations": %s}' % (entries_text, conversations_text)
+        self.is_ready = True
+        self.file.save("backup", ContentFile(content.encode("utf-8")), save=True)
+
+        settings.get_model("Message").objects.compose(
+            get_generic_superuser(),
+            self.author,
+            gettext(
+                "your backup is now ready. you may download your backup"
+                " file using the link provided in the backup tab of settings."
+            ),
+        )
+
+    def process_async(self):
+        from dictionary.tasks import process_backup  # noqa
+
+        process_backup.delay(self.pk)
+
+    def delete(self, **kwargs):
+        super().delete(**kwargs)
+        self.file.delete(save=False)

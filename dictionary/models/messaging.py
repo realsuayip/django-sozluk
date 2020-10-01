@@ -95,7 +95,7 @@ class Conversation(models.Model):
 
     def archive(self):
         serializer = ArchiveSerializer()
-        _messages = self.messages.all()
+        _messages = self.messages.select_related("sender", "recipient")
 
         if not _messages.exists():
             return self
@@ -106,11 +106,11 @@ class Conversation(models.Model):
 
         try:
             # Extend existing archive
-            existant = ConversationArchive.objects.get(holder=self.holder, target=self.target.username)
-            previous_messages = existant.to_json["messages"]
+            existent = ConversationArchive.objects.get(holder=self.holder, target=self.target.username)
+            previous_messages = existent.to_json["messages"]
             previous_messages.extend(json.loads(messages))
-            existant.messages = json.dumps(previous_messages)
-            existant.save()
+            existent.messages = json.dumps(previous_messages)
+            existent.save()
         except ConversationArchive.DoesNotExist:
             ConversationArchive.objects.create(holder=self.holder, target=self.target.username, messages=messages)
 

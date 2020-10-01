@@ -6,8 +6,16 @@ from django.db.models import Count, Q
 from djdict import celery_app
 
 from dictionary.conf import settings
-from dictionary.models import AccountTerminationQueue, Author, GeneralReport, Image, UserVerification
+from dictionary.models import AccountTerminationQueue, Author, BackUp, GeneralReport, Image, UserVerification
 from dictionary.utils import time_threshold
+
+
+@celery_app.task
+def process_backup(backup_id):
+    BackUp.objects.get(id=backup_id).process()
+
+
+# Periodic tasks
 
 
 @celery_app.on_after_finalize.connect

@@ -1,3 +1,18 @@
+[0.16.0-alpha](2020.10.01)(incompatible)
+--Additions--
+1) Add backup feature; users now can take
+their content as a JSON file. **incompatible**
+run makemigrations+migrate for dictionary app.
+2) Add media files deployment notice
+in docs.
+
+-- Changes --
+1) Improved performance for archiving
+conversations.
+
+--Deletions--
+None
+
 [0.15.2-alpha](2020.09.29)(compatible)
 --Additions--
 None
