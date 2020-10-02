@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 {% load filters i18n cache %}
-{% block title %}{{ safename }}{% if tabs.current %} - {{ tabs.current }}{% endif %}{% endblock %}
+{% block title %}{{ safename }}{% if tabs.current %} - {% for name, safename in tabs.available.items %}{% if name == tabs.current %}{{ safename }}{% endif %}{% endfor %}{% endif %}{% endblock %}
 
 {% cache None topic_list_description safename request.site_name %}
     {% block description %}{% blocktrans with site_name=request.site.name %}latest topics in {{ safename }} channel. join {{ site_name }} community to create a new topic in this channel or elaborate on existing topics.{% endblocktrans %}{% endblock %}

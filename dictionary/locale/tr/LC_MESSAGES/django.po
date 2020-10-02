@@ -3025,7 +3025,7 @@ msgstr "hiç"
 #: .\templates\dictionary\user\profile.html:57
 #, python-format
 msgid "you are the %(queue_ordinal)s person in the novice list."
-msgstr ">çaylak onay listesinde %(queue_ordinal)s sıradasınız."
+msgstr "çaylak onay listesinde %(queue_ordinal)s sıradasınız."
 
 #: .\templates\dictionary\user\profile.html:62
 msgid "novice"
