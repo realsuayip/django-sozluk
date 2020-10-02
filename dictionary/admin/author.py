@@ -32,7 +32,7 @@ class SuspensionFilter(SimpleListFilter):
 class AuthorAdmin(UserAdmin):
     search_fields = ("username",)
     autocomplete_fields = ("badges",)
-    list_display = ("username", "email", "is_active", "is_novice", "date_joined")
+    list_display = ("username", "email", "is_active", "is_novice", "karma", "date_joined")
     ordering = ("-date_joined",)
 
     list_filter = (

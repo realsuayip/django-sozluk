@@ -32,9 +32,6 @@ class AnnouncementAdmin(admin.ModelAdmin):
 
     autocomplete_fields = ("discussion",)
     search_fields = ("title",)
-    list_filter = (
-        PublishFilter,
-        ("date_created", DateFieldListFilter),
-    )
-    list_display = ("title", "date_created")
+    list_filter = (PublishFilter, ("date_created", DateFieldListFilter), "html_only", "notify")
+    list_display = ("title", "discussion", "date_created")
     ordering = ("-date_created",)

@@ -4,7 +4,7 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from dictionary.admin.views.topic import TopicMove
-from dictionary.models import Topic
+from dictionary.models import Topic, Wish
 from dictionary.utils.admin import intermediate
 
 
@@ -75,3 +75,16 @@ class TopicAdmin(admin.ModelAdmin):
 
     # Permissions
     move_topic.allowed_permissions = ["move_topic"]
+
+
+@admin.register(Wish)
+class WishAdmin(admin.ModelAdmin):
+    list_display = ("author", "topic", "hint", "date_created")
+    list_filter = (("date_created", DateFieldListFilter), ("hint", EmptyFieldListFilter), "author__is_novice")
+    search_fields = ("author__username", "topic__title")
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False

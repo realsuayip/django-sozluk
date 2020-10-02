@@ -100,8 +100,8 @@ class Comment(models.Model):
     upvoted_by = models.ManyToManyField("Author", related_name="+")
     downvoted_by = models.ManyToManyField("Author", related_name="+")
 
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_edited = models.DateTimeField(null=True, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    date_edited = models.DateTimeField(null=True, editable=False, verbose_name=_("Date edited"))
 
     class Meta:
         verbose_name = _("comment")

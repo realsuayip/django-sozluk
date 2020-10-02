@@ -1,3 +1,15 @@
+[0.17.1-alpha](2020.10.03)(compatible)
+--Additions--
+1) Add Wish model to admin panel.
+
+-- Changes --
+1) Optimized overall admin page experience
+by adding new filters, search fields
+etc.
+
+--Deletions--
+None
+
 [0.17.0-alpha](2020.10.02)(incompatible)
 --Additions--
 1) Add the case of ValueError (possible, but

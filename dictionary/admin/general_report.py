@@ -1,4 +1,5 @@
 from django.contrib import admin, messages as notifications
+from django.contrib.admin import DateFieldListFilter
 from django.utils.translation import gettext, gettext_lazy as _
 
 from dictionary.models import GeneralReport
@@ -7,7 +8,7 @@ from dictionary.models import GeneralReport
 @admin.register(GeneralReport)
 class GeneralReportAdmin(admin.ModelAdmin):
     search_fields = ("subject", "reporter_email")
-    list_display = ("subject", "reporter_email", "category", "is_open")
+    list_display = ("subject", "reporter_email", "category", "date_created", "is_open")
     readonly_fields = (
         "reporter_email",
         "category",
@@ -22,8 +23,8 @@ class GeneralReportAdmin(admin.ModelAdmin):
         (_("Metadata"), {"fields": ("reporter_email", "date_created", "is_verified", "date_verified")}),
         (_("Evaluation"), {"fields": ("is_open",)}),
     )
-    list_filter = ("category", "is_open")
-    ordering = ("-is_verified", "-is_open")
+    list_filter = ("category", "is_open", ("date_created", DateFieldListFilter))
+    ordering = ("-is_open",)
     actions = ("close_report", "open_report")
 
     def get_queryset(self, request):
