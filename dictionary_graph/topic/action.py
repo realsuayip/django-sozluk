@@ -1,4 +1,3 @@
-from django.core.validators import ValidationError
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import linebreaksbr
 from django.utils.translation import gettext as _
@@ -8,6 +7,7 @@ from graphene import ID, Mutation, String
 from dictionary.models import Topic, Wish
 from dictionary.templatetags.filters import formatted
 from dictionary.utils import smart_lower
+from dictionary.utils.validators import validate_user_text
 
 from dictionary_graph.utils import login_required
 
@@ -44,18 +44,18 @@ class WishTopic(Mutation):
     @login_required
     def mutate(_root, info, title, hint=""):
         sender = info.context.user
+
+        if not sender.is_accessible:
+            raise ValueError(_("sorry, the genie is now busy"))
+
         topic = Topic.objects.get_or_pseudo(unicode_string=title)
         hint = smart_lower(hint).strip() or None
 
-        if not topic.valid or (topic.exists and (topic.has_entries or topic.is_banned)):
+        if hint:
+            validate_user_text(hint, exctype=ValueError)
+
+        if not topic.valid or (topic.exists and (topic.is_banned or topic.has_entries)):
             raise ValueError(_("we couldn't handle your request. try again later."))
-
-        wish = Wish(author=sender, hint=hint)
-
-        try:
-            wish.full_clean()
-        except ValidationError as error:
-            raise ValueError(", ".join(error.messages)) from error
 
         if not topic.exists:
             topic = Topic.objects.create_topic(title=title)
@@ -65,11 +65,8 @@ class WishTopic(Mutation):
                 previous_wish.delete()
                 return WishTopic(feedback=_("your wish has been deleted"))
 
-        if not sender.is_accessible:
-            raise ValueError(_("sorry, the genie is now busy"))
+        Wish.objects.create(topic=topic, author=sender, hint=hint)
 
-        wish.save()
-        topic.wishes.add(wish)
         return WishTopic(
             feedback=_("your wish is now enlisted. if someone starts a discussion, we will let you know."),
             hint=linebreaksbr(formatted(hint)),

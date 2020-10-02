@@ -40,13 +40,12 @@ class Topic(models.Model):
     )
 
     category = models.ManyToManyField(Category, blank=True, verbose_name=_("Channels"))
+
     allow_suggestions = models.BooleanField(
         default=True,
         verbose_name=_("Allow suggestions"),
         help_text=_("When checked, users will be able to suggest channels to this topic."),
     )
-
-    wishes = models.ManyToManyField("Wish", blank=True, editable=False, verbose_name=_("Wishes"))
 
     mirrors = models.ManyToManyField(
         "self",
@@ -184,12 +183,16 @@ class Topic(models.Model):
 
 
 class Wish(models.Model):
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="wishes")
-    hint = models.TextField(validators=[validate_user_text], null=True, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="wishes", verbose_name=_("Author"))
+    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="wishes", verbose_name=_("Topic"))
+
+    hint = models.TextField(validators=[validate_user_text], null=True, blank=True, verbose_name=_("Hint"))
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
 
     def __str__(self):
         return f"{self.__class__.__name__}#{self.pk} u:{self.author.username}"
 
     class Meta:
+        verbose_name = _("wish")
+        verbose_name_plural = _("wishes")
         ordering = ("-date_created",)

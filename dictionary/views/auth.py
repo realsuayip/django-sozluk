@@ -234,7 +234,7 @@ class DownloadBackup(LoginRequiredMixin, View):
     raise_exception = True
 
     def get(self, request):
-        with suppress(BackUp.DoesNotExist):
+        with suppress(BackUp.DoesNotExist, ValueError):
             backup = BackUp.objects.get(author=self.request.user, is_ready=True)
             response = FileResponse(backup.file, as_attachment=True)
             return response

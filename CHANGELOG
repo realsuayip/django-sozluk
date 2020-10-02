@@ -1,3 +1,34 @@
+[0.17.0-alpha](2020.10.02)(incompatible)
+--Additions--
+1) Add the case of ValueError (possible, but
+not likely) in BackupDownload view.
+
+-- Changes --
+1) Changed wish backend for better API.
+**incompatible**: this is a bit tricky:
+
+If you want to preserve previous data,
+take a backup of dictionary_topic_wishes
+table.
+
+You need to run makemigrations+migrate
+for dictionary app, when prompted with
+the question, you need to provide a
+temporary topic ID that will hold ALL the
+previous wishes. Then:
+
+a) If you want to preserve previous data,
+use data from dictionary_topic_wishes to match
+topics with wishes. You can do this by hand one
+by one, or preferably write a script that will
+do it for you.
+
+b) If you don't really care about the previous
+data, just empty dictionary_wish table.
+
+--Deletions--
+None
+
 [0.16.1-alpha](2020.10.01)(compatible)
 --Additions--
 1) Add admin interface for topic
