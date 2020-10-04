@@ -1637,6 +1637,14 @@ textarea.expandable {
     .image-list .img-fluid {
         max-height: initial;
     }
+
+    .settings-nav-expander {
+        display: block;
+    }
+
+    .settings-nav-tabs {
+        display: none;
+    }
 }
 
 @media (max-width: 420px) {

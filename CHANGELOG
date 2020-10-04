@@ -1,3 +1,14 @@
+[0.17.3-alpha](2020.10.04)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Add hamburger menu instead of tabs
+in mobile user settings page.
+
+--Deletions--
+None
+
 [0.17.2-alpha](2020.10.03)(compatible)
 --Additions--
 None

@@ -2,7 +2,15 @@
 {% load i18n %}
 {% block title %}{% trans "settings" context "titleblock" %}{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3"><strong>{% trans "settings" context "titleblock" %}</strong></h1>
+    <div class="d-flex justify-content-between">
+        <h1 class="h4 m-0"><strong>{% trans "settings" context "titleblock" %}</strong></h1>
+        <button class="btn p-0 settings-nav-expander dj-hidden" data-toggle="collapse" aria-expanded="false">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <use href="#menu"></use>
+                <title>{% trans "Settings menu" %}</title>
+            </svg>
+        </button>
+    </div>
 
     {% url 'user_preferences' as preferences %}
     {% url 'user_preferences_password' as password %}
@@ -10,7 +18,17 @@
     {% url 'user_preferences_terminate' as terminate %}
     {% url 'user_preferences_backup' as backup %}
 
-    <ul class="nav nav-tabs mb-3">
+    <ul class="collapse list-unstyled bg-light mt-3 rounded" style="font-size: 16px;">
+        <li><a class="list-group-item" href="{{ preferences }}">{% trans "preferences" %}</a></li>
+        <li><a class="list-group-item" href="{{ password }}">{% trans "password" %}</a></li>
+        <li><a class="list-group-item" href="{{ email }}">{% trans "e-mail" %}</a></li>
+        <li><a class="list-group-item" href="{{ terminate }}">{% trans "account deletion" %}</a></li>
+        <li><a class="list-group-item" href="{{ backup }}">{% trans "backup" %}</a></li>
+    </ul>
+
+    <div class="mt-2"></div>
+
+    <ul class="nav nav-tabs mb-3 settings-nav-tabs">
         <li class="nav-item">
             <a class="nav-link {% if request.path == preferences %}active{% endif %}" href="{{ preferences }}">{% trans "preferences" %}</a>
         </li>
@@ -28,6 +46,5 @@
         </li>
     </ul>
 
-    {% block content_preferences %}
-    {% endblock %}
+    {% block content_preferences %}{% endblock %}
 {% endblock %}
