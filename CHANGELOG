@@ -1,3 +1,14 @@
+[0.17.4-alpha](2020.10.05)(compatible)
+--Additions--
+1) Add helpful message for
+broken/deleted user uploaded images.
+
+-- Changes --
+None
+
+--Deletions--
+None
+
 [0.17.3-alpha](2020.10.04)(compatible)
 --Additions--
 None
