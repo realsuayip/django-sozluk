@@ -47,6 +47,8 @@ class InNoviceList(AuthorManagerAccessible):
 
 
 class AccountTerminationQueueManager(models.Manager):
+    _private_user = None
+
     def get_terminated(self):
         return self.exclude(state="FZ").filter(termination_date__lt=timezone.now())
 
@@ -58,13 +60,15 @@ class AccountTerminationQueueManager(models.Manager):
     def terminate_legacy(self, user):
         if not user.is_novice:
             # Migrate entries before deleting the user completely
-            user.entry_set.all().update(author=get_generic_privateuser())
-            logger.info("User entires migrated: %s<->%d", user.username, user.pk)
+            user.entry_set(manager="objects_published").all().update(author=self._private_user)
+            logger.info("User entries migrated: %s<->%d", user.username, user.pk)
 
         self.terminate_no_trace(user)
 
     def commit_terminations(self):
-        for termination in self.get_terminated():
+        self._private_user = get_generic_privateuser()
+
+        for termination in self.get_terminated().select_related("author"):
             if termination.state == "NT":
                 self.terminate_no_trace(termination.author)
             elif termination.state == "LE":

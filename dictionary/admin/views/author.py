@@ -56,12 +56,13 @@ class SuspendUser(IntermediateActionView):
             message_for_log = f"Suspended until {suspended_until}, information: {action_information}"
 
             log_list = []  # Reserve list that hold instances for bulk creation
+            generic_superuser = get_generic_superuser()
 
             # Set new suspended_until and append instances to reserved lists
             for user in user_list_raw:
                 user.suspended_until = suspended_until
                 log_list.append(logentry_instance(message_for_log, request.user, Author, user))
-                Message.objects.compose(get_generic_superuser(), user, message_for_user)
+                Message.objects.compose(generic_superuser, user, message_for_user)
 
             # Bulk creation/updates
             Author.objects.bulk_update(user_list_raw, ["suspended_until"])  # Update Author, does not call save()
