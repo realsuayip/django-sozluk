@@ -1,4 +1,5 @@
 import math
+import random
 
 from contextlib import suppress
 from decimal import Decimal
@@ -246,6 +247,10 @@ class Author(AbstractUser):
             .count()
         )
 
+    @usercache
+    def get_best_entries(self):
+        return tuple(self.entry_set(manager="objects_published").filter(vote_rate__gt=0).order_by("-vote_rate")[:50])
+
     def has_exceeded_vote_limit(self, against=None):
         """Check vote limits. This is done before the vote is registered."""
 
@@ -392,14 +397,15 @@ class Author(AbstractUser):
     def followers(self):
         return Author.objects.filter(following=self)
 
-    @property
+    @cached_property
     def entry_nice(self):
-        return (
-            self.entry_set(manager="objects_published")
-            .filter(vote_rate__gt=Decimal("1"))
-            .order_by("-vote_rate")
-            .first()
-        )
+        """A random entry selected from the best entries of the user."""
+        best_entries = self.get_best_entries()
+
+        if not best_entries:
+            return None
+
+        return random.choice(best_entries)
 
     @property
     def email_confirmed(self):

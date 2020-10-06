@@ -1,3 +1,20 @@
+[0.17.5-alpha](2020.10.06)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) In profile page, the promoted entry
+is now randomly selected from the top 50
+entries of the user; formerly it would
+show the best entry only.
+2) Generic superuser caller (get_generic_superuser)
+is now cached.
+3) Dropped os.path in favor of pathlib.Path in
+settings.py
+
+--Deletions--
+None
+
 [0.17.4-alpha](2020.10.05)(compatible)
 --Additions--
 1) Add helpful message for
