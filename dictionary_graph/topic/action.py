@@ -61,8 +61,9 @@ class WishTopic(Mutation):
             topic = Topic.objects.create_topic(title=title)
         else:
             previous_wish = topic.wishes.filter(author=sender)
-            if previous_wish.exists():
-                previous_wish.delete()
+            deleted, _types = previous_wish.delete()
+
+            if deleted:
                 return WishTopic(feedback=_("your wish has been deleted"))
 
         Wish.objects.create(topic=topic, author=sender, hint=hint)

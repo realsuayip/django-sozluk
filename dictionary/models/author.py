@@ -214,7 +214,11 @@ class Author(AbstractUser):
 
     def delete(self, *args, **kwargs):
         # Archive conversations of target users.
-        for conversation in self.targeted_conversations.all():
+        targeted_conversations = self.targeted_conversations.select_related("holder", "target").prefetch_related(
+            "messages"
+        )
+
+        for conversation in targeted_conversations:
             conversation.archive()
 
         return super().delete(*args, **kwargs)

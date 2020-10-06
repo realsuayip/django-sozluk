@@ -106,11 +106,13 @@ class Conversation(models.Model):
 
         try:
             # Extend existing archive
-            existent = ConversationArchive.objects.get(holder=self.holder, target=self.target.username)
+            existent = ConversationArchive.objects.select_related("holder").get(
+                holder=self.holder, target=self.target.username
+            )
             previous_messages = existent.to_json["messages"]
             previous_messages.extend(json.loads(messages))
             existent.messages = json.dumps(previous_messages)
-            existent.save()
+            existent.save(update_fields=["messages"])
         except ConversationArchive.DoesNotExist:
             ConversationArchive.objects.create(holder=self.holder, target=self.target.username, messages=messages)
 

@@ -43,7 +43,7 @@ class DeleteEntry(Action, Mutation):
 
     @staticmethod
     @owneraction
-    def mutate(_root, info, entry):
+    def mutate(_root, _info, entry):
         entry.delete()
         redirect_url = reverse_lazy("topic", kwargs={"slug": entry.topic.slug})
 
@@ -59,6 +59,9 @@ class PinEntry(Action, Mutation):
     @staticmethod
     @owneraction
     def mutate(_root, info, entry):
+        if entry.is_draft:
+            return PinEntry(feedback=_("we couldn't handle your request. try again later."))
+
         feedback = _("this entry is now pinned")
         current = info.context.user.pinned_entry
 
@@ -68,7 +71,7 @@ class PinEntry(Action, Mutation):
         else:
             info.context.user.pinned_entry = entry
 
-        info.context.user.save()
+        info.context.user.save(update_fields=["pinned_entry"])
         return PinEntry(feedback=feedback)
 
 
@@ -98,7 +101,10 @@ def voteaction(mutator):
 
     @wraps(mutator)
     def decorator(_root, info, pk):
-        entry, sender = Entry.objects_all.get(pk=pk), info.context.user
+        entry, sender = (
+            Entry.objects_published.select_related("author").only("id", "author_id", "author__karma").get(pk=pk),
+            info.context.user,
+        )
 
         if entry.author == sender:
             raise PermissionDenied(_("we couldn't handle your request. try again later."))
@@ -141,8 +147,8 @@ class UpvoteEntry(Action, Mutation):
             if sender.is_karma_eligible:
                 sender.karma = karma + cost  # refund
                 entry.author.karma = karma - upvote_rate
-                sender.save()
-                entry.author.save()
+                sender.save(update_fields=["karma"])
+                entry.author.save(update_fields=["karma"])
 
             return response
 
@@ -153,7 +159,7 @@ class UpvoteEntry(Action, Mutation):
 
             if sender.is_karma_eligible:
                 entry.author.karma = karma + (downvote_rate + upvote_rate)
-                entry.author.save()
+                entry.author.save(update_fields=["karma"])
 
             return response
 
@@ -166,8 +172,8 @@ class UpvoteEntry(Action, Mutation):
         if sender.is_karma_eligible:
             sender.karma = karma - cost
             entry.author.karma = karma + upvote_rate
-            sender.save()
-            entry.author.save()
+            sender.save(update_fields=["karma"])
+            entry.author.save(update_fields=["karma"])
 
         return response
 
@@ -188,8 +194,8 @@ class DownvoteEntry(Action, Mutation):
             if sender.is_karma_eligible:
                 sender.karma = karma + cost  # refund
                 entry.author.karma = karma + downvote_rate
-                sender.save()
-                entry.author.save()
+                sender.save(update_fields=["karma"])
+                entry.author.save(update_fields=["karma"])
             return response
 
         # User changes from upvote to downvote
@@ -199,7 +205,7 @@ class DownvoteEntry(Action, Mutation):
 
             if sender.is_karma_eligible:
                 entry.author.karma = karma - (downvote_rate + upvote_rate)
-                entry.author.save()
+                entry.author.save(update_fields=["karma"])
 
             return response
 
@@ -212,8 +218,8 @@ class DownvoteEntry(Action, Mutation):
         if sender.is_karma_eligible:
             sender.karma = karma - cost
             entry.author.karma = karma - downvote_rate
-            sender.save()
-            entry.author.save()
+            sender.save(update_fields=["karma"])
+            entry.author.save(update_fields=["karma"])
 
         return response
 

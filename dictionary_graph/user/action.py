@@ -78,9 +78,9 @@ class ToggleTheme(Mutation):
         user = info.context.user
         if user.theme == Author.Theme.DARK:
             user.theme = Author.Theme.LIGHT
-            user.save()
+            user.save(update_fields=["theme"])
             return ToggleTheme(user.theme)
 
         user.theme = Author.Theme.DARK
-        user.save()
+        user.save(update_fields=["theme"])
         return ToggleTheme(user.theme)

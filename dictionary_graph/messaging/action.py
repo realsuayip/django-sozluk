@@ -46,7 +46,13 @@ class ArchiveConversation(Mutation):
     @staticmethod
     @login_required
     def mutate(_root, info, pk_set):
-        for conversation in Conversation.objects.filter(holder=info.context.user, pk__in=pk_set):
+        conversations = (
+            Conversation.objects.filter(holder=info.context.user, pk__in=pk_set)
+            .select_related("holder", "target")
+            .prefetch_related("messages")
+        )
+
+        for conversation in conversations:
             conversation.messages.filter(recipient=info.context.user, read_at__isnull=True).update(
                 read_at=timezone.now()
             )

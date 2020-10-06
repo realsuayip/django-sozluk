@@ -31,7 +31,7 @@ class DraftEdit(Mutation):
             entry = Entry.objects_all.get(is_draft=True, author=info.context.user, pk=pk)
             entry.content = content
             entry.date_edited = timezone.now()
-            entry.save()
+            entry.save(update_fields=["content", "date_edited"])
             return DraftEdit(
                 pk=entry.pk,
                 content=linebreaksbr(formatted(entry.content)),

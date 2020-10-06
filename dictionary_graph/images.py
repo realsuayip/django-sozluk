@@ -19,7 +19,7 @@ class DeleteImage(Mutation):
     def mutate(_root, info, slug):
         image = Image.objects.get(author=info.context.user, is_deleted=False, slug=slug)
         image.is_deleted = True
-        image.save()
+        image.save(update_fields=["is_deleted"])
         return DeleteImage(feedback=None)
 
 

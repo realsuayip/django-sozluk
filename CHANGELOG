@@ -1,3 +1,17 @@
+[0.17.6-alpha](2020.10.06)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Improved performance for archiving feature.
+2) Bunch of minor improvements in performance
+in graph mutations/queries.
+3) Fixed a bug which allowed draft entries
+to be pinned.
+
+--Deletions--
+None
+
 [0.17.5-alpha](2020.10.06)(compatible)
 --Additions--
 None
