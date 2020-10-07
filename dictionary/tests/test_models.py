@@ -4,6 +4,7 @@ import time
 from decimal import Decimal
 from unittest import mock
 
+from django.core.cache import cache
 from django.db import IntegrityError
 from django.shortcuts import reverse
 from django.test import TestCase, TransactionTestCase
@@ -15,7 +16,6 @@ from dictionary.models import (
     Category,
     Conversation,
     Entry,
-    EntryFavorites,
     GeneralReport,
     Memento,
     Message,
@@ -31,7 +31,7 @@ class AuthorModelTests(TestCase):
         cls.generic_superuser = Author.objects.create(
             username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
         )
-        cls.author = Author.objects.create(username="user", email="0", is_active=True)
+        cls.author = Author.objects.create(username="user", email="0", is_active=True, is_novice=False)
         cls.topic = Topic.objects.create_topic("test_topic")
         cls.entry_base = {"topic": cls.topic, "author": cls.author}
 
@@ -61,6 +61,9 @@ class AuthorModelTests(TestCase):
     def test_last_entry_date(self):
         Entry.objects.create(**self.entry_base, is_draft=True)
         self.assertIsNone(self.author.last_entry_date)
+
+        del self.author.last_entry_date
+
         entry = Entry.objects.create(**self.entry_base)
         self.assertEqual(self.author.last_entry_date, entry.date_created)
 
@@ -75,35 +78,45 @@ class AuthorModelTests(TestCase):
 
     def test_novice_list_join_retreat(self):
         """
-        10 published entries needed in order an user to be in the novice list, if the number of entries drop to < 10
+        10 published entries needed in order an user to be in the novice list,
+        if the number of entries drop to < 10
         user is removed from novice list
+
+        del novice.entry_count -> Normally we don't expect multiple entry creation
+        in one request; we need to delete cached_property to simulate that.
         """
 
+        novice = Author.objects.create(username="noviceuser", email="noviceuser", is_active=True, is_novice=True)
+        entry_base = {"topic": self.topic, "author": novice, "content": "123"}
+
         # Initial status
-        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
-        self.assertIsNone(self.author.application_date)
+        self.assertEqual(novice.application_status, Author.Status.ON_HOLD)
+        self.assertIsNone(novice.application_date)
 
         # Add NINE entries
         for _ in range(9):
-            Entry.objects.create(**self.entry_base)
+            Entry.objects.create(**entry_base)
+            del novice.entry_count
 
-        # add an entry which is a draft
-        Entry.objects.create(**self.entry_base, is_draft=True)
+        # Add an entry which is a draft
+        Entry.objects.create(**entry_base, is_draft=True)
+        del novice.entry_count
 
         # There are 10 PUBLISHED entries required, 9 present, so everything should be the same
-        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
-        self.assertIsNone(self.author.application_date)
+        self.assertEqual(novice.application_status, Author.Status.ON_HOLD)
+        self.assertIsNone(novice.application_date)
 
-        # add 10th entry (user joins the novice list)
-        final_entry = Entry.objects.create(**self.entry_base)
+        # Add 10th entry (user joins the novice list)
+        final_entry = Entry.objects.create(**entry_base)
+        del novice.entry_count
 
-        self.assertEqual(self.author.application_status, Author.Status.PENDING)
-        self.assertIsNotNone(self.author.application_date)
+        self.assertEqual(novice.application_status, Author.Status.PENDING)
+        self.assertIsNotNone(novice.application_date)
 
         final_entry.delete()  # delete 10th entry to retreat from novice list
 
-        self.assertEqual(self.author.application_status, Author.Status.ON_HOLD)
-        self.assertIsNone(self.author.application_date)
+        self.assertEqual(novice.application_status, Author.Status.ON_HOLD)
+        self.assertIsNone(novice.application_date)
 
     def test_message_preferences(self):
         some_author = Author.objects.create(username="author", email="3", is_novice=False, is_active=True)
@@ -195,16 +208,18 @@ class AuthorModelTests(TestCase):
 
         # Entry with low vote rate
         entry = Entry.objects.create(**self.entry_base)
+        del self.author.entry_nice
+        cache.clear()
+
         self.assertEqual(None, self.author.entry_nice)
 
         # Entry with enough vote rate
         entry.vote_rate = Decimal("1.1")
         entry.save()
-        self.assertEqual(entry, self.author.entry_nice)
 
-        # Superior entry
-        another_entry = Entry.objects.create(**self.entry_base, vote_rate=Decimal("3"))
-        self.assertEqual(another_entry, self.author.entry_nice)
+        del self.author.entry_nice
+        cache.clear()
+        self.assertEqual(entry, self.author.entry_nice)
 
 
 class CategoryModelTests(TransactionTestCase):
@@ -333,19 +348,6 @@ class UserVerificationModelTests(TestCase):
             author=self.author, expiration_date=timezone.now() - datetime.timedelta(hours=30)
         )
         self.assertEqual(self.author.email_confirmed, True)
-
-
-class EntryFavoritesModelTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = Author.objects.create(username="user", email="0")
-        cls.topic = Topic.objects.create_topic("test_topic")
-        cls.entry = Entry.objects.create(topic=cls.topic, author=cls.author)
-
-    def test_str(self):
-        self.author.favorite_entries.add(self.entry)
-        fav = EntryFavorites.objects.get(author=self.author, entry=self.entry)
-        self.assertEqual(str(fav), "Entry favorisi #1")
 
 
 class MessageModelTests(TestCase):
@@ -499,14 +501,3 @@ class TopicModelTest(TransactionTestCase):
 
     def test_str(self):
         self.assertEqual(str(self.some_topic), "zeki müren")
-
-
-class TopicFollowingModelTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.some_topic = Topic.objects.create_topic("hüseyin")
-        cls.author = Author.objects.create(username="user", email="0", is_novice=False)
-
-    def test_str(self):
-        some_topic_following = TopicFollowing.objects.create(topic=self.some_topic, author=self.author)
-        self.assertEqual(str(some_topic_following), "1 => user")
