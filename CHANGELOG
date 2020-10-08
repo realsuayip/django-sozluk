@@ -1,3 +1,14 @@
+[0.17.8-alpha](2020.10.09)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed pagination selectors not working
+properly in iOS Safari (Thanks to Aras Diler).
+
+--Deletions--
+None
+
 [0.17.7-alpha](2020.10.07)(compatible)
 --Additions--
 None

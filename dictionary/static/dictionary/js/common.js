@@ -1,4 +1,5 @@
 import { Handle, Handler, template, updateQueryStringParameter } from "./utils"
+import { isTouchDevice } from "./mql"
 
 Handle("body", "change", event => {
     if (event.target.matches("select.page-selector")) {
@@ -6,7 +7,7 @@ Handle("body", "change", event => {
     }
 })
 
-Handle("body", "focusin", event => {
+Handle("body", isTouchDevice ? "touchstart" : "focusin", event => {
     // Load pages for paginator select
     const select = event.target
     if (select.matches("select.page-selector") && !select.hasAttribute("data-loaded")) {
