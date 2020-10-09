@@ -266,7 +266,11 @@
                         <ul>
                             {% for category in categories %}
                                 <li>
-                                    <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                                    {% if category.is_pseudo %}
+                                        <a href="{% url 'topic-search' %}?q=%23{{ category.name }}">#{{ category.name }}</a>
+                                    {% else %}
+                                        <a data-lf-slug="{{ category.slug }}" title="{{ category.description }}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
+                                    {% endif %}
                                 </li>
                             {% endfor %}
                         </ul>

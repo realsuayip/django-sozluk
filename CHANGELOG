@@ -1,3 +1,17 @@
+[0.17.9-alpha](2020.10.10)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) In topic channel list, pseudo channels
+were listed alike real channels, fixed that.
+2) Fixed user settings hamburger menu not
+rendering properly when viewport size gets changed.
+3) Updated readme & docs.
+
+--Deletions--
+None
+
 [0.17.8-alpha](2020.10.09)(compatible)
 --Additions--
 None

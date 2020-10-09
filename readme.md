@@ -6,7 +6,11 @@ Check [CHANGELOG](CHANGELOG) before cloning a newer version!
 
 [Installation guide](docs/turkish/installation.md) is now available in Turkish!
 
-This project is subject to further development, check out "todo" keyword in the project files or github issues to see the to-do's.
+If you want to contribute to the project or have found a bug
+or need help about deployment etc., you may contact me via
+Telegram (I use the same username there) or [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
+
+Check out "todo" keyword in the project files or Github issues to see the to-do's.
 
 Check out [screenshots](screenshots) folder to see current front-end in action with both the desktop and mobile views.
    
@@ -19,5 +23,3 @@ To receive e-mails in development, make sure that a Celery worker is running in 
     python -m smtpd -n -c DebuggingServer localhost:1025
 
 Python 3.8.2+ required.
-
-If you want to contribute to the project or have found a bug or need help about deployment etc., you may contact me via Telegram (I use the same username there) or create an issue.

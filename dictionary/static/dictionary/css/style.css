@@ -1556,6 +1556,10 @@ textarea.expandable {
     header.entry-individual > .mobile {
         display: none;
     }
+
+    .settings-nav-mobile {
+        display: none;
+    }
 }
 
 @media (max-width: 615px) {

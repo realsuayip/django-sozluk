@@ -85,6 +85,9 @@ için detaylı bilgi bulunuyor. Bu ayarlardan iki tanesini derhal yapmanız gere
 
 #### Geçici e-posta sunucusu
 
+**Güncelleme:** E-postalar artık Celery ile asenkron olarak gönderildiği için arka planda bir de celery worker
+çalıştırmanız gerekiyor.
+
 Son olarak, e-posta gönderen sayfalar ve fonksiyonlar (örneğin yeni kullanıcı kaydı) halihazırda bir e-posta sunucusu
 belirlenmediği için çalışmayacaktır. Fakat yerel ağda iken gönderilen e-postaları komut satırına yazdırabiliriz, bunu
 yapmak için ayrı bir komut satırında şunu çalıştırın:
