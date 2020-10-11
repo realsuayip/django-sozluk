@@ -66,4 +66,4 @@ class TopicManager(models.Manager):
 class TopicManagerPublished(models.Manager):
     # Return topics which has published (by authors) entries
     def get_queryset(self):
-        return super().get_queryset().filter(Exists(Entry.objects.only("pk").filter(topic=OuterRef("pk"))))
+        return super().get_queryset().filter(Exists(Entry.objects.filter(topic=OuterRef("pk"))))
