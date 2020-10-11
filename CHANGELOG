@@ -1,3 +1,18 @@
+[0.17.10-alpha](2020.10.11)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Use new Django 3 syntax in
+TopicEntryList "answered" method.
+2) Fixed the ancient TopicEntryList
+_find_subsequent_page method.
+3) Remove redundant raise statement
+in LeftFrameProcessor.
+
+--Deletions--
+None
+
 [0.17.9-alpha](2020.10.10)(compatible)
 --Additions--
 None

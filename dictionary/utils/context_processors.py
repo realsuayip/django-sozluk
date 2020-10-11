@@ -78,11 +78,10 @@ class LeftFrameProcessor:
     @cached_property
     def _exclusions(self):
         if exclusions := self.get_cookie("lfex"):
-            with suppress(JSONDecodeError, ValueError):
+            with suppress(JSONDecodeError):
                 parsed = json.loads(exclusions)
                 if isinstance(parsed, list) and all(isinstance(s, str) for s in parsed):
                     return parsed
-                raise ValueError
 
         # Returning None, handler will hit DEFAULT_EXCLUSIONS
         self.set_cookie("lfex", json.dumps(settings.DEFAULT_EXCLUSIONS))

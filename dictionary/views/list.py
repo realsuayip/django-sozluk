@@ -509,11 +509,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return None
 
     def answered(self):
-        # In Django 3+ we don't need to annotate.
-        # https://docs.djangoproject.com/en/3.0/ref/models/expressions/#filtering-on-a-subquery-or-exists-expressions
-        return self.topic.entries.annotate(has_comments=Exists(Comment.objects.filter(entry=OuterRef("pk")))).filter(
-            has_comments=True
-        )
+        return self.topic.entries.filter(Exists(Comment.objects.filter(entry=OuterRef("pk"))))
 
     def images(self):
         return self.topic.entries.filter(content__regex=IMAGE_REGEX)
@@ -733,15 +729,16 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         # Redirect to topic itself.
         return redirect(self.topic.get_absolute_url())
 
-    def _find_subsequent_page(self, pages_before):
-        is_on = pages_before + 1
-        page_count = 0
-        while is_on > 0:
-            page_count += 1
-            is_on -= self.get_paginate_by()
-        if is_on == 0:
-            page_count += 1
-        return page_count
+    def _find_subsequent_page(self, previous_object_count):
+        paginate_by = self.get_paginate_by()
+        index = previous_object_count + 1
+
+        page = (index // paginate_by) or 1
+
+        if (index % paginate_by == 0) or (index > paginate_by):
+            page += 1
+
+        return page
 
     def _qs_filter(self, queryset, prefetch=True):
         """
