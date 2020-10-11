@@ -2,7 +2,7 @@ from contextlib import suppress
 
 from django.core.validators import ValidationError
 from django.db import models
-from django.db.models import Count, Q
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404
 
 from dictionary.models import Entry
@@ -66,10 +66,4 @@ class TopicManager(models.Manager):
 class TopicManagerPublished(models.Manager):
     # Return topics which has published (by authors) entries
     def get_queryset(self):
-        pub_filter = {"entries__is_draft": False, "entries__author__is_novice": False}
-        return (
-            super()
-            .get_queryset()
-            .annotate(num_published=Count("entries", filter=Q(**pub_filter)))
-            .exclude(num_published__lt=1)
-        )
+        return super().get_queryset().filter(Exists(Entry.objects.only("pk").filter(topic=OuterRef("pk"))))

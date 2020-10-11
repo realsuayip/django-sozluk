@@ -1,5 +1,4 @@
 from django.contrib import messages as notifications
-from django.db.models import Count
 from django.shortcuts import redirect
 from django.utils.translation import gettext, gettext_lazy as _, ngettext, pgettext
 
@@ -22,8 +21,7 @@ class TopicMove(IntermediateActionView):
     page_title = _("Topic transfer")
 
     def get_queryset(self):
-        queryset = self.model.objects.annotate(count=Count("entries")).filter(pk__in=self.get_source_ids(), count__gt=0)
-        return queryset
+        return self.model.objects_published.filter(pk__in=self.get_source_ids())
 
     def post(self, request):
         reference = request.POST.get("reference") == "yes"

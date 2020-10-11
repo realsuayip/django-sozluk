@@ -1,3 +1,15 @@
+[0.17.11-alpha](2020.10.11)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Topic "objects_published" manager now uses
+Exists (as it should have been).
+2) Optimized TopicMove "get_queryset" method.
+
+--Deletions--
+None
+
 [0.17.10-alpha](2020.10.11)(compatible)
 --Additions--
 None
