@@ -16,7 +16,9 @@ from dictionary_graph.utils import AnonymousUserStorage, login_required
 
 
 def owneraction(mutator):
-    """Checks if sender is actually the owner of the object & gets the Entry object."""
+    """
+    Checks if sender is actually the owner of the object & gets the Entry object.
+    """
 
     @wraps(mutator)
     @login_required
@@ -97,7 +99,10 @@ class FavoriteEntry(Action, Mutation):
 
 
 def voteaction(mutator):
-    """Checks if sender is actually the owner of the object, gets the Entry object. Handle anonymous votes."""
+    """
+    Checks if sender is actually the owner of the object, gets the Entry object.
+    Handles anonymous votes.
+    """
 
     @wraps(mutator)
     def decorator(_root, info, pk):
@@ -179,7 +184,7 @@ class UpvoteEntry(Action, Mutation):
 
 
 class DownvoteEntry(Action, Mutation):
-    """Mutation to downvote an entry, same logic with UpvoteEntry but reversed."""
+    """Mutation to downvote an entry."""
 
     @staticmethod
     @voteaction

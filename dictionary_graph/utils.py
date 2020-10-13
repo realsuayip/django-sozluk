@@ -7,7 +7,9 @@ from dictionary.conf import settings
 
 
 def login_required(func):
-    """Utility decorator to check if the user logged in (mutations & resolvers)"""
+    """
+    Utility decorator to check if the user logged in (mutations & resolvers).
+    """
 
     @wraps(func)
     def decorator(_root, info, *args, **kwargs):
@@ -20,12 +22,15 @@ def login_required(func):
 
 class VoteStorage:
     """
-    A mocking object to mock the m2m fields (upvoted_entries, downvoted_entries) of Author, for anonymous users.
+    A mocking object to mock the m2m fields (upvoted_entries, downvoted_entries)
+    of Author, for anonymous users.
 
-    Anonymous users can vote, in order to hinder duplicate votes, session is used; though it is not the best way to
-    handle this, I think it's better than storing all the IP addresses of the guest users as acquiring an IP address is
-    a nuance; it depends on the server and it can also be manipulated by keen hackers. It's just better to stick to this
-    way instead of making things complicated as there is no way to make this work 100% intended.
+    Anonymous users can vote, in order to hinder duplicate votes, session is
+    used; though it is not the best way to handle this, I think it's better than
+    storing all the IP addresses of the guest users as acquiring an IP address
+    is a nuance; it depends on the server and it can also be manipulated by keen
+    hackers. It's just better to stick to this way instead of making things
+    complicated as there is no way to make this work 100% intended.
     """
 
     def __init__(self, request, name, rate):

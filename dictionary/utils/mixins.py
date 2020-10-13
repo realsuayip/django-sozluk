@@ -12,9 +12,8 @@ from dictionary.utils import InputNotInDesiredRangeError
 
 class PasswordConfirmMixin:
     """
-    Include a password_field with a FormMixin to confirm user's password before processing form data. This could also be
-    written as a forms.Form mixin, but there may be cases where you don't want to use django's forms, you can use this
-    mixin in those cases as well.
+    Include a password_field with a FormMixin to confirm user's password before
+    processing form data.
     """
 
     password_field_name = "password_confirm"  # nosec
@@ -95,9 +94,11 @@ class IntermediateActionMixin:
 
     def get_object_list(self):
         """
-        Not static. If you alter the objects in a way that the current get_queryset method won't fetch them anymore,
-        cast this method into a list to access the objects that are updated, after updating them.
+        Not static. If you alter the objects in a way that the current
+        get_queryset method won't fetch them anymore, cast this method into a
+        list to access the objects that are updated, after updating them.
         """
+
         if not self.get_queryset().exists():
             raise self.model.DoesNotExist
         return self.get_queryset()

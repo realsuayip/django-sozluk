@@ -7,8 +7,8 @@ from dictionary.utils import time_threshold
 
 class NoviceActivityMiddleware:
     """
-    Novice users who visits the website daily should have advantage on novice list, so we need to track last active date
-    of novice users, which is what this middleware does. (And also determines novice queue number)
+    Novice users who visits the website daily should have advantage on novice
+    list, so we need to track last active date of novice users.
     """
 
     def __init__(self, get_response):

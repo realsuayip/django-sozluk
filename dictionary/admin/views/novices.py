@@ -31,8 +31,9 @@ class NoviceList(PermissionRequiredMixin, ListView):
 
 class NoviceLookup(PermissionRequiredMixin, ListView):
     """
-    View to accept or reject a novice application. Lists first 10 entries of the novice user. Users will get mail
-    and a message indicating the result of their application. A LogEntry object is created for this action.
+    View to accept or reject a novice application. Lists first 10 entries of the
+    novice user. Users will get mail and a message indicating the result of
+    their application. A LogEntry object is created for this action.
     """
 
     model = Entry

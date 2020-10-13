@@ -25,9 +25,8 @@ from dictionary.utils.decorators import for_public_methods
 
 class TopicQueryHandler:
     """
-    Queryset algorithms for topic lists.
-    Each non-database category has its own method, note that function names correspond to their slugs, this allows
-    us to write a clean code, and each time we have to edit one of them for specific feature it won't be painful.
+    Queryset algorithms for topic lists. Each non-database category has its own
+    method and their names correspond to their slugs, this allows for clean code.
     """
 
     # Queryset filters
@@ -158,11 +157,16 @@ class TopicQueryHandler:
         Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
 
         todo: If you can convert this to native orm or create a queryset that will result in same data, please do.
-        I tried to make the sql easy-to-read, but failed as there were many aliases that I couldn't find a meaningful
-        name. They are named arbitrarily, if you think you can make it more readable, please do.
+        Update: An ORM implementation was made, but it was too slow compared to
+        this solution. See: https://gist.github.com/realsuayip/9d2c5365cbe6e43d1fe282a556d0f6d5
 
-        Query Description: List topics on condition that the user has entries in in (written in last 24 hours), along
-        with count of entries that were written after the user's latest entry on that topic.
+        I tried to make the sql easy-to-read, but failed as there were many
+        aliases that I couldn't find meaningful names. They are named arbitrarily,
+        if you think you can make it more readable, please do.
+
+        Query Description: List topics on condition that the user has entries in
+        (written in last 24 hours), along with count of entries that were
+        written after the user's latest entry on that topic.
         """
 
         pk = user.pk
@@ -247,8 +251,8 @@ class TopicQueryHandler:
     def search(self, user, search_keys):
         """
         The logic of advanced search feature.
-        Notice: If you are including a new field, and it requires an annotation, you will need to use SubQuery.
-        Notice: Entry counts given in accordance with search filters, it may not be the count of ALL entries.
+        Notice: Entry counts given in accordance with search filters, it may not
+        be the count of ALL entries.
         """
 
         keywords = search_keys.get("keywords")
@@ -581,9 +585,8 @@ class TopicListHandler:
 
     def delete_cache(self, flush=False, delimiter=False):
         """
-        Deletes cached data and initiates new data using _get_data.
-        Call this before serialized to get new results.
-        :param flush: Set this to true if you don't need new data.
+        Deletes cached data. Call this before serialized to get new results.
+        :param flush: Set this to True if you don't need new data.
         :param delimiter: Set this to True to limit the time to delete cache.
         """
 

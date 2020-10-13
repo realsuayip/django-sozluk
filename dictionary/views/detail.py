@@ -76,8 +76,8 @@ class ChatArchive(LoginRequiredMixin, DetailView):
 
 class LatestEntriesPaginator(Paginator):
     """
-    Count of entries may have already been calculated. This
-    means 1 less count(*) query, which is really slow.
+    Count of entries may have already been calculated. This means 1 less
+    count(*) query.
     """
 
     def __init__(self, *args, **kwargs):

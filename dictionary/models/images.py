@@ -13,7 +13,10 @@ def user_directory_path(instance, filename):
 
 
 def image_slug():
-    """Assigns a slug to an image. (Tries again recursively if the slug is taken.)"""
+    """
+    Assigns a slug to an image. (Tries again recursively if the slug is taken.)
+    """
+
     slug = "".join(secrets.choice(string.ascii_lowercase + string.digits) for _i in range(8))
 
     try:

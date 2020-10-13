@@ -8,15 +8,17 @@ from django.core.cache import cache
 
 def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"):
     """
-    Decorator to cache functions using django's low-level cache api. Arguments are not taken into consideration while
-    caching, so values of func(a, b) and func(b, d) will be the same (the value of first called). This is used to cache
-    context processors, but not limited to.
+    Decorator to cache functions using django's low-level cache api. Arguments
+    are not taken into consideration while caching, so values of func(a, b) and
+    func(b, d) will be the same (the value of first called).
 
     :param initial_func: (decorator thingy, passed when used with parameters)
     :param timeout: Set the cache timeout, None to cache indefinitely.
-    :param prefix: Cache keys are set using the name of the function. Set a unique prefix to
-    avoid clashes between functions that have the same name.
-    :param vary_on_user: Set True to cache per user. (Anonymous users will have the same value)
+    :param prefix: Cache keys are set using the name of the function. Set a
+    unique prefix to avoid clashes between functions/methods that with same name.
+    :param vary_on_user: Set True to cache per user (anonymous users will have
+    the same value). The wrapped function needs to have either "request" as
+    argument or "user" as keyword argument.
     """
 
     def decorator(func):

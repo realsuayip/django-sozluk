@@ -49,8 +49,8 @@ class IntermediateActionHandler:
 
 def intermediate(action):
     """
-    Decorator for admin actions with intermediate pages. (using IntermediateActionView). The decorated
-    view should return the name of the url.
+    Decorator for admin actions with intermediate pages (IntermediateActionView).
+    The decorated action should return the name of the url.
     """
 
     @wraps(action)

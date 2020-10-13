@@ -43,13 +43,18 @@ class ArchiveSerializer(Serializer):
 
 
 class PlainSerializer:
-    """A surface-level 'serializer' that creates a dictionary from 'public' methods/attributes {name: return value}"""
+    """
+    A surface-level 'serializer' that creates a dictionary from 'public'
+    attributes.
+    """
 
     exclude = ()
-    """A tuple of names of attributes/methods to be ignored while serializing."""
+    """
+    Names of attributes to be ignored while serializing.
+    """
 
     def get_serialized(self):
-        """Outer dictionary comprehension removes null values from inner dictionary."""
+        # Outer dictionary comprehension removes null values from inner dictionary.
         return {
             key: value
             for key, value in {

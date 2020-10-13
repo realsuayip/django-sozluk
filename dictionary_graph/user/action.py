@@ -11,7 +11,10 @@ from dictionary_graph.utils import login_required
 
 
 def useraction(mutator):
-    """Set up sender and subject, check if they are the same or subject is private. Also check for authentication."""
+    """
+    Set up sender and subject, check if they are the same or subject is private.
+    Also check for authentication.
+    """
 
     @wraps(mutator)
     @login_required

@@ -13,10 +13,12 @@ from dictionary.utils.views import IntermediateActionView
 
 class SuspendUser(IntermediateActionView):
     """
-    View for user suspension intermediate page. Admin provides suspension time from 'time_choices' and also provides
-    some information. For each suspended user, a LogEntry object is created. get_queryset is not modified so it is
-    possible to select already suspended users, but latest submission will be taken into account. Note that composing
-    a message to each banned user is an expensive action, large inputs (> 100) may take time. (~7 sec for 800 objects)
+    View for user suspension intermediate page. Admin provides suspension time
+    from 'time_choices' and also provides some information. For each suspended user,
+    a LogEntry object is created. get_queryset is not modified so it is possible
+    to select already suspended users, but latest submission will be taken into
+    account. Note that composing a message to each banned user is an expensive action,
+    large inputs (> 100) may take time (~7 sec for 800 users).
     """
 
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")

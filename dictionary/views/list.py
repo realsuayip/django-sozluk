@@ -147,8 +147,8 @@ class PeopleList(LoginRequiredMixin, ListView):
 
 class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
     """
-    List conversations with a message sending form and a search box. Search results
-    handled via GET request in get_queryset.
+    List conversations with a message sending form and a search box.
+    Search results handled via GET request in get_queryset.
     """
 
     model = Conversation
@@ -312,15 +312,21 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     template_name = "dictionary/list/entry_list.html"
 
     topic = None
-    """The topic object whose entries to be shown. If url doesn't match an existing topic,
-       a PseudoTopic object created via TopicManager will be used to handle creation & template rendering."""
+    """
+    The topic object whose entries to be shown. If url params doesn't match an
+    existing topic, a PseudoTopic object will be used to handle creation and
+    template rendering.
+    """
 
     entry = None
     """Entry object if the user requests a single entry."""
 
     view_mode = None
-    """There are several view modes which filter out entries by specific metadata. This determines which queryset will
-       be used to fetch entries. It is caught using GET parameters. (entry_permalink is handled differently)"""
+    """
+    There are several view modes which filter out entries by specific metadata.
+    This determines which queryset will be used to fetch entries. It is caught
+    using GET parameters (entry_permalink is handled differently).
+    """
 
     modes = (
         "regular",
@@ -338,20 +344,27 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         "answered",
         "images",
     )
-    """List of filtering modes that are used to filter out entries. User passes filtering mode using the query
-       parameter 'a'. For example ?a=today returns only today's entries."""
+    """
+    List of filtering modes that are used to filter out entries. User passes
+    filtering mode using the query parameter 'a'. For example ?a=today returns
+    only today's entries.
+    """
 
     login_required_modes = ("novices", "following", "recent", "acquaintances")
-    """These filtering modes require user authentication. (they need to be present in modes)"""
+    """These filtering modes require user authentication."""
 
     redirect = False
-    """When handling queryset, if there are no new entries found, redirect user (if desired) to full topic view."""
+    """
+    When handling queryset, if there are no new entries found, redirect user
+    (if desired) to full topic view.
+    """
 
     def form_valid(self, form):
         """
-        User sent new entry, whose topic may or may not be existent. If topic exists, adds the entry and redirects to
-        the entry permalink. If topic doesn't exist, topic is created if the title is valid. Entry.save() automatically
-        sets created_by field of the topic.
+        User sent new entry, whose topic may or may not be existent. If topic
+        exists, adds the entry and redirects to the entry permalink, otherwise
+        the topic is created if the title is valid. Entry.save() sets created_by
+        field of the topic.
         """
 
         if self.topic.exists and self.topic.is_banned:
@@ -405,9 +418,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def form_invalid(self, form):
         """
-        This can be called by: invalid topic title, banned topic post or invalid content. Because no queryset is set,
-        a custom form_invalid method is necessary. Non-field error messages supplied via notifications in form_valid.
+        This can be called by: invalid topic title, banned topic post or invalid
+        content. Because no queryset is set, a custom form_invalid method is
+        necessary. Non-field error messages supplied in form_valid.
         """
+
         if form.errors:
             for err in form.errors["content"]:
                 notifications.error(self.request, err, extra_tags="persistent")
@@ -471,7 +486,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return self.topic.entries.filter(**filters)
 
     def following(self):
-        """User is redirected here from activity link in header (view -> activity_list)"""
+        """User is redirected here from activity_list view."""
         queryset = None
         following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
 
@@ -675,10 +690,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def get_topic(self):
         """
-        Get topic object (or permalink of an entry) and return it. If no topic objects found return a pseudo topic
-        object that could be created via post. If unicode_string or query search points to a valid slug
-        (or author or entry permalink), redirect to that object.
+        Get topic object (or permalink of an entry) and return it. If no topic
+        objects found return a pseudo topic object that could be created via post.
+        If unicode_string or query search points to a valid slug (or author or
+        entry permalink), redirect to that object.
         """
+
         # Normal handling of an existing topic
         if self.kwargs.get("slug"):
             self.topic = Topic.objects.get_or_pseudo(slug=self.kwargs.get("slug"))
@@ -742,12 +759,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
     def _qs_filter(self, queryset, prefetch=True):
         """
-        Filter queryset to exclude drafts, blocked users etc. and select and prefetch related objects, if required.
+        Filter queryset to exclude drafts, blocked users etc. and select and
+        prefetch related objects, if required.
 
         :param queryset: Queryset object of entries.
-        :param prefetch: Do you need to prefetch data? If you are going to use them, definitely use default value, else
-        set to False to escape unnecessary database overhead (e.g. You only need qs to access count).
-        :return: qs
+        :param prefetch: Do you need to prefetch data? If you are going to use
+        them, definitely use default value, else set to False to escape
+        unnecessary database overhead (e.g. You only need qs to access count).
+        :return: Queryset
         """
 
         novice_view_modes = ["novices", "entry_permalink", "acquaintances"]  # modes in which novice entries are visible
