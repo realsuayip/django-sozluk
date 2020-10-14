@@ -1,3 +1,15 @@
+[0.17.12-alpha](2020.10.14)(compatible)
+--Additions--
+1) Add client-side caching for all
+autocomplete inputs.
+
+-- Changes --
+1) Updated autocomplete library to
+latest version.
+
+--Deletions--
+None
+
 [0.17.11-alpha](2020.10.11)(compatible)
 --Additions--
 None
