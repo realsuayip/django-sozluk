@@ -6,12 +6,12 @@
   ],
   "devDependencies": {
     "standard": "^14.3.4",
-    "stylelint": "^13.6.1",
+    "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0"
   },
   "dependencies": {
-    "@popperjs/core": "^2.4.4",
+    "@popperjs/core": "^2.5.3",
     "dropzone": "^5.7.2",
-    "js-cookie": "^3.0.0-rc.0"
+    "js-cookie": "^3.0.0-rc.1"
   }
 }

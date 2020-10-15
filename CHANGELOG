@@ -1,3 +1,15 @@
+[0.17.13-alpha](2020.10.15)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Updated javascript libraries to
+latest versions (@popperjs/core
+and js-cookie).
+
+--Deletions--
+None
+
 [0.17.12-alpha](2020.10.14)(compatible)
 --Additions--
 1) Add client-side caching for all
