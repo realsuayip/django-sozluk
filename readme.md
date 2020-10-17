@@ -4,6 +4,11 @@
 
 Check [CHANGELOG](CHANGELOG) before cloning a newer version!
 
+This is a clone of ekşi sözlük. Commonly referred as "collaborative dictionary",
+this type of social networking can be thought as "urban dictionary on steroids". Visit
+[this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk) to learn more about
+this type of social network.
+
 [Installation guide](docs/turkish/installation.md) is now available in Turkish!
 
 If you want to contribute to the project or have found a bug
