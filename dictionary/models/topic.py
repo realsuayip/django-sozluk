@@ -121,16 +121,6 @@ class Topic(models.Model):
     def follow_check(self, user):
         return TopicFollowing.objects.filter(topic=self, author=user).exists()
 
-    def latest_entry_date(self, sender):
-        try:
-            return (
-                self.entries.exclude(Q(author__in=sender.blocked.all()) | Q(author=sender))
-                .latest("date_created")
-                .date_created
-            )
-        except ObjectDoesNotExist:
-            return self.date_created
-
     def register_wishes(self, fulfiller_entry=None):
         """To delete fulfilled wishes and inform wishers."""
 

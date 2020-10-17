@@ -484,7 +484,7 @@ class Author(AbstractUser):
 
         equal_and_superior = Author.in_novice_list.exclude(pk=self.pk).filter(queue_priority__gte=self.queue_priority)
 
-        if equal_and_superior.count():
+        if equal_and_superior.exists():
             superior = equal_and_superior.filter(queue_priority__gt=self.queue_priority)
 
             if superior_count := superior.count():

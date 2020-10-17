@@ -466,23 +466,6 @@ class TopicModelTest(TransactionTestCase):
         Entry.objects.create(topic=self.some_topic, author=self.author)
         self.assertEqual(self.some_topic.has_entries, True)
 
-    def test_latest_entry_date(self):
-        # Initial status (no entry)
-        self.assertEqual(self.some_topic.latest_entry_date(self.author), self.some_topic.date_created)
-
-        # Self entry doesn't change output
-        time.sleep(0.01)  # So that self.some_topic.date_created != some_entry.date_created
-        some_entry = Entry.objects.create(topic=self.some_topic, author=self.author)
-        self.assertEqual(self.some_topic.latest_entry_date(self.author), self.some_topic.date_created)
-
-        # Some other person requests latest entry date
-        some_other_author = Author.objects.create(username="user2", email="1", is_novice=False)
-        self.assertEqual(self.some_topic.latest_entry_date(some_other_author), some_entry.date_created)
-
-        # Block test
-        some_other_author.blocked.add(self.author)
-        self.assertEqual(self.some_topic.latest_entry_date(some_other_author), self.some_topic.date_created)
-
     def test_follow_check(self):
         # Initial status
         self.assertEqual(self.some_topic.follow_check(self.author), False)

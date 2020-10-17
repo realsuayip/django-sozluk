@@ -1,3 +1,18 @@
+[0.17.14-alpha](2020.10.17)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed a regression in autocomplete
+behaviour which hindered searches with
+@handle.
+2) Improved the performance of novice
+queue determination logic.
+
+--Deletions--
+1) Removed unused latest_entry_date
+method of Topic.
+
 [0.17.13-alpha](2020.10.15)(compatible)
 --Additions--
 None

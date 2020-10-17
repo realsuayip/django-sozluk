@@ -169,7 +169,7 @@ class AutoComplete {
                 value: notSafe(s.value)
             }))
 
-            if (this.cache) {
+            if (this.cache && (name !== "@")) {
                 const resultSet = items.length ? this.cachedResults : this.emptyResults
                 resultSet.push({ [name]: items })
             }
