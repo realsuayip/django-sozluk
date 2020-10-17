@@ -1,6 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Q
 from django.shortcuts import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
