@@ -116,7 +116,10 @@ def voteaction(mutator):
 
         if not sender.is_authenticated:
             if settings.DISABLE_ANONYMOUS_VOTING:
-                raise PermissionDenied(_("we couldn't handle your request. try again later."))
+                # Fail silently.
+                # We cannot determine if the decorated mutation belongs to
+                # UpvoteEntry or DownvoteEntry, so we return the common ancestor.
+                return Mutation()
 
             sender = AnonymousUserStorage(info.context)
 
