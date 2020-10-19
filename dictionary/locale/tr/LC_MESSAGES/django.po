@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 22:35+0300\n"
-"PO-Revision-Date: 2020-10-01 23:15+0156\n"
+"POT-Creation-Date: 2020-10-19 13:29+0300\n"
+"PO-Revision-Date: 2020-10-19 13:32+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Translated-Using: django-rosetta 0.9.4\n"
+"X-Translated-Using: django-rosetta 0.9.5\n"
 
 #: .\admin\__init__.py:20
 msgid "Administration"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Accessibility details"
 msgstr "Erişilebilirlik detayları"
 
-#: .\admin\author.py:59 .\models\author.py:123
+#: .\admin\author.py:59 .\models\author.py:124
 msgid "Novice status"
 msgstr "Çaylak durumu"
 
@@ -72,35 +72,45 @@ msgstr "Seçilen yazarları askıya al"
 msgid "Unsuspend selected authors"
 msgstr "Seçilen yazarları askıdan kaldır"
 
-#: .\admin\entry.py:17 .\admin\general_report.py:22 .\admin\topic.py:19
+#: .\admin\entry.py:23 .\admin\general_report.py:23 .\admin\topic.py:19
 msgid "Metadata"
 msgstr "Üstveri"
 
-#: .\admin\flatpages.py:14
+#: .\admin\entry.py:40 .\models\category.py:62 .\models\entry.py:16
+#: .\models\topic.py:175
+msgid "Topic"
+msgstr "Başlık"
+
+#: .\admin\entry.py:41
+#| msgid "entry"
+msgid "Entry"
+msgstr "Entry"
+
+#: .\admin\flatpages.py:17
 msgid "Advanced options"
 msgstr "Gelişmiş seçenekler"
 
-#: .\admin\general_report.py:21
+#: .\admin\general_report.py:22
 msgid "Report content"
 msgstr "Rapor içeriği"
 
-#: .\admin\general_report.py:23
+#: .\admin\general_report.py:24
 msgid "Evaluation"
 msgstr "Değerlendirme"
 
-#: .\admin\general_report.py:34
+#: .\admin\general_report.py:35
 msgid "Selected reports' status were marked as closed."
 msgstr "Seçilen raporların statüsü kapalı olarak işaretlendi."
 
-#: .\admin\general_report.py:38
+#: .\admin\general_report.py:39
 msgid "Selected reports' status were marked as open."
 msgstr "Seçilen raporların statüsü açık olarak işaretlendi."
 
-#: .\admin\general_report.py:40
+#: .\admin\general_report.py:41
 msgid "Mark selected reports' status as closed."
 msgstr "Seçilen raporların statüsünü kapalı olarak işaretle."
 
-#: .\admin\general_report.py:41
+#: .\admin\general_report.py:42
 msgid "Mark selected reports' status as open."
 msgstr "Seçilen raporların statüsünü açık olarak işaretle."
 
@@ -140,15 +150,15 @@ msgstr ""
 msgid "Move entries from selected topics"
 msgstr "Seçili başlıklardaki entry'leri taşı"
 
-#: .\admin\views\author.py:24
+#: .\admin\views\author.py:26
 msgid "Suspend authors"
 msgstr "Yazarları askıya al"
 
-#: .\admin\views\author.py:50
+#: .\admin\views\author.py:52
 msgid "No information was given."
 msgstr "Bilgi verilmedi."
 
-#: .\admin\views\author.py:53
+#: .\admin\views\author.py:55
 #, python-format
 msgid ""
 "your account has been suspended. administration message: %(message)s\n"
@@ -159,29 +169,29 @@ msgstr ""
 "\n"
 "profil sayfanızda hesabınızın tekrar aktifleştirilmesi için kalan süreyi görebilirsiniz."
 
-#: .\admin\views\author.py:73
+#: .\admin\views\author.py:76
 #, python-format
 msgid "%(count)d author was suspended."
 msgid_plural "%(count)d authors were suspended."
 msgstr[0] "%(count)d yazar askıya alındı."
 msgstr[1] "%(count)d yazar askıya alındı."
 
-#: .\admin\views\author.py:77
+#: .\admin\views\author.py:80
 msgid "The selected duration was invalid."
 msgstr "Geçersiz bir süre seçtiniz."
 
-#: .\admin\views\author.py:86
+#: .\admin\views\author.py:89
 msgid "Unsuspend authors"
 msgstr "Yazarların askıya alınmasını durdur"
 
-#: .\admin\views\author.py:111
+#: .\admin\views\author.py:114
 #, python-format
 msgid "%(count)d author was unsuspended."
 msgid_plural "%(count)d authors were unsuspended."
 msgstr[0] "%(count)d yazarın askıdan alınma durumu sona erdi."
 msgstr[1] "%(count)d yazarın askıdan alınma durumu sona erdi."
 
-#: .\admin\views\author.py:115 .\views\auth.py:145 .\views\auth.py:183
+#: .\admin\views\author.py:118 .\views\auth.py:145 .\views\auth.py:183
 #: .\views\edit.py:26 .\views\reporting.py:75
 msgid "we couldn't handle your request. try again later."
 msgstr "işleminizi gerçekleştiremedik. daha sonra tekrar deneyin."
@@ -191,29 +201,29 @@ msgstr "işleminizi gerçekleştiremedik. daha sonra tekrar deneyin."
 msgid "Novice review list"
 msgstr "Çaylak onay listesi"
 
-#: .\admin\views\novices.py:50
+#: .\admin\views\novices.py:51
 msgid "The user is not on the novice list."
 msgstr "Kullanıcı çaylak listesinde değil."
 
-#: .\admin\views\novices.py:54
+#: .\admin\views\novices.py:55
 msgid "The user is not at the top of the novice list."
 msgstr "Kullanıcı çaylak listesinin başında değil."
 
-#: .\admin\views\novices.py:67
+#: .\admin\views\novices.py:68
 #, python-format
 msgid "First ten entries of: %(username)s"
 msgstr "%(username)s nickli kullanıcın ilk 10 entry'si"
 
-#: .\admin\views\novices.py:74
+#: .\admin\views\novices.py:75
 msgid "The selected operation was invalid."
 msgstr "Geçersiz bir işlem seçtiniz."
 
-#: .\admin\views\novices.py:92
+#: .\admin\views\novices.py:93
 #, python-format
 msgid "Authorship of the user '%(username)s' was approved."
 msgstr "%(username)s nickli kullanıcının yazarlık talebi kabul edildi."
 
-#: .\admin\views\novices.py:97
+#: .\admin\views\novices.py:98
 #, python-format
 msgid ""
 "dear %(username)s, congratulations! your application of authorship has been "
@@ -222,16 +232,16 @@ msgstr ""
 "sayın %(username)s, tebrikler! yazarlık başvurunuz kabul edildi. giriş "
 "yaparak yazar olmanın olanaklarından faydalanabilirsin."
 
-#: .\admin\views\novices.py:102
+#: .\admin\views\novices.py:103
 msgid "your authorship has been approved"
 msgstr "yazarlık başvurunuz kabul edildi"
 
-#: .\admin\views\novices.py:116
+#: .\admin\views\novices.py:117
 #, python-format
 msgid "Authorship of the user '%(username)s' was rejected."
 msgstr "%(username)s nickli kullanıcının yazarlık talebi kabul reddedildi."
 
-#: .\admin\views\novices.py:121
+#: .\admin\views\novices.py:122
 #, python-format
 msgid ""
 "dear %(username)s, your application of authorship has been rejected and all "
@@ -242,7 +252,7 @@ msgstr ""
 "silindi. eğer 10 entry doldurursanız tekrar çaylak onay listesine "
 "alınacaksınız."
 
-#: .\admin\views\novices.py:126
+#: .\admin\views\novices.py:127
 msgid "your authorship has been rejected"
 msgstr "yazarlık başvurunuz reddedildi"
 
@@ -264,18 +274,18 @@ msgstr "Tüm önbellek temizlendi."
 msgid "Topic transfer"
 msgstr "Başlık taşıma"
 
-#: .\admin\views\topic.py:74
+#: .\admin\views\topic.py:73
 #, python-format
 msgid "%(count)d entry was transferred"
 msgid_plural "%(count)d entries were transferred"
 msgstr[0] "%(count)d tane entry güncellendi."
 msgstr[1] "%(count)d tane entry güncellendi."
 
-#: .\admin\views\topic.py:78
+#: .\admin\views\topic.py:77
 msgid "Couldn't find the target topic."
 msgstr "Hedef başlık bulunamadı."
 
-#: .\admin\views\topic.py:80
+#: .\admin\views\topic.py:79
 msgid "GENERIC_SUPERUSER is missing?"
 msgstr "GENERIC_SUPERUSER bulunamadı?"
 
@@ -330,7 +340,7 @@ msgstr "entry'ler"
 msgid "favorites"
 msgstr "favorileri"
 
-#: .\apps.py:62 .\templates\dictionary\base.html:162
+#: .\apps.py:62 .\models\topic.py:185 .\templates\dictionary\base.html:162
 #: .\templates\dictionary\user\profile.html:121 .\views\detail.py:110
 msgid "wishes"
 msgstr "ukteler"
@@ -611,8 +621,9 @@ msgid ""
 msgstr ""
 "gerekli. kayıt işlemini tamamlamak için geçerli bir mail adresi girin."
 
-#: .\forms\auth.py:26 .\models\author.py:113 .\models\reporting.py:12
-#: .\templates\dictionary\user\preferences\base.html:21
+#: .\forms\auth.py:26 .\models\author.py:114 .\models\reporting.py:12
+#: .\templates\dictionary\user\preferences\base.html:24
+#: .\templates\dictionary\user\preferences\base.html:39
 msgid "e-mail"
 msgstr "e-posta"
 
@@ -624,7 +635,7 @@ msgstr "cinsiyet"
 msgid "birth date"
 msgstr "doğum tarihi"
 
-#: .\forms\auth.py:40 .\models\author.py:97
+#: .\forms\auth.py:40 .\models\author.py:98
 msgid "nickname"
 msgstr "nick"
 
@@ -669,7 +680,6 @@ msgid "topics per page"
 msgstr "sayfa başına başlık"
 
 #: .\forms\edit.py:16
-#| msgid "save preferences"
 msgid "message preference"
 msgstr "mesajlaşma tercihi"
 
@@ -682,7 +692,6 @@ msgid "allow uncategorized topics in today"
 msgstr "bugün'de başıboş başlıklar da gözüksün"
 
 #: .\forms\edit.py:19
-#| msgid "site announcements"
 msgid "include site announcements in my activity"
 msgstr "olay'da sözlük duyuruları bulunsun"
 
@@ -733,10 +742,6 @@ msgstr ""
 
 #: .\management\commands\create_generic_user.py:58
 #, python-format
-#| msgid ""
-#| "generic_%(user_type)s has been created with the username %(username) and "
-#| "email %(email)s. You can edit the details of this user via admin page if you"
-#| " wish."
 msgid ""
 "generic_%(user_type)s has been created with the username %(username)s and "
 "email %(email)s. You can edit the details of this user via admin page if you"
@@ -816,7 +821,7 @@ msgstr "duyuru"
 msgid "announcements"
 msgstr "sözlük duyuruları"
 
-#: .\models\author.py:58
+#: .\models\author.py:59
 msgid ""
 "unlike what you sent, an appropriate nickname would only consist of letters,"
 " numbers and spaces."
@@ -824,59 +829,59 @@ msgstr ""
 "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan "
 "bir nick münasiptir."
 
-#: .\models\author.py:63
+#: .\models\author.py:64
 msgid "male"
 msgstr "erkek"
 
-#: .\models\author.py:64
+#: .\models\author.py:65
 msgid "female"
 msgstr "kadın"
 
-#: .\models\author.py:65
+#: .\models\author.py:66
 msgid "other"
 msgstr "diğer"
 
-#: .\models\author.py:66
+#: .\models\author.py:67
 msgid "forget it"
 msgstr "boşver"
 
-#: .\models\author.py:69
+#: .\models\author.py:70
 msgid "in novice list"
 msgstr "çaylak listesinde"
 
-#: .\models\author.py:70
+#: .\models\author.py:71
 msgid "waiting for first ten entries"
 msgstr "entry girmesi bekleniyor"
 
-#: .\models\author.py:71
+#: .\models\author.py:72
 msgid "authorship approved"
 msgstr "yazarlık başvurusu kabul edildi"
 
-#: .\models\author.py:74
+#: .\models\author.py:75
 msgid "nobody"
 msgstr "kimse"
 
-#: .\models\author.py:75
+#: .\models\author.py:76
 msgid "authors and novices"
 msgstr "yazarlar ve çaylaklar"
 
-#: .\models\author.py:76 .\models\author.py:198
+#: .\models\author.py:77 .\models\author.py:199
 msgid "authors"
 msgstr "yazarlar"
 
-#: .\models\author.py:77
+#: .\models\author.py:78
 msgid "people who i follow"
 msgstr "takip ettiklerim"
 
-#: .\models\author.py:80
+#: .\models\author.py:81
 msgid "Light"
 msgstr "Aydınlık"
 
-#: .\models\author.py:81
+#: .\models\author.py:82
 msgid "Dark"
 msgstr "Karanlık"
 
-#: .\models\author.py:101
+#: .\models\author.py:102
 msgid ""
 "the nickname that will represent you in the site. can be 3-35 characters "
 "long, can include only letters, numbers and spaces"
@@ -884,35 +889,35 @@ msgstr ""
 "sözlükte sizi temsil edecek rumuz. 3-35 karakter uzunluğunda, boşluk "
 "içerebilir özel ve türkçe karakter içeremez."
 
-#: .\models\author.py:107
+#: .\models\author.py:108
 msgid "this nickname is too tiny"
 msgstr "bu nick çok minnoş"
 
-#: .\models\author.py:109
+#: .\models\author.py:110
 msgid "this nickname is already taken"
 msgstr "bu nick kapılmış"
 
-#: .\models\author.py:114
+#: .\models\author.py:115
 msgid "active"
 msgstr "aktif"
 
-#: .\models\author.py:125
+#: .\models\author.py:126
 msgid "Application status"
 msgstr "Başvuru durumu"
 
-#: .\models\author.py:127 .\templates\admin\novices.html:18
+#: .\models\author.py:128 .\templates\admin\novices.html:18
 msgid "Application date"
 msgstr "Başvuru tarihi"
 
-#: .\models\author.py:128
+#: .\models\author.py:129
 msgid "Last activity as novice"
 msgstr "Çaylak olarak son etkinlik"
 
-#: .\models\author.py:131
+#: .\models\author.py:132
 msgid "Queue priority"
 msgstr "Sıra önceliği"
 
-#: .\models\author.py:132
+#: .\models\author.py:133
 msgid ""
 "Novices with high priority are more likely to appear on the top of the "
 "novice list."
@@ -920,83 +925,83 @@ msgstr ""
 "Yüksek sıra önceliğine sahip çaylakların çaylak listesinin üstüne çıkmaları "
 "daha olasıdır."
 
-#: .\models\author.py:136
+#: .\models\author.py:137
 msgid "Suspended until"
 msgstr "Şu tarihe kadar uzaklaştırıldı"
 
-#: .\models\author.py:137
+#: .\models\author.py:138
 msgid "Frozen status"
 msgstr "Donuk durumu"
 
-#: .\models\author.py:138
+#: .\models\author.py:139
 msgid "Anonymous status"
 msgstr "Anonim durumu"
 
-#: .\models\author.py:163
+#: .\models\author.py:164
 msgid "Birth date"
 msgstr "Doğum tarihi"
 
-#: .\models\author.py:164
+#: .\models\author.py:165
 msgid "Gender"
 msgstr "Cinsiyet"
 
-#: .\models\author.py:176
+#: .\models\author.py:177
 msgid "Karma points"
 msgstr "Karma puanı"
 
-#: .\models\author.py:177
+#: .\models\author.py:178
 msgid "Badges"
 msgstr "Rozetler"
 
-#: .\models\author.py:191
+#: .\models\author.py:192
 msgid "Can access to the novice list"
 msgstr "Çaylak listesine erişebilir"
 
-#: .\models\author.py:192
+#: .\models\author.py:193
 msgid "Can suspend users"
 msgstr "Kullanıcıları askıya alabilir"
 
-#: .\models\author.py:193
+#: .\models\author.py:194
 msgid "Can clear cache"
 msgstr "Önbelleği temizleyebilir"
 
-#: .\models\author.py:194
+#: .\models\author.py:195
 msgid "Can comment on entries"
 msgstr "Entry'lere yorum yapabilir"
 
-#: .\models\author.py:195
+#: .\models\author.py:196
 msgid "Can suggest categories for topics"
 msgstr "Başlıklara kanal önerisi yapabilir"
 
-#: .\models\author.py:197
+#: .\models\author.py:198
 #: .\templates\dictionary\includes\forms\extended_search.html:7
 msgid "author"
 msgstr "yazar"
 
-#: .\models\author.py:261
+#: .\models\author.py:270
 msgid "you have used up all the vote claims you have today. try again later."
 msgstr ""
 "bir gün içerisinde kullanabileceğiniz oy hakkınızı doldurdunuz. daha sonra "
 "tekrar deneyin."
 
-#: .\models\author.py:269
+#: .\models\author.py:278
 msgid "sorry, you have been haunting this person for a long time."
 msgstr "olmaz. bu kullanıcıyla yeterince haşır neşir oldunuz."
 
-#: .\models\author.py:276
+#: .\models\author.py:285
 msgid ""
 "this person has taken enough of your votes today, maybe try other users?"
 msgstr ""
 "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara "
 "baksanız?"
 
-#: .\models\author.py:306 .\templates\dictionary\edit\entry_update.html:42
+#: .\models\author.py:315 .\templates\dictionary\edit\entry_update.html:42
 #: .\templates\dictionary\list\entry_list.html:245 .\views\edit.py:40
 #: .\views\images.py:33
 msgid "you lack the required permissions."
 msgstr "gereken yetkilere sahip değilsiniz."
 
-#: .\models\author.py:316
+#: .\models\author.py:325
 #, python-format
 msgid "you are sending entries too frequently. try again in a second."
 msgid_plural ""
@@ -1005,36 +1010,36 @@ msgstr[0] "çok hızlı entry gönderiyorsunuz. şimdi yeniden deneyin."
 msgstr[1] ""
 "çok hızlı entry gönderiyorsunuz. %(remaining)d saniye içinde tekrar deneyin."
 
-#: .\models\author.py:511
+#: .\models\author.py:521
 msgid "delete account completely"
 msgstr "hesabı komple sil"
 
-#: .\models\author.py:512
+#: .\models\author.py:522
 msgid "delete account with legacy"
 msgstr "hesabı miras bırakarak sil"
 
-#: .\models\author.py:513
+#: .\models\author.py:523
 msgid "freeze account"
 msgstr "hesabı dondur"
 
-#: .\models\author.py:516
+#: .\models\author.py:526
 #: .\templates\dictionary\user\preferences\terminate.html:42
 msgid "last words?"
 msgstr "son sözünüz?"
 
-#: .\models\author.py:544 .\models\category.py:15 .\models\flatpages.py:21
+#: .\models\author.py:554 .\models\category.py:15 .\models\flatpages.py:21
 msgid "Name"
 msgstr "İsim"
 
-#: .\models\author.py:545 .\models\category.py:17
+#: .\models\author.py:555 .\models\category.py:17
 msgid "Description"
 msgstr "Açıklama"
 
-#: .\models\author.py:549 .\models\flatpages.py:22
+#: .\models\author.py:559 .\models\flatpages.py:22
 msgid "Link"
 msgstr "Bağlantı"
 
-#: .\models\author.py:551
+#: .\models\author.py:561
 msgid ""
 "The link to follow when users click the badge. If no link is provided, "
 "related topic will be used."
@@ -1042,15 +1047,15 @@ msgstr ""
 "Rozete tıklayınca gidilecek bağlantı. Eğer boş bırakırsanız ilgili başlığa "
 "yönlendirecek."
 
-#: .\models\author.py:559
+#: .\models\author.py:569
 msgid "badge"
 msgstr "rozet"
 
-#: .\models\author.py:560
+#: .\models\author.py:570
 msgid "badges"
 msgstr "rozetler"
 
-#: .\models\author.py:596
+#: .\models\author.py:606
 msgid ""
 "your backup is now ready. you may download your backup file using the link "
 "provided in the backup tab of settings."
@@ -1104,40 +1109,33 @@ msgid "Negative"
 msgstr "Negatif"
 
 #: .\models\category.py:60 .\models\entry.py:17 .\models\entry.py:97
-#: .\models\images.py:27
+#: .\models\images.py:30 .\models\topic.py:174
 msgid "Author"
 msgstr "Yazar"
 
-#: .\models\category.py:62 .\models\entry.py:16
-msgid "Topic"
-msgstr "Başlık"
-
 #: .\models\category.py:64
-#| msgid "Channels"
 msgid "Channel"
 msgstr "Kanal"
 
 #: .\models\category.py:66
-#| msgid "Dictionary"
 msgid "Direction"
 msgstr "Yön"
 
-#: .\models\category.py:67 .\models\entry.py:19 .\models\images.py:31
-#: .\models\reporting.py:33 .\models\topic.py:99
+#: .\models\category.py:67 .\models\entry.py:19 .\models\entry.py:103
+#: .\models\images.py:34 .\models\reporting.py:33 .\models\topic.py:96
+#: .\models\topic.py:178
 msgid "Date created"
 msgstr "Oluşturulma tarihi"
 
 #: .\models\category.py:91
-#| msgid "suggest"
 msgid "suggestion"
 msgstr "Başlık önerisi"
 
 #: .\models\category.py:92
-#| msgid "Allow suggestions"
 msgid "suggestions"
 msgstr "Başlık önerileri"
 
-#: .\models\entry.py:20
+#: .\models\entry.py:20 .\models\entry.py:104
 msgid "Date edited"
 msgstr "Değiştirilme tarihi"
 
@@ -1192,19 +1190,19 @@ msgstr "dış bağlantı"
 msgid "external urls"
 msgstr "dış bağlantılar"
 
-#: .\models\images.py:28
+#: .\models\images.py:31
 msgid "File"
 msgstr "Dosya"
 
-#: .\models\images.py:30
+#: .\models\images.py:33
 msgid "Unpublished"
 msgstr "Yayından kaldırılmış"
 
-#: .\models\images.py:44
+#: .\models\images.py:47
 msgid "image"
 msgstr "görsel"
 
-#: .\models\images.py:45 .\templates\dictionary\list\entry_list.html:39
+#: .\models\images.py:48 .\templates\dictionary\list\entry_list.html:39
 #: .\templates\dictionary\list\entry_list.html:78
 #: .\templatetags\functions.py:88
 msgid "images"
@@ -1254,11 +1252,11 @@ msgstr "rapor"
 msgid "reports"
 msgstr "raporlar"
 
-#: .\models\topic.py:24
+#: .\models\topic.py:22
 msgid "Definition"
 msgstr "Tanım"
 
-#: .\models\topic.py:26
+#: .\models\topic.py:24
 msgid ""
 "In order to change the definition of the topic after it has been created, "
 "you need to use topic moving feature."
@@ -1266,38 +1264,34 @@ msgstr ""
 "Başlık oluşturulduktan sonra tanımını değiştirmek için başlık taşıma "
 "özelliğini kullanmalısınız."
 
-#: .\models\topic.py:38
+#: .\models\topic.py:36
 msgid "First user to write an entry"
 msgstr "İlk entry giren kullanıcı"
 
-#: .\models\topic.py:39
+#: .\models\topic.py:37
 msgid ""
 "The author or novice who entered the first entry for this topic publicly."
 msgstr ""
 "Bu başlığa ilk kez halka açık bir şekilde entry giren yazar veya çaylak."
 
-#: .\models\topic.py:42
+#: .\models\topic.py:40
 msgid "Channels"
 msgstr "Kanallar"
 
-#: .\models\topic.py:45
+#: .\models\topic.py:44
 msgid "Allow suggestions"
 msgstr "Kanal önerileri açık"
 
-#: .\models\topic.py:46
+#: .\models\topic.py:45
 msgid "When checked, users will be able to suggest channels to this topic."
 msgstr ""
 "İşaretlendiği takdirde kullanıcılar bu başlığa kanal önerisi yapabilecek."
 
-#: .\models\topic.py:49
-msgid "Wishes"
-msgstr "Ukteler"
-
-#: .\models\topic.py:54
+#: .\models\topic.py:51
 msgid "Title disambiguation"
 msgstr "Başlık ayrımı"
 
-#: .\models\topic.py:56
+#: .\models\topic.py:53
 msgid ""
 "<p style='color: #ba2121'><b>Warning!</b> The topics that you enter will "
 "automatically get related disambiguations. For this reason you should be "
@@ -1312,15 +1306,15 @@ msgstr ""
 " haricindeki başlıkları tekrar toplu halde eklemek üzere not "
 "etmelisiniz.</p>"
 
-#: .\models\topic.py:63
+#: .\models\topic.py:60
 msgid "Media links"
 msgstr "Medya bağlantıları"
 
-#: .\models\topic.py:67
+#: .\models\topic.py:64
 msgid "Prohibited"
 msgstr "Yasaklı"
 
-#: .\models\topic.py:68
+#: .\models\topic.py:65
 msgid ""
 "Check this if you want to hinder authors and novices from entering new "
 "entries to this topic."
@@ -1328,11 +1322,11 @@ msgstr ""
 "Yazar ve çaylakların bu başlığa entry girmesini engellemek istiyorsanız "
 "işaretleyin."
 
-#: .\models\topic.py:73
+#: .\models\topic.py:70
 msgid "Censored"
 msgstr "Sansürlü"
 
-#: .\models\topic.py:75
+#: .\models\topic.py:72
 msgid ""
 "Check this if you don't want this topic to appear in in-site searches and "
 "<strong>public</strong> topic lists."
@@ -1340,11 +1334,11 @@ msgstr ""
 "Bu başlığın sözlük içi aramalarda ve <strong>halka açık</strong> başlık "
 "listelerinde gözükmesini istemiyorsanız işaretleyin."
 
-#: .\models\topic.py:82
+#: .\models\topic.py:79
 msgid "Pinned"
 msgstr "Sabitlenmiş"
 
-#: .\models\topic.py:84
+#: .\models\topic.py:81
 msgid ""
 "Check this if you want this topic to be pinned in popular topics.<br>The "
 "topic needs to have at least one entry."
@@ -1352,11 +1346,11 @@ msgstr ""
 "Bu başlığın gündemde en üstte görünmesini istiyorsanız "
 "işaretleyin.<br>Başlığa en az 1 entry girilmiş olmalı."
 
-#: .\models\topic.py:91
+#: .\models\topic.py:88
 msgid "Ask me anything"
 msgstr "Soru cevap etkinliği"
 
-#: .\models\topic.py:93
+#: .\models\topic.py:90
 msgid ""
 "If checked, comments will be visible in this topic. Authorized users will be"
 " able to comment on entries."
@@ -1364,23 +1358,23 @@ msgstr ""
 "Bu başlığa ait entry'lere ait yorumlar görünür hale gelecek. Yetkili "
 "kullanıcılar entry'lere cevap yazabilecekler."
 
-#: .\models\topic.py:100
+#: .\models\topic.py:97
 msgid "<i>Might not always correspond to first entry.</i>"
 msgstr "<i>Her zaman ilk entry ile örtüşmeyebilir.</i>"
 
-#: .\models\topic.py:110
+#: .\models\topic.py:107
 msgid "Can move topics"
 msgstr "Başlık taşıyabilir"
 
-#: .\models\topic.py:111
+#: .\models\topic.py:108
 msgid "topic"
 msgstr "başlık"
 
-#: .\models\topic.py:112
+#: .\models\topic.py:109
 msgid "topics"
 msgstr "başlıklar"
 
-#: .\models\topic.py:148
+#: .\models\topic.py:135
 #, python-format
 msgid ""
 "`%(title)s`, the topic you wished for, had an entry entered by "
@@ -1389,11 +1383,20 @@ msgstr ""
 "ukte verdiğiniz `%(title)s` başlığına `@%(username)s` tarafından entry "
 "girildi: (bkz: #%(entry)d)"
 
-#: .\models\topic.py:157
+#: .\models\topic.py:144
 #, python-format
 msgid ""
 "`%(title)s`, the topic you wished for, is now populated with some entries."
 msgstr "ukte verdiğiniz `%(title)s` başlığına entry geldi."
+
+#: .\models\topic.py:177
+msgid "Hint"
+msgstr "Not"
+
+#: .\models\topic.py:184
+#| msgid "wishes"
+msgid "wish"
+msgstr "ukte"
 
 #: .\templates\404.html:4 .\templates\404.html:27
 msgctxt "titleblock"
@@ -1592,7 +1595,6 @@ msgid "View"
 msgstr ""
 
 #: .\templates\admin\app_list.html:28
-#| msgid "Channels"
 msgid "Change"
 msgstr ""
 
@@ -2413,7 +2415,6 @@ msgid "unfollow,follow"
 msgstr "takip etme,takip et"
 
 #: .\templates\dictionary\list\entry_list.html:103
-#| msgid "Entry content area"
 msgid "Skip to entry content area"
 msgstr "Entry içerik alanına geç"
 
@@ -2481,19 +2482,19 @@ msgstr "kenarda dursun şimdilik"
 msgid "belonging channels"
 msgstr "başlığın kanalları"
 
-#: .\templates\dictionary\list\entry_list.html:274
+#: .\templates\dictionary\list\entry_list.html:278
 msgid "this topic is yet to be classified"
 msgstr "bu başlık henüz sınıflandırılmamış"
 
-#: .\templates\dictionary\list\entry_list.html:279
+#: .\templates\dictionary\list\entry_list.html:283
 msgid "suggest channels"
 msgstr "kanal öner"
 
-#: .\templates\dictionary\list\entry_list.html:294
+#: .\templates\dictionary\list\entry_list.html:298
 msgid "suggest"
 msgstr "öner"
 
-#: .\templates\dictionary\list\entry_list.html:300
+#: .\templates\dictionary\list\entry_list.html:304
 msgid "put down"
 msgstr "önerme"
 
@@ -2792,7 +2793,6 @@ msgstr ""
 "iyi olacaktır."
 
 #: .\templates\dictionary\user\preferences\backup.html:4
-#| msgid "chronic backup"
 msgctxt "titleblock"
 msgid "backup"
 msgstr "yedek"
@@ -2831,26 +2831,34 @@ msgid "create a new backup file"
 msgstr "yeni yedek oluştur"
 
 #: .\templates\dictionary\user\preferences\base.html:3
-#: .\templates\dictionary\user\preferences\base.html:5
+#: .\templates\dictionary\user\preferences\base.html:6
 #: .\templates\dictionary\user\preferences\index.html:3
 msgctxt "titleblock"
 msgid "settings"
 msgstr "ayarlar"
 
-#: .\templates\dictionary\user\preferences\base.html:15
+#: .\templates\dictionary\user\preferences\base.html:10
+#| msgid "settings"
+msgid "Settings menu"
+msgstr "Ayarlar menüsü"
+
+#: .\templates\dictionary\user\preferences\base.html:22
+#: .\templates\dictionary\user\preferences\base.html:33
 msgid "preferences"
 msgstr "tercihler"
 
-#: .\templates\dictionary\user\preferences\base.html:18
+#: .\templates\dictionary\user\preferences\base.html:23
+#: .\templates\dictionary\user\preferences\base.html:36
 msgid "password"
 msgstr "parola"
 
-#: .\templates\dictionary\user\preferences\base.html:24
+#: .\templates\dictionary\user\preferences\base.html:25
+#: .\templates\dictionary\user\preferences\base.html:42
 msgid "account deletion"
 msgstr "hesabı kapat"
 
-#: .\templates\dictionary\user\preferences\base.html:27
-#| msgid "chronic backup"
+#: .\templates\dictionary\user\preferences\base.html:26
+#: .\templates\dictionary\user\preferences\base.html:45
 msgid "backup"
 msgstr "yedek"
 
@@ -3045,7 +3053,6 @@ msgid "zealous"
 msgstr "azimli"
 
 #: .\templates\dictionary\user\profile.html:71
-#| msgid "most liked entries"
 msgid "has at least 1000 entries"
 msgstr "en azından 1000 entry girmiş"
 
@@ -3054,7 +3061,6 @@ msgid "assorter"
 msgstr "tasnifçi"
 
 #: .\templates\dictionary\user\profile.html:77
-#| msgid "Can suggest categories for topics"
 msgid "can suggest categories to topics"
 msgstr "başlıklara kanal önerisi yapabilir"
 
@@ -3172,24 +3178,24 @@ msgstr "e-posta onayı"
 
 #. Translators: This is the default keyword to search when users search with
 #. no input.
-#: .\utils\managers.py:272
+#: .\utils\managers.py:276
 msgid "common sense"
 msgstr "akıl fikir"
 
-#: .\utils\managers.py:392 .\views\list.py:288 .\views\list.py:651
+#: .\utils\managers.py:396 .\views\list.py:288 .\views\list.py:662
 msgid "actually, you may benefit from this feature by logging in."
 msgstr "giriş yaparsan bu özellikten yararlanabilirsin aslında."
 
-#: .\utils\mixins.py:21
+#: .\utils\mixins.py:20
 msgid "your password was incorrect"
 msgstr "parolanızı yanlış girdiniz."
 
-#: .\utils\mixins.py:82
+#: .\utils\mixins.py:81
 #, python-format
 msgid "Couldn't find any suitable %(obj_name)s objects."
 msgstr "Uygun kaynak %(obj_name)s nesneleri bulunamadı."
 
-#: .\utils\mixins.py:89
+#: .\utils\mixins.py:88
 #, python-format
 msgid "At most, you can only work with %(max_input)d %(obj_name)s objects."
 msgstr ""
@@ -3306,7 +3312,7 @@ msgstr "çeşke bi şeyler yazsaydın"
 msgid "settings are saved, dear"
 msgstr "kaydettik efendim"
 
-#: .\views\edit.py:53 .\views\list.py:403
+#: .\views\edit.py:53 .\views\list.py:416
 msgid "the entry was successfully launched into stratosphere"
 msgstr "entry başarıyla stratosfere yollandı"
 
@@ -3359,15 +3365,15 @@ msgstr "başlıklar okundu olarak işaretlendi"
 
 #. Translators: Not likely to occur in normal circumstances so you may include
 #. some humor here.
-#: .\views\list.py:360 .\views\list.py:382
+#: .\views\list.py:373 .\views\list.py:395
 msgid "no, no i don't think i will."
 msgstr "olmaz ki canım... hürrüpü"
 
-#: .\views\list.py:498
+#: .\views\list.py:513
 msgid "honestly, there was nothing new. so i listed them all."
 msgstr "pek bişey bulamadım açıkçası, buyrun hepsi."
 
-#: .\views\list.py:669
+#: .\views\list.py:680
 #, python-format
 msgid ""
 "you have been redirected by a reference, <a href='%(url)s'>click here</a> to"
@@ -3430,6 +3436,9 @@ msgstr ""
 "ne yazık ki iletişim talebiniz iletilemedi. onaylama bağlantısı geçersiz. "
 "lütfen bağlantı adresini kontrol edin. <strong>onaylama bağlantısı "
 "gönderimden itibaren bir gün için geçerlidir.</strong> "
+
+#~ msgid "Wishes"
+#~ msgstr "Ukteler"
 
 #~ msgid "maybe this can help:"
 #~ msgstr "elimizde şunlar var:"

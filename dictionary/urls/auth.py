@@ -59,5 +59,5 @@ urlpatterns_auth = urlpatterns_password_reset + [
     path("settings/account-termination/", TerminateAccount.as_view(), name="user_preferences_terminate"),
     path("settings/backup/", CreateBackup.as_view(), name="user_preferences_backup"),
     path("settings/backup/download/", DownloadBackup.as_view(), name="user_preferences_backup_download"),
-    path("contact/confirm/<uuid:key>", VerifyReport.as_view(), name="verify-report"),
+    path("contact/confirm/<uuid:key>/", VerifyReport.as_view(), name="verify-report"),
 ]

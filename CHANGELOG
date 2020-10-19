@@ -1,3 +1,15 @@
+[0.17.16-alpha](2020.10.19)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Add missing slashes in some
+url configurations.
+2) Add missing Turkish strings.
+
+--Deletions--
+None
+
 [0.17.15-alpha](2020.10.17)(compatible)
 --Additions--
 None

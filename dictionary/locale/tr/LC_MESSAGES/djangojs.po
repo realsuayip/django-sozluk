@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-01 22:35+0300\n"
-"PO-Revision-Date: 2020-10-01 23:21+0156\n"
+"POT-Creation-Date: 2020-10-19 13:32+0300\n"
+"PO-Revision-Date: 2020-10-19 13:34+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Translated-Using: django-rosetta 0.9.4\n"
+"X-Translated-Using: django-rosetta 0.9.5\n"
 
 #: .\static\dictionary\js\accessibility.js:62
 #: .\static\dictionary\js\dialog.js:62 .\static\dictionary\js\dist\index.js:1
@@ -84,7 +84,7 @@ msgstr "sil"
 #: .\static\dictionary\js\conversation.js:142
 #: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:118
 #: .\static\dictionary\js\editor.js:124 .\static\dictionary\js\entry.js:336
-#: .\static\dictionary\js\image.js:46 .\static\dictionary\js\user.js:18
+#: .\static\dictionary\js\image.js:62 .\static\dictionary\js\user.js:18
 msgid "Are you sure?"
 msgstr "Emin misiniz?"
 
@@ -98,13 +98,15 @@ msgstr "mesajınız görülmemiştir diye umuyoruz."
 msgid "if only you could write down something"
 msgstr "çeşke bi şeyler yazsaydın"
 
-#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:18
-#| msgctxt "editor"
-#| msgid "image"
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:6
+msgid "image could not be displayed. it might have been deleted."
+msgstr "görsel yüklenemedi. silinmiş olabilir mi?"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:27
 msgid "image"
 msgstr "görsel"
 
-#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:19
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:28
 msgid "open full image in new tab"
 msgstr "tam görseli yeni sekmede aç"
 
@@ -137,6 +139,10 @@ msgstr "spoiler arasına ne yazılacak?"
 #: .\static\dictionary\js\editor.js:86
 msgid "which address to link?"
 msgstr "hangi adrese gidecek?"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:292
+msgid "save changes"
+msgstr "değişiklikleri kaydet"
 
 #: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:88
 msgid "alias for the link?"
@@ -177,14 +183,6 @@ msgstr "takip et"
 #: .\static\dictionary\js\user.js:32
 msgid "unfollow"
 msgstr "takip etme"
-
-#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\mql.js:9
-msgid "scroll to top"
-msgstr "sayfanın başına dön"
-
-#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:292
-msgid "save changes"
-msgstr "değişiklikleri kaydet"
 
 #: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:52
 msgid "actually, nothing here."
@@ -271,9 +269,13 @@ msgstr "bu başlığa az önce ukte verdiniz."
 msgid "your hint:"
 msgstr "notunuz:"
 
-#: .\static\dictionary\js\lib\autocomplete.js:160
+#: .\static\dictionary\js\lib\autocomplete.js:42
 msgid "-- no corresponding results --"
 msgstr "-- buna yakın bir sonuç yok --"
+
+#: .\static\dictionary\js\mql.js:9
+msgid "scroll to top"
+msgstr "sayfanın başına dön"
 
 #: .\static\dictionary\js\utils.js:63
 msgid "Close"
