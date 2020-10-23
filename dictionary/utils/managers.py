@@ -281,8 +281,6 @@ class TopicQueryHandler:
         if favorites_only and user.is_authenticated:
             filters["entries__favorited_by"] = user
 
-        # Originally this would sum up all the entries' rates, but in new implementation it considers only one entry
-        # Summing up all entries requires SubQueries and it complicates things a lot. This filter is decent anyway.
         if nice_only:
             filters["entries__vote_rate__gte"] = Decimal("100")
 
@@ -298,14 +296,15 @@ class TopicQueryHandler:
         if to_date:
             filters["entries__date_created__lte"] = to_date
 
+        ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
+
         qs = (
             Topic.objects.values(*self.values)
             .filter(**self.base_filter, **filters)
             .annotate(count=Count("entries", distinct=True))
         )
-        ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
-        result = qs.order_by(*ordering_map.get(ordering))[: settings.TOPICS_PER_PAGE_DEFAULT]
-        return result
+
+        return qs.order_by(*ordering_map.get(ordering))[: settings.TOPICS_PER_PAGE_DEFAULT]
 
     def generic_category(self, category):
         return (
@@ -439,37 +438,39 @@ class TopicListHandler:
             ) from exc
 
     def _validate_exclusions(self, exclusions):
-        if self.slug == "popular":
-            if exclusions is None:
-                return settings.DEFAULT_EXCLUSIONS
+        if self.slug != "popular":
+            return ()
 
-            return tuple(slug for slug in exclusions if slug in settings.EXCLUDABLE_CATEGORIES)
+        if exclusions is None:
+            return settings.DEFAULT_EXCLUSIONS
 
-        return ()
+        return tuple(slug for slug in exclusions if slug in settings.EXCLUDABLE_CATEGORIES)
 
     def _validate_tab(self, tab):
-        if self.slug in settings.TABBED_CATEGORIES:
-            tab_meta = settings.NON_DB_CATEGORIES_META.get(self.slug)[2]
-            avaiable_tabs, default_tab = tab_meta[0].keys(), tab_meta[1]
-            return tab if tab in avaiable_tabs else default_tab
-        return None
+        if self.slug not in settings.TABBED_CATEGORIES:
+            return None
+
+        tab_meta = settings.NON_DB_CATEGORIES_META.get(self.slug)[2]
+        available_tabs, default_tab = tab_meta[0].keys(), tab_meta[1]
+        return tab if tab in available_tabs else default_tab
 
     def _validate_year(self, year):
         """Validates and sets the year."""
-        if self.slug == "today-in-history":
-            default = settings.YEAR_RANGE[0]
-            if year is not None:
+        if self.slug != "today-in-history":
+            return None
 
-                if not isinstance(year, (str, int)):
-                    raise TypeError("The year either needs to be an integer or a string.")
+        default = settings.YEAR_RANGE[0]
 
-                if isinstance(year, str):
-                    year = int(year) if year.isdigit() else default
-
-                return year if year in settings.YEAR_RANGE else default
-
+        if year is None:
             return default
-        return None
+
+        if not isinstance(year, (str, int)):
+            raise TypeError("The year either needs to be an integer or a string.")
+
+        if isinstance(year, str):
+            year = int(year) if year.isdigit() else default
+
+        return year if year in settings.YEAR_RANGE else default
 
     def _validate_extra(self, extra):
         return (
@@ -590,22 +591,23 @@ class TopicListHandler:
         :param delimiter: Set this to True to limit the time to delete cache.
         """
 
-        if self.cache_exists:
-            if (
-                delimiter
-                and (timezone.now() - cache.get(self.cache_key).get("set_at")).total_seconds()
-                < settings.REFRESH_TIMEOUT
-            ):
-                return False
+        if not self.cache_exists:
+            return False
 
-            cache.delete(self.cache_key)
-            self.cache_exists = False
+        is_premature = (
+            timezone.now() - cache.get(self.cache_key).get("set_at")
+        ).total_seconds() < settings.REFRESH_TIMEOUT
 
-            if flush:
-                self.data = ()  # empty tuple
+        if delimiter and is_premature:
+            return False
 
-            return True
-        return False
+        cache.delete(self.cache_key)
+        self.cache_exists = False
+
+        if flush:
+            self.data = ()  # empty tuple
+
+        return True
 
     @property
     def serialized(self):
@@ -620,17 +622,17 @@ class TopicListHandler:
         return self._cache_data(tuple(self.data))
 
     @property
-    def refresh_count(self):  # (yenile count)
-        if self.cache_exists and self.slug == "today":
-            set_at = cache.get(self.cache_key).get("set_at")
+    def refresh_count(self):
+        if not (self.cache_exists and self.slug == "today"):
+            return 0
 
-            if (timezone.now() - set_at).total_seconds() < settings.REFRESH_TIMEOUT:
-                # Too soon, check out delete_cache delimiter.
-                return 0
+        set_at = cache.get(self.cache_key).get("set_at")
 
-            return Entry.objects.filter(date_created__gte=set_at).count()
+        if (timezone.now() - set_at).total_seconds() < settings.REFRESH_TIMEOUT:
+            # Too soon, check out delete_cache delimiter.
+            return 0
 
-        return 0
+        return Entry.objects.filter(date_created__gte=set_at).count()
 
 
 class TopicListManager(TopicListHandler, TopicQueryHandler):

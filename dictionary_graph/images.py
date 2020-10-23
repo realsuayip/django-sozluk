@@ -7,8 +7,6 @@ from dictionary_graph.utils import login_required
 
 
 class DeleteImage(Mutation):
-    """Meta class for entry action mutations."""
-
     class Arguments:
         slug = String()
 

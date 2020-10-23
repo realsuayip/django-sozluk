@@ -263,7 +263,7 @@ class VoteComment(Mutation):
             else:
                 comment.downvoted_by.add(sender)
         else:
-            raise ValueError("That action is not available")
+            raise ValueError(_("we couldn't handle your request. try again later."))
 
         count = comment.upvoted_by.count() - comment.downvoted_by.count()
         return VoteComment(count=count)

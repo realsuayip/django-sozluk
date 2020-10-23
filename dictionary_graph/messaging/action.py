@@ -24,7 +24,7 @@ class DeleteConversation(Mutation):
     @login_required
     def mutate(_root, info, mode, pk_set):
         if mode not in ("archived", "present"):
-            raise ValueError("the requested mode is not valid")
+            raise ValueError(_("we couldn't handle your request. try again later."))
 
         if mode == "present":
             model = Conversation
