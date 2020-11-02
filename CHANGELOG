@@ -1,4 +1,27 @@
-[0.17.17-alpha](2020.10.23)(compatible)
+[1.0.1-beta](2020.11.02)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Upgrade Django version to 3.1.3 from
+3.1.2, this fixes some layout issues
+in admin pages (you may need to clear
+your browser cache).
+2) TopicListHandler's delete_cache and
+refresh_count methods caused unnecessary
+hits to cache server, fixed that.
+3) Header categories now respond the
+changes made in admin page immediately
+(the previous versions required clearing
+cache using the utility provided in admin).
+4) Django-specific model methods are now
+ordered properly as described in Django
+documentation.
+
+--Deletions--
+None
+
+[0.17.17-alpha](2020.10.23)(compatible) --- released as 1.0.0-beta
 --Additions--
 None
 
