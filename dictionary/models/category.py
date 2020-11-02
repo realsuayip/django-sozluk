@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Sum, UniqueConstraint
 from django.db.models.functions import Coalesce
@@ -46,6 +47,9 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = uuslug(self.name, instance=self)
+
+        # Deletes cache of context processor that holds list of categories.
+        cache.delete("default_context__header_categories")
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
