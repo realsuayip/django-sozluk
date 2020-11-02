@@ -361,6 +361,7 @@ class TopicListHandler:
     data = None
     cache_exists = False
     cache_key = None
+    cache_set_at = None
 
     _available_extras = ("user", "channel")
     """Available external extras."""
@@ -573,16 +574,20 @@ class TopicListHandler:
         self._set_cache_key()
         cached_data = cache.get(self.cache_key)
 
-        if cached_data is not None:
-            if self.slug in ("top", "today-in-history"):
-                # check if the day has changed or not for top or today-in-history
-                if timezone.localtime(cached_data.get("set_at")).day == timezone.localtime(timezone.now()).day:
-                    self.cache_exists = True
-            else:
+        if cached_data is None:
+            return
+
+        # Cached data detected, check if the day has changed for top or
+        # today-in-history (if not, leave cache_exists False to fetch fresh data).
+        if self.slug in ("top", "today-in-history"):
+            if timezone.localtime(cached_data.get("set_at")).day == timezone.localtime(timezone.now()).day:
                 self.cache_exists = True
+        else:
+            self.cache_exists = True
 
         if self.cache_exists:
             self._cached_data = cached_data.get("data")
+            self.cache_set_at = cached_data.get("set_at")
 
     def delete_cache(self, flush=False, delimiter=False):
         """
@@ -594,11 +599,10 @@ class TopicListHandler:
         if not self.cache_exists:
             return False
 
-        is_premature = (
-            timezone.now() - cache.get(self.cache_key).get("set_at")
-        ).total_seconds() < settings.REFRESH_TIMEOUT
+        # How many seconds have passed since the last time cache has been set?
+        time_elapsed = (timezone.now() - self.cache_set_at).total_seconds()
 
-        if delimiter and is_premature:
+        if delimiter and time_elapsed < settings.REFRESH_TIMEOUT:
             return False
 
         cache.delete(self.cache_key)
@@ -626,13 +630,13 @@ class TopicListHandler:
         if not (self.cache_exists and self.slug == "today"):
             return 0
 
-        set_at = cache.get(self.cache_key).get("set_at")
+        time_elapsed = (timezone.now() - self.cache_set_at).total_seconds()
 
-        if (timezone.now() - set_at).total_seconds() < settings.REFRESH_TIMEOUT:
+        if time_elapsed < settings.REFRESH_TIMEOUT:
             # Too soon, check out delete_cache delimiter.
             return 0
 
-        return Entry.objects.filter(date_created__gte=set_at).count()
+        return Entry.objects.filter(date_created__gte=self.cache_set_at).count()
 
 
 class TopicListManager(TopicListHandler, TopicQueryHandler):
