@@ -33,16 +33,16 @@ class Image(models.Model):
     is_deleted = models.BooleanField(default=False, verbose_name=_("Unpublished"))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
 
-    def get_absolute_url(self):
-        return reverse("image-detail", kwargs={"slug": self.slug})
+    class Meta:
+        verbose_name = _("image")
+        verbose_name_plural = _("images")
+
+    def __str__(self):
+        return str(self.slug)
 
     def delete(self, *args, **kwargs):
         super().delete()
         self.file.delete(save=False)
 
-    def __str__(self):
-        return str(self.slug)
-
-    class Meta:
-        verbose_name = _("image")
-        verbose_name_plural = _("images")
+    def get_absolute_url(self):
+        return reverse("image-detail", kwargs={"slug": self.slug})

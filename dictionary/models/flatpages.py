@@ -22,10 +22,10 @@ class ExternalURL(models.Model):
     url = models.URLField(verbose_name=_("Link"))
     weight = models.PositiveSmallIntegerField(default=0, verbose_name=_("Weight"))
 
-    def __str__(self):
-        return f"{self.name} -- {self.url}"
-
     class Meta:
         ordering = ("-weight", "name")
         verbose_name = _("external url")
         verbose_name_plural = _("external urls")
+
+    def __str__(self):
+        return f"{self.name} -- {self.url}"

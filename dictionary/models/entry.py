@@ -25,13 +25,13 @@ class Entry(models.Model):
     objects_published = EntryManagerOnlyPublished()
     objects = EntryManager()
 
-    def __str__(self):
-        return f"{self.id}#{self.author}"
-
     class Meta:
         ordering = ["date_created"]
         verbose_name = _("entry")
         verbose_name_plural = _("entries")
+
+    def __str__(self):
+        return f"{self.id}#{self.author}"
 
     def save(self, *args, **kwargs):
         created = self.pk is None
@@ -65,9 +65,6 @@ class Entry(models.Model):
 
         self.topic.register_wishes(fulfiller_entry=self)
 
-    def get_absolute_url(self):
-        return reverse("entry-permalink", kwargs={"entry_id": self.pk})
-
     def delete(self, *args, **kwargs):
         if self.comments.exists():
             self.author = get_generic_privateuser()
@@ -85,6 +82,9 @@ class Entry(models.Model):
             self.author.application_date = None
             self.author.queue_priority = 0
             self.author.save(update_fields=["application_status", "application_date", "queue_priority"])
+
+    def get_absolute_url(self):
+        return reverse("entry-permalink", kwargs={"entry_id": self.pk})
 
     def update_vote(self, rate, change=False):
         k = Decimal("2") if change else Decimal("1")

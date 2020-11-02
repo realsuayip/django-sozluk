@@ -184,9 +184,6 @@ class Author(AbstractUser):
     objects_accessible = AuthorManagerAccessible()
     in_novice_list = InNoviceList()
 
-    def __str__(self):
-        return str(self.username)
-
     class Meta:
         permissions = (
             ("can_activate_user", _("Can access to the novice list")),
@@ -197,6 +194,9 @@ class Author(AbstractUser):
         )
         verbose_name = _("author")
         verbose_name_plural = _("authors")
+
+    def __str__(self):
+        return str(self.username)
 
     def save(self, *args, **kwargs):
         created = self.pk is None  # If True, the user is created (not updated).
@@ -209,9 +209,6 @@ class Author(AbstractUser):
         if created:
             self.following_categories.add(*Category.objects.filter(is_default=True))
 
-    def get_absolute_url(self):
-        return reverse("user-profile", kwargs={"slug": self.slug})
-
     def delete(self, *args, **kwargs):
         # Archive conversations of target users.
         targeted_conversations = self.targeted_conversations.select_related("holder", "target").prefetch_related(
@@ -223,8 +220,12 @@ class Author(AbstractUser):
 
         return super().delete(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse("user-profile", kwargs={"slug": self.slug})
+
     def get_following_topics_with_receipt(self):
         """Get user's following topics with read receipts."""
+
         return self.following_topics.annotate(
             count=(
                 Count(
@@ -321,11 +322,14 @@ class Author(AbstractUser):
             delta = timezone.now() - latest_entry_date
             if delta <= timezone.timedelta(seconds=interval):
                 remaining = interval - delta.seconds
-                return ngettext(
-                    "you are sending entries too frequently. try again in a second.",
-                    "you are sending entries too frequently. try again in %(remaining)d seconds.",
-                    remaining,
-                ) % {"remaining": remaining}
+                return (
+                    ngettext(
+                        "you are sending entries too frequently. try again in a second.",
+                        "you are sending entries too frequently. try again in %(remaining)d seconds.",
+                        remaining,
+                    )
+                    % {"remaining": remaining}
+                )
 
         return None
 

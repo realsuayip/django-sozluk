@@ -48,15 +48,15 @@ class ConversationArchive(models.Model):
     messages = models.TextField()  # json text
     date_created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.__class__.__name__} holder -> {self.holder.username} target -> {self.target}"
-
     class Meta:
         constraints = [
             UniqueConstraint(fields=["holder", "slug"], name="unique_conversationarchive_a"),
             UniqueConstraint(fields=["holder", "target"], name="unique_conversationarchive_b"),
         ]
         ordering = ("-date_created",)
+
+    def __str__(self):
+        return f"{self.__class__.__name__} holder -> {self.holder.username} target -> {self.target}"
 
     def save(self, *args, **kwargs):
         created = self.pk is None
@@ -84,11 +84,11 @@ class Conversation(models.Model):
 
     objects = ConversationManager()
 
-    def __str__(self):
-        return f"<Conversation> holder-> {self.holder.username}, target-> {self.target.username}"
-
     class Meta:
         constraints = [UniqueConstraint(fields=["holder", "target"], name="unique_conversation")]
+
+    def __str__(self):
+        return f"<Conversation> holder-> {self.holder.username}, target-> {self.target.username}"
 
     def get_absolute_url(self):
         return reverse("conversation", kwargs={"slug": self.target.slug})
@@ -101,7 +101,8 @@ class Conversation(models.Model):
             return self
 
         messages = serializer.serialize(
-            _messages, fields=("body", "sender__username", "recipient__username", "sent_at"),
+            _messages,
+            fields=("body", "sender__username", "recipient__username", "sent_at"),
         )
 
         try:

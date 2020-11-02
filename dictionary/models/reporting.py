@@ -20,7 +20,9 @@ class GeneralReport(models.Model):
     subject = models.CharField(max_length=160, verbose_name=_("Subject"))
     content = models.TextField(verbose_name=_("Content"))
     is_open = models.BooleanField(
-        default=True, verbose_name=_("Report is open"), help_text=_("Indicates the current status of the report."),
+        default=True,
+        verbose_name=_("Report is open"),
+        help_text=_("Indicates the current status of the report."),
     )
 
     key = models.UUIDField(default=uuid4, unique=True, editable=False)
@@ -33,9 +35,9 @@ class GeneralReport(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
     date_verified = models.DateTimeField(null=True, verbose_name=_("Date verified"))
 
-    def __str__(self):
-        return f"{self.subject} <{self.__class__.__name__}>#{self.pk}"
-
     class Meta:
         verbose_name = _("report")
         verbose_name_plural = _("reports")
+
+    def __str__(self):
+        return f"{self.subject} <{self.__class__.__name__}>#{self.pk}"

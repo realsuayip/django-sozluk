@@ -100,21 +100,21 @@ class Topic(models.Model):
     objects = TopicManager()
     objects_published = TopicManagerPublished()
 
-    def __str__(self):
-        return f"{self.title}"
-
     class Meta:
         permissions = (("move_topic", _("Can move topics")),)
         verbose_name = _("topic")
         verbose_name_plural = _("topics")
 
-    def get_absolute_url(self):
-        return reverse("topic", kwargs={"slug": self.slug})
+    def __str__(self):
+        return str(self.title)
 
     def save(self, *args, **kwargs):
         self.title = i18n_lower(self.title)
         self.slug = uuslug(self.title, instance=self)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("topic", kwargs={"slug": self.slug})
 
     def follow_check(self, user):
         return TopicFollowing.objects.filter(topic=self, author=user).exists()
@@ -177,10 +177,10 @@ class Wish(models.Model):
     hint = models.TextField(validators=[validate_user_text], null=True, blank=True, verbose_name=_("Hint"))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
 
-    def __str__(self):
-        return f"{self.__class__.__name__}#{self.pk} u:{self.author.username}"
-
     class Meta:
         verbose_name = _("wish")
         verbose_name_plural = _("wishes")
         ordering = ("-date_created",)
+
+    def __str__(self):
+        return f"{self._meta.verbose_name.title()} #{self.pk} ({self.author.username})"

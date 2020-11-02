@@ -36,6 +36,11 @@ class Category(models.Model):
     objects_all = CategoryManagerAll()
     objects = CategoryManager()
 
+    class Meta:
+        ordering = ["-weight"]
+        verbose_name = _("channel")
+        verbose_name_plural = _("channels")
+
     def __str__(self):
         return f"{self.name}"
 
@@ -45,11 +50,6 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse("topic_list", kwargs={"slug": self.slug})
-
-    class Meta:
-        ordering = ["-weight"]
-        verbose_name = _("channel")
-        verbose_name_plural = _("channels")
 
 
 class Suggestion(models.Model):
@@ -66,6 +66,24 @@ class Suggestion(models.Model):
     direction = models.SmallIntegerField(choices=Direction.choices, verbose_name=_("Direction"))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
 
+    class Meta:
+        verbose_name = _("suggestion")
+        verbose_name_plural = _("suggestions")
+        constraints = [
+            UniqueConstraint(fields=["author", "topic", "category"], name="unique_category_suggestion"),
+        ]
+
+    def __str__(self):
+        return f"{self._meta.verbose_name.title()} #{self.pk}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.register()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.register()
+
     def register(self):
         rate = self.__class__.objects.filter(topic=self.topic, category=self.category).aggregate(
             rate=Coalesce(Sum("direction"), 0)
@@ -78,18 +96,3 @@ class Suggestion(models.Model):
 
         if exists and rate < settings.SUGGESTIONS_QUALIFY_RATE:
             self.topic.category.remove(self.category)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.register()
-
-    def delete(self, *args, **kwargs):
-        super().delete(*args, **kwargs)
-        self.register()
-
-    class Meta:
-        verbose_name = _("suggestion")
-        verbose_name_plural = _("suggestions")
-        constraints = [
-            UniqueConstraint(fields=["author", "topic", "category"], name="unique_category_suggestion"),
-        ]

@@ -41,6 +41,10 @@ class Announcement(models.Model):
         help_text=_("You can set future dates for the publication date."),
     )
 
+    class Meta:
+        verbose_name = _("announcement")
+        verbose_name_plural = _("announcements")
+
     def __str__(self):
         return f"{self.title} - {entrydate(timezone.localtime(self.date_created), None)}"
 
@@ -61,9 +65,6 @@ class Announcement(models.Model):
     def get_absolute_url(self):
         pub = timezone.localtime(self.date_created)
         return reverse(
-            "announcements-detail", kwargs={"year": pub.year, "month": pub.month, "day": pub.day, "slug": self.slug},
+            "announcements-detail",
+            kwargs={"year": pub.year, "month": pub.month, "day": pub.day, "slug": self.slug},
         )
-
-    class Meta:
-        verbose_name = _("announcement")
-        verbose_name_plural = _("announcements")
