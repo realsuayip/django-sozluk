@@ -1798,7 +1798,7 @@ msgstr "hay aksi!"
 
 #: .\templates\dictionary\base.html:234
 msgid "something went wrong. try reloading the page."
-msgstr "bir şeyler yanlış gitti. sayfa yenilemeyi deneyin."
+msgstr "bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin."
 
 #: .\templates\dictionary\base.html:261
 msgid "Toggle dark mode"
@@ -2805,7 +2805,7 @@ msgid ""
 msgstr ""
 "yayınlanmış tüm entry'lerinizi ve arşivlenmiş mesajlarınızı içeren bir yedek"
 " isteğinde bulunabilirsiniz. çıktı dosyası JSON formatında olacak. gün "
-"başında sadece bir tane yedek isteyebilirsiniz."
+"başına sadece bir tane yedek isteyebilirsiniz."
 
 #: .\templates\dictionary\user\preferences\backup.html:18
 #, python-format
