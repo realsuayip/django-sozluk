@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl, quote, unquote
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.functional import LazyObject, cached_property
+from django.utils.translation import gettext as _
 
 from dictionary.conf import settings
 from dictionary.models import Category
@@ -99,7 +100,10 @@ class LeftFrameProcessor:
                 self.delete_cookie("lfea")
         return {}
 
-    def _get_context(self, manager=None):
+    def _get_context(self, manager=None, attempt=1):
+        if attempt > 3:
+            return {"safename": _("something went wrong. try reloading the page.")}
+
         try:
             handler = manager or TopicListManager(
                 self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions, self._extra
@@ -107,7 +111,7 @@ class LeftFrameProcessor:
             context = LeftFrame(handler, page=self._page).as_context()
         except (Http404, PermissionDenied):
             self.set_cookie("lfac", settings.DEFAULT_CATEGORY)
-            return self._get_context(manager=TopicListManager(settings.DEFAULT_CATEGORY))
+            return self._get_context(manager=TopicListManager(settings.DEFAULT_CATEGORY), attempt=attempt + 1)
 
         return context
 
