@@ -1,3 +1,23 @@
+[1.0.2-beta](2020.11.12)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Add stop condition for recursive
+method in LeftFrameProcessor. In
+current implementation, there is no
+known way to cause recursion error
+but future implementations may cause
+this error, leading to a breaking
+error. This will make bug detection
+process easier in such a case.
+2) Content skipper will no longer
+appear in print mode.
+3) Fix some minor Turkish strings.
+
+--Deletions--
+None
+
 [1.0.1-beta](2020.11.02)(compatible)
 --Additions--
 None
