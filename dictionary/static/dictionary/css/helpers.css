@@ -1598,6 +1598,12 @@ body.dark .alert-info {
     color: var(--text-light);
 }
 
+@media print {
+    .d-print-none {
+        display: none !important;
+    }
+}
+
 /* Dropzone
  * The MIT License
  * Copyright (c) 2012 Matias Meno <m@tias.me>
