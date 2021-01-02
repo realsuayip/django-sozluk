@@ -18,7 +18,7 @@
                     </svg>
                     <span>{% trans "back to messages" %}</span>
                 </a>
-                <a role="button" tabindex="0" class="unblock-user-trigger sync" data-username="{{ recipient.username }}">{{ is_blocked|yesno:_("remove block,block this guy") }}</a>
+                <a role="button" tabindex="0" class="block-user-trigger sync" data-username="{{ recipient.username }}">{{ is_blocked|yesno:_("remove block,block this guy") }}</a>
             </div>
 
             <div data-mode="present" data-id="{{ conversation.pk }}">

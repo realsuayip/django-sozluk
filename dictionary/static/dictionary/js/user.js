@@ -4,7 +4,7 @@ import { Handle, Handler, gqlc, notify, toggleText } from "./utils"
 import { showBlockDialog, showMessageDialog } from "./dialog"
 
 function userAction (type, recipient, loc = null, re = true) {
-    gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
+    return gqlc({ query: `mutation{user{${type}(username:"${recipient}"){feedback redirect}}}` }).then(function (response) {
         const info = response.data.user[type]
         if (re && (loc || info.redirect)) {
             window.location = loc || info.redirect
@@ -14,16 +14,17 @@ function userAction (type, recipient, loc = null, re = true) {
     })
 }
 
-Handler(".unblock-user-trigger", "click", function () {
-    if (confirm(gettext("Are you sure?"))) {
-        let loc
-        if (this.classList.contains("sync")) {
-            loc = location
-        } else {
-            this.classList.toggle("dj-hidden")
-        }
-        userAction("block", this.getAttribute("data-username"), loc)
+Handler(".block-user-trigger", "click", function () {
+    const sync = this.classList.contains("sync")
+    const recipient = this.getAttribute("data-username")
+
+    if (sync) {
+        return userAction("block", recipient, location)
     }
+
+    userAction("block", recipient, null, false).then(function () {
+        toggleText(this, gettext("remove block"), gettext("block this guy"))
+    }.bind(this))
 })
 
 Handler(".follow-user-trigger", "click", function () {

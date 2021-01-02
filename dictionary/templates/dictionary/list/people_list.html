@@ -39,7 +39,7 @@
                         {% for author in authors %}
                             <li class="list-group-item d-flex justify-content-between border-0">
                                 <a href="{{ author.get_absolute_url }}">{{ author.username }}</a>
-                                <a role="button" tabindex="0" class="unblock-user-trigger" data-username="{{ author.username }}">{% trans "remove block" %}</a>
+                                <a role="button" tabindex="0" class="block-user-trigger" data-username="{{ author.username }}">{% trans "remove block" %}</a>
                             </li>
                         {% endfor %}
                     {% endif %}
