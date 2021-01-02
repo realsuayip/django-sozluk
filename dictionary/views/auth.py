@@ -27,11 +27,11 @@ class Login(LoginView):
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get("remember_me", False)
+        session_timeout = 86400 * 30 if remember_me else 86400
 
-        if remember_me:
-            self.request.session.set_expiry(1209600)  # 2 weeks
-        else:
-            self.request.session.set_expiry(7200)
+        # Session expiration is computed from the last time the session
+        # was modified. If you are modifying the session, keep this in mind.
+        self.request.session.set_expiry(session_timeout)
 
         # Check if the user cancels account termination.
         with suppress(AccountTerminationQueue.DoesNotExist):
