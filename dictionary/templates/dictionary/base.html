@@ -225,18 +225,13 @@
 
 {#<!-- content -->#}
 
+<div class="container content{{ request.is_mobile|yesno:" lf-hidden," }}">
 
-<div class="container content">
-
-    <aside class="left-frame tinybar" id="left-frame-nav" aria-label="{% trans "Topic list" %}">
-        {% if request.is_mobile %}
-            <h2>{% trans "oops!" %}</h2>
-            <p>{% trans "something went wrong. try reloading the page." %}</p>
-        {% else %}
+    {% if not request.is_mobile %}
+        <aside class="left-frame tinybar" id="left-frame-nav" aria-label="{% trans "Topic list" %}">
             {% include "dictionary/includes/left_frame.html" %}
-        {% endif %}
-    </aside>
-
+        </aside>
+    {% endif %}
 
     {# page content #}
     <main class="content-frame" id="main">
