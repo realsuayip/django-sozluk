@@ -641,11 +641,11 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        setup_or_redirect = self.get_topic()
+        response = self.get_topic()
 
         # Did get_topic() returned a search result?
-        if setup_or_redirect:
-            return setup_or_redirect
+        if response and self.request.method != "POST":
+            return response
 
         # Empty request (direct request to /topic/)
         if self.topic is None:

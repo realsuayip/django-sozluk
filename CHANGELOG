@@ -1,3 +1,16 @@
+[1.0.4-beta](2021.01.13)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed a breaking bug which
+caused loss of newly published
+entries in concurrent contexts.
+Thanks to Aras Diler for the report.
+
+--Deletions--
+None
+
 [1.0.3-beta](2021.01.09)(compatible)
 --Additions--
 None
