@@ -22,7 +22,9 @@ class PasswordConfirmMixin:
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            if not request.user.check_password(form.cleaned_data.get(self.password_field_name)):
+            if not request.user.check_password(
+                form.cleaned_data.get(self.password_field_name)
+            ):
                 notifications.error(request, self.password_error_message)
                 return self.form_invalid(form)
             return self.form_valid(form)
@@ -57,7 +59,8 @@ class IntegratedFormMixin(FormMixin):
             self.object = self.get_object()
         else:
             raise TypeError(
-                "IntegratedFormMixin only works when the view is subclass of either DetailView or ListView."
+                "IntegratedFormMixin only works when the view"
+                " is subclass of either DetailView or ListView."
             )
 
         return super().form_invalid(form)
@@ -85,8 +88,14 @@ class IntermediateActionMixin:
         except InputNotInDesiredRangeError:
             notifications.error(
                 request,
-                gettext("At most, you can only work with %(max_input)d %(obj_name)s objects.",)
-                % {"obj_name": self.model._meta.verbose_name, "max_input": self.max_input},
+                gettext(
+                    "At most, you can only work with"
+                    " %(max_input)d %(obj_name)s objects.",
+                )
+                % {
+                    "obj_name": self.model._meta.verbose_name,
+                    "max_input": self.max_input,
+                },
             )
             return redirect(self.get_changelist_url())
 
@@ -132,4 +141,5 @@ class IntermediateActionMixin:
         return context
 
     def get_changelist_url(self):
-        return reverse(f"admin:{self.model._meta.app_label}_{self.model.__name__.lower()}_changelist")
+        app, model = self.model._meta.app_label, self.model.__name__.lower()
+        return reverse(f"admin:{app}_{model}_changelist")

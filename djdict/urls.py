@@ -28,7 +28,11 @@ urlpatterns = [
     path("graphql/", include("dictionary_graph.urls")),
     path("admin/", admin.site.urls),
     # i18n
-    path("jsi18n/", JavaScriptCatalog.as_view(packages=["dictionary"]), name="javascript-catalog"),
+    path(
+        "jsi18n/",
+        JavaScriptCatalog.as_view(packages=["dictionary"]),
+        name="javascript-catalog",
+    ),
     path("i18n/", include("django.conf.urls.i18n")),
     # Sitemap
     path("sitemap.xml", gzip_page(sitemap_views.index), {"sitemaps": sitemaps}),

@@ -53,9 +53,9 @@ class ArchiveConversation(Mutation):
         )
 
         for conversation in conversations:
-            conversation.messages.filter(recipient=info.context.user, read_at__isnull=True).update(
-                read_at=timezone.now()
-            )
+            conversation.messages.filter(
+                recipient=info.context.user, read_at__isnull=True
+            ).update(read_at=timezone.now())
             conversation.archive()
 
         return ArchiveConversation(redirect=reverse_lazy("messages-archive"))
@@ -104,11 +104,14 @@ class DeleteMessage(Mutation):
         message = Message.objects.get(pk=pk)
         conversation = message.conversation_set.get(holder=info.context.user)
 
+        since = (timezone.now() - message.sent_at).total_seconds()
+
         if (
             message.sender == info.context.user
-            and (timezone.now() - message.sent_at).total_seconds() < settings.MESSAGE_PURGE_THRESHOLD
+            and since < settings.MESSAGE_PURGE_THRESHOLD
         ):
-            # Sender deleted message immediately, remove message content for target user.
+            # Sender deleted message immediately,
+            # remove message content for target user.
             # Translators: Include an emoji
             message.body = _("this message was deleted 🤷‍")
             message.save(update_fields=["body"])

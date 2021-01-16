@@ -31,8 +31,8 @@ class NoviceList(PermissionRequiredMixin, ListView):
 
 class NoviceLookup(PermissionRequiredMixin, ListView):
     """
-    View to accept or reject a novice application. Lists first 10 entries of the
-    novice user. Users will get mail and a message indicating the result of
+    View to accept or reject a novice application. Lists first 10 entries of
+    the novice user. Users will get mail and a message indicating the result of
     their application. A LogEntry object is created for this action.
     """
 
@@ -52,7 +52,9 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             self.novice = None
         elif self.novice not in novices[:100]:
             self.novice = None
-            notifications.error(self.request, _("The user is not at the top of the novice list."))
+            notifications.error(
+                self.request, _("The user is not at the top of the novice list.")
+            )
 
         if self.novice is None:
             return redirect(reverse("admin:novice_list"))
@@ -65,15 +67,21 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context.update(admin.site.each_context(self.request))
-        context["title"] = _("First ten entries of: %(username)s") % {"username": self.novice.username}
+        context["title"] = _("First ten entries of: %(username)s") % {
+            "username": self.novice.username
+        }
         return context
 
     def post(self, *args, **kwargs):
         operation = self.request.POST.get("operation")
 
-        if operation not in ["accept", "decline"]:
+        if operation not in ("accept", "decline"):
             notifications.error(self.request, _("The selected operation was invalid."))
-            return redirect(reverse("admin:novice_lookup", kwargs={"username": self.novice.username}))
+            return redirect(
+                reverse(
+                    "admin:novice_lookup", kwargs={"username": self.novice.username}
+                )
+            )
 
         if operation == "accept":
             self.accept_application()
@@ -90,7 +98,9 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
         user.save()
 
         # Log admin info
-        admin_info_msg = _("Authorship of the user '%(username)s' was approved.") % {"username": user.username}
+        admin_info_msg = _("Authorship of the user '%(username)s' was approved.") % {
+            "username": user.username
+        }
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
@@ -99,8 +109,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " of authorship has been approved. you can utilize your"
             " authorship by logging in."
         ) % {"username": user.username}
+
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user(_("your authorship has been approved"), user_info_msg, settings.FROM_EMAIL)
+        user.email_user(
+            _("your authorship has been approved"), user_info_msg, settings.FROM_EMAIL
+        )
 
         notifications.success(self.request, admin_info_msg)
         return True
@@ -108,13 +121,16 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
     def decline_application(self):
         # Alter the user status & delete entries
         user = self.novice
-        Entry.objects_published.filter(author=user).delete()  # does not trigger model's delete()
+
+        Entry.objects_published.filter(author=user).delete()
         user.application_status = Author.Status.ON_HOLD
         user.application_date = None
         user.save()
 
         # Log admin info
-        admin_info_msg = _("Authorship of the user '%(username)s' was rejected.") % {"username": user.username}
+        admin_info_msg = _("Authorship of the user '%(username)s' was rejected.") % {
+            "username": user.username
+        }
         log_admin(admin_info_msg, self.request.user, Author, user)
 
         # Send information messages to the user
@@ -123,8 +139,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " rejected and all of your entries has been deleted. if you"
             " fill up 10 entries, you will be admitted to novice list again."
         ) % {"username": user.username}
+
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user(_("your authorship has been rejected"), user_info_msg, settings.FROM_EMAIL)
+        user.email_user(
+            _("your authorship has been rejected"), user_info_msg, settings.FROM_EMAIL
+        )
 
         notifications.success(self.request, admin_info_msg)
         return True

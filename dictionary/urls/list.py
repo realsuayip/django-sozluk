@@ -10,6 +10,10 @@ urlpatterns_list = [
     # Topic entry list
     path("topic/", TopicEntryList.as_view(), name="topic-search"),
     path("topic/<slug:slug>/", TopicEntryList.as_view(), name="topic"),
-    path("topic/<str:unicode_string>/", TopicEntryList.as_view(), name="topic-unicode-url"),
+    path(
+        "topic/<str:unicode_string>/",
+        TopicEntryList.as_view(),
+        name="topic-unicode-url",
+    ),
     path("entry/<int:entry_id>/", TopicEntryList.as_view(), name="entry-permalink"),
 ]

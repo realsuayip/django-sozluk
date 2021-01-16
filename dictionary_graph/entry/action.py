@@ -25,7 +25,9 @@ def owneraction(mutator):
     def decorator(_root, info, pk):
         entry, sender = Entry.objects_all.get(pk=pk), info.context.user
         if entry.author != sender:
-            raise PermissionDenied(_("we couldn't handle your request. try again later."))
+            raise PermissionDenied(
+                _("we couldn't handle your request. try again later.")
+            )
         return mutator(_root, info, entry)
 
     return decorator
@@ -54,7 +56,9 @@ class DeleteEntry(Action, Mutation):
             entry.author.karma = F("karma") - 1
             entry.author.save(update_fields=["karma"])
 
-        return DeleteEntry(feedback=_("your entry has been deleted"), redirect=redirect_url)
+        return DeleteEntry(
+            feedback=_("your entry has been deleted"), redirect=redirect_url
+        )
 
 
 class PinEntry(Action, Mutation):
@@ -62,7 +66,9 @@ class PinEntry(Action, Mutation):
     @owneraction
     def mutate(_root, info, entry):
         if entry.is_draft:
-            return PinEntry(feedback=_("we couldn't handle your request. try again later."))
+            return PinEntry(
+                feedback=_("we couldn't handle your request. try again later.")
+            )
 
         feedback = _("this entry is now pinned")
         current = info.context.user.pinned_entry
@@ -86,16 +92,21 @@ class FavoriteEntry(Action, Mutation):
         entry = Entry.objects_published.get(pk=pk)
 
         if entry.author.blocked.filter(pk=info.context.user.pk).exists():
-            raise PermissionDenied(_("we couldn't handle your request. try again later."))
+            raise PermissionDenied(
+                _("we couldn't handle your request. try again later.")
+            )
 
         if info.context.user.favorite_entries.filter(pk=pk).exists():
             info.context.user.favorite_entries.remove(entry)
             return FavoriteEntry(
-                feedback=_("the entry has been removed from favorites"), count=entry.favorited_by.count()
+                feedback=_("the entry has been removed from favorites"),
+                count=entry.favorited_by.count(),
             )
 
         info.context.user.favorite_entries.add(entry)
-        return FavoriteEntry(feedback=_("the entry has been favorited"), count=entry.favorited_by.count())
+        return FavoriteEntry(
+            feedback=_("the entry has been favorited"), count=entry.favorited_by.count()
+        )
 
 
 def voteaction(mutator):
@@ -107,12 +118,16 @@ def voteaction(mutator):
     @wraps(mutator)
     def decorator(_root, info, pk):
         entry, sender = (
-            Entry.objects_published.select_related("author").only("id", "author_id", "author__karma").get(pk=pk),
+            Entry.objects_published.select_related("author")
+            .only("id", "author_id", "author__karma")
+            .get(pk=pk),
             info.context.user,
         )
 
         if entry.author == sender:
-            raise PermissionDenied(_("we couldn't handle your request. try again later."))
+            raise PermissionDenied(
+                _("we couldn't handle your request. try again later.")
+            )
 
         if not sender.is_authenticated:
             if settings.DISABLE_ANONYMOUS_VOTING:
@@ -124,7 +139,10 @@ def voteaction(mutator):
             sender = AnonymousUserStorage(info.context)
 
         upvoted, downvoted = sender.upvoted_entries, sender.downvoted_entries
-        in_upvoted, in_downvoted = upvoted.filter(pk=pk).exists(), downvoted.filter(pk=pk).exists()
+        in_upvoted, in_downvoted = (
+            upvoted.filter(pk=pk).exists(),
+            downvoted.filter(pk=pk).exists(),
+        )
         exceeded, reason = sender.has_exceeded_vote_limit(against=entry.author)
 
         constants = (
@@ -134,7 +152,18 @@ def voteaction(mutator):
             settings.KARMA_RATES["upvote"],
         )
 
-        return mutator(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants, exceeded, reason)
+        return mutator(
+            _root,
+            entry,
+            sender,
+            upvoted,
+            downvoted,
+            in_upvoted,
+            in_downvoted,
+            constants,
+            exceeded,
+            reason,
+        )
 
     return decorator
 
@@ -144,7 +173,18 @@ class UpvoteEntry(Action, Mutation):
 
     @staticmethod
     @voteaction
-    def mutate(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants, exceeded, reason):
+    def mutate(
+        _root,
+        entry,
+        sender,
+        upvoted,
+        downvoted,
+        in_upvoted,
+        in_downvoted,
+        constants,
+        exceeded,
+        reason,
+    ):
         response = UpvoteEntry(feedback=None)
         karma, cost, downvote_rate, upvote_rate = constants
 
@@ -191,7 +231,18 @@ class DownvoteEntry(Action, Mutation):
 
     @staticmethod
     @voteaction
-    def mutate(_root, entry, sender, upvoted, downvoted, in_upvoted, in_downvoted, constants, exceeded, reason):
+    def mutate(
+        _root,
+        entry,
+        sender,
+        upvoted,
+        downvoted,
+        in_upvoted,
+        in_downvoted,
+        constants,
+        exceeded,
+        reason,
+    ):
         response = DownvoteEntry(feedback=None)
         karma, cost, downvote_rate, upvote_rate = constants
 

@@ -19,19 +19,27 @@ class Announcement(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         verbose_name=_("Discussion topic"),
-        help_text=_("Optional. The topic where the users will be discussing this announcement."),
+        help_text=_(
+            "Optional. The topic where the users will be discussing this announcement."
+        ),
     )
 
     html_only = models.BooleanField(
         default=False,
         verbose_name=_("Allow HTML"),
-        help_text=_("Check this to only use HTML, otherwise you can use entry formatting options."),
+        help_text=_(
+            "Check this to only use HTML, otherwise you can"
+            " use entry formatting options."
+        ),
     )
 
     notify = models.BooleanField(
         default=False,
         verbose_name=_("Notify users"),
-        help_text=_("When checked, users will get a notification when the announcement gets released."),
+        help_text=_(
+            "When checked, users will get a notification"
+            " when the announcement gets released."
+        ),
     )
 
     date_edited = models.DateTimeField(null=True, editable=False)
@@ -46,7 +54,9 @@ class Announcement(models.Model):
         verbose_name_plural = _("announcements")
 
     def __str__(self):
-        return f"{self.title} - {entrydate(timezone.localtime(self.date_created), None)}"
+        return (
+            f"{self.title} - {entrydate(timezone.localtime(self.date_created), None)}"
+        )
 
     def save(self, *args, **kwargs):
         created = self.pk is None
@@ -66,5 +76,10 @@ class Announcement(models.Model):
         pub = timezone.localtime(self.date_created)
         return reverse(
             "announcements-detail",
-            kwargs={"year": pub.year, "month": pub.month, "day": pub.day, "slug": self.slug},
+            kwargs={
+                "year": pub.year,
+                "month": pub.month,
+                "day": pub.day,
+                "slug": self.slug,
+            },
         )

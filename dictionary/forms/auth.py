@@ -22,11 +22,16 @@ class LoginForm(AuthenticationForm):
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
         max_length=254,
-        help_text=_("required. in order to complete registration, provide a valid e-mail address."),
+        help_text=_(
+            "required. in order to complete registration,"
+            " provide a valid e-mail address."
+        ),
         label=_("e-mail"),
     )
     gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date"))
+    birth_date = forms.DateField(
+        widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date")
+    )
     terms_conditions = forms.BooleanField(required=True)
 
     class Meta:
@@ -41,16 +46,22 @@ class SignUpForm(UserCreationForm):
 
 
 class ResendEmailForm(forms.Form):
-    email = forms.EmailField(max_length=254, label=_("the e-mail address you used to register your account"))
+    email = forms.EmailField(
+        max_length=254, label=_("the e-mail address you used to register your account")
+    )
 
     def clean(self):
         if not self.errors:
             try:
                 author = Author.objects.get(email=self.cleaned_data.get("email"))
                 if author.is_active:
-                    raise forms.ValidationError(gettext("this e-mail has already been confirmed."))
+                    raise forms.ValidationError(
+                        gettext("this e-mail has already been confirmed.")
+                    )
             except Author.DoesNotExist as exc:
-                raise forms.ValidationError(gettext("no such e-mail, never heard of it.")) from exc
+                raise forms.ValidationError(
+                    gettext("no such e-mail, never heard of it.")
+                ) from exc
 
         super().clean()
 
@@ -58,7 +69,9 @@ class ResendEmailForm(forms.Form):
 class ChangeEmailForm(forms.Form):
     email1 = forms.EmailField(max_length=254, label=_("new e-mail address"))
     email2 = forms.EmailField(max_length=254, label=_("new e-mail address (again)"))
-    password_confirm = forms.CharField(label=_("confirm your password"), strip=False, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(
+        label=_("confirm your password"), strip=False, widget=forms.PasswordInput
+    )
 
     def clean(self):
         form_data = self.cleaned_data
@@ -73,7 +86,9 @@ class ChangeEmailForm(forms.Form):
 
 
 class TerminateAccountForm(forms.ModelForm):
-    password_confirm = forms.CharField(label=_("confirm your password"), strip=False, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(
+        label=_("confirm your password"), strip=False, widget=forms.PasswordInput
+    )
 
     class Meta:
         model = AccountTerminationQueue

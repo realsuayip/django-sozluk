@@ -7,7 +7,9 @@ from uuslug import slugify
 from dictionary.conf import settings
 
 
-user_text_re = _lazy_re_compile(r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$")
+user_text_re = _lazy_re_compile(
+    r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$"
+)
 topic_title_re = _lazy_re_compile(r"^[a-z0-9 ğçıöşü&#()_+='%/\",.!?~\[\]{}<>^;\\|-]+$")
 
 
@@ -42,7 +44,12 @@ def validate_category_name(value):
             " clashes with a reserved category lister. The complete list"
             " of forbidden names follows:"
         )
-        raise ValidationError(mark_safe(f"<strong>{message}</strong><br>{'<br>'.join(settings.NON_DB_CATEGORIES)}"))
+        raise ValidationError(
+            mark_safe(
+                f"<strong>{message}</strong><br>"
+                f"{'<br>'.join(settings.NON_DB_CATEGORIES)}"
+            )
+        )
 
 
 def validate_username_partial(value):

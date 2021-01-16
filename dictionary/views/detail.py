@@ -13,7 +13,14 @@ from django.views.generic import DetailView, ListView
 
 from dictionary.conf import settings
 from dictionary.forms.edit import MementoForm, SendMessageForm
-from dictionary.models import Author, Conversation, ConversationArchive, Entry, Memento, Message
+from dictionary.models import (
+    Author,
+    Conversation,
+    ConversationArchive,
+    Entry,
+    Memento,
+    Message,
+)
 from dictionary.utils.decorators import cached_context
 from dictionary.utils.managers import UserStatsQueryHandler, entry_prefetch
 from dictionary.utils.mixins import IntegratedFormMixin
@@ -30,13 +37,17 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
     def form_valid(self, form):
         recipient = self.get_recipient()
-        message = Message.objects.compose(self.request.user, recipient, form.cleaned_data["body"])
+        message = Message.objects.compose(
+            self.request.user, recipient, form.cleaned_data["body"]
+        )
 
         if not message:
             notifications.error(self.request, _("we couldn't send your message"))
             return self.form_invalid(form)
 
-        return redirect(reverse("conversation", kwargs={"slug": self.kwargs.get("slug")}))
+        return redirect(
+            reverse("conversation", kwargs={"slug": self.kwargs.get("slug")})
+        )
 
     def form_invalid(self, form):
         for err in form.non_field_errors() + form.errors.get("body", []):
@@ -50,7 +61,9 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
 
         if chat is not None:
             # Mark read
-            chat.messages.filter(sender=recipient, read_at__isnull=True).update(read_at=timezone.now())
+            chat.messages.filter(sender=recipient, read_at__isnull=True).update(
+                read_at=timezone.now()
+            )
             return chat
 
         raise Http404  # users haven't messaged each other yet
@@ -58,8 +71,12 @@ class Chat(LoginRequiredMixin, IntegratedFormMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         recipient = self.object.target
-        is_blocked = self.request.user.blocked.filter(pk=recipient.pk).exists()  # causes 1 duplicate query
-        can_send_message = False if is_blocked else self.request.user.can_send_message(recipient)
+
+        # Causes 1 duplicate query
+        is_blocked = self.request.user.blocked.filter(pk=recipient.pk).exists()
+        can_send_message = (
+            False if is_blocked else self.request.user.can_send_message(recipient)
+        )
 
         context["recipient"] = recipient
         context["can_send_message"] = can_send_message
@@ -71,7 +88,9 @@ class ChatArchive(LoginRequiredMixin, DetailView):
     template_name = "dictionary/conversation/conversation_archive.html"
 
     def get_object(self, queryset=None):
-        return get_object_or_404(ConversationArchive, holder=self.request.user, slug=self.kwargs["slug"])
+        return get_object_or_404(
+            ConversationArchive, holder=self.request.user, slug=self.kwargs["slug"]
+        )
 
 
 class LatestEntriesPaginator(Paginator):
@@ -123,7 +142,9 @@ class UserProfile(IntegratedFormMixin, ListView):
                 existing_memento.save()
         else:
             if not body:
-                notifications.info(self.request, gettext("if only you could write down something"))
+                notifications.info(
+                    self.request, gettext("if only you could write down something")
+                )
             else:
                 memento = form.save(commit=False)
                 memento.holder = self.request.user
@@ -148,7 +169,9 @@ class UserProfile(IntegratedFormMixin, ListView):
         return super().get_paginator(*args, **kwargs)
 
     def get_queryset(self):
-        handler = UserStatsQueryHandler(self.profile, requester=self.request.user, order=True)
+        handler = UserStatsQueryHandler(
+            self.profile, requester=self.request.user, order=True
+        )
         qs = getattr(handler, self.tab)()
         tab_obj_type = self.tabs.get(self.tab)["type"]
 
@@ -168,7 +191,9 @@ class UserProfile(IntegratedFormMixin, ListView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        self.profile = get_object_or_404(Author, slug=self.kwargs.get("slug"), is_active=True)
+        self.profile = get_object_or_404(
+            Author, slug=self.kwargs.get("slug"), is_active=True
+        )
 
         # Check accessibility
         if self.profile != self.request.user and any(
@@ -200,13 +225,17 @@ class UserProfile(IntegratedFormMixin, ListView):
             and sender.is_novice
             and sender.application_status == "PN"
         ):
-            queue = cached_context(prefix="nqu", vary_on_user=True, timeout=86400)(lambda user: user.novice_queue)
+            queue = cached_context(prefix="nqu", vary_on_user=True, timeout=86400)(
+                lambda user: user.novice_queue
+            )
             return queue(user=sender)
         return None
 
     def get_memento(self):
         if self.request.user.is_authenticated:
             with suppress(Memento.DoesNotExist):
-                return Memento.objects.get(holder=self.request.user, patient=self.profile)
+                return Memento.objects.get(
+                    holder=self.request.user, patient=self.profile
+                )
 
         return None

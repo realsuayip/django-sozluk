@@ -23,7 +23,9 @@ class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return self.request.user
 
     def form_invalid(self, form):
-        notifications.error(self.request, gettext("we couldn't handle your request. try again later."))
+        notifications.error(
+            self.request, gettext("we couldn't handle your request. try again later.")
+        )
         return super().form_invalid(form)
 
 
@@ -37,7 +39,9 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         entry = form.save(commit=False)
 
         if self.request.user.is_suspended or entry.topic.is_banned:
-            notifications.error(self.request, gettext("you lack the required permissions."))
+            notifications.error(
+                self.request, gettext("you lack the required permissions.")
+            )
             return super().form_invalid(form)
 
         if entry.is_draft:
@@ -50,7 +54,10 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
             entry.is_draft = False
             entry.date_created = timezone.now()
             entry.date_edited = None
-            notifications.info(self.request, gettext("the entry was successfully launched into stratosphere"))
+            notifications.info(
+                self.request,
+                gettext("the entry was successfully launched into stratosphere"),
+            )
         else:
             entry.date_edited = timezone.now()
 
@@ -82,10 +89,14 @@ class CommentCreate(CommentMixin, CreateView):
     entry = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.entry = get_object_or_404(Entry.objects_published, pk=self.kwargs.get("pk"))
+        self.entry = get_object_or_404(
+            Entry.objects_published, pk=self.kwargs.get("pk")
+        )
 
         if not (
-            request.user.has_perm("dictionary.can_comment") and self.entry.topic.is_ama and request.user.is_accessible
+            request.user.has_perm("dictionary.can_comment")
+            and self.entry.topic.is_ama
+            and request.user.is_accessible
         ):
             raise Http404
 
@@ -108,7 +119,9 @@ class CommentUpdate(CommentMixin, UpdateView):
     success_message = _("the comment has been updated")
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Comment, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user)
+        return get_object_or_404(
+            Comment, pk=self.kwargs.get(self.pk_url_kwarg), author=self.request.user
+        )
 
     def form_valid(self, form):
         if self.request.POST.get("delete"):
@@ -118,7 +131,11 @@ class CommentUpdate(CommentMixin, UpdateView):
 
         if not self.request.user.is_accessible:
             notifications.error(
-                self.request, gettext("you lack the permissions to edit this comment. you might as well delete it?")
+                self.request,
+                gettext(
+                    "you lack the permissions to edit this comment."
+                    " you might as well delete it?"
+                ),
             )
             return self.form_invalid(form)
 

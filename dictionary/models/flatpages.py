@@ -7,7 +7,10 @@ class MetaFlatPage(FlatPage):
     html_only = models.BooleanField(
         default=False,
         verbose_name=_("Allow HTML"),
-        help_text=_("Check this to only use HTML, otherwise you can use entry formatting options."),
+        help_text=_(
+            "Check this to only use HTML, otherwise"
+            " you can use entry formatting options."
+        ),
     )
     weight = models.PositiveSmallIntegerField(default=0, verbose_name=_("Weight"))
 

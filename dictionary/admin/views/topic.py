@@ -10,9 +10,9 @@ from dictionary.utils.views import IntermediateActionView
 
 class TopicMove(IntermediateActionView):
     """
-    Move entries in (selected range of) (a) topic(s) to another topic. If wanted,
-    include a reference for new topic in (the) old topic(s). An admin log
-    -for target topic- is created for this action.
+    Move entries in (selected range of) (a) topic(s) to another topic. If
+    wanted, include a reference for new topic in (the) old topic(s). An admin
+    log -for target topic- is created for this action.
     """
 
     max_input = 15
@@ -70,7 +70,11 @@ class TopicMove(IntermediateActionView):
 
             notifications.success(
                 request,
-                ngettext("%(count)d entry was transferred", "%(count)d entries were transferred", entries_count)
+                ngettext(
+                    "%(count)d entry was transferred",
+                    "%(count)d entries were transferred",
+                    entries_count,
+                )
                 % {"count": entries_count},
             )
         except Topic.DoesNotExist:

@@ -34,7 +34,9 @@ class Topic(models.Model):
         editable=False,
         on_delete=models.SET_NULL,
         verbose_name=_("First user to write an entry"),
-        help_text=_("The author or novice who entered the first entry for this topic publicly."),
+        help_text=_(
+            "The author or novice who entered the first entry for this topic publicly."
+        ),
     )
 
     category = models.ManyToManyField(Category, blank=True, verbose_name=_("Channels"))
@@ -42,7 +44,9 @@ class Topic(models.Model):
     allow_suggestions = models.BooleanField(
         default=True,
         verbose_name=_("Allow suggestions"),
-        help_text=_("When checked, users will be able to suggest channels to this topic."),
+        help_text=_(
+            "When checked, users will be able to suggest channels to this topic."
+        ),
     )
 
     mirrors = models.ManyToManyField(
@@ -62,7 +66,10 @@ class Topic(models.Model):
     is_banned = models.BooleanField(
         default=False,
         verbose_name=_("Prohibited"),
-        help_text=_("Check this if you want to hinder authors and novices from entering new entries to this topic."),
+        help_text=_(
+            "Check this if you want to hinder authors and novices"
+            " from entering new entries to this topic."
+        ),
     )
 
     is_censored = models.BooleanField(
@@ -87,7 +94,8 @@ class Topic(models.Model):
         default=False,
         verbose_name=_("Ask me anything"),
         help_text=_(
-            "If checked, comments will be visible in this topic. Authorized users will be able to comment on entries."
+            "If checked, comments will be visible in this topic."
+            " Authorized users will be able to comment on entries."
         ),
     )
 
@@ -127,7 +135,9 @@ class Topic(models.Model):
             wishes = self.wishes.all().select_related("author")
 
             for wish in wishes:
-                self_fulfillment = invoked_by_entry and fulfiller_entry.author == wish.author
+                self_fulfillment = (
+                    invoked_by_entry and fulfiller_entry.author == wish.author
+                )
 
                 if not self_fulfillment:
                     message = (
@@ -141,11 +151,16 @@ class Topic(models.Model):
                             "entry": fulfiller_entry.pk,
                         }
                         if invoked_by_entry
-                        else gettext("`%(title)s`, the topic you wished for, is now populated with some entries.")
+                        else gettext(
+                            "`%(title)s`, the topic you wished for,"
+                            " is now populated with some entries."
+                        )
                         % {"title": self.title}
                     )
 
-                    Message.objects.compose(get_generic_superuser(), wish.author, message)
+                    Message.objects.compose(
+                        get_generic_superuser(), wish.author, message
+                    )
 
             return wishes.delete()
         return None
@@ -171,11 +186,25 @@ class Topic(models.Model):
 
 
 class Wish(models.Model):
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="wishes", verbose_name=_("Author"))
-    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="wishes", verbose_name=_("Topic"))
+    author = models.ForeignKey(
+        "Author",
+        on_delete=models.CASCADE,
+        related_name="wishes",
+        verbose_name=_("Author"),
+    )
+    topic = models.ForeignKey(
+        "Topic",
+        on_delete=models.CASCADE,
+        related_name="wishes",
+        verbose_name=_("Topic"),
+    )
 
-    hint = models.TextField(validators=[validate_user_text], null=True, blank=True, verbose_name=_("Hint"))
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    hint = models.TextField(
+        validators=[validate_user_text], null=True, blank=True, verbose_name=_("Hint")
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name=_("Date created")
+    )
 
     class Meta:
         verbose_name = _("wish")

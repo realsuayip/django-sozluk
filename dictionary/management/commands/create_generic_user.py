@@ -15,22 +15,35 @@ class Command(BaseDebugCommand):
         return _("Creates a generic user")
 
     def add_arguments(self, parser):
-        parser.add_argument("user-type", type=str, help=_("The type of the user to be created"))
-        parser.add_argument("password", type=str, help=_("The password of the user to be created"))
-        parser.add_argument("email", type=str, help=_("E-mail address of the user to bo be created"))
+        parser.add_argument(
+            "user-type", type=str, help=_("The type of the user to be created")
+        )
+        parser.add_argument(
+            "password", type=str, help=_("The password of the user to be created")
+        )
+        parser.add_argument(
+            "email", type=str, help=_("E-mail address of the user to bo be created")
+        )
 
     def handle(self, **options):
         available_types = ("private", "superuser")
         user_type = options.get("user-type")
         email = options.get("email")
 
-        validate_email(email)  # Throws django.core.exceptions.ValidationError if not valid.
+        # Throws django.core.exceptions.ValidationError if not valid.
+        validate_email(email)
 
         if user_type not in available_types:
-            raise ValueError(f"({_('Invalid user type, available types:')} {available_types}.")
+            raise ValueError(
+                f"({_('Invalid user type, available types:')} {available_types}."
+            )
 
         is_private = user_type == "private"
-        username = settings.GENERIC_PRIVATEUSER_USERNAME if is_private else settings.GENERIC_SUPERUSER_USERNAME
+        username = (
+            settings.GENERIC_PRIVATEUSER_USERNAME
+            if is_private
+            else settings.GENERIC_SUPERUSER_USERNAME
+        )
 
         confirmation = input(
             _(
@@ -59,9 +72,18 @@ class Command(BaseDebugCommand):
                         " %(username)s and email %(email)s. You can edit the details"
                         " of this user via admin page if you wish."
                     )
-                    % {"username": guser.username, "user_type": user_type, "email": guser.email}
+                    % {
+                        "username": guser.username,
+                        "user_type": user_type,
+                        "email": guser.email,
+                    }
                 )
             except IntegrityError:
-                self.stdout.write(_("Error: either there is an existing user with given username or e-mail is in use."))
+                self.stdout.write(
+                    _(
+                        "Error: either there is an existing user with"
+                        " given username or e-mail is in use."
+                    )
+                )
         else:
             self.stdout.write(_("Command aborted."))

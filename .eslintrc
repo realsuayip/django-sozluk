@@ -1,71 +1,12 @@
 {
-  "extends": "standard",
+  "extends": "eslint-config-prettier",
   "env": {
     "browser": true,
     "commonjs": true,
     "es6": true
   },
-  "parserOptions": {
-    "ecmaVersion": 2020
-  },
-  "rules": {
-    "semi": [
-      2,
-      "never"
-    ],
-    "quotes": [
-      2,
-      "double",
-      {
-        "avoidEscape": true,
-        "allowTemplateLiterals": true
-      }
-    ],
-    "no-use-before-define": [
-      2,
-      {
-        "functions": true,
-        "classes": true
-      }
-    ],
-    "object-shorthand": [
-      2,
-      "always"
-    ],
-    "arrow-parens": [
-      2,
-      "as-needed"
-    ],
-    "prefer-const": [
-      2
-    ],
-    "dot-notation": [
-      2
-    ],
-    "func-style": [
-      2,
-      "declaration",
-      {
-        "allowArrowFunctions": true
-      }
-    ],
-    "quote-props": [
-      2,
-      "as-needed"
-    ],
-    "no-prototype-builtins": [
-      2
-    ],
-    "indent": [
-      "warn",
-      4,
-      {
-        "SwitchCase": 1
-      }
-    ],
-    "object-curly-spacing": [
-      "warn",
-      "always"
-    ]
+   "parserOptions": {
+     "sourceType": "module",
+     "ecmaVersion": 2020
   }
 }

@@ -106,12 +106,20 @@ class LeftFrameProcessor:
 
         try:
             handler = manager or TopicListManager(
-                self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions, self._extra
+                self.slug,
+                self.user,
+                self._year,
+                self._search_keys,
+                self._tab,
+                self._exclusions,
+                self._extra,
             )
             context = LeftFrame(handler, page=self._page).as_context()
         except (Http404, PermissionDenied):
             self.set_cookie("lfac", settings.DEFAULT_CATEGORY)
-            return self._get_context(manager=TopicListManager(settings.DEFAULT_CATEGORY), attempt=attempt + 1)
+            return self._get_context(
+                manager=TopicListManager(settings.DEFAULT_CATEGORY), attempt=attempt + 1
+            )
 
         return context
 

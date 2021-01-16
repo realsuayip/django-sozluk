@@ -78,8 +78,13 @@ class TopicListQuery(ObjectType):
 
     @staticmethod
     def resolve_topics(_parent, info, slug, **kwargs):
-        # Convert string query parameters to actual dictionary to use it in TopicListHandler
-        search_keys = dict(parse_qsl(kwargs.get("search_keys"))) if kwargs.get("search_keys") else {}
+        # Convert string query parameters to actual
+        # dictionary to use it in TopicListHandler
+        search_keys = (
+            dict(parse_qsl(kwargs.get("search_keys")))
+            if kwargs.get("search_keys")
+            else {}
+        )
         manager = TopicListManager(
             slug,
             info.context.user,
@@ -97,27 +102,43 @@ class TopicListQuery(ObjectType):
         page = frame.page  # May raise PermissionDenied or Http404
 
         object_list = [
-            Topic(title=t["title"], slug=t["slug"], count=humanize_count(t.get("count"))) for t in page["object_list"]
+            Topic(
+                title=t["title"], slug=t["slug"], count=humanize_count(t.get("count"))
+            )
+            for t in page["object_list"]
         ]
 
-        paginator = {"num_pages": page["paginator"]["num_pages"], "page_range": page["paginator"]["page_range"]}
+        paginator = {
+            "num_pages": page["paginator"]["num_pages"],
+            "page_range": page["paginator"]["page_range"],
+        }
 
         tabs = (
             Tabs(
                 current=frame.tabs["current"],
-                available=[Tab(name=key, safename=value) for key, value in frame.tabs["available"].items()],
+                available=[
+                    Tab(name=key, safename=value)
+                    for key, value in frame.tabs["available"].items()
+                ],
             )
             if frame.tabs
             else None
         )
 
         exclusions = (
-            Exclusions(active=frame.exclusions["active"], available=frame.exclusions["available"])
+            Exclusions(
+                active=frame.exclusions["active"],
+                available=frame.exclusions["available"],
+            )
             if frame.exclusions
             else None
         )
 
-        extra = [Extra(name=key, value=value) for key, value in frame.extra.items()] if frame.extra else None
+        extra = (
+            [Extra(name=key, value=value) for key, value in frame.extra.items()]
+            if frame.extra
+            else None
+        )
 
         page_data = {
             "has_next": page.get("has_next"),

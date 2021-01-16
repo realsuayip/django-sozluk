@@ -13,7 +13,10 @@ class PublishFilter(SimpleListFilter):
     parameter_name = "published"
 
     def lookups(self, request, model_admin):
-        return [("yes", gettext("Published")), ("no", gettext("Waiting for publication date"))]
+        return [
+            ("yes", gettext("Published")),
+            ("no", gettext("Waiting for publication date")),
+        ]
 
     def queryset(self, request, queryset):
         if self.value() == "yes":
@@ -27,11 +30,20 @@ class PublishFilter(SimpleListFilter):
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {"widget": Textarea(attrs={"rows": 20, "style": "width: 50%; box-sizing: border-box;"})},
+        models.TextField: {
+            "widget": Textarea(
+                attrs={"rows": 20, "style": "width: 50%; box-sizing: border-box;"}
+            )
+        },
     }
 
     autocomplete_fields = ("discussion",)
     search_fields = ("title",)
-    list_filter = (PublishFilter, ("date_created", DateFieldListFilter), "html_only", "notify")
+    list_filter = (
+        PublishFilter,
+        ("date_created", DateFieldListFilter),
+        "html_only",
+        "notify",
+    )
     list_display = ("title", "discussion", "date_created")
     ordering = ("-date_created",)

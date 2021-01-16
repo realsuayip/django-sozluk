@@ -14,11 +14,11 @@ from dictionary.utils.views import IntermediateActionView
 class SuspendUser(IntermediateActionView):
     """
     View for user suspension intermediate page. Admin provides suspension time
-    from 'time_choices' and also provides some information. For each suspended user,
-    a LogEntry object is created. get_queryset is not modified so it is possible
-    to select already suspended users, but latest submission will be taken into
-    account. Note that composing a message to each banned user is an expensive action,
-    large inputs (> 100) may take time (~7 sec for 800 users).
+    from 'time_choices' and also provides some information. For each suspended
+    user, a LogEntry object is created. get_queryset is not modified so it is
+    possible to select already suspended users, but latest submission will be
+    taken into account. Note that composing a message to each banned user is an
+    expensive action, large inputs (>100) may take time (~7 sec for 800 users).
     """
 
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
@@ -45,17 +45,24 @@ class SuspendUser(IntermediateActionView):
             else:
                 suspended_until = timezone.now() + time_choices[choice]
 
-            # Evaluate it immediately because it needs to be iterated and we need to call len()
+            # Evaluate it immediately because it needs to be iterated and we
+            # need to call len() anyway.
             user_list_raw = list(self.get_object_list())
 
             # Get and parse information for suspension
-            action_information = request.POST.get("information", gettext("No information was given."))
+            action_information = request.POST.get(
+                "information", gettext("No information was given.")
+            )
 
             message_for_user = gettext(
-                "your account has been suspended. administration message: %(message)s\n\n"
-                "in your profile page, you can see the remaining time until your account gets reactivated."
+                "your account has been suspended. administration message:"
+                " %(message)s\n\n in your profile page, you can see the"
+                " remaining time until your account gets reactivated."
             ) % {"message": action_information}
-            message_for_log = f"Suspended until {suspended_until}, information: {action_information}"
+
+            message_for_log = (
+                f"Suspended until {suspended_until}, information: {action_information}"
+            )
 
             log_list = []  # Reserve list that hold instances for bulk creation
             generic_superuser = get_generic_superuser()
@@ -63,17 +70,23 @@ class SuspendUser(IntermediateActionView):
             # Set new suspended_until and append instances to reserved lists
             for user in user_list_raw:
                 user.suspended_until = suspended_until
-                log_list.append(logentry_instance(message_for_log, request.user, Author, user))
+                log_list.append(
+                    logentry_instance(message_for_log, request.user, Author, user)
+                )
                 Message.objects.compose(generic_superuser, user, message_for_user)
 
-            # Bulk creation/updates
-            Author.objects.bulk_update(user_list_raw, ["suspended_until"])  # Update Author, does not call save()
+            # Bulk creation/updates, *does not call save()*
+            Author.objects.bulk_update(user_list_raw, ["suspended_until"])
             logentry_bulk_create(log_list)  # Log user suspension for admin history
 
             count = len(user_list_raw)
             notifications.success(
                 request,
-                ngettext("%(count)d author was suspended.", "%(count)d authors were suspended.", count)
+                ngettext(
+                    "%(count)d author was suspended.",
+                    "%(count)d authors were suspended.",
+                    count,
+                )
                 % {"count": count},
             )
         else:
@@ -83,7 +96,6 @@ class SuspendUser(IntermediateActionView):
 
 
 class UnsuspendUser(IntermediateActionView):
-    # Same procedures as SuspendUser.
     permission_required = ("dictionary.suspend_user", "dictionary.change_author")
     model = Author
     page_title = _("Unsuspend authors")
@@ -103,7 +115,9 @@ class UnsuspendUser(IntermediateActionView):
 
             for user in user_list_raw:
                 user.suspended_until = None
-                log_list.append(logentry_instance("Removed suspension", request.user, Author, user))
+                log_list.append(
+                    logentry_instance("Removed suspension", request.user, Author, user)
+                )
 
             Author.objects.bulk_update(user_list_raw, ["suspended_until"])
             logentry_bulk_create(log_list)
@@ -111,9 +125,15 @@ class UnsuspendUser(IntermediateActionView):
             count = len(user_list_raw)
             notifications.success(
                 request,
-                ngettext("%(count)d author was unsuspended.", "%(count)d authors were unsuspended.", count)
+                ngettext(
+                    "%(count)d author was unsuspended.",
+                    "%(count)d authors were unsuspended.",
+                    count,
+                )
                 % {"count": count},
             )
         else:
-            notifications.error(request, gettext("we couldn't handle your request. try again later."))
+            notifications.error(
+                request, gettext("we couldn't handle your request. try again later.")
+            )
         return redirect(self.get_changelist_url())

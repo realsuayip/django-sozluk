@@ -10,13 +10,25 @@ class PreferencesForm(UserChangeForm):
     password = None
 
     gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date"))
-    entries_per_page = forms.ChoiceField(choices=Author.EntryCount.choices, label=_("entries per page"))
-    topics_per_page = forms.ChoiceField(choices=Author.TopicCount.choices, label=_("topics per page"))
-    message_preference = forms.ChoiceField(choices=Author.MessagePref.choices, label=_("message preference"))
+    birth_date = forms.DateField(
+        widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date")
+    )
+    entries_per_page = forms.ChoiceField(
+        choices=Author.EntryCount.choices, label=_("entries per page")
+    )
+    topics_per_page = forms.ChoiceField(
+        choices=Author.TopicCount.choices, label=_("topics per page")
+    )
+    message_preference = forms.ChoiceField(
+        choices=Author.MessagePref.choices, label=_("message preference")
+    )
     allow_receipts = forms.BooleanField(required=False, label=_("show read receipts"))
-    allow_uncategorized = forms.BooleanField(required=False, label=_("allow uncategorized topics in today"))
-    allow_site_announcements = forms.BooleanField(required=False, label=_("include site announcements in my activity"))
+    allow_uncategorized = forms.BooleanField(
+        required=False, label=_("allow uncategorized topics in today")
+    )
+    allow_site_announcements = forms.BooleanField(
+        required=False, label=_("include site announcements in my activity")
+    )
 
     class Meta:
         model = Author
@@ -36,7 +48,11 @@ class EntryForm(forms.ModelForm):
     class Meta:
         model = Entry
         fields = ("content",)
-        error_messages = {"content": {"required": _("my dear, just write your entry, how hard could it be?")}}
+        error_messages = {
+            "content": {
+                "required": _("my dear, just write your entry, how hard could it be?")
+            }
+        }
 
 
 class SendMessageForm(forms.ModelForm):

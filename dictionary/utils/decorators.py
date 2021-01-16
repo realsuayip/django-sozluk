@@ -6,7 +6,9 @@ from django.core.cache import cache
 # General decorators
 
 
-def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"):
+def cached_context(
+    initial_func=None, *, timeout=None, vary_on_user=False, prefix="default"
+):
     """
     Decorator to cache functions using django's low-level cache api. Arguments
     are not taken into consideration while caching, so values of func(a, b) and
@@ -34,14 +36,18 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
                 else:
                     user = kwargs.get("user")
 
-                user_prefix = "_anonymous" if not user.is_authenticated else f"_usr{user.pk}"
+                user_prefix = (
+                    "_anonymous" if not user.is_authenticated else f"_usr{user.pk}"
+                )
 
             func_name = ""
 
             if hasattr(func, "__name__"):
                 func_name = func.__name__
             elif prefix == "default":
-                raise ValueError("Usage with non-wrapped decorators require an unique prefix.")
+                raise ValueError(
+                    "Usage with non-wrapped decorators require an unique prefix."
+                )
 
             key = f"{prefix}_context__{func_name}{user_prefix}"
             cached_value = cache.get(key)

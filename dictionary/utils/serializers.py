@@ -32,7 +32,11 @@ class ArchiveSerializer(Serializer):
                     value = obj
                     for item in fields:
                         value = getattr(value, item)
-                    if value != obj and isinstance(value, JSON_ALLOWED_OBJECTS) or value is None:
+                    if (
+                        value != obj
+                        and isinstance(value, JSON_ALLOWED_OBJECTS)
+                        or value is None
+                    ):
                         self._current[field] = value
 
         super().end_object(obj)
@@ -60,7 +64,9 @@ class PlainSerializer:
             for key, value in {
                 name: getattr(self, name)
                 for name in dir(self)
-                if not name.startswith(("_", "get_serialized", "exclude") + self.exclude)
+                if not name.startswith(
+                    ("_", "get_serialized", "exclude") + self.exclude
+                )
             }.items()
             if value is not None
         }
@@ -132,7 +138,10 @@ class LeftFrame(PlainSerializer):
             "drafts": "/entry/update/",
         }
 
-        if f"{self.slug}_{self._manager.tab}" in ("userstats_channels", "acquaintances_entries"):
+        if f"{self.slug}_{self._manager.tab}" in (
+            "userstats_channels",
+            "acquaintances_entries",
+        ):
             return "/topic/"
 
         return identifier_map.get(self.slug, "/topic/")
@@ -154,7 +163,8 @@ class LeftFrame(PlainSerializer):
         }
 
         if hasattr(self.extra.get("user_object"), "username"):
-            pairs["userstats_channels"] = f"?a=search&keywords=@{self.extra.get('user_object').username}"
+            user_query = f"?a=search&keywords=@{self.extra.get('user_object').username}"
+            pairs["userstats_channels"] = user_query
 
         key = (
             (
@@ -173,7 +183,11 @@ class LeftFrame(PlainSerializer):
     def page(self):
         """Get current page_obj via Paginator and serialize it using PageSerializer"""
         user = self._manager.user
-        paginate_by = user.topics_per_page if user.is_authenticated else settings.TOPICS_PER_PAGE_DEFAULT
+        paginate_by = (
+            user.topics_per_page
+            if user.is_authenticated
+            else settings.TOPICS_PER_PAGE_DEFAULT
+        )
         paginator = Paginator(self._manager.serialized, paginate_by)
         return PageSerializer(paginator.get_page(self._page)).get_serialized()
 
@@ -190,7 +204,11 @@ class LeftFrame(PlainSerializer):
 
     @cached_context
     def _get_available_exclusions(self):
-        return list(settings.get_model("Category").objects_all.filter(slug__in=settings.EXCLUDABLE_CATEGORIES))
+        return list(
+            settings.get_model("Category").objects_all.filter(
+                slug__in=settings.EXCLUDABLE_CATEGORIES
+            )
+        )
 
     @cached_property
     def exclusions(self):

@@ -6,7 +6,14 @@ from django.db.models import Count, Q
 from djdict import celery_app
 
 from dictionary.conf import settings
-from dictionary.models import AccountTerminationQueue, Author, BackUp, GeneralReport, Image, UserVerification
+from dictionary.models import (
+    AccountTerminationQueue,
+    Author,
+    BackUp,
+    GeneralReport,
+    Image,
+    UserVerification,
+)
 from dictionary.utils import time_threshold
 
 
@@ -20,7 +27,8 @@ def process_backup(backup_id):
 
 @celery_app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    """Add and set intervals of periodic tasks."""
+    """Add and set intervals for periodic tasks."""
+
     sender.add_periodic_task(timedelta(hours=4), commit_user_deletions)
     sender.add_periodic_task(timedelta(hours=6), purge_images)
     sender.add_periodic_task(timedelta(hours=12), purge_verifications)
@@ -31,19 +39,31 @@ def setup_periodic_tasks(sender, **kwargs):
 @celery_app.task
 def purge_verifications():
     """Delete expired verifications."""
-    UserVerification.objects.filter(expiration_date__lte=time_threshold(hours=24)).delete()
+
+    UserVerification.objects.filter(
+        expiration_date__lte=time_threshold(hours=24)
+    ).delete()
 
 
 @celery_app.task
 def purge_reports():
     """Delete expired reports."""
-    GeneralReport.objects.filter(is_verified=False, date_created__lte=time_threshold(hours=24)).delete()
+
+    GeneralReport.objects.filter(
+        is_verified=False, date_created__lte=time_threshold(hours=24)
+    ).delete()
 
 
 @celery_app.task
 def purge_images():
-    """Delete expired images (Not bulk deleting so as to delete actual image files)."""
-    expired = Image.objects.filter(is_deleted=True, date_created__lte=time_threshold(hours=120))
+    """
+    Delete expired images.
+    (Not bulk deleting so as to delete actual image files)
+    """
+
+    expired = Image.objects.filter(
+        is_deleted=True, date_created__lte=time_threshold(hours=120)
+    )
     for image in expired:
         image.delete()
 
@@ -56,12 +76,16 @@ def commit_user_deletions():
 
 @celery_app.task
 def grant_perm_suggestion():
-    """Gives suitable users 'dictionary.can_suggest_categories' permission."""
+    """
+    Gives suitable users 'dictionary.can_suggest_categories' permission.
+    """
 
     perm = Permission.objects.get(codename="can_suggest_categories")
 
     authors = (
-        Author.objects_accessible.exclude(Q(user_permissions__in=[perm]) | Q(is_novice=True))
+        Author.objects_accessible.exclude(
+            Q(user_permissions__in=[perm]) | Q(is_novice=True)
+        )
         .annotate(count=Count("entry", filter=Q(entry__is_draft=False)))
         .filter(count__gte=settings.SUGGESTIONS_ENTRY_REQUIREMENT)
     )

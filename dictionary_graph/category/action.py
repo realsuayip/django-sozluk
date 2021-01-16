@@ -59,7 +59,12 @@ class SuggestCategory(Mutation):
         ).count()
 
         if suggestion_count_today >= settings.SUGGESTIONS_PER_DAY:
-            raise ValueError(_("you have used up all the suggestion claims you have today. try again later."))
+            raise ValueError(
+                _(
+                    "you have used up all the suggestion"
+                    " claims you have today. try again later."
+                )
+            )
 
         category = get_object_or_404(Category.objects_all, slug=category)
         kwargs = {"author": info.context.user, "topic": topic, "category": category}
@@ -68,10 +73,14 @@ class SuggestCategory(Mutation):
             obj = Suggestion.objects.get(direction=direction, **kwargs)
             obj.delete()
         except Suggestion.DoesNotExist:
-            obj, created = Suggestion.objects.update_or_create(defaults={"direction": direction}, **kwargs)
+            obj, created = Suggestion.objects.update_or_create(
+                defaults={"direction": direction}, **kwargs
+            )
 
             kwargs.pop("category")
-            if created and Suggestion.objects.filter(**kwargs).count() > settings.SUGGESTIONS_PER_TOPIC:
+            suggestion_count_topic = Suggestion.objects.filter(**kwargs).count()
+
+            if created and suggestion_count_topic > settings.SUGGESTIONS_PER_TOPIC:
                 obj.delete()
                 raise ValueError(
                     ngettext(

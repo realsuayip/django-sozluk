@@ -5,7 +5,8 @@
     "since 2017-06"
   ],
   "devDependencies": {
-    "standard": "^14.3.4",
+    "prettier": "^2.2.1",
+    "eslint-config-prettier": "^7.1.0",
     "stylelint": "^13.7.2",
     "stylelint-config-standard": "^20.0.0"
   },
@@ -13,5 +14,10 @@
     "@popperjs/core": "^2.5.3",
     "dropzone": "^5.7.2",
     "js-cookie": "^3.0.0-rc.1"
+  },
+  "prettier": {
+    "semi": false,
+    "arrowParens": "avoid",
+    "printWidth": 88
   }
 }

@@ -26,7 +26,11 @@ from uuslug import uuslug
 from dictionary.conf import settings
 from dictionary.models.category import Category
 from dictionary.models.m2m import DownvotedEntries, UpvotedEntries
-from dictionary.models.managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
+from dictionary.models.managers.author import (
+    AccountTerminationQueueManager,
+    AuthorManagerAccessible,
+    InNoviceList,
+)
 from dictionary.utils import get_generic_superuser, parse_date_or_none, time_threshold
 from dictionary.utils.decorators import cached_context
 from dictionary.utils.serializers import ArchiveSerializer
@@ -42,9 +46,11 @@ def usercache(initial_func=None, *, timeout=86400):
     def inner(method):
         @wraps(method)
         def wrapped(self, *args, **kwargs):
-            return cached_context(prefix="usercache_" + method.__name__, vary_on_user=True, timeout=timeout)(
-                lambda user=None: method(self, *args, **kwargs)
-            )(user=self)
+            return cached_context(
+                prefix="usercache_" + method.__name__,
+                vary_on_user=True,
+                timeout=timeout,
+            )(lambda user=None: method(self, *args, **kwargs))(user=self)
 
         return wrapped
 
@@ -56,7 +62,10 @@ def usercache(initial_func=None, *, timeout=86400):
 
 class AuthorNickValidator(UnicodeUsernameValidator):
     regex = r"^[a-z0-9]+(\ [a-z0-9]+)*$"
-    message = _("unlike what you sent, an appropriate nickname would only consist of letters, numbers and spaces.")
+    message = _(
+        "unlike what you sent, an appropriate nickname would"
+        " only consist of letters, numbers and spaces."
+    )
 
 
 class Author(AbstractUser):
@@ -117,38 +126,57 @@ class Author(AbstractUser):
     # Base auth field settings
     USERNAME_FIELD = "email"
 
-    # A list of the field names that will be prompted for when creating a user via the createsuperuser command.
+    # A list of the field names that will be prompted for when
+    # creating a user via the createsuperuser command.
     REQUIRED_FIELDS = ["username", "is_active"]
 
     # Novice application related fields
-    is_novice = models.BooleanField(db_index=True, default=True, verbose_name=_("Novice status"))
-    application_status = models.CharField(
-        max_length=2, choices=Status.choices, default=Status.ON_HOLD, verbose_name=_("Application status")
+    is_novice = models.BooleanField(
+        db_index=True, default=True, verbose_name=_("Novice status")
     )
-    application_date = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Application date"))
-    last_activity = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Last activity as novice"))
+    application_status = models.CharField(
+        max_length=2,
+        choices=Status.choices,
+        default=Status.ON_HOLD,
+        verbose_name=_("Application status"),
+    )
+    application_date = models.DateTimeField(
+        null=True, blank=True, default=None, verbose_name=_("Application date")
+    )
+    last_activity = models.DateTimeField(
+        null=True, blank=True, default=None, verbose_name=_("Last activity as novice")
+    )
     queue_priority = models.PositiveSmallIntegerField(
         default=0,
         verbose_name=_("Queue priority"),
-        help_text=_("Novices with high priority are more likely to appear on the top of the novice list."),
+        help_text=_(
+            "Novices with high priority are more likely"
+            " to appear on the top of the novice list."
+        ),
     )
 
     # Accessibility details
-    suspended_until = models.DateTimeField(null=True, blank=True, default=None, verbose_name=_("Suspended until"))
+    suspended_until = models.DateTimeField(
+        null=True, blank=True, default=None, verbose_name=_("Suspended until")
+    )
     is_frozen = models.BooleanField(default=False, verbose_name=_("Frozen status"))
     is_private = models.BooleanField(default=False, verbose_name=_("Anonymous status"))
 
     # User-user relations
-    following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="+")
-    blocked = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="blocked_by")
+    following = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="+"
+    )
+    blocked = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="blocked_by"
+    )
 
     # User-entry relations
     favorite_entries = models.ManyToManyField(
         "Entry", through="EntryFavorites", related_name="favorited_by", blank=True
     )
-
-    upvoted_entries = models.ManyToManyField("Entry", through="UpvotedEntries", related_name="upvoted_by", blank=True)
-
+    upvoted_entries = models.ManyToManyField(
+        "Entry", through="UpvotedEntries", related_name="upvoted_by", blank=True
+    )
     downvoted_entries = models.ManyToManyField(
         "Entry", through="DownvotedEntries", related_name="downvoted_by", blank=True
     )
@@ -158,23 +186,43 @@ class Author(AbstractUser):
     allow_uncategorized = models.BooleanField(default=True)
 
     # User-topic relations
-    following_topics = models.ManyToManyField("Topic", through="TopicFollowing", related_name="followers", blank=True)
+    following_topics = models.ManyToManyField(
+        "Topic", through="TopicFollowing", related_name="followers", blank=True
+    )
 
     # Personal info
     birth_date = models.DateField(blank=True, null=True, verbose_name=_("Birth date"))
-    gender = models.CharField(max_length=2, choices=Gender.choices, default=Gender.UNKNOWN, verbose_name=_("Gender"))
+    gender = models.CharField(
+        max_length=2,
+        choices=Gender.choices,
+        default=Gender.UNKNOWN,
+        verbose_name=_("Gender"),
+    )
 
     # Preferences
-    entries_per_page = models.IntegerField(choices=EntryCount.choices, default=EntryCount.TEN)
-    topics_per_page = models.IntegerField(choices=TopicCount.choices, default=TopicCount.FIFTY)
-    message_preference = models.CharField(max_length=2, choices=MessagePref.choices, default=MessagePref.ALL_USERS)
-    pinned_entry = models.OneToOneField("Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+")
+    entries_per_page = models.IntegerField(
+        choices=EntryCount.choices, default=EntryCount.TEN
+    )
+    topics_per_page = models.IntegerField(
+        choices=TopicCount.choices, default=TopicCount.FIFTY
+    )
+    message_preference = models.CharField(
+        max_length=2, choices=MessagePref.choices, default=MessagePref.ALL_USERS
+    )
+    pinned_entry = models.OneToOneField(
+        "Entry", blank=True, null=True, on_delete=models.SET_NULL, related_name="+"
+    )
     allow_receipts = models.BooleanField(default=True)
     allow_site_announcements = models.BooleanField(default=True)
     theme = models.CharField(choices=Theme.choices, default=Theme.LIGHT, max_length=10)
 
     # Other
-    karma = models.DecimalField(default=Decimal(0), max_digits=7, decimal_places=2, verbose_name=_("Karma points"))
+    karma = models.DecimalField(
+        default=Decimal(0),
+        max_digits=7,
+        decimal_places=2,
+        verbose_name=_("Karma points"),
+    )
     badges = models.ManyToManyField("Badge", blank=True, verbose_name=_("Badges"))
 
     announcement_read = models.DateTimeField(auto_now_add=True)
@@ -211,9 +259,9 @@ class Author(AbstractUser):
 
     def delete(self, *args, **kwargs):
         # Archive conversations of target users.
-        targeted_conversations = self.targeted_conversations.select_related("holder", "target").prefetch_related(
-            "messages"
-        )
+        targeted_conversations = self.targeted_conversations.select_related(
+            "holder", "target"
+        ).prefetch_related("messages")
 
         for conversation in targeted_conversations:
             conversation.archive()
@@ -242,7 +290,11 @@ class Author(AbstractUser):
                 )
             ),
             last_read_at=F("topicfollowing__read_at"),
-            is_read=Case(When(Q(count__gt=0), then=False), default=True, output_field=BooleanField()),
+            is_read=Case(
+                When(Q(count__gt=0), then=False),
+                default=True,
+                output_field=BooleanField(),
+            ),
         )
 
     def get_entry_count_by_threshold(self, **timedelta_kwargs):
@@ -254,21 +306,31 @@ class Author(AbstractUser):
 
     @usercache
     def get_best_entries(self):
-        return tuple(self.entry_set(manager="objects_published").filter(vote_rate__gt=0).order_by("-vote_rate")[:50])
+        return tuple(
+            self.entry_set(manager="objects_published")
+            .filter(vote_rate__gt=0)
+            .order_by("-vote_rate")[:50]
+        )
 
     def has_exceeded_vote_limit(self, against=None):
         """Check vote limits. This is done before the vote is registered."""
 
         # Notice: couldn't filter on unions, so both models are explicitly written.
-        h24 = {"date_created__gte": time_threshold(hours=24)}  # Filter objects that has been created in last 24 hours.
+        h24 = {
+            "date_created__gte": time_threshold(hours=24)
+        }  # Filter objects that has been created in last 24 hours.
 
         upvoted = UpvotedEntries.objects.filter(author=self)
         downvoted = DownvotedEntries.objects.filter(author=self)
 
-        daily_vote_count = upvoted.filter(**h24).count() + downvoted.filter(**h24).count()
+        daily_vote_count = (
+            upvoted.filter(**h24).count() + downvoted.filter(**h24).count()
+        )
 
         if daily_vote_count >= settings.DAILY_VOTE_LIMIT:
-            return True, gettext("you have used up all the vote claims you have today. try again later.")
+            return True, gettext(
+                "you have used up all the vote claims you have today. try again later."
+            )
 
         if against:
             upvoted_against = upvoted.filter(entry__author=against).count()
@@ -276,14 +338,21 @@ class Author(AbstractUser):
             total_votes_against = upvoted_against + downvoted_against
 
             if total_votes_against >= settings.TOTAL_VOTE_LIMIT_PER_USER:
-                return True, gettext("sorry, you have been haunting this person for a long time.")
+                return True, gettext(
+                    "sorry, you have been haunting this person for a long time."
+                )
 
             daily_upvoted_against = upvoted.filter(entry__author=against, **h24).count()
-            daily_downvoted_against = downvoted.filter(entry__author=against, **h24).count()
+            daily_downvoted_against = downvoted.filter(
+                entry__author=against, **h24
+            ).count()
             daily_votes_against = daily_upvoted_against + daily_downvoted_against
 
             if daily_votes_against >= settings.DAILY_VOTE_LIMIT_PER_USER:
-                return True, gettext("this person has taken enough of your votes today, maybe try other users?")
+                return True, gettext(
+                    "this person has taken enough of"
+                    " your votes today, maybe try other users?"
+                )
 
         return False, None
 
@@ -297,12 +366,18 @@ class Author(AbstractUser):
         if (
             (recipient.is_frozen or recipient.is_private or (not recipient.is_active))
             or (recipient.message_preference == Author.MessagePref.DISABLED)
-            or (self.is_novice and recipient.message_preference == Author.MessagePref.AUTHOR_ONLY)
+            or (
+                self.is_novice
+                and recipient.message_preference == Author.MessagePref.AUTHOR_ONLY
+            )
             or (
                 recipient.message_preference == Author.MessagePref.FOLLOWING_ONLY
                 and not recipient.following.filter(pk=self.pk).exists()
             )
-            or (recipient.blocked.filter(pk=self.pk).exists() or self.blocked.filter(pk=recipient.pk).exists())
+            or (
+                recipient.blocked.filter(pk=self.pk).exists()
+                or self.blocked.filter(pk=recipient.pk).exists()
+            )
         ):
             return False
 
@@ -318,14 +393,21 @@ class Author(AbstractUser):
         latest_entry_date = self.last_entry_date
 
         if latest_entry_date is not None:
-            interval = settings.NOVICE_ENTRY_INTERVAL if self.is_novice else settings.AUTHOR_ENTRY_INTERVAL
+            interval = (
+                settings.NOVICE_ENTRY_INTERVAL
+                if self.is_novice
+                else settings.AUTHOR_ENTRY_INTERVAL
+            )
             delta = timezone.now() - latest_entry_date
+
             if delta <= timezone.timedelta(seconds=interval):
                 remaining = interval - delta.seconds
                 return (
                     ngettext(
-                        "you are sending entries too frequently. try again in a second.",
-                        "you are sending entries too frequently. try again in %(remaining)d seconds.",
+                        "you are sending entries too frequently."
+                        " try again in a second.",
+                        "you are sending entries too frequently."
+                        " try again in %(remaining)d seconds.",
                         remaining,
                     )
                     % {"remaining": remaining}
@@ -341,7 +423,10 @@ class Author(AbstractUser):
         gen_start_date = parse_date_or_none(settings.FIRST_GENERATION_DATE)
 
         if gen_start_date is None:
-            raise ValueError("Invalid configuration for 'FIRST_GENERATION_DATE'. Please provide a valid date.")
+            raise ValueError(
+                "Invalid configuration for 'FIRST_GENERATION_DATE'."
+                " Please provide a valid date."
+            )
 
         delta = self.date_joined - gen_start_date
         return math.ceil((delta.days / settings.GENERATION_GAP_DAYS) or 1)
@@ -364,8 +449,15 @@ class Author(AbstractUser):
 
     @property
     def is_karma_eligible(self):
-        """Eligible users will be able to influence other users' karma points by voting."""
-        return not (self.is_novice or self.is_suspended or self.karma <= settings.KARMA_BOUNDARY_LOWER)
+        """
+        Eligible users will be able to influence other
+        users' karma points by voting.
+        """
+        return not (
+            self.is_novice
+            or self.is_suspended
+            or self.karma <= settings.KARMA_BOUNDARY_LOWER
+        )
 
     @cached_property
     @usercache
@@ -391,12 +483,23 @@ class Author(AbstractUser):
     @usercache
     def last_entry_date(self):
         with suppress(ObjectDoesNotExist):
-            return self.entry_set(manager="objects_published").latest("date_created").date_created
+            return (
+                self.entry_set(manager="objects_published")
+                .latest("date_created")
+                .date_created
+            )
 
         return None
 
     def invalidate_entry_counts(self):
-        names = ("entry_count", "entry_count_month", "entry_count_week", "entry_count_day", "last_entry_date")
+        names = (
+            "entry_count",
+            "entry_count_month",
+            "entry_count_week",
+            "entry_count_day",
+            "last_entry_date",
+        )
+
         for name in names:
             key = f"usercache_{name}_context__<lambda>_usr{self.pk}"
             cache.delete(key)
@@ -417,11 +520,15 @@ class Author(AbstractUser):
 
     @property
     def email_confirmed(self):
-        return not self.userverification_set.filter(expiration_date__gte=time_threshold(hours=24)).exists()
+        return not self.userverification_set.filter(
+            expiration_date__gte=time_threshold(hours=24)
+        ).exists()
 
     @property
     def is_suspended(self):
-        return self.suspended_until is not None and self.suspended_until > timezone.now()
+        return (
+            self.suspended_until is not None and self.suspended_until > timezone.now()
+        )
 
     @property
     def is_accessible(self):
@@ -434,7 +541,10 @@ class Author(AbstractUser):
     @cached_property
     def unread_message_count(self):
         return self.conversations.aggregate(
-            count=Count("messages", filter=Q(messages__recipient=self, messages__read_at__isnull=True))
+            count=Count(
+                "messages",
+                filter=Q(messages__recipient=self, messages__read_at__isnull=True),
+            )
         )["count"]
 
     @cached_property
@@ -443,22 +553,29 @@ class Author(AbstractUser):
         """
         Find counts for unread topics and announcements (displayed in header when apt).
 
-        This query seems to be too expensive to be called in every request. So it is called
-        every <timeout> seconds. In following topic list, the cache gets invalidated each
-        request, making that page fresh every time. Actions which might change this data
-        also invalidates this cache. e.g. reading an unread topic/announcement.
+        This query seems to be too expensive to be called in every request. So it is
+        called every <timeout> seconds. In following topic list, the cache gets
+        invalidated each request, making that page fresh every time. Actions which
+        might change this data also invalidates this cache. e.g. reading an unread
+        topic/announcement.
         """
 
         unread_announcements = (
             (
                 apps.get_model("dictionary.Announcement")
-                .objects.filter(notify=True, date_created__lte=timezone.now(), date_created__gte=self.announcement_read)
+                .objects.filter(
+                    notify=True,
+                    date_created__lte=timezone.now(),
+                    date_created__gte=self.announcement_read,
+                )
                 .count()
             )
             if self.allow_site_announcements
             else 0
         )
-        unread_topics = self.get_following_topics_with_receipt().aggregate(sum=Coalesce(Sum("count"), 0))["sum"]
+        unread_topics = self.get_following_topics_with_receipt().aggregate(
+            sum=Coalesce(Sum("count"), 0)
+        )["sum"]
         return {
             "sum": unread_announcements + unread_topics,
             "announcements": unread_announcements,
@@ -467,7 +584,9 @@ class Author(AbstractUser):
 
     def invalidate_unread_topic_count(self):
         """Invalidates cache of unread_topic_count, set by cached_context."""
-        return cache.delete(f"usercache_unread_topic_count_context__<lambda>_usr{self.pk}")
+        return cache.delete(
+            f"usercache_unread_topic_count_context__<lambda>_usr{self.pk}"
+        )
 
     @cached_property
     def novice_queue(self):
@@ -479,14 +598,23 @@ class Author(AbstractUser):
 
         def interqueue(user):
             active_siblings = Author.in_novice_list.annotate_activity(
-                Author.in_novice_list.exclude(pk=user.pk).filter(queue_priority=user.queue_priority)
+                Author.in_novice_list.exclude(pk=user.pk).filter(
+                    queue_priority=user.queue_priority
+                )
             ).filter(is_active_today=True)
 
             if active_siblings.exists():
-                return active_siblings.filter(application_date__lt=user.application_date).count() + 1
+                return (
+                    active_siblings.filter(
+                        application_date__lt=user.application_date
+                    ).count()
+                    + 1
+                )
             return 1
 
-        equal_and_superior = Author.in_novice_list.exclude(pk=self.pk).filter(queue_priority__gte=self.queue_priority)
+        equal_and_superior = Author.in_novice_list.exclude(pk=self.pk).filter(
+            queue_priority__gte=self.queue_priority
+        )
 
         if equal_and_superior.exists():
             superior = equal_and_superior.filter(queue_priority__gt=self.queue_priority)
@@ -503,16 +631,21 @@ class Memento(models.Model):
     patient = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="+")
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["holder", "patient"], name="unique_memento")]
+        constraints = [
+            models.UniqueConstraint(fields=["holder", "patient"], name="unique_memento")
+        ]
 
     def __str__(self):
-        return f"{self.__class__.__name__}#{self.id}, from {self.holder} about {self.patient}"
+        return (
+            f"{self.__class__.__name__}#{self.id},"
+            f" from {self.holder} about {self.patient}"
+        )
 
 
 class UserVerification(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     verification_token = models.CharField(max_length=128)
-    new_email = models.EmailField(null=True, blank=True)  # new e-mail if it is subject to change
+    new_email = models.EmailField(null=True, blank=True)  # (if it is subject to change)
     expiration_date = models.DateTimeField()
 
     def save(self, *args, **kwargs):
@@ -527,14 +660,22 @@ class AccountTerminationQueue(models.Model):
         FROZEN = "FZ", _("freeze account")
 
     author = models.OneToOneField(Author, on_delete=models.CASCADE)
-    state = models.CharField(max_length=2, choices=State.choices, default=State.FROZEN, verbose_name=_("last words?"))
+    state = models.CharField(
+        max_length=2,
+        choices=State.choices,
+        default=State.FROZEN,
+        verbose_name=_("last words?"),
+    )
     termination_date = models.DateTimeField(null=True, editable=False)
     date_created = models.DateTimeField(auto_now_add=True)
 
     objects = AccountTerminationQueueManager()
 
     def __str__(self):
-        return f"{self.author}, status={self.state} to be terminated after: {self.termination_date or 'N/A'}"
+        return (
+            f"{self.author}, status={self.state} to be"
+            f" terminated after: {self.termination_date or 'N/A'}"
+        )
 
     def save(self, *args, **kwargs):
         created = self.pk is None
@@ -562,7 +703,8 @@ class Badge(models.Model):
         blank=True,
         verbose_name=_("Link"),
         help_text=_(
-            "The link to follow when users click the badge. If no link is provided, related topic will be used."
+            "The link to follow when users click the badge."
+            " If no link is provided, related topic will be used."
         ),
     )
 
@@ -590,16 +732,26 @@ class BackUp(models.Model):
             return
 
         serializer = ArchiveSerializer()
-        entries = self.author.entry_set(manager="objects_published").select_related("topic")
+        entries = self.author.entry_set(manager="objects_published").select_related(
+            "topic"
+        )
         conversations = self.author.conversationarchive_set.all()
 
-        entries_text = serializer.serialize(entries, fields=("topic__title", "content", "date_created", "date_edited"))
+        entries_text = serializer.serialize(
+            entries, fields=("topic__title", "content", "date_created", "date_edited")
+        )
         conversations_text = (
             "[%s]"
-            % "".join('{"target": "%s", "messages": %s},' % (item.target, item.messages) for item in conversations)[:-1]
+            % "".join(
+                '{"target": "%s", "messages": %s},' % (item.target, item.messages)
+                for item in conversations
+            )[:-1]
         )  # Formatting already-serialized data ([:-1] removes the trailing comma).
 
-        content = '{"entries": %s, "conversations": %s}' % (entries_text, conversations_text)
+        content = '{"entries": %s, "conversations": %s}' % (
+            entries_text,
+            conversations_text,
+        )
         self.is_ready = True
         self.file.save("backup", ContentFile(content.encode("utf-8")), save=True)
 

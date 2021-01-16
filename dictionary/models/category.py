@@ -13,7 +13,12 @@ from dictionary.utils.validators import validate_category_name
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=24, unique=True, verbose_name=_("Name"), validators=[validate_category_name])
+    name = models.CharField(
+        max_length=24,
+        unique=True,
+        verbose_name=_("Name"),
+        validators=[validate_category_name],
+    )
     slug = models.SlugField(editable=False)
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
     is_pseudo = models.BooleanField(
@@ -61,20 +66,37 @@ class Suggestion(models.Model):
         POSITIVE = 1, _("Positive")
         NEGATIVE = -1, _("Negative")
 
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, verbose_name=_("Author"))
-    topic = models.ForeignKey(
-        "Topic", on_delete=models.CASCADE, related_name="category_suggestions", verbose_name=_("Topic")
+    author = models.ForeignKey(
+        "Author", on_delete=models.CASCADE, verbose_name=_("Author")
     )
-    category = models.ForeignKey("Category", on_delete=models.CASCADE, related_name="+", verbose_name=_("Channel"))
+    topic = models.ForeignKey(
+        "Topic",
+        on_delete=models.CASCADE,
+        related_name="category_suggestions",
+        verbose_name=_("Topic"),
+    )
+    category = models.ForeignKey(
+        "Category",
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name=_("Channel"),
+    )
 
-    direction = models.SmallIntegerField(choices=Direction.choices, verbose_name=_("Direction"))
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    direction = models.SmallIntegerField(
+        choices=Direction.choices, verbose_name=_("Direction")
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name=_("Date created")
+    )
 
     class Meta:
         verbose_name = _("suggestion")
         verbose_name_plural = _("suggestions")
         constraints = [
-            UniqueConstraint(fields=["author", "topic", "category"], name="unique_category_suggestion"),
+            UniqueConstraint(
+                fields=["author", "topic", "category"],
+                name="unique_category_suggestion",
+            ),
         ]
 
     def __str__(self):
@@ -89,9 +111,9 @@ class Suggestion(models.Model):
         self.register()
 
     def register(self):
-        rate = self.__class__.objects.filter(topic=self.topic, category=self.category).aggregate(
-            rate=Coalesce(Sum("direction"), 0)
-        )["rate"]
+        rate = self.__class__.objects.filter(
+            topic=self.topic, category=self.category
+        ).aggregate(rate=Coalesce(Sum("direction"), 0))["rate"]
 
         exists = self.topic.category.filter(pk=self.category.pk).exists()
 

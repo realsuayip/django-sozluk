@@ -14,7 +14,9 @@ class AnnouncementSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Announcement.objects.filter(date_created__lte=timezone.now()).order_by("-pk")
+        return Announcement.objects.filter(date_created__lte=timezone.now()).order_by(
+            "-pk"
+        )
 
     def lastmod(self, obj):
         return obj.date_edited or obj.date_created
@@ -66,7 +68,8 @@ class StaticCategorySiteMap(CategorySiteMap):
         return [
             category
             for category in settings.NON_DB_CATEGORIES
-            if category not in settings.LOGIN_REQUIRED_CATEGORIES and category != "userstats"
+            if category not in settings.LOGIN_REQUIRED_CATEGORIES
+            and category != "userstats"
         ]
 
     def location(self, item):

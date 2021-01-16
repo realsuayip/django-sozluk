@@ -23,7 +23,9 @@ class SuspensionFilter(SimpleListFilter):
         if self.value() == "yes":
             return queryset.filter(suspended_until__gt=timezone.now())
         if self.value() == "no":
-            return queryset.filter(Q(suspended_until__lt=timezone.now()) | Q(suspended_until__isnull=True))
+            return queryset.filter(
+                Q(suspended_until__lt=timezone.now()) | Q(suspended_until__isnull=True)
+            )
 
         return None
 
@@ -32,7 +34,14 @@ class SuspensionFilter(SimpleListFilter):
 class AuthorAdmin(UserAdmin):
     search_fields = ("username",)
     autocomplete_fields = ("badges",)
-    list_display = ("username", "email", "is_active", "is_novice", "karma", "date_joined")
+    list_display = (
+        "username",
+        "email",
+        "is_active",
+        "is_novice",
+        "karma",
+        "date_joined",
+    )
     ordering = ("-date_joined",)
 
     list_filter = (
@@ -52,12 +61,37 @@ class AuthorAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("username", "karma", "badges")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "gender", "birth_date")},),
-        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
-        (_("Accessibility details"), {"fields": ("is_frozen", "is_private", "suspended_until")}),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name", "email", "gender", "birth_date")},
+        ),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        (
+            _("Accessibility details"),
+            {"fields": ("is_frozen", "is_private", "suspended_until")},
+        ),
         (
             _("Novice status"),
-            {"fields": ("is_novice", "application_status", "application_date", "last_activity", "queue_priority")},
+            {
+                "fields": (
+                    "is_novice",
+                    "application_status",
+                    "application_date",
+                    "last_activity",
+                    "queue_priority",
+                )
+            },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
@@ -83,14 +117,26 @@ class AuthorAdmin(UserAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path("novices/list/", self.admin_site.admin_view(NoviceList.as_view()), name="novice_list"),
+            path(
+                "novices/list/",
+                self.admin_site.admin_view(NoviceList.as_view()),
+                name="novice_list",
+            ),
             path(
                 "novices/lookup/<str:username>/",
                 self.admin_site.admin_view(NoviceLookup.as_view()),
                 name="novice_lookup",
             ),
-            path("actions/suspend/", self.admin_site.admin_view(SuspendUser.as_view()), name="suspend-user"),
-            path("actions/unsuspend/", self.admin_site.admin_view(UnsuspendUser.as_view()), name="unsuspend-user"),
+            path(
+                "actions/suspend/",
+                self.admin_site.admin_view(SuspendUser.as_view()),
+                name="suspend-user",
+            ),
+            path(
+                "actions/unsuspend/",
+                self.admin_site.admin_view(UnsuspendUser.as_view()),
+                name="unsuspend-user",
+            ),
         ]
 
         return custom_urls + urls

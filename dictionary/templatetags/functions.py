@@ -52,7 +52,11 @@ def get_external_urls():
 @register.simple_tag
 def get_topic_suggestions(user, topic):
     def exists(direction):
-        return Exists(Suggestion.objects.filter(direction=direction, author=user, topic=topic, category=OuterRef("pk")))
+        return Exists(
+            Suggestion.objects.filter(
+                direction=direction, author=user, topic=topic, category=OuterRef("pk")
+            )
+        )
 
     return Category.objects_all.annotate(up=exists(1), down=exists(-1))
 
@@ -108,7 +112,11 @@ def print_entry_class(context):
             classes.append("owner")
         if entry.author.is_private:
             classes.append("private")
-        if context.get("show_comments") and user.has_perm("dictionary.can_comment") and user.is_accessible:
+        if (
+            context.get("show_comments")
+            and user.has_perm("dictionary.can_comment")
+            and user.is_accessible
+        ):
             classes.append("commentable")
 
     if gap := context.get("gap"):
@@ -120,14 +128,23 @@ def print_entry_class(context):
 @register.inclusion_tag("dictionary/includes/header_link.html", takes_context=True)
 def render_header_link(context, slug):
     """
-    Renders non-database header links (renders nothing if given category does not exist.)
+    Renders non-database header links
+    Renders nothing if given category does not exist.
     """
 
     details = settings.NON_DB_CATEGORIES_META.get(slug)
 
-    if (slug in settings.LOGIN_REQUIRED_CATEGORIES and not context["user"].is_authenticated) or details is None:
+    if (
+        slug in settings.LOGIN_REQUIRED_CATEGORIES
+        and not context["user"].is_authenticated
+    ) or details is None:
         return {"unauthorized": True}
 
     frame = context.get("left_frame") or context.get("left_frame_fallback")
     is_active = slug == frame.slug if hasattr(frame, "slug") else False
-    return {"hlink_slug": slug, "hlink_safename": details[0], "hlink_description": details[1], "is_active": is_active}
+    return {
+        "hlink_slug": slug,
+        "hlink_safename": details[0],
+        "hlink_description": details[1],
+        "is_active": is_active,
+    }

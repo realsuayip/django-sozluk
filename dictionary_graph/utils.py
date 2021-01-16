@@ -14,7 +14,9 @@ def login_required(func):
     @wraps(func)
     def decorator(_root, info, *args, **kwargs):
         if not info.context.user.is_authenticated:
-            raise PermissionDenied(_("actually, you may benefit from this feature by logging in."))
+            raise PermissionDenied(
+                _("actually, you may benefit from this feature by logging in.")
+            )
         return func(_root, info, *args, **kwargs)
 
     return decorator
@@ -67,11 +69,17 @@ class AnonymousUserStorage:
 
     @property
     def upvoted_entries(self):
-        return VoteStorage(self.request, name="upvoted_entries", rate=settings.VOTE_RATES["anonymous"])
+        return VoteStorage(
+            self.request, name="upvoted_entries", rate=settings.VOTE_RATES["anonymous"]
+        )
 
     @property
     def downvoted_entries(self):
-        return VoteStorage(self.request, name="downvoted_entries", rate=settings.VOTE_RATES["anonymous"] * -1)
+        return VoteStorage(
+            self.request,
+            name="downvoted_entries",
+            rate=settings.VOTE_RATES["anonymous"] * -1,
+        )
 
     @property
     def is_karma_eligible(self):
@@ -79,4 +87,7 @@ class AnonymousUserStorage:
 
     def has_exceeded_vote_limit(self, **kwargs):
         # 14 = Max allowed votes - 1
-        return len(self.upvoted_entries.items) + len(self.downvoted_entries.items) > 14, None
+        return (
+            len(self.upvoted_entries.items) + len(self.downvoted_entries.items) > 14,
+            None,
+        )

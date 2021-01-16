@@ -19,7 +19,15 @@ class Command(BaseDebugCommand):
             topics = tuple(Topic.objects.filter(pk__range=(_range[0], _range[1])))
 
         while size > 0:
-            topic = random.choice(topics) if topics is not None else Topic.objects.order_by("?").first()  # nosec
+            topic = (
+                random.choice(topics)
+                if topics is not None
+                else Topic.objects.order_by("?").first()
+            )  # nosec
             author = Author.objects.filter(is_novice=False).order_by("?").first()
-            Entry.objects.create(topic=topic, author=author, content=f"{topic}, {author}, {timezone.now()}")
+            Entry.objects.create(
+                topic=topic,
+                author=author,
+                content=f"{topic}, {author}, {timezone.now()}",
+            )
             size -= 1

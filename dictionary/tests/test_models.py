@@ -31,18 +31,28 @@ class AuthorModelTests(TestCase):
         cls.generic_superuser = Author.objects.create(
             username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
         )
-        cls.author = Author.objects.create(username="user", email="0", is_active=True, is_novice=False)
+        cls.author = Author.objects.create(
+            username="user", email="0", is_active=True, is_novice=False
+        )
         cls.topic = Topic.objects.create_topic("test_topic")
         cls.entry_base = {"topic": cls.topic, "author": cls.author}
 
     def test_profile_entry_counts(self):
         Entry.objects.create(**self.entry_base)  # created now (today)
         # dates to be mocked for auto now add field 'date_created'
-        mock_31 = timezone.now() - datetime.timedelta(minutes=43201)  # month upper limit
-        mock_30 = timezone.now() - datetime.timedelta(minutes=43199)  # created in 1 month period
-        mock_14 = timezone.now() - datetime.timedelta(minutes=20159)  # created in 2 weeks period
+        mock_31 = timezone.now() - datetime.timedelta(
+            minutes=43201
+        )  # month upper limit
+        mock_30 = timezone.now() - datetime.timedelta(
+            minutes=43199
+        )  # created in 1 month period
+        mock_14 = timezone.now() - datetime.timedelta(
+            minutes=20159
+        )  # created in 2 weeks period
         mock_8 = timezone.now() - datetime.timedelta(minutes=10081)  # week upper limit
-        mock_7 = timezone.now() - datetime.timedelta(minutes=10079)  # created in 1 week period
+        mock_7 = timezone.now() - datetime.timedelta(
+            minutes=10079
+        )  # created in 1 week period
         mock_2 = timezone.now() - datetime.timedelta(minutes=1441)  # today upper limit
         mock_1 = timezone.now() - datetime.timedelta(minutes=1439)  # created today
 
@@ -86,7 +96,9 @@ class AuthorModelTests(TestCase):
         in one request; we need to delete cached_property to simulate that.
         """
 
-        novice = Author.objects.create(username="noviceuser", email="noviceuser", is_active=True, is_novice=True)
+        novice = Author.objects.create(
+            username="noviceuser", email="noviceuser", is_active=True, is_novice=True
+        )
         entry_base = {"topic": self.topic, "author": novice, "content": "123"}
 
         # Initial status
@@ -119,23 +131,41 @@ class AuthorModelTests(TestCase):
         self.assertIsNone(novice.application_date)
 
     def test_message_preferences(self):
-        some_author = Author.objects.create(username="author", email="3", is_novice=False, is_active=True)
-        some_novice = Author.objects.create(username="novice", email="4", is_active=True)
-        frozen_account = Author.objects.create(username="frozen", email="5", is_frozen=True, is_active=True)
-        private_account = Author.objects.create(username="private", email="6", is_private=True, is_active=True)
+        some_author = Author.objects.create(
+            username="author", email="3", is_novice=False, is_active=True
+        )
+        some_novice = Author.objects.create(
+            username="novice", email="4", is_active=True
+        )
+        frozen_account = Author.objects.create(
+            username="frozen", email="5", is_frozen=True, is_active=True
+        )
+        private_account = Author.objects.create(
+            username="private", email="6", is_private=True, is_active=True
+        )
         inactive_account = Author.objects.create(username="inactive", email="7")
 
         # ALL users (database default)
-        can_msg_sent_by_novice_public = Message.objects.compose(some_novice, self.author, "test")
-        can_msg_sent_by_author_public = Message.objects.compose(some_author, self.author, "test")
+        can_msg_sent_by_novice_public = Message.objects.compose(
+            some_novice, self.author, "test"
+        )
+        can_msg_sent_by_author_public = Message.objects.compose(
+            some_author, self.author, "test"
+        )
         self.assertNotEqual(can_msg_sent_by_author_public, False)
         self.assertNotEqual(can_msg_sent_by_novice_public, False)
 
         # Disabled
         self.author.message_preference = Author.MessagePref.DISABLED
-        can_msg_sent_by_novice_disabled = Message.objects.compose(some_novice, self.author, "test-")
-        can_msg_sent_by_author_disabled = Message.objects.compose(some_author, self.author, "test-")
-        can_msg_sent_by_gsuper_disabled = Message.objects.compose(self.generic_superuser, self.author, "test")
+        can_msg_sent_by_novice_disabled = Message.objects.compose(
+            some_novice, self.author, "test-"
+        )
+        can_msg_sent_by_author_disabled = Message.objects.compose(
+            some_author, self.author, "test-"
+        )
+        can_msg_sent_by_gsuper_disabled = Message.objects.compose(
+            self.generic_superuser, self.author, "test"
+        )
         self.assertEqual(can_msg_sent_by_author_disabled, False)
         self.assertEqual(can_msg_sent_by_novice_disabled, False)
         self.assertNotEqual(can_msg_sent_by_gsuper_disabled, False)
@@ -144,15 +174,21 @@ class AuthorModelTests(TestCase):
         self.author.message_preference = Author.MessagePref.AUTHOR_ONLY
         msg_sent_by_novice = Message.objects.compose(some_novice, self.author, "test")
         msg_sent_by_author = Message.objects.compose(some_author, self.author, "test")
-        msg_sent_by_gsuper = Message.objects.compose(self.generic_superuser, self.author, "test")
+        msg_sent_by_gsuper = Message.objects.compose(
+            self.generic_superuser, self.author, "test"
+        )
         self.assertNotEqual(msg_sent_by_author, False)
         self.assertEqual(msg_sent_by_novice, False)
         self.assertNotEqual(msg_sent_by_gsuper, False)
 
         # Following only
         self.author.message_preference = Author.MessagePref.FOLLOWING_ONLY
-        msg_sent_by_non_follower = Message.objects.compose(some_author, self.author, "test")
-        msg_sent_by_gsuper = Message.objects.compose(self.generic_superuser, self.author, "test")
+        msg_sent_by_non_follower = Message.objects.compose(
+            some_author, self.author, "test"
+        )
+        msg_sent_by_gsuper = Message.objects.compose(
+            self.generic_superuser, self.author, "test"
+        )
         self.assertEqual(msg_sent_by_non_follower, False)
         self.assertNotEqual(msg_sent_by_gsuper, False)
         self.author.following.add(some_author)  # add following to send message
@@ -162,32 +198,52 @@ class AuthorModelTests(TestCase):
         # Blocking tests
         self.author.message_preference = Author.MessagePref.ALL_USERS
         self.author.blocked.add(some_author)
-        can_recieve_msg_from_blocked_user = Message.objects.compose(some_author, self.author, "test")
+        can_recieve_msg_from_blocked_user = Message.objects.compose(
+            some_author, self.author, "test"
+        )
         self.assertEqual(can_recieve_msg_from_blocked_user, False)
-        can_send_msg_to_blocked_user = Message.objects.compose(self.author, some_author, "test")
+        can_send_msg_to_blocked_user = Message.objects.compose(
+            self.author, some_author, "test"
+        )
         self.assertEqual(can_send_msg_to_blocked_user, False)
 
         self.author.blocked.add(self.generic_superuser)
-        can_recieve_msg_from_blocked_gsuper = Message.objects.compose(self.generic_superuser, self.author, "test")
+        can_recieve_msg_from_blocked_gsuper = Message.objects.compose(
+            self.generic_superuser, self.author, "test"
+        )
         self.assertNotEqual(can_recieve_msg_from_blocked_gsuper, False)
 
         # No self-messaging allowed
-        can_send_message_to_self = Message.objects.compose(self.author, self.author, "test")
+        can_send_message_to_self = Message.objects.compose(
+            self.author, self.author, "test"
+        )
         self.assertEqual(can_send_message_to_self, False)
 
         # Frozen and private accounts can't be messaged
-        can_send_message_to_frozen = Message.objects.compose(self.author, frozen_account, "test")
-        can_send_message_to_private = Message.objects.compose(self.author, private_account, "test")
-        can_send_message_to_frozen_gsuper = Message.objects.compose(self.generic_superuser, frozen_account, "test")
-        can_send_message_to_private_gsuper = Message.objects.compose(self.generic_superuser, private_account, "test")
+        can_send_message_to_frozen = Message.objects.compose(
+            self.author, frozen_account, "test"
+        )
+        can_send_message_to_private = Message.objects.compose(
+            self.author, private_account, "test"
+        )
+        can_send_message_to_frozen_gsuper = Message.objects.compose(
+            self.generic_superuser, frozen_account, "test"
+        )
+        can_send_message_to_private_gsuper = Message.objects.compose(
+            self.generic_superuser, private_account, "test"
+        )
         self.assertEqual(can_send_message_to_frozen, False)
         self.assertEqual(can_send_message_to_private, False)
         self.assertNotEqual(can_send_message_to_frozen_gsuper, False)
         self.assertNotEqual(can_send_message_to_private_gsuper, False)
 
         # Inactive accounts can't be messaged
-        can_send_message_to_inactive = Message.objects.compose(self.author, inactive_account, "test")
-        can_send_message_to_inactive_gsuper = Message.objects.compose(self.generic_superuser, inactive_account, "test")
+        can_send_message_to_inactive = Message.objects.compose(
+            self.author, inactive_account, "test"
+        )
+        can_send_message_to_inactive_gsuper = Message.objects.compose(
+            self.generic_superuser, inactive_account, "test"
+        )
         self.assertEqual(can_send_message_to_inactive, False)
         self.assertNotEqual(can_send_message_to_inactive_gsuper, False)
 
@@ -263,7 +319,9 @@ class EntryModelTests(TestCase):
         topic_with_no_ownership = Topic.objects.create_topic("test_topic2")
         self.assertIsNone(topic_with_no_ownership.created_by)
 
-        new_entry = Entry.objects.create(author=self.author, topic=topic_with_no_ownership, is_draft=True)
+        new_entry = Entry.objects.create(
+            author=self.author, topic=topic_with_no_ownership, is_draft=True
+        )
         self.assertIsNone(topic_with_no_ownership.created_by)
 
         new_entry.is_draft = False
@@ -316,7 +374,9 @@ class MementoModelTests(TransactionTestCase):
 
     def test_str(self):
         memento = Memento.objects.create(holder=self.author_1, patient=self.author_2)
-        self.assertEqual(str(memento), f"Memento#1, from {self.author_1} about {self.author_2}")
+        self.assertEqual(
+            str(memento), f"Memento#1, from {self.author_1} about {self.author_2}"
+        )
 
 
 class UserVerificationModelTests(TestCase):
@@ -325,8 +385,12 @@ class UserVerificationModelTests(TestCase):
         cls.author = Author.objects.create(username="user", email="0")
 
     def test_no_multiple_verifications(self):
-        UserVerification.objects.create(author=self.author, expiration_date=timezone.now())
-        latest_uv = UserVerification.objects.create(author=self.author, expiration_date=timezone.now())
+        UserVerification.objects.create(
+            author=self.author, expiration_date=timezone.now()
+        )
+        latest_uv = UserVerification.objects.create(
+            author=self.author, expiration_date=timezone.now()
+        )
         list_uv_for_author = UserVerification.objects.filter(author=self.author)
         self.assertEqual(list_uv_for_author.count(), 1)
         self.assertEqual(latest_uv, list_uv_for_author.first())
@@ -335,7 +399,8 @@ class UserVerificationModelTests(TestCase):
         # For profile page email change status indicator
         # Create pending email confirmation
         uv_author = UserVerification.objects.create(
-            author=self.author, expiration_date=timezone.now() + datetime.timedelta(hours=12)
+            author=self.author,
+            expiration_date=timezone.now() + datetime.timedelta(hours=12),
         )
         self.assertEqual(self.author.email_confirmed, False)
 
@@ -345,7 +410,8 @@ class UserVerificationModelTests(TestCase):
 
         # There is a email confirmation sent, but it has been expired
         UserVerification.objects.create(
-            author=self.author, expiration_date=timezone.now() - datetime.timedelta(hours=30)
+            author=self.author,
+            expiration_date=timezone.now() - datetime.timedelta(hours=30),
         )
         self.assertEqual(self.author.email_confirmed, True)
 
@@ -356,8 +422,12 @@ class MessageModelTests(TestCase):
         cls.generic_superuser = Author.objects.create(
             username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
         )
-        cls.author_1 = Author.objects.create(username="user1", email="1", is_active=True)
-        cls.author_2 = Author.objects.create(username="user2", email="2", is_active=True)
+        cls.author_1 = Author.objects.create(
+            username="user1", email="1", is_active=True
+        )
+        cls.author_2 = Author.objects.create(
+            username="user2", email="2", is_active=True
+        )
 
     def test_read_at_time(self):
         some_message = Message.objects.compose(self.author_1, self.author_2, "body")
@@ -376,8 +446,12 @@ class ConversationModelTests(TestCase):
         cls.generic_superuser = Author.objects.create(
             username=settings.GENERIC_SUPERUSER_USERNAME, email="gsu", is_active=True
         )
-        cls.author_1 = Author.objects.create(username="user1", email="1", is_active=True)
-        cls.author_2 = Author.objects.create(username="user2", email="2", is_active=True)
+        cls.author_1 = Author.objects.create(
+            username="user1", email="1", is_active=True
+        )
+        cls.author_2 = Author.objects.create(
+            username="user2", email="2", is_active=True
+        )
 
     def test_conversation_creation_on_messaging(self):
         # Check initial status
@@ -385,21 +459,29 @@ class ConversationModelTests(TestCase):
         self.assertEqual(conversation_count, 0)
 
         # A conversation started
-        some_msg = Message.objects.compose(self.author_1, self.author_2, "gelmiyorsun artık günah çıkarmaya?")
+        some_msg = Message.objects.compose(
+            self.author_1, self.author_2, "gelmiyorsun artık günah çıkarmaya?"
+        )
 
         conversation_count = Conversation.objects.all().count()
         self.assertEqual(conversation_count, 2)
 
         # Get that conversation and check if the previous message is in it
-        current_conversation_1_2 = Conversation.objects.get(holder=self.author_1, target=self.author_2)
-        current_conversation_2_1 = Conversation.objects.get(holder=self.author_2, target=self.author_1)
+        current_conversation_1_2 = Conversation.objects.get(
+            holder=self.author_1, target=self.author_2
+        )
+        current_conversation_2_1 = Conversation.objects.get(
+            holder=self.author_2, target=self.author_1
+        )
         self.assertIn(some_msg, current_conversation_1_2.messages.all())
         self.assertIn(some_msg, current_conversation_2_1.messages.all())
 
         # Reply message, check also if that message in conversation and check no extra conversation is created
         # for it (it should append to newly created conversation)
 
-        some_other_msg = Message.objects.compose(self.author_2, self.author_1, "işlemiyorum ki, evdeyim hep.")
+        some_other_msg = Message.objects.compose(
+            self.author_2, self.author_1, "işlemiyorum ki, evdeyim hep."
+        )
         conversation_count = Conversation.objects.all().count()
         self.assertEqual(conversation_count, 2)
         self.assertIn(some_other_msg, current_conversation_1_2.messages.all())
@@ -412,21 +494,35 @@ class ConversationModelTests(TestCase):
         self.assertEqual(self.author_2, current_conversation_1_2.target)
 
     def test_last_message(self):
-        some_msg = Message.objects.compose(self.author_1, self.author_2, "baapoçun çen?!!")
-        current_conversation_1_2 = Conversation.objects.get(holder=self.author_1, target=self.author_2)
-        current_conversation_2_1 = Conversation.objects.get(holder=self.author_2, target=self.author_1)
+        some_msg = Message.objects.compose(
+            self.author_1, self.author_2, "baapoçun çen?!!"
+        )
+        current_conversation_1_2 = Conversation.objects.get(
+            holder=self.author_1, target=self.author_2
+        )
+        current_conversation_2_1 = Conversation.objects.get(
+            holder=self.author_2, target=self.author_1
+        )
         self.assertEqual(some_msg, current_conversation_1_2.last_message)
         self.assertEqual(some_msg, current_conversation_2_1.last_message)
 
-        time.sleep(0.01)  # apparently auto_now_add fields will be exactly the same in the same block.
-        some_other_msg = Message.objects.compose(self.author_1, self.author_2, "ya bi sktr git allah allah")
+        time.sleep(
+            0.01
+        )  # apparently auto_now_add fields will be exactly the same in the same block.
+        some_other_msg = Message.objects.compose(
+            self.author_1, self.author_2, "ya bi sktr git allah allah"
+        )
         self.assertEqual(some_other_msg, current_conversation_1_2.last_message)
         self.assertEqual(some_other_msg, current_conversation_2_1.last_message)
 
     def test_str(self):
         Message.objects.compose(self.author_1, self.author_2, "baapoçun çen?!!")
-        current_conversation = Conversation.objects.get(holder=self.author_1, target=self.author_2)
-        self.assertEqual(str(current_conversation), "<Conversation> holder-> user1, target-> user2")
+        current_conversation = Conversation.objects.get(
+            holder=self.author_1, target=self.author_2
+        )
+        self.assertEqual(
+            str(current_conversation), "<Conversation> holder-> user1, target-> user2"
+        )
 
 
 class GeneralReportModelTest(TestCase):

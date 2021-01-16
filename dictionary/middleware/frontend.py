@@ -28,7 +28,12 @@ class MobileDetectionMiddleware:
         response = self.get_response(request)
 
         if request.user.is_authenticated and get_theme_from_cookie(request) != theme:
-            response.set_cookie("theme", theme, samesite="Lax", expires=timezone.now() + timezone.timedelta(days=90))
+            response.set_cookie(
+                "theme",
+                theme,
+                samesite="Lax",
+                expires=timezone.now() + timezone.timedelta(days=90),
+            )
 
         # Code to be executed for each request/response after
         # the view is called.
@@ -46,5 +51,7 @@ class LeftFrameMiddleware:
         return response
 
     def process_template_response(self, request, response):
-        response.context_data["left_frame"] = lf_proxy(request, response) if not request.is_mobile else {}
+        response.context_data["left_frame"] = (
+            lf_proxy(request, response) if not request.is_mobile else {}
+        )
         return response

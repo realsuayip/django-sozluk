@@ -14,7 +14,15 @@ class TopicAdmin(admin.ModelAdmin):
         (None, {"fields": ("title", "category", "mirrors")}),
         (
             _("Accessibility settings"),
-            {"fields": ("allow_suggestions", "is_pinned", "is_banned", "is_censored", "is_ama")},
+            {
+                "fields": (
+                    "allow_suggestions",
+                    "is_pinned",
+                    "is_banned",
+                    "is_censored",
+                    "is_ama",
+                )
+            },
         ),
         (_("Metadata"), {"fields": ("created_by", "date_created")}),
         (
@@ -57,7 +65,13 @@ class TopicAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        custom_urls = [path("actions/move/", self.admin_site.admin_view(TopicMove.as_view()), name="topic-move")]
+        custom_urls = [
+            path(
+                "actions/move/",
+                self.admin_site.admin_view(TopicMove.as_view()),
+                name="topic-move",
+            )
+        ]
         return custom_urls + urls
 
     # Custom permissions for action | pylint: disable=R0201
@@ -80,7 +94,11 @@ class TopicAdmin(admin.ModelAdmin):
 @admin.register(Wish)
 class WishAdmin(admin.ModelAdmin):
     list_display = ("author", "topic", "hint", "date_created")
-    list_filter = (("date_created", DateFieldListFilter), ("hint", EmptyFieldListFilter), "author__is_novice")
+    list_filter = (
+        ("date_created", DateFieldListFilter),
+        ("hint", EmptyFieldListFilter),
+        "author__is_novice",
+    )
     search_fields = ("author__username", "topic__title")
 
     def has_change_permission(self, request, obj=None):

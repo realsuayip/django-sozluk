@@ -23,7 +23,14 @@ class EntryAdmin(admin.ModelAdmin):
         (_("Metadata"), {"fields": ("is_draft", "date_created", "date_edited")}),
     )
 
-    readonly_fields = ("author", "content", "vote_rate", "is_draft", "date_created", "date_edited")
+    readonly_fields = (
+        "author",
+        "content",
+        "vote_rate",
+        "is_draft",
+        "date_created",
+        "date_edited",
+    )
 
     def has_add_permission(self, request, obj=None):
         return False

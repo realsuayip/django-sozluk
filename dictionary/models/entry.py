@@ -6,20 +6,41 @@ from django.shortcuts import reverse
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
-from dictionary.models.managers.entry import EntryManager, EntryManagerAll, EntryManagerOnlyPublished
+from dictionary.models.managers.entry import (
+    EntryManager,
+    EntryManagerAll,
+    EntryManagerOnlyPublished,
+)
 from dictionary.models.messaging import Message
 from dictionary.utils import get_generic_privateuser, get_generic_superuser, smart_lower
 from dictionary.utils.validators import validate_user_text
 
 
 class Entry(models.Model):
-    topic = models.ForeignKey("Topic", on_delete=models.CASCADE, related_name="entries", verbose_name=_("Topic"))
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, verbose_name=_("Author"))
-    content = models.TextField(db_index=True, validators=[validate_user_text], verbose_name=_("Content"))
-    date_created = models.DateTimeField(db_index=True, auto_now_add=True, verbose_name=_("Date created"))
-    date_edited = models.DateTimeField(blank=True, null=True, default=None, verbose_name=_("Date edited"))
-    vote_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal(0), verbose_name=_("Vote rate"))
-    is_draft = models.BooleanField(db_index=True, default=False, verbose_name=_("Draft status"))
+    topic = models.ForeignKey(
+        "Topic",
+        on_delete=models.CASCADE,
+        related_name="entries",
+        verbose_name=_("Topic"),
+    )
+    author = models.ForeignKey(
+        "Author", on_delete=models.CASCADE, verbose_name=_("Author")
+    )
+    content = models.TextField(
+        db_index=True, validators=[validate_user_text], verbose_name=_("Content")
+    )
+    date_created = models.DateTimeField(
+        db_index=True, auto_now_add=True, verbose_name=_("Date created")
+    )
+    date_edited = models.DateTimeField(
+        blank=True, null=True, default=None, verbose_name=_("Date edited")
+    )
+    vote_rate = models.DecimalField(
+        max_digits=7, decimal_places=2, default=Decimal(0), verbose_name=_("Vote rate")
+    )
+    is_draft = models.BooleanField(
+        db_index=True, default=False, verbose_name=_("Draft status")
+    )
 
     objects_all = EntryManagerAll()
     objects_published = EntryManagerOnlyPublished()
@@ -42,8 +63,13 @@ class Entry(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Check if the user has written 10 entries, If so make them available for novice lookup
-        if self.author.is_novice and self.author.application_status == "OH" and self.author.entry_count >= 10:
+        # Check if the user has written 10 entries,
+        # If so make them available for novice lookup
+        if (
+            self.author.is_novice
+            and self.author.application_status == "OH"
+            and self.author.entry_count >= 10
+        ):
             self.author.application_status = "PN"
             self.author.application_date = timezone.now()
             self.author.save()
@@ -74,14 +100,24 @@ class Entry(models.Model):
         self.author.invalidate_entry_counts()
         super().delete(*args, **kwargs)
 
-        if self.author.is_novice and self.author.application_status == "PN" and self.author.entry_count < 10:
+        if (
+            self.author.is_novice
+            and self.author.application_status == "PN"
+            and self.author.entry_count < 10
+        ):
             # If the entry count drops less than 10, remove user from novice lookup.
             # This does not trigger if bulk deletion made on admin panel (users can
             # only remove one entry at a time) or the entry in question has answers.
             self.author.application_status = "OH"
             self.author.application_date = None
             self.author.queue_priority = 0
-            self.author.save(update_fields=["application_status", "application_date", "queue_priority"])
+            self.author.save(
+                update_fields=[
+                    "application_status",
+                    "application_date",
+                    "queue_priority",
+                ]
+            )
 
     def get_absolute_url(self):
         return reverse("entry-permalink", kwargs={"entry_id": self.pk})
@@ -94,14 +130,22 @@ class Entry(models.Model):
 
 class Comment(models.Model):
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="comments")
-    author = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="+", verbose_name=_("Author"))
-    content = models.TextField(validators=[validate_user_text], verbose_name=_("Content"))
+    author = models.ForeignKey(
+        "Author", on_delete=models.CASCADE, related_name="+", verbose_name=_("Author")
+    )
+    content = models.TextField(
+        validators=[validate_user_text], verbose_name=_("Content")
+    )
 
     upvoted_by = models.ManyToManyField("Author", related_name="+")
     downvoted_by = models.ManyToManyField("Author", related_name="+")
 
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
-    date_edited = models.DateTimeField(null=True, editable=False, verbose_name=_("Date edited"))
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name=_("Date created")
+    )
+    date_edited = models.DateTimeField(
+        null=True, editable=False, verbose_name=_("Date edited")
+    )
 
     class Meta:
         verbose_name = _("comment")
@@ -115,4 +159,5 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return f"{reverse('entry-permalink', kwargs={'entry_id': self.entry.pk})}#comment-{self.pk}"
+        entry_url = reverse("entry-permalink", kwargs={"entry_id": self.entry.pk})
+        return f"{entry_url}#comment-{self.pk}"

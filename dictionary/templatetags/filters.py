@@ -45,10 +45,12 @@ SEE = pgettext_lazy("editor", "see")
 SEARCH = pgettext_lazy("editor", "search")
 IMAGE = pgettext_lazy("editor", "image")
 
-# Translators: Entry date format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+# Translators: Entry date format.
+# https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
 ENTRY_DATE_FORMAT = gettext_lazy("M j, Y")
 
-# Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+# Translators: Entry time format.
+# https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
 ENTRY_TIME_FORMAT = gettext_lazy("g:i a")
 
 
@@ -58,7 +60,11 @@ def q_unescape(string):
 
 
 def linkify(weburl_match):
-    """Linkify given url. If the url is internal convert it to appropriate tag if possible."""
+    """
+    Linkify given url. If the url is internal convert
+    it to appropriate tag if possible.
+    """
+
     domain, path = weburl_match.group(1), weburl_match.group(2) or ""
 
     if domain.endswith(settings.DOMAIN) and len(path) > 7:
@@ -75,7 +81,7 @@ def linkify(weburl_match):
             return f'({SEE}: <a href="{path}">{guess}</a>)'
 
         if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
-            return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'  # noqa
+            return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'
 
     path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
     url = domain + path
@@ -95,7 +101,10 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
+        (
+            fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)",
+            fr'({SEE}: <a href="/entry/\1/">#\1</a>)',
+        ),
         (
             fr"\({SEE_EXPR}: (?!<)(@?{RE_TOPIC_CHARSET})\)",
             lambda m: fr'({SEE}: <a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>)',
@@ -103,27 +112,37 @@ def formatted(raw_entry):
         # Swh
         (
             fr"`:{RE_TOPIC_CHARSET}`",
-            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',  # noqa
+            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',
         ),
         # Reference with no indicator
         (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
-        (fr"`(@?{RE_TOPIC_CHARSET})`", lambda m: fr'<a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>'),
+        (
+            fr"`(@?{RE_TOPIC_CHARSET})`",
+            lambda m: fr'<a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>',
+        ),
         # Search
         (
             fr"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
             fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Image
-        (IMAGE_REGEX, fr'<a role="button" tabindex="0" data-img="/img/\1" aria-expanded="false">{IMAGE}</a>'),
+        (
+            IMAGE_REGEX,
+            fr'<a role="button" tabindex="0" data-img="/img/\1" aria-expanded="false">{IMAGE}</a>',
+        ),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
-        # Find links with label, then encapsulate them in anchor tag, which adds " character before the
-        # link. Then we find all other links which don't have " at the start.
-        # Users can't send " character, they send the escaped version: &quot;
+        # Find links with label, then encapsulate them in anchor tag, which
+        # adds " character before the link. Then we find all other links which
+        # don't have " at the start. Users can't send " character, they send the
+        # escaped version: &quot;
         (
             fr"\[{RE_WEBURL} (?!\s|{RE_WEBURL_NC})([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
             r'<a rel="ugc nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
-        (fr"(?<!\"){RE_WEBURL}", linkify,),
+        (
+            fr"(?<!\"){RE_WEBURL}",
+            linkify,
+        ),
     )
 
     for tag in replacements:
@@ -135,7 +154,10 @@ def formatted(raw_entry):
 @register.filter
 def mark(formatted_entry, words):
     for word in sorted(words.split(), key=len, reverse=True):
-        tag = (fr"({re.escape(escape(word))})(?!(.(?!<(a|mark)))*<\/(a|mark)>)", r"<mark>\1</mark>")
+        tag = (
+            fr"({re.escape(escape(word))})(?!(.(?!<(a|mark)))*<\/(a|mark)>)",
+            r"<mark>\1</mark>",
+        )
         formatted_entry = re.sub(*tag, formatted_entry)
     return mark_safe(formatted_entry)
 
@@ -150,9 +172,14 @@ def entrydate(created, edited):
         if created.date() == edited.date():
             append = defaultfilters.date(edited, f" ~ {ENTRY_TIME_FORMAT}")
         else:
-            append = defaultfilters.date(edited, f" ~ {ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}")
+            append = defaultfilters.date(
+                edited, f" ~ {ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}"
+            )
 
-    return defaultfilters.date(created, f"{ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}") + append
+    return (
+        defaultfilters.date(created, f"{ENTRY_DATE_FORMAT} {ENTRY_TIME_FORMAT}")
+        + append
+    )
 
 
 @register.filter

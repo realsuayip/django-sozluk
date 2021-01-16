@@ -8,7 +8,18 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.db import connection
-from django.db.models import CharField, Count, Exists, F, Max, OuterRef, Prefetch, Q, Subquery, Value
+from django.db.models import (
+    CharField,
+    Count,
+    Exists,
+    F,
+    Max,
+    OuterRef,
+    Prefetch,
+    Q,
+    Subquery,
+    Value,
+)
 from django.db.models.functions import Coalesce, Concat, Greatest
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -18,7 +29,16 @@ from django.utils.translation import gettext as _
 from dateutil.relativedelta import relativedelta
 
 from dictionary.conf import settings
-from dictionary.models import Author, Category, Comment, DownvotedEntries, Entry, EntryFavorites, Topic, UpvotedEntries
+from dictionary.models import (
+    Author,
+    Category,
+    Comment,
+    DownvotedEntries,
+    Entry,
+    EntryFavorites,
+    Topic,
+    UpvotedEntries,
+)
 from dictionary.utils import parse_date_or_none, time_threshold
 from dictionary.utils.decorators import for_public_methods
 
@@ -34,7 +54,11 @@ class TopicQueryHandler:
     def day_filter(self):
         return {"entries__date_created__gte": time_threshold(hours=24)}
 
-    base_filter = {"entries__is_draft": False, "entries__author__is_novice": False, "is_censored": False}
+    base_filter = {
+        "entries__is_draft": False,
+        "entries__author__is_novice": False,
+        "is_censored": False,
+    }
 
     # Queryset annotations
     latest = {"latest": Max("entries__date_created")}  # to order_by("-latest")
@@ -60,7 +84,8 @@ class TopicQueryHandler:
     def today_in_history(self, year):
         now = timezone.now()
         diff = now.year - year
-        # If we don't use localtime, date() may shift a day because of the hour difference.
+        # If we don't use localtime, date() may
+        # shift a day because of the hour difference.
         delta = timezone.localtime(now - relativedelta(years=diff))
 
         return (
@@ -72,7 +97,10 @@ class TopicQueryHandler:
 
     def popular(self, exclusions):
         def counter(hours):
-            return Count("entries", filter=Q(entries__date_created__gte=time_threshold(hours=hours)))
+            return Count(
+                "entries",
+                filter=Q(entries__date_created__gte=time_threshold(hours=hours)),
+            )
 
         return (
             Topic.objects.values(*self.values)
@@ -86,11 +114,21 @@ class TopicQueryHandler:
 
     def top(self, tab):
         filters = {
-            "yesterday": {"date_created__date": timezone.localtime(time_threshold(hours=24)).date()},
-            "week": {"date_created__lte": time_threshold(days=7), "date_created__gte": time_threshold(days=14)},
+            "yesterday": {
+                "date_created__date": timezone.localtime(
+                    time_threshold(hours=24)
+                ).date()
+            },
+            "week": {
+                "date_created__lte": time_threshold(days=7),
+                "date_created__gte": time_threshold(days=14),
+            },
         }
+
         return (
-            Entry.objects.filter(**filters.get(tab), vote_rate__gt=0, topic__is_censored=False)
+            Entry.objects.filter(
+                **filters.get(tab), vote_rate__gt=0, topic__is_censored=False
+            )
             .order_by("-vote_rate")
             .annotate(title=F("topic__title"), slug=F("pk"))
             .values(*self.values)
@@ -122,9 +160,18 @@ class TopicQueryHandler:
     def acquaintances_favorites(self, user):
         return (
             Entry.objects_published.values("topic")
-            .filter(favorited_by__in=user.following.all(), entryfavorites__date_created__gte=time_threshold(hours=24))
+            .filter(
+                favorited_by__in=user.following.all(),
+                entryfavorites__date_created__gte=time_threshold(hours=24),
+            )
             .annotate(
-                title=Concat(F("topic__title"), Value(" (#"), F("pk"), Value(")"), output_field=CharField()),
+                title=Concat(
+                    F("topic__title"),
+                    Value(" (#"),
+                    F("pk"),
+                    Value(")"),
+                    output_field=CharField(),
+                ),
                 slug=F("pk"),
                 latest=Max("entryfavorites__date_created"),
             )
@@ -156,7 +203,9 @@ class TopicQueryHandler:
         """
         Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
 
-        todo: If you can convert this to native orm or create a queryset that will result in same data, please do.
+        todo: If you can convert this to native orm or create a queryset that
+        will result in same data, please do.
+
         Update: An ORM implementation was made, but it was too slow compared to
         this solution. See: https://gist.github.com/realsuayip/9d2c5365cbe6e43d1fe282a556d0f6d5
 
@@ -243,7 +292,12 @@ class TopicQueryHandler:
     def novices(self):
         return (
             Topic.objects.values(*self.values)
-            .filter(**self.day_filter, entries__author__is_novice=True, entries__is_draft=False, is_censored=False)
+            .filter(
+                **self.day_filter,
+                entries__author__is_novice=True,
+                entries__is_draft=False,
+                is_censored=False,
+            )
             .annotate(**self.latest, count=Count("entries"))
             .order_by("-latest")
         )
@@ -271,8 +325,13 @@ class TopicQueryHandler:
             ordering = "newer"
 
         # Provide a default search term if none present
-        if not keywords and not author_nick and not (favorites_only and user.is_authenticated):
-            # Translators: This is the default keyword to search when users search with no input.
+        if (
+            not keywords
+            and not author_nick
+            and not (favorites_only and user.is_authenticated)
+        ):
+            # Translators: This is the default keyword to search
+            # when users search with no input.
             keywords = _("common sense")
 
         filters = {}
@@ -288,7 +347,11 @@ class TopicQueryHandler:
             filters["entries__author__username"] = author_nick
 
         if keywords:
-            filters["title__search" if connection.vendor == "postgresql" else "title__icontains"] = keywords
+            filters[
+                "title__search"
+                if connection.vendor == "postgresql"
+                else "title__icontains"
+            ] = keywords
 
         if from_date:
             filters["entries__date_created__gte"] = from_date
@@ -296,7 +359,11 @@ class TopicQueryHandler:
         if to_date:
             filters["entries__date_created__lte"] = to_date
 
-        ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
+        ordering_map = {
+            "alpha": ["title"],
+            "newer": ["-date_created"],
+            "popular": ["-count", "-date_created"],
+        }
 
         qs = (
             Topic.objects.values(*self.values)
@@ -304,7 +371,8 @@ class TopicQueryHandler:
             .annotate(count=Count("entries", distinct=True))
         )
 
-        return qs.order_by(*ordering_map.get(ordering))[: settings.TOPICS_PER_PAGE_DEFAULT]
+        limit = settings.TOPICS_PER_PAGE_DEFAULT
+        return qs.order_by(*ordering_map.get(ordering))[:limit]
 
     def generic_category(self, category):
         return (
@@ -393,7 +461,9 @@ class TopicListHandler:
         """
 
         if not user.is_authenticated and slug in settings.LOGIN_REQUIRED_CATEGORIES:
-            raise PermissionDenied(_("actually, you may benefit from this feature by logging in."))
+            raise PermissionDenied(
+                _("actually, you may benefit from this feature by logging in.")
+            )
 
         self.slug = slug
         self.user = user
@@ -422,11 +492,20 @@ class TopicListHandler:
             "search": [self.user, self.search_keys],
             "popular": [self.exclusions],
             "top": [self.tab],
-            "userstats": [self.user, self.extra.get("user_object"), self.extra.get("channel_object"), self.tab],
+            "userstats": [
+                self.user,
+                self.extra.get("user_object"),
+                self.extra.get("channel_object"),
+                self.tab,
+            ],
         }
 
         # Convert today-in-history => today_in_history
-        slug_method = self.slug.replace("-", "_") if self.slug in settings.NON_DB_CATEGORIES else "generic_category"
+        slug_method = (
+            self.slug.replace("-", "_")
+            if self.slug in settings.NON_DB_CATEGORIES
+            else "generic_category"
+        )
 
         # Get the method from TopicQueryHandler.
         try:
@@ -445,7 +524,9 @@ class TopicListHandler:
         if exclusions is None:
             return settings.DEFAULT_EXCLUSIONS
 
-        return tuple(slug for slug in exclusions if slug in settings.EXCLUDABLE_CATEGORIES)
+        return tuple(
+            slug for slug in exclusions if slug in settings.EXCLUDABLE_CATEGORIES
+        )
 
     def _validate_tab(self, tab):
         if self.slug not in settings.TABBED_CATEGORIES:
@@ -475,7 +556,11 @@ class TopicListHandler:
 
     def _validate_extra(self, extra):
         return (
-            {key: value for key, value in extra.items() if key in self._available_extras and isinstance(value, str)}
+            {
+                key: value
+                for key, value in extra.items()
+                if key in self._available_extras and isinstance(value, str)
+            }
             if extra and self.slug in settings.PARAMETRIC_CATEGORIES
             else {}
         )
@@ -487,13 +572,15 @@ class TopicListHandler:
         """
 
         if self.slug == "userstats":
-            # Parse userstats related extras, set the safename of the frame and add hidetabs.
+            # Parse userstats related extras, set the safename
+            # of the frame and add hidetabs.
             user_slug = self.extra.get("user")
 
             if not user_slug:
                 raise Http404
 
-            # Converting slug to actual Author object to use it later on in query. (same with the channel)
+            # Converting slug to actual Author object to
+            # use it later on in query. (same with the channel)
             user = get_object_or_404(Author, slug=user_slug)
             self.extra["user_object"] = user
             fmtstr = {"username": user.username}
@@ -510,11 +597,15 @@ class TopicListHandler:
             else:
                 self.extra.pop("channel", None)  # so as not to interfere with cache key
 
-            self.extra["safename"] = settings.NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
+            self.extra["safename"] = (
+                settings.NON_DB_CATEGORIES_META["userstats"][2][0][self.tab] % fmtstr
+            )
             self.extra["hidetabs"] = "yes"
 
         elif self.slug not in settings.NON_DB_CATEGORIES:
-            self.extra["generic_category"] = get_object_or_404(Category.objects, slug=self.slug)
+            self.extra["generic_category"] = get_object_or_404(
+                Category.objects, slug=self.slug
+            )
 
     @property
     def _caching_allowed(self):
@@ -529,7 +620,9 @@ class TopicListHandler:
             cache.set(
                 self.cache_key,
                 {"data": data, "set_at": timezone.now()},
-                settings.EXCLUSIVE_TIMEOUTS.get(self.slug, settings.DEFAULT_CACHE_TIMEOUT),
+                settings.EXCLUSIVE_TIMEOUTS.get(
+                    self.slug, settings.DEFAULT_CACHE_TIMEOUT
+                ),
             )
         return data
 
@@ -544,7 +637,11 @@ class TopicListHandler:
         exclusions = "_".join(sorted(self.exclusions)) if self.exclusions else ""
         extra = (
             ":x:"
-            + "_".join(f"{key}={value}" for key, value in sorted(self.extra.items()) if key in self._extras_cache_per)
+            + "_".join(
+                f"{key}={value}"
+                for key, value in sorted(self.extra.items())
+                if key in self._extras_cache_per
+            )
             if self.extra
             else ""
         )
@@ -561,14 +658,21 @@ class TopicListHandler:
                 "ordering",
             )
 
-            params = {param: self.search_keys.get(param, "_") for param in available_search_params}
+            params = {
+                param: self.search_keys.get(param, "_")
+                for param in available_search_params
+            }
 
             if params["is_in_favorites"] != "_":
                 scope = private
 
-            search_keys = hashlib.blake2b("".join(params.values()).encode("utf-8")).hexdigest()
+            search_keys = hashlib.blake2b(
+                "".join(params.values()).encode("utf-8")
+            ).hexdigest()
 
-        self.cache_key = f"tlq_{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}{extra}"
+        self.cache_key = (
+            f"tlq_{scope}_{self.slug}{year}{tab}{search_keys}{exclusions}{extra}"
+        )
 
     def _check_cache(self):
         self._set_cache_key()
@@ -580,7 +684,10 @@ class TopicListHandler:
         # Cached data detected, check if the day has changed for top or
         # today-in-history (if not, leave cache_exists False to fetch fresh data).
         if self.slug in ("top", "today-in-history"):
-            if timezone.localtime(cached_data.get("set_at")).day == timezone.localtime(timezone.now()).day:
+            if (
+                timezone.localtime(cached_data.get("set_at")).day
+                == timezone.localtime(timezone.now()).day
+            ):
                 self.cache_exists = True
         else:
             self.cache_exists = True
@@ -701,18 +808,26 @@ class UserStatsQueryHandler:
         return self.entries.filter(vote_rate__gt=0)
 
     def weeklygoods(self):
-        return self.entries.filter(vote_rate__gt=0, date_created__gte=time_threshold(days=7))
+        return self.entries.filter(
+            vote_rate__gt=0, date_created__gte=time_threshold(days=7)
+        )
 
     def beloved(self):
         return self.entries.filter(favorited_by__in=[self.user])
 
     def recentlyvoted(self):
         up, down = (
-            Subquery(model.objects.filter(entry=OuterRef("pk")).order_by("-date_created").values("date_created")[:1])
+            Subquery(
+                model.objects.filter(entry=OuterRef("pk"))
+                .order_by("-date_created")
+                .values("date_created")[:1]
+            )
             for model in (UpvotedEntries, DownvotedEntries)
         )
 
-        return self.entries.annotate(last_voted=Coalesce(Greatest(up, down), up, down)).filter(last_voted__isnull=False)
+        return self.entries.annotate(
+            last_voted=Coalesce(Greatest(up, down), up, down)
+        ).filter(last_voted__isnull=False)
 
     def wishes(self):
         return (
@@ -726,7 +841,10 @@ class UserStatsQueryHandler:
         return (
             Category.objects.annotate(
                 count=Count(
-                    "topic__entries", filter=Q(topic__entries__author=self.user, topic__entries__is_draft=False)
+                    "topic__entries",
+                    filter=Q(
+                        topic__entries__author=self.user, topic__entries__is_draft=False
+                    ),
                 )
             )
             .filter(count__gte=1)
@@ -738,7 +856,11 @@ class UserStatsQueryHandler:
             Author.objects_accessible.filter(entry__in=self.user.favorite_entries.all())
             .annotate(frequency=Count("entry"))
             .filter(frequency__gt=1)
-            .exclude(Q(pk=self.user.pk) | Q(blocked__in=[self.user.pk]) | Q(pk__in=self.user.blocked.all()))
+            .exclude(
+                Q(pk=self.user.pk)
+                | Q(blocked__in=[self.user.pk])
+                | Q(pk__in=self.user.blocked.all())
+            )
             .only("username", "slug")
             .order_by("-frequency")[:10]
         )
@@ -755,7 +877,10 @@ def entry_prefetch(queryset, user, comments=False):
 
     if comments:
         comments_qs = (
-            Comment.objects.annotate(rating=Count("upvoted_by", distinct=True) - Count("downvoted_by", distinct=True))
+            Comment.objects.annotate(
+                rating=Count("upvoted_by", distinct=True)
+                - Count("downvoted_by", distinct=True)
+            )
             .select_related("author")
             .only(
                 "id",
@@ -776,8 +901,13 @@ def entry_prefetch(queryset, user, comments=False):
                 zip(
                     ("is_upvoted", "is_downvoted"),
                     (
-                        Exists(model.objects.filter(author=user, comment=OuterRef("pk")))
-                        for model in (Comment.upvoted_by.through, Comment.downvoted_by.through)
+                        Exists(
+                            model.objects.filter(author=user, comment=OuterRef("pk"))
+                        )
+                        for model in (
+                            Comment.upvoted_by.through,
+                            Comment.downvoted_by.through,
+                        )
                     ),
                 )
             )

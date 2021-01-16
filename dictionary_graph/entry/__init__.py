@@ -1,6 +1,13 @@
 from graphene import ObjectType
 
-from .action import DeleteEntry, DownvoteEntry, FavoriteEntry, PinEntry, UpvoteEntry, VoteComment
+from .action import (
+    DeleteEntry,
+    DownvoteEntry,
+    FavoriteEntry,
+    PinEntry,
+    UpvoteEntry,
+    VoteComment,
+)
 from .edit import DraftEdit
 from .list import EntryFavoritesQuery
 

@@ -1,6 +1,10 @@
 from django.urls import path
 
-from dictionary.views.announcements import AnnouncementDetail, AnnouncementIndex, AnnouncementMonth
+from dictionary.views.announcements import (
+    AnnouncementDetail,
+    AnnouncementIndex,
+    AnnouncementMonth,
+)
 
 
 urlpatterns_announcements = [

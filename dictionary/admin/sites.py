@@ -14,7 +14,11 @@ class SiteAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path("cache/", self.admin_site.admin_view(ClearCache.as_view()), name="clear-cache"),
+            path(
+                "cache/",
+                self.admin_site.admin_view(ClearCache.as_view()),
+                name="clear-cache",
+            ),
         ]
         return custom_urls + urls
 

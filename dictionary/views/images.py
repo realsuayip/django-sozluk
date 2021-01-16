@@ -32,17 +32,26 @@ class ImageUpload(LoginRequiredMixin, CreateView):
         if self.request.user.is_novice or not self.request.user.is_accessible:
             return HttpResponseBadRequest(gettext("you lack the required permissions."))
 
-        if Image.objects.filter(
+        upload_count_today = Image.objects.filter(
             author=self.request.user, date_created__gte=time_threshold(hours=24)
-        ).count() >= settings.DAILY_IMAGE_UPLOAD_LIMIT and not self.request.user.has_perm("dictionary.add_image"):
+        ).count()
+
+        if (
+            upload_count_today >= settings.DAILY_IMAGE_UPLOAD_LIMIT
+            and not self.request.user.has_perm("dictionary.add_image")
+        ):
             return HttpResponseBadRequest(
-                gettext("you have reached the upload limit (%(limit)d images in a 24 hour period). try again later.")
+                gettext(
+                    "you have reached the upload limit"
+                    " (%(limit)d images in a 24 hour period). try again later."
+                )
                 % {"limit": settings.DAILY_IMAGE_UPLOAD_LIMIT}
             )
 
         if image.file.size > settings.MAX_UPLOAD_SIZE:
+            max_size_mb = settings.MAX_UPLOAD_SIZE / 1048576
             return HttpResponseBadRequest(
-                gettext("this file is too large. (%.1f> MB)") % settings.MAX_UPLOAD_SIZE / 1048576
+                gettext("this file is too large. (%.1f> MB)") % max_size_mb
             )
 
         if settings.COMPRESS_IMAGES and image.file.size > settings.COMPRESS_THRESHOLD:
@@ -60,7 +69,9 @@ class ImageList(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "dictionary/list/image_list.html"
 
     def get_queryset(self):
-        return Image.objects.filter(author=self.request.user, is_deleted=False).order_by("-date_created")
+        return Image.objects.filter(
+            author=self.request.user, is_deleted=False
+        ).order_by("-date_created")
 
     def test_func(self):
         return not self.request.user.is_novice

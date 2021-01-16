@@ -1,4 +1,6 @@
-from django.contrib.sessions.backends.cached_db import SessionStore as DjangoCachedDBStore
+from django.contrib.sessions.backends.cached_db import (
+    SessionStore as DjangoCachedDBStore,
+)
 
 
 from .db import SessionStore as DictionarySessionStore

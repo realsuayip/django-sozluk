@@ -17,7 +17,10 @@ class AuthorManagerAccessible(UserManager):
             super()
             .get_queryset()
             .exclude(
-                Q(is_frozen=True) | Q(is_private=True) | Q(is_active=False) | Q(suspended_until__gt=timezone.now())
+                Q(is_frozen=True)
+                | Q(is_private=True)
+                | Q(is_active=False)
+                | Q(suspended_until__gt=timezone.now())
             )
         )
 
@@ -60,7 +63,9 @@ class AccountTerminationQueueManager(models.Manager):
     def terminate_legacy(self, user):
         if not user.is_novice:
             # Migrate entries before deleting the user completely
-            user.entry_set(manager="objects_published").all().update(author=self._private_user)
+            user.entry_set(manager="objects_published").all().update(
+                author=self._private_user
+            )
             logger.info("User entries migrated: %s<->%d", user.username, user.pk)
 
         self.terminate_no_trace(user)

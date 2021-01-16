@@ -107,10 +107,21 @@ class Index(ListView):
                 yield next_pk
 
     def nice_records(self):
-        nice_pk_set = cached_context(prefix="index_nice_pk_set", timeout=self.nice_cache_timeout)(
-            lambda: tuple(Entry.objects.filter(vote_rate__gte=self.nice_bound).values_list("pk", flat=True).order_by())
+        nice_pk_set = cached_context(
+            prefix="index_nice_pk_set", timeout=self.nice_cache_timeout
+        )(
+            lambda: tuple(
+                Entry.objects.filter(vote_rate__gte=self.nice_bound)
+                .values_list("pk", flat=True)
+                .order_by()
+            )
         )()  # Generated cache key: index_nice_pk_set_context__<lambda>
-        return random.sample(nice_pk_set, self.size) if len(nice_pk_set) > self.size else nice_pk_set
+
+        return (
+            random.sample(nice_pk_set, self.size)
+            if len(nice_pk_set) > self.size
+            else nice_pk_set
+        )
 
 
 class PeopleList(LoginRequiredMixin, ListView):
@@ -118,7 +129,10 @@ class PeopleList(LoginRequiredMixin, ListView):
     paginate_by = 15
 
     tab = None
-    tabs = {"following": gettext_lazy("following list"), "blocked": gettext_lazy("blocked list")}
+    tabs = {
+        "following": gettext_lazy("following list"),
+        "blocked": gettext_lazy("blocked list"),
+    }
 
     def get_queryset(self):
         queryset = getattr(self, self.tab)()
@@ -182,10 +196,15 @@ class ConversationList(LoginRequiredMixin, IntegratedFormMixin, ListView):
 
     def get_queryset(self):
         query_term = i18n_lower(self.request.GET.get("search_term", "")).strip() or None
+
         return (
             Conversation.objects.list_for_user(self.request.user, query_term)
             .select_related("target")
-            .prefetch_related(Prefetch("messages", queryset=Message.objects.select_related("recipient")))
+            .prefetch_related(
+                Prefetch(
+                    "messages", queryset=Message.objects.select_related("recipient")
+                )
+            )
         )
 
 
@@ -194,7 +213,9 @@ class ConversationArchiveList(ConversationList):
     template_name = "dictionary/conversation/inbox_archive.html"
 
     def get_queryset(self):
-        return ConversationArchive.objects.filter(holder=self.request.user).select_related("holder")
+        return ConversationArchive.objects.filter(
+            holder=self.request.user
+        ).select_related("holder")
 
 
 class ActivityList(LoginRequiredMixin, ListView):
@@ -203,13 +224,18 @@ class ActivityList(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return self.request.user.get_following_topics_with_receipt().order_by("is_read", "-topicfollowing__read_at")
+        return self.request.user.get_following_topics_with_receipt().order_by(
+            "is_read", "-topicfollowing__read_at"
+        )
 
     def post(self, *args, **kwargs):
         """Bulk read unread topics."""
+
         TopicFollowing.objects.filter(
             author=self.request.user,
-            topic__in=self.request.user.get_following_topics_with_receipt().filter(is_read=False),
+            topic__in=self.request.user.get_following_topics_with_receipt().filter(
+                is_read=False
+            ),
         ).update(read_at=timezone.now())
 
         notifications.info(self.request, _("the topics were mark read"))
@@ -284,8 +310,14 @@ class TopicList(UserPassesTestMixin, TemplateView):
         return response
 
     def test_func(self):
-        if self.kwargs.get("slug") in settings.LOGIN_REQUIRED_CATEGORIES and not self.request.user.is_authenticated:
-            notifications.info(self.request, _("actually, you may benefit from this feature by logging in."))
+        if (
+            self.kwargs.get("slug") in settings.LOGIN_REQUIRED_CATEGORIES
+            and not self.request.user.is_authenticated
+        ):
+            notifications.info(
+                self.request,
+                _("actually, you may benefit from this feature by logging in."),
+            )
             return False
         return True
 
@@ -369,7 +401,8 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         if self.topic.exists and self.topic.is_banned:
             # Cannot check is_banned before checking its existence.
-            # Translators: Not likely to occur in normal circumstances so you may include some humor here.
+            # Translators: Not likely to occur in normal circumstances
+            # so you may include some humor here.
             notifications.error(self.request, _("no, no i don't think i will."))
             return self.form_invalid(form)
 
@@ -386,7 +419,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         if publishing_draft:
             # Publishing previously draft entry.
             try:
-                entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
+                entry = Entry.objects_all.get(
+                    is_draft=True, author=self.request.user, pk=int(draft_pk)
+                )
                 entry.content = form.cleaned_data["content"]
                 entry.is_draft = False
                 entry.date_created = timezone.now()
@@ -413,7 +448,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 entry.topic = Topic.objects.create_topic(title=self.topic.title)
 
         entry.save()
-        notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
+        notifications.info(
+            self.request, _("the entry was successfully launched into stratosphere")
+        )
         return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
 
     def form_invalid(self, form):
@@ -488,21 +525,28 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def following(self):
         """User is redirected here from activity_list view."""
         queryset = None
-        following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
+        following = TopicFollowing.objects.filter(
+            author=self.request.user, topic=self.topic
+        ).first()
 
         if following:
             epoch = self.request.GET.get("d")
 
             try:
                 # epoch + 1 because it does not account for the milliseconds
-                last_read = timezone.make_aware(datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc)
+                last_read = timezone.make_aware(
+                    datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc
+                )
             except (ValueError, TypeError, OSError):
                 last_read = None
 
             if last_read and last_read > following.date_created:
+                # We need to apply _qs_filter because we use queryset results in here.
                 queryset = self._qs_filter(
-                    self.topic.entries.filter(date_created__gt=last_read).exclude(Q(author=self.request.user))
-                )  # Note: we need to apply _qs_filter because we use queryset results in here.
+                    self.topic.entries.filter(date_created__gt=last_read).exclude(
+                        Q(author=self.request.user)
+                    )
+                )
 
         if queryset is not None and queryset.exists():
             following.read_at = timezone.now()
@@ -510,21 +554,29 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             self.request.user.invalidate_unread_topic_count()
             return queryset
 
-        notifications.info(self.request, _("honestly, there was nothing new. so i listed them all."))
+        notifications.info(
+            self.request, _("honestly, there was nothing new. so i listed them all.")
+        )
         self.redirect = True
         return None
 
     def novices(self):
-        return self.topic.entries.filter(author__is_novice=True, date_created__gte=time_threshold(hours=24))
+        return self.topic.entries.filter(
+            author__is_novice=True, date_created__gte=time_threshold(hours=24)
+        )
 
     def recent(self):
         with suppress(Entry.DoesNotExist):
-            latest = self.topic.entries.filter(author=self.request.user).latest("date_created")
+            latest = self.topic.entries.filter(author=self.request.user).latest(
+                "date_created"
+            )
             return self.topic.entries.filter(date_created__gte=latest.date_created)
         return None
 
     def answered(self):
-        return self.topic.entries.filter(Exists(Comment.objects.filter(entry=OuterRef("pk"))))
+        return self.topic.entries.filter(
+            Exists(Comment.objects.filter(entry=OuterRef("pk")))
+        )
 
     def images(self):
         return self.topic.entries.filter(content__regex=IMAGE_REGEX)
@@ -535,7 +587,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         if self.entry is not None:
             return entry_prefetch(
-                Entry.objects_all.filter(pk=self.entry.pk), self.request.user, comments=self.topic.is_ama
+                Entry.objects_all.filter(pk=self.entry.pk),
+                self.request.user,
+                comments=self.topic.is_ama,
             )
 
         if self.topic.exists:
@@ -562,22 +616,34 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         queryset_size = context.get("paginator").count
 
         if self.request.user.is_authenticated:
-            context["drafts"] = Entry.objects_all.filter(is_draft=True, topic=self.topic, author=self.request.user)
+            context["drafts"] = Entry.objects_all.filter(
+                is_draft=True, topic=self.topic, author=self.request.user
+            )
 
         if queryset_size > 0:
             # Find subsequent and previous entries
-            # Get current page's first and last entry, and find the number of entries before and after by date.
+            # Get current page's first and last entry, and find the
+            # number of entries before and after by date.
             # Using these count data, find what page next entry is located on.
             first_entry = entries[0] if not self.entry else self.entry
 
             # Redirect to reference?
-            if all((self.view_mode == "regular", queryset_size == 1, self.request.GET.get("nr") != "true")) and (
-                reference := re.fullmatch(fr"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content)
+            if all(
+                (
+                    self.view_mode == "regular",
+                    queryset_size == 1,
+                    self.request.GET.get("nr") != "true",
+                )
+            ) and (
+                reference := re.fullmatch(
+                    fr"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content
+                )
             ):
                 title = reference.group(1)  # noqa
                 with suppress(Topic.DoesNotExist):
                     topic = Topic.objects_published.get(title=title)
-                    # Reference needs to have at least 2 entries to hinder mirror references.
+                    # Reference needs to have at least
+                    # 2 entries to hinder mirror references.
                     if topic.entry_count > 1:
                         return {"referrer": self.topic, "referent": topic}
 
@@ -605,7 +671,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 first_entry_date = first_entry.date_created
 
                 previous_entries_count = self._qs_filter(
-                    self.topic.entries.filter(date_created__lt=first_entry_date, author__is_novice=False),
+                    self.topic.entries.filter(
+                        date_created__lt=first_entry_date, author__is_novice=False
+                    ),
                     prefetch=False,
                 ).count()
 
@@ -616,16 +684,22 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             if show_subsequent:
                 with suppress(IndexError):
                     last_entry_date = (
-                        entries[queryset_size - 1].date_created if not self.entry else self.entry.date_created
+                        entries[queryset_size - 1].date_created
+                        if not self.entry
+                        else self.entry.date_created
                     )
 
                     subsequent_entries_count = self._qs_filter(
-                        self.topic.entries.filter(date_created__gt=last_entry_date, author__is_novice=False),
+                        self.topic.entries.filter(
+                            date_created__gt=last_entry_date, author__is_novice=False
+                        ),
                         prefetch=False,
                     ).count()
 
                     if subsequent_entries_count > 0:
-                        subsequent_entries_page = self._find_subsequent_page(previous_entries_count)
+                        subsequent_entries_page = self._find_subsequent_page(
+                            previous_entries_count
+                        )
 
             context["previous_entries_count"] = previous_entries_count
             context["previous_entries_page"] = previous_entries_page
@@ -634,9 +708,12 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             context["first_entry"] = first_entry
 
         else:
-            # Parameters returned no corresponding entries, show ALL entries count to guide the user
+            # Parameters returned no corresponding entries,
+            # show ALL entries count to guide the user
             self.view_mode = "regular"
-            context["all_entries_count"] = self._qs_filter(self.regular(), prefetch=False).count()
+            context["all_entries_count"] = self._qs_filter(
+                self.regular(), prefetch=False
+            ).count()
 
         return context
 
@@ -657,9 +734,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             self.view_mode = requested if requested in self.modes else "regular"
 
         # Check login requirements
-
-        if not request.user.is_authenticated and self.view_mode in self.login_required_modes:
-            notifications.info(request, _("actually, you may benefit from this feature by logging in."))
+        if (
+            not request.user.is_authenticated
+            and self.view_mode in self.login_required_modes
+        ):
+            notifications.info(
+                request, _("actually, you may benefit from this feature by logging in.")
+            )
             return redirect(reverse("login"))
 
         return super().dispatch(request)
@@ -685,8 +766,13 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             )
             return redirect(referent.get_absolute_url())
 
-        # This redirect is done here because we initially want to get the queryset first to decide if redirect is needed
-        return super().render_to_response(context, **response_kwargs) if not self.redirect else self._redirect_to_self()
+        # This redirect is done here because we initially
+        # want to get the queryset first to decide if redirect is needed
+        return (
+            super().render_to_response(context, **response_kwargs)
+            if not self.redirect
+            else self._redirect_to_self()
+        )
 
     def get_topic(self):
         """
@@ -702,7 +788,9 @@ class TopicEntryList(IntegratedFormMixin, ListView):
 
         # Unicode url parameter handling (e.g. /topic/şıllık redirects to /topic/sillik)
         elif self.kwargs.get("unicode_string"):
-            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.kwargs.get("unicode_string"))
+            self.topic = Topic.objects.get_or_pseudo(
+                unicode_string=self.kwargs.get("unicode_string")
+            )
 
             if self.topic.exists:
                 return self._redirect_to_self()
@@ -714,9 +802,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                 klass = (
                     Entry.objects_published
                     if not self.request.user.is_authenticated
-                    else Entry.objects_published.exclude(author__in=self.request.user.blocked.all())
+                    else Entry.objects_published.exclude(
+                        author__in=self.request.user.blocked.all()
+                    )
                 )
-                self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")),)
+                self.entry = get_object_or_404(
+                    klass,
+                    pk=int(self.kwargs.get("entry_id")),
+                )
                 self.topic = self.entry.topic
                 self.view_mode = "entry_permalink"
 
@@ -769,12 +862,20 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         :return: Queryset
         """
 
-        novice_view_modes = ["novices", "entry_permalink", "acquaintances"]  # modes in which novice entries are visible
+        # Modes in which novice entries are visible
+        novice_view_modes = [
+            "novices",
+            "entry_permalink",
+            "acquaintances",
+        ]
 
         if self.view_mode == "recent" and self.request.user.is_novice:
-            # 'followups' doesn't include novice entries for authors, but does for novices.
+            # 'followups' doesn't include novice entries
+            # for authors, but does for novices.
             novice_view_modes.append("recent")
-        elif self.view_mode == "search" and self.request.GET.get("keywords", "").strip().startswith("@"):
+        elif self.view_mode == "search" and self.request.GET.get(
+            "keywords", ""
+        ).strip().startswith("@"):
             novice_view_modes.append("search")
 
         qs = queryset.exclude(is_draft=True)

@@ -50,8 +50,12 @@ class ConversationArchive(models.Model):
 
     class Meta:
         constraints = [
-            UniqueConstraint(fields=["holder", "slug"], name="unique_conversationarchive_a"),
-            UniqueConstraint(fields=["holder", "target"], name="unique_conversationarchive_b"),
+            UniqueConstraint(
+                fields=["holder", "slug"], name="unique_conversationarchive_a"
+            ),
+            UniqueConstraint(
+                fields=["holder", "target"], name="unique_conversationarchive_b"
+            ),
         ]
         ordering = ("-date_created",)
 
@@ -72,12 +76,20 @@ class ConversationArchive(models.Model):
     @cached_property
     def to_json(self):
         # JSON text to Python object
-        return {"holder": self.holder, "target": self.target, "messages": json.loads(self.messages)}
+        return {
+            "holder": self.holder,
+            "target": self.target,
+            "messages": json.loads(self.messages),
+        }
 
 
 class Conversation(models.Model):
-    holder = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="conversations")
-    target = models.ForeignKey("Author", on_delete=models.CASCADE, related_name="targeted_conversations")
+    holder = models.ForeignKey(
+        "Author", on_delete=models.CASCADE, related_name="conversations"
+    )
+    target = models.ForeignKey(
+        "Author", on_delete=models.CASCADE, related_name="targeted_conversations"
+    )
 
     messages = models.ManyToManyField(Message)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -85,7 +97,9 @@ class Conversation(models.Model):
     objects = ConversationManager()
 
     class Meta:
-        constraints = [UniqueConstraint(fields=["holder", "target"], name="unique_conversation")]
+        constraints = [
+            UniqueConstraint(fields=["holder", "target"], name="unique_conversation")
+        ]
 
     def __str__(self):
         return f"<Conversation> holder-> {self.holder.username}, target-> {self.target.username}"
@@ -115,7 +129,9 @@ class Conversation(models.Model):
             existent.messages = json.dumps(previous_messages)
             existent.save(update_fields=["messages"])
         except ConversationArchive.DoesNotExist:
-            ConversationArchive.objects.create(holder=self.holder, target=self.target.username, messages=messages)
+            ConversationArchive.objects.create(
+                holder=self.holder, target=self.target.username, messages=messages
+            )
 
         return self.delete()
 

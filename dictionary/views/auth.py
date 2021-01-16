@@ -14,7 +14,13 @@ from django.views.generic import CreateView, FormView, View
 
 from dictionary.backends.sessions.utils import flush_all_sessions
 from dictionary.conf import settings
-from dictionary.forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
+from dictionary.forms.auth import (
+    ChangeEmailForm,
+    LoginForm,
+    ResendEmailForm,
+    SignUpForm,
+    TerminateAccountForm,
+)
 from dictionary.models import AccountTerminationQueue, Author, BackUp, UserVerification
 from dictionary.utils import get_theme_from_cookie, time_threshold
 from dictionary.utils.email import send_email_confirmation
@@ -37,7 +43,9 @@ class Login(LoginView):
         with suppress(AccountTerminationQueue.DoesNotExist):
             AccountTerminationQueue.objects.get(author=form.get_user()).delete()
             notifications.info(
-                self.request, _("welcome back. your account has been reactivated."), extra_tags="persistent"
+                self.request,
+                _("welcome back. your account has been reactivated."),
+                extra_tags="persistent",
             )
 
         notifications.info(self.request, _("successfully logged in, dear"))
@@ -87,7 +95,8 @@ class ConfirmEmail(View):
         try:
             token_hashed = hashlib.blake2b(token.bytes).hexdigest()
             verification_object = UserVerification.objects.get(
-                verification_token=token_hashed, expiration_date__gte=time_threshold(hours=24)
+                verification_token=token_hashed,
+                expiration_date__gte=time_threshold(hours=24),
             )
         except UserVerification.DoesNotExist:
             return self.render_to_response()
@@ -106,7 +115,9 @@ class ConfirmEmail(View):
         return self.render_to_response()
 
     def render_to_response(self):
-        return render(self.request, self.template_name, context={"success": self.success})
+        return render(
+            self.request, self.template_name, context={"success": self.success}
+        )
 
 
 class ResendEmailConfirmation(FormView):
@@ -140,9 +151,13 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
 
         # Send a 'your password has been changed' message to ensure security.
         try:
-            self.request.user.email_user(_("your password has been changed."), message, settings.FROM_EMAIL)
+            self.request.user.email_user(
+                _("your password has been changed."), message, settings.FROM_EMAIL
+            )
         except SMTPException:
-            notifications.error(self.request, _("we couldn't handle your request. try again later."))
+            notifications.error(
+                self.request, _("we couldn't handle your request. try again later.")
+            )
             return super().form_invalid(form)
 
         notifications.info(self.request, _("your password has been changed."))
@@ -157,7 +172,9 @@ class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
     def form_valid(self, form):
         send_email_confirmation(self.request.user, form.cleaned_data.get("email1"))
         notifications.info(
-            self.request, _("your e-mail will be changed after the confirmation."), extra_tags="persistent"
+            self.request,
+            _("your e-mail will be changed after the confirmation."),
+            extra_tags="persistent",
         )
         return redirect(self.success_url)
 
@@ -178,13 +195,19 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
 
         # Send a message to ensure security.
         try:
-            self.request.user.email_user(_("your account is now frozen"), message, settings.FROM_EMAIL)
+            self.request.user.email_user(
+                _("your account is now frozen"), message, settings.FROM_EMAIL
+            )
         except SMTPException:
-            notifications.error(self.request, _("we couldn't handle your request. try again later."))
+            notifications.error(
+                self.request, _("we couldn't handle your request. try again later.")
+            )
             return super().form_invalid(form)
 
         termination_choice = form.cleaned_data.get("state")
-        AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
+        AccountTerminationQueue.objects.create(
+            author=self.request.user, state=termination_choice
+        )
         # Unlike logout(), this invalidates ALL sessions across devices.
         flush_all_sessions(self.request.user)
         notifications.info(self.request, _("your request was taken. farewell."))
@@ -204,7 +227,9 @@ class CreateBackup(LoginRequiredMixin, CreateView):
 
         if previous_backup_exists:
             notifications.error(
-                self.request, _("you have already requested a backup file today."), extra_tags="persistent"
+                self.request,
+                _("you have already requested a backup file today."),
+                extra_tags="persistent",
             )
             return self.form_invalid(form)
 

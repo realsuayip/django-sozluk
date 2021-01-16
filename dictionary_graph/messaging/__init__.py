@@ -1,6 +1,11 @@
 from graphene import ObjectType
 
-from .action import ArchiveConversation, ComposeMessage, DeleteConversation, DeleteMessage
+from .action import (
+    ArchiveConversation,
+    ComposeMessage,
+    DeleteConversation,
+    DeleteMessage,
+)
 
 
 class MessageMutations(ObjectType):

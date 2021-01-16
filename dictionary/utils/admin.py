@@ -44,7 +44,9 @@ class IntermediateActionHandler:
 
     @property
     def redirect_url(self):
-        return redirect(reverse(self.url_name) + f"?source_list={self.get_source_list()}")
+        return redirect(
+            reverse(self.url_name) + f"?source_list={self.get_source_list()}"
+        )
 
 
 def intermediate(action):

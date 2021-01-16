@@ -9,12 +9,22 @@ from dictionary.models import ExternalURL
 
 class FlatPageAdmin(_FlatPageAdmin):
     formfield_overrides = {
-        models.TextField: {"widget": Textarea(attrs={"rows": 25, "style": "width: 100%; box-sizing: border-box;"})},
+        models.TextField: {
+            "widget": Textarea(
+                attrs={"rows": 25, "style": "width: 100%; box-sizing: border-box;"}
+            )
+        },
     }
     list_display = ("url", "title", "weight")
     fieldsets = (
         (None, {"fields": ("url", "title", "content", "html_only", "weight", "sites")}),
-        (_("Advanced options"), {"classes": ("collapse",), "fields": ("registration_required", "template_name")}),
+        (
+            _("Advanced options"),
+            {
+                "classes": ("collapse",),
+                "fields": ("registration_required", "template_name"),
+            },
+        ),
     )
     list_filter = ("sites", "registration_required", "html_only")
 

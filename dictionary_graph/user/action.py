@@ -19,7 +19,10 @@ def useraction(mutator):
     @wraps(mutator)
     @login_required
     def decorator(_root, info, username):
-        subject, sender = get_object_or_404(Author, username=username), info.context.user
+        subject, sender = (
+            get_object_or_404(Author, username=username),
+            info.context.user,
+        )
         if sender == subject or subject.is_private:
             raise ValueError(_("we couldn't handle your request. try again later."))
         return mutator(_root, info, sender, subject)
@@ -48,8 +51,14 @@ class Block(Action, Mutation):
         sender.following.remove(subject)
         subject.following.remove(sender)
         sender.blocked.add(subject)
-        sender.favorite_entries.remove(*sender.favorite_entries.filter(author__in=[subject]))
-        return Block(feedback=_("the person is now blocked"), redirect=info.context.build_absolute_uri(reverse("home")))
+        sender.favorite_entries.remove(
+            *sender.favorite_entries.filter(author__in=[subject])
+        )
+
+        return Block(
+            feedback=_("the person is now blocked"),
+            redirect=info.context.build_absolute_uri(reverse("home")),
+        )
 
 
 class Follow(Action, Mutation):
@@ -61,7 +70,9 @@ class Follow(Action, Mutation):
             or subject.blocked.filter(pk=sender.pk).exists()
             or sender.blocked.filter(pk=subject.pk).exists()
         ):
-            return Follow(feedback=_("we couldn't handle your request. try again later."))
+            return Follow(
+                feedback=_("we couldn't handle your request. try again later.")
+            )
 
         if sender.following.filter(pk=subject.pk).exists():
             sender.following.remove(subject)
@@ -73,6 +84,7 @@ class Follow(Action, Mutation):
 
 class ToggleTheme(Mutation):
     """Toggles theme for logged in users."""
+
     theme = String()
 
     @staticmethod

@@ -26,35 +26,50 @@ class GeneralReportView(CreateView):
             instance.reporter_email = self.request.user.email
             instance.is_verified = True
 
-        if GeneralReport.objects.filter(
-            reporter_email=instance.reporter_email, date_created__gte=time_threshold(minutes=15)
-        ).exists():
+        recent_report_exists = GeneralReport.objects.filter(
+            reporter_email=instance.reporter_email,
+            date_created__gte=time_threshold(minutes=15),
+        ).exists()
+
+        if recent_report_exists:
             notifications.error(
-                self.request, _("it hasn't been long since you last sent a report."), extra_tags="persistent"
+                self.request,
+                _("it hasn't been long since you last sent a report."),
+                extra_tags="persistent",
             )
             return self.form_invalid(form)
 
         # User is already logged in, no verification required.
         if self.request.user.is_authenticated:
             notifications.success(
-                self.request, _("your report request has been successfully sent."), extra_tags="persistent"
+                self.request,
+                _("your report request has been successfully sent."),
+                extra_tags="persistent",
             )
             return super().form_valid(form)
 
         # Prepare and send a verification email.
-        key = instance.key
-        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
+        path = reverse("verify-report", kwargs={"key": instance.key})
+        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{path}"
 
         message = _(
-            "in order reporting form to reach us, you need to follow the link given below."
-            " if you are in mindset such as 'what the hell? i did not send such report', you"
-            " can continue with your life as if nothing ever happened. the link:"
+            "in order reporting form to reach us,"
+            " you need to follow the link given below."
+            " if you are in mindset such as 'what the"
+            " hell? i did not send such report', you"
+            " can continue with your life as if nothing"
+            " ever happened. the link:"
         )
 
         body = f'<p>{message}</p><a href="{link}">{link}</a>'
 
         try:
-            email = EmailMessage(_("confirmation of reporting"), body, settings.FROM_EMAIL, [instance.reporter_email])
+            email = EmailMessage(
+                _("confirmation of reporting"),
+                body,
+                settings.FROM_EMAIL,
+                [instance.reporter_email],
+            )
             email.content_subtype = "html"
             email.send()
             notifications.info(
@@ -72,7 +87,9 @@ class GeneralReportView(CreateView):
 
     def form_invalid(self, form):
         notifications.error(
-            self.request, _("we couldn't handle your request. try again later."), extra_tags="persistent"
+            self.request,
+            _("we couldn't handle your request. try again later."),
+            extra_tags="persistent",
         )
         return super().form_invalid(form)
 
@@ -88,7 +105,8 @@ class GeneralReportView(CreateView):
 
             if referrer_entry and referrer_topic:
                 data["subject"] = _(
-                    "about the entry (#%(referrer_entry)s), in the topic titled '%(referrer_topic)s'"
+                    "about the entry (#%(referrer_entry)s),"
+                    " in the topic titled '%(referrer_topic)s'"
                 ) % {"referrer_entry": referrer_entry, "referrer_topic": referrer_topic}
 
             if self.request.user.is_authenticated:
@@ -111,14 +129,18 @@ class VerifyReport(View):
             report.date_verified = timezone.now()
             report.save()
             notifications.success(
-                self.request, _("your report request was successfully sent."), extra_tags="persistent"
+                self.request,
+                _("your report request was successfully sent."),
+                extra_tags="persistent",
             )
         else:
             notifications.error(
                 self.request,
                 _(
-                    "unfortunately your report request was not sent. the confirmation link is invalid;"
-                    " please check the confirmation link. <strong>confirmation link is only valid for"
+                    "unfortunately your report request was not sent."
+                    " the confirmation link is invalid;"
+                    " please check the confirmation link."
+                    " <strong>confirmation link is only valid for"
                     " 24 hours after it was sent.</strong>"
                 ),
                 extra_tags="persistent",

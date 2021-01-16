@@ -69,6 +69,9 @@ class WishTopic(Mutation):
         Wish.objects.create(topic=topic, author=sender, hint=hint)
 
         return WishTopic(
-            feedback=_("your wish is now enlisted. if someone starts a discussion, we will let you know."),
+            feedback=_(
+                "your wish is now enlisted. if someone starts"
+                " a discussion, we will let you know."
+            ),
             hint=linebreaksbr(formatted(hint)),
         )

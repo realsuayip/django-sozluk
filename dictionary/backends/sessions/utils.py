@@ -13,7 +13,8 @@ def flush_all_sessions(user):
 
     for session in sessions:
         if cached:
-            cache_key = KEY_PREFIX + session.session_key  # Determined in DjangoCachedDBStore
+            # Determined in DjangoCachedDBStore
+            cache_key = KEY_PREFIX + session.session_key
             cache.delete(cache_key)
 
         session.delete()

@@ -17,7 +17,9 @@ def image_slug():
     Assigns a slug to an image. (Tries again recursively if the slug is taken.)
     """
 
-    slug = "".join(secrets.choice(string.ascii_lowercase + string.digits) for _i in range(8))
+    slug = "".join(
+        secrets.choice(string.ascii_lowercase + string.digits) for _i in range(8)
+    )
 
     try:
         Image.objects.get(slug=slug)
@@ -27,11 +29,15 @@ def image_slug():
 
 
 class Image(models.Model):
-    author = models.ForeignKey("Author", null=True, on_delete=models.SET_NULL, verbose_name=_("Author"))
+    author = models.ForeignKey(
+        "Author", null=True, on_delete=models.SET_NULL, verbose_name=_("Author")
+    )
     file = models.ImageField(upload_to=user_directory_path, verbose_name=_("File"))
     slug = models.SlugField(default=image_slug, unique=True, editable=False)
     is_deleted = models.BooleanField(default=False, verbose_name=_("Unpublished"))
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name=_("Date created")
+    )
 
     class Meta:
         verbose_name = _("image")

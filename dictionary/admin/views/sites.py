@@ -21,12 +21,16 @@ class ClearCache(PermissionRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         if (key := request.POST.get("cache_key") or None) is not None:
-            message = _("The cache with key '%(key)s' has been invalidated.") % {"key": key}
+            message = _("The cache with key '%(key)s' has been invalidated.") % {
+                "key": key
+            }
             cache.delete(key)
         else:
             message = _("All of cache has been invalidated.")
             cache.clear()
 
-        log_admin(f"Cleared cache. /cache_key: {key}/", request.user, Site, request.site)
+        log_admin(
+            f"Cleared cache. /cache_key: {key}/", request.user, Site, request.site
+        )
         notifications.warning(request, message)
         return redirect(reverse("admin:index"))

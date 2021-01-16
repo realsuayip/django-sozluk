@@ -32,7 +32,9 @@ class GeneralReport(models.Model):
         help_text=_("Indicates whether this report has been verified by e-mail"),
     )
 
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_("Date created"))
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name=_("Date created")
+    )
     date_verified = models.DateTimeField(null=True, verbose_name=_("Date verified"))
 
     class Meta:

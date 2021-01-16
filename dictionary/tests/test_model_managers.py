@@ -9,7 +9,9 @@ class EntryModelManagersTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.topic = Topic.objects.create_topic("topik")
-        cls.author = Author.objects.create(username="author", email="0", is_novice=False)
+        cls.author = Author.objects.create(
+            username="author", email="0", is_novice=False
+        )
         cls.novice = Author.objects.create(username="novice", email="1")
 
         cls.author_eb = {"topic": cls.topic, "author": cls.author}
@@ -62,7 +64,9 @@ class ConversationModelManagersTest(TestCase):
         author_6 = Author.objects.create(username="a6", email="7", is_active=True)
         author_7 = Author.objects.create(username="a8", email="8", is_active=True)
 
-        cls.convo_1_2_msg = Message.objects.compose(cls.author_1, cls.author_2, "domates")
+        cls.convo_1_2_msg = Message.objects.compose(
+            cls.author_1, cls.author_2, "domates"
+        )
         Message.objects.compose(cls.author_1, cls.author_3, "biber")
         Message.objects.compose(cls.author_2, cls.author_3, "patlıcan")
 
@@ -70,23 +74,47 @@ class ConversationModelManagersTest(TestCase):
         Message.objects.compose(cls.author_4, author_6, "filiz")
         Message.objects.compose(cls.author_4, author_7, "önemsiz")
 
-        cls.conversation_1_2 = Conversation.objects.get(holder=cls.author_1, target=cls.author_2)
-        cls.conversation_2_1 = Conversation.objects.get(holder=cls.author_2, target=cls.author_1)
+        cls.conversation_1_2 = Conversation.objects.get(
+            holder=cls.author_1, target=cls.author_2
+        )
+        cls.conversation_2_1 = Conversation.objects.get(
+            holder=cls.author_2, target=cls.author_1
+        )
 
-        cls.conversation_1_3 = Conversation.objects.get(holder=cls.author_1, target=cls.author_3)
-        cls.conversation_3_1 = Conversation.objects.get(holder=cls.author_3, target=cls.author_1)
+        cls.conversation_1_3 = Conversation.objects.get(
+            holder=cls.author_1, target=cls.author_3
+        )
+        cls.conversation_3_1 = Conversation.objects.get(
+            holder=cls.author_3, target=cls.author_1
+        )
 
-        cls.conversation_2_3 = Conversation.objects.get(holder=cls.author_2, target=cls.author_3)
-        cls.conversation_3_2 = Conversation.objects.get(holder=cls.author_3, target=cls.author_2)
+        cls.conversation_2_3 = Conversation.objects.get(
+            holder=cls.author_2, target=cls.author_3
+        )
+        cls.conversation_3_2 = Conversation.objects.get(
+            holder=cls.author_3, target=cls.author_2
+        )
 
-        cls.conversation_4_5 = Conversation.objects.get(holder=cls.author_4, target=author_5)
-        cls.conversation_5_4 = Conversation.objects.get(holder=author_5, target=cls.author_4)
+        cls.conversation_4_5 = Conversation.objects.get(
+            holder=cls.author_4, target=author_5
+        )
+        cls.conversation_5_4 = Conversation.objects.get(
+            holder=author_5, target=cls.author_4
+        )
 
-        cls.conversation_4_6 = Conversation.objects.get(holder=cls.author_4, target=author_6)
-        cls.conversation_6_4 = Conversation.objects.get(holder=author_6, target=cls.author_4)
+        cls.conversation_4_6 = Conversation.objects.get(
+            holder=cls.author_4, target=author_6
+        )
+        cls.conversation_6_4 = Conversation.objects.get(
+            holder=author_6, target=cls.author_4
+        )
 
-        cls.conversation_4_7 = Conversation.objects.get(holder=cls.author_4, target=author_7)
-        cls.conversation_7_4 = Conversation.objects.get(holder=author_7, target=cls.author_4)
+        cls.conversation_4_7 = Conversation.objects.get(
+            holder=cls.author_4, target=author_7
+        )
+        cls.conversation_7_4 = Conversation.objects.get(
+            holder=author_7, target=cls.author_4
+        )
 
     def test_list_for_user_with_no_search_term(self):
         conversation_list = Conversation.objects.list_for_user(self.author_1)
@@ -107,22 +135,30 @@ class ConversationModelManagersTest(TestCase):
 
     def test_list_for_user_with_search_term(self):
         # Search by message content
-        conversation_list = Conversation.objects.list_for_user(self.author_1, search_term="domates")
+        conversation_list = Conversation.objects.list_for_user(
+            self.author_1, search_term="domates"
+        )
         self.assertEqual(1, conversation_list.count())
         self.assertIn(self.conversation_1_2, conversation_list)
 
-        conversation_list_4 = Conversation.objects.list_for_user(self.author_4, search_term="filiz")
+        conversation_list_4 = Conversation.objects.list_for_user(
+            self.author_4, search_term="filiz"
+        )
         self.assertEqual(2, conversation_list_4.count())
         self.assertIn(self.conversation_4_5, conversation_list_4)
         self.assertIn(self.conversation_4_6, conversation_list_4)
 
         # Search by author nick
-        conversation_list_2 = Conversation.objects.list_for_user(self.author_2, search_term="a3")
+        conversation_list_2 = Conversation.objects.list_for_user(
+            self.author_2, search_term="a3"
+        )
         self.assertEqual(1, conversation_list_2.count())
         self.assertIn(self.conversation_2_3, conversation_list_2)
 
         # Keyword with no result
-        conversation_list_3 = Conversation.objects.list_for_user(self.author_3, search_term="avakado")
+        conversation_list_3 = Conversation.objects.list_for_user(
+            self.author_3, search_term="avakado"
+        )
         self.assertEqual(0, conversation_list_3.count())
 
     def test_with_user(self):
@@ -134,7 +170,9 @@ class ConversationModelManagersTest(TestCase):
         self.assertEqual(conversation_1_2, self.conversation_1_2)
 
         # Test non-interchangeability
-        conversation_1_2_alternative_call = Conversation.objects.with_user(self.author_2, self.author_1)
+        conversation_1_2_alternative_call = Conversation.objects.with_user(
+            self.author_2, self.author_1
+        )
         self.assertNotEqual(conversation_1_2, conversation_1_2_alternative_call)
 
         # Test messages
@@ -146,13 +184,19 @@ class ConversationModelManagersTest(TestCase):
 class TopicModelManagersTest(TransactionTestCase):
     @classmethod
     def setUp(cls):
-        cls.author = Author.objects.create(username="user666", email="666", is_novice=False)
+        cls.author = Author.objects.create(
+            username="user666", email="666", is_novice=False
+        )
         cls.novice = Author.objects.create(username="user333", email="333")
 
-        cls.topic_1 = Topic.objects.create_topic("şeker çocuk", created_by=cls.author)  # slug -> seker-cocuk
+        cls.topic_1 = Topic.objects.create_topic(
+            "şeker çocuk", created_by=cls.author
+        )  # slug -> seker-cocuk
         cls.topic_2 = Topic.objects.create_topic("tepeleme")  # slug -> tepeleme
 
-        cls.entry_1 = Entry.objects.create(author=cls.author, topic=cls.topic_1, is_draft=True)
+        cls.entry_1 = Entry.objects.create(
+            author=cls.author, topic=cls.topic_1, is_draft=True
+        )
         cls.entry_2 = Entry.objects.create(author=cls.author, topic=cls.topic_2)
 
         # Non draft, by novice (for test_manager_published)

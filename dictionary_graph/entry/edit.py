@@ -28,7 +28,9 @@ class DraftEdit(Mutation):
         validate_user_text(content, exctype=ValueError)
 
         if pk:
-            entry = Entry.objects_all.get(is_draft=True, author=info.context.user, pk=pk)
+            entry = Entry.objects_all.get(
+                is_draft=True, author=info.context.user, pk=pk
+            )
             entry.content = content
             entry.date_edited = timezone.now()
             entry.save(update_fields=["content", "date_edited"])
@@ -47,7 +49,9 @@ class DraftEdit(Mutation):
             if not topic.exists:
                 topic = Topic.objects.create_topic(title=topic.title)
 
-            entry = Entry(author=info.context.user, topic=topic, content=content, is_draft=True)
+            entry = Entry(
+                author=info.context.user, topic=topic, content=content, is_draft=True
+            )
             entry.save()
             return DraftEdit(
                 pk=entry.pk,

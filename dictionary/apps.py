@@ -63,7 +63,10 @@ class DictionaryConfig(AppConfig):
             _("the topics that some authors want populated"),
             ({"all": _("all"), "owned": _("owned")}, "all"),
         ),
-        "today-in-history": (_("today in history"), _("what has been said around this time in the past years?")),
+        "today-in-history": (
+            _("today in history"),
+            _("what has been said around this time in the past years?"),
+        ),
         "drafts": (_("drafts"), _("the entries that i've yet to publish")),
         "followups": (_("followups"), _("what other authors wrote down after me?")),
         "novices": (_("novices"), _("the entries of novice users")),
@@ -114,7 +117,13 @@ class DictionaryConfig(AppConfig):
     These categories have tabs. Make sure you configure metadata correctly.
     """
 
-    USER_EXCLUSIVE_CATEGORIES = ("today", "drafts", "acquaintances", "wishes", "followups")
+    USER_EXCLUSIVE_CATEGORIES = (
+        "today",
+        "drafts",
+        "acquaintances",
+        "wishes",
+        "followups",
+    )
     """
     Cache (if enabled) these categories PER USER (The list of objects in those
     categories varies on authenticated user).
@@ -171,7 +180,12 @@ class DictionaryConfig(AppConfig):
     DEFAULT_CACHE_TIMEOUT = 90
     """ADVANCED: Set default timeout for category caching."""
 
-    EXCLUSIVE_TIMEOUTS = {"top": 86400, "today-in-history": 86400, "today": 300, "popular": 30}
+    EXCLUSIVE_TIMEOUTS = {
+        "top": 86400,
+        "today-in-history": 86400,
+        "today": 300,
+        "popular": 30,
+    }
     """
     ADVANCED: Set exclusive timeouts (seconds) for categories if you don't want
     them to use the default.
@@ -345,7 +359,9 @@ class DictionaryConfig(AppConfig):
     """
 
     SUGGESTIONS_ENTRY_REQUIREMENT = 100
-    """The number of entries required to acquire the privilege of suggesting channels."""
+    """
+    The number of entries required to acquire the privilege of suggesting channels.
+    """
 
     # Images
 

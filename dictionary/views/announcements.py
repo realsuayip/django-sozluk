@@ -1,5 +1,9 @@
 from django.utils import timezone
-from django.views.generic.dates import ArchiveIndexView, DateDetailView, MonthArchiveView
+from django.views.generic.dates import (
+    ArchiveIndexView,
+    DateDetailView,
+    MonthArchiveView,
+)
 
 from dictionary.models import Announcement
 
@@ -20,7 +24,10 @@ class AnnouncementIndex(AnnouncementMixin, ArchiveIndexView):
 
     def dispatch(self, request, *args, **kwargs):
         # Mark announcements read
-        if request.user.is_authenticated and request.user.unread_topic_count["announcements"] > 0:
+        if (
+            request.user.is_authenticated
+            and request.user.unread_topic_count["announcements"] > 0
+        ):
             request.user.announcement_read = timezone.now()
             request.user.save()
             self.request.user.invalidate_unread_topic_count()
@@ -36,7 +43,9 @@ class AnnouncementMonth(AnnouncementMixin, MonthArchiveView):
 
     def get_date_list(self, queryset, **kwargs):
         # To list ALL months in date_list (the archive doesn't go deeper at this point)
-        return super().get_date_list(queryset=self.model.objects.all(), ordering="DESC", **kwargs)
+        return super().get_date_list(
+            queryset=self.model.objects.all(), ordering="DESC", **kwargs
+        )
 
 
 class AnnouncementDetail(AnnouncementMixin, DateDetailView):
