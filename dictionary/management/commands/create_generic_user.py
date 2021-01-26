@@ -40,28 +40,29 @@ class Command(BaseDebugCommand):
             % {"username": username, "user_type": user_type, "email": email}
         )
 
-        if confirmation == "y":
-            try:
-                guser = Author.objects.create_user(
-                    username=username,
-                    email=email,
-                    is_active=True,
-                    is_novice=False,
-                    is_private=is_private,
-                    application_status="AP",
-                    message_preference="DS",
-                    password=options.get("password"),
-                )
-
-                self.stdout.write(
-                    _(
-                        "generic_%(user_type)s has been created with the username"
-                        " %(username)s and email %(email)s. You can edit the details"
-                        " of this user via admin page if you wish."
-                    )
-                    % {"username": guser.username, "user_type": user_type, "email": guser.email}
-                )
-            except IntegrityError:
-                self.stdout.write(_("Error: either there is an existing user with given username or e-mail is in use."))
-        else:
+        if confirmation != "y":
             self.stdout.write(_("Command aborted."))
+            return
+
+        try:
+            guser = Author.objects.create_user(
+                username=username,
+                email=email,
+                is_active=True,
+                is_novice=False,
+                is_private=is_private,
+                application_status="AP",
+                message_preference="DS",
+                password=options.get("password"),
+            )
+
+            self.stdout.write(
+                _(
+                    "generic_%(user_type)s has been created with the username"
+                    " %(username)s and email %(email)s. You can edit the details"
+                    " of this user via admin page if you wish."
+                )
+                % {"username": guser.username, "user_type": user_type, "email": guser.email}
+            )
+        except IntegrityError:
+            self.stdout.write(_("Error: either there is an existing user with given username or e-mail is in use."))

@@ -317,19 +317,22 @@ class Author(AbstractUser):
 
         latest_entry_date = self.last_entry_date
 
-        if latest_entry_date is not None:
-            interval = settings.NOVICE_ENTRY_INTERVAL if self.is_novice else settings.AUTHOR_ENTRY_INTERVAL
-            delta = timezone.now() - latest_entry_date
-            if delta <= timezone.timedelta(seconds=interval):
-                remaining = interval - delta.seconds
-                return (
-                    ngettext(
-                        "you are sending entries too frequently. try again in a second.",
-                        "you are sending entries too frequently. try again in %(remaining)d seconds.",
-                        remaining,
-                    )
-                    % {"remaining": remaining}
+        if latest_entry_date is None:
+            return None
+
+        interval = settings.NOVICE_ENTRY_INTERVAL if self.is_novice else settings.AUTHOR_ENTRY_INTERVAL
+        delta = timezone.now() - latest_entry_date
+
+        if delta <= timezone.timedelta(seconds=interval):
+            remaining = interval - delta.seconds
+            return (
+                ngettext(
+                    "you are sending entries too frequently. try again in a second.",
+                    "you are sending entries too frequently. try again in %(remaining)d seconds.",
+                    remaining,
                 )
+                % {"remaining": remaining}
+            )
 
         return None
 

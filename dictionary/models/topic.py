@@ -122,33 +122,36 @@ class Topic(models.Model):
     def register_wishes(self, fulfiller_entry=None):
         """To delete fulfilled wishes and inform wishers."""
 
-        if self.wishes.exists() and self.has_entries:
-            invoked_by_entry = fulfiller_entry is not None
-            wishes = self.wishes.all().select_related("author")
+        if not (self.wishes.exists() and self.has_entries):
+            return None
 
-            for wish in wishes:
-                self_fulfillment = invoked_by_entry and fulfiller_entry.author == wish.author
+        invoked_by_entry = fulfiller_entry is not None
+        wishes = self.wishes.all().select_related("author")
 
-                if not self_fulfillment:
-                    message = (
-                        gettext(
-                            "`%(title)s`, the topic you wished for, had an entry"
-                            " entered by `@%(username)s`: (see: #%(entry)d)"
-                        )
-                        % {
-                            "title": self.title,
-                            "username": fulfiller_entry.author.username,
-                            "entry": fulfiller_entry.pk,
-                        }
-                        if invoked_by_entry
-                        else gettext("`%(title)s`, the topic you wished for, is now populated with some entries.")
-                        % {"title": self.title}
-                    )
+        for wish in wishes:
+            self_fulfillment = invoked_by_entry and fulfiller_entry.author == wish.author
 
-                    Message.objects.compose(get_generic_superuser(), wish.author, message)
+            if self_fulfillment:
+                continue
 
-            return wishes.delete()
-        return None
+            message = (
+                gettext(
+                    "`%(title)s`, the topic you wished for, had an entry"
+                    " entered by `@%(username)s`: (see: #%(entry)d)"
+                )
+                % {
+                    "title": self.title,
+                    "username": fulfiller_entry.author.username,
+                    "entry": fulfiller_entry.pk,
+                }
+                if invoked_by_entry
+                else gettext("`%(title)s`, the topic you wished for, is now populated with some entries.")
+                % {"title": self.title}
+            )
+
+            Message.objects.compose(get_generic_superuser(), wish.author, message)
+
+        return wishes.delete()
 
     def wish_collection(self):
         return self.wishes.select_related("author")
