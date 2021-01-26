@@ -16,37 +16,40 @@
 {% block content %}
     <p style="background: #79aec8; padding: 1em; color: #fff; margin: 0;">{% trans "You have selected these users to suspend:" %}</p>
     {% load humanize %}
-    <div style="border: 1px solid #79aec8; padding: 1em; border-top: none;">
+    <div style="border: 1px solid #79aec8; padding: 1em; border-top: none; margin-bottom: 1rem">
         {% for source in sources %}
             <p>
                 <strong>
                     <a target="_blank" href="{{ source.get_absolute_url }}">{{ source.username }}</a>
                 </strong>
-                <small>({% trans "last entry date:" %} {{ source.last_entry_date|naturaltime }})</small>
+                {% if source.last_entry_date %}
+                    <small>({% trans "last entry date:" %}{{ source.last_entry_date|naturaltime }})</small>
+                {% endif %}
             </p>
         {% endfor %}
     </div>
 
-    <hr style="margin: 1rem 0;">
-
     <form method="post">
-        <div>
-            <label for="suspension_time">{% trans "Time interval for suspension:" %}</label>
-            <select name="suspension_time" id="suspension_time" style="width: 100%;">
-                <option value="D1" selected>{% trans "One day" %}</option>
-                <option value="W1">{% trans "One week" %}</option>
-                <option value="W2">{% trans "Two weeks" %}</option>
-                <option value="M1">{% trans "One month" %}</option>
-                <option value="M3">{% trans "Three months" %}</option>
-                <option value="PM">{% trans "Permanent" %}</option>
+        <label for="quantity">{% trans "Time interval for suspension:" %}</label>
+        <div style="margin-top: .5rem">
+            <input type="number" id="quantity" name="quantity" min="1" max="100" value="7" style="height: 18px">
+            <select name="multiplier">
+                <option value="1">{% trans "hour(s)" %}</option>
+                <option value="24" selected>{% trans "day(s)" %}</option>
+                <option value="168">{% trans "week(s)" %}</option>
+                <option value="730">{% trans "month(s)" %}</option>
+                <option value="8760">{% trans "year(s)" %}</option>
             </select>
         </div>
-        <br>
-        <label for="information">{% trans "Information messages to be shown for users:" %} </label>
-        <textarea name="information" cols="40" rows="10" id="information" style="width: 100%;" placeholder="{% trans "(entry formatting options are available)" %}" required></textarea>
 
-        {% csrf_token %}
-
-        <input type="submit" value="{% trans "Suspend" %}" class="default">
+        <div style="margin-top: 1rem;">
+            <label for="information">{% trans "Information messages to be shown for users:" %} </label>
+            <textarea name="information" rows="10" cols="100" id="information"
+                      style="display: block; box-sizing: border-box; margin: .4rem 0"
+                      placeholder="{% trans "(entry formatting options are available)" %}"
+                      required></textarea>
+            {% csrf_token %}
+            <input type="submit" value="{% trans "Suspend" %}" class="default" style="float: none">
+        </div>
     </form>
 {% endblock %}
