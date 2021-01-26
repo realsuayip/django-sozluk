@@ -31,6 +31,7 @@ class TopicAdmin(admin.ModelAdmin):
                     "<b>Spotify album: </b>(https://open.spotify.com/embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br>"
                     "<b>Spotify playlist: </b>"
                     "(https://open.spotify.com/embed/user/spotify/playlist/37i9dQZF1DX1tz6EDao8it)<br>"
+                    "<b>Tweet: </b>(https://twitter.com/kaankural/status/16867365789)<br>"
                 ),
             },
         ),

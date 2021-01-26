@@ -168,6 +168,8 @@ def mediastamp(media_urls, mode):
         return ""
 
     has_instagram = False
+    has_twitter = False
+
     media_set = tuple(dict.fromkeys(media_urls.split()))
     html = ""
 
@@ -177,6 +179,7 @@ def mediastamp(media_urls, mode):
      data-instgrm-version="12"></blockquote>'
     spotify = '<iframe class="border-0" src="{}" width="100%" height="{}" allowtransparency="true" \
      allow="encrypted-media"></iframe>'
+    twitter = '<blockquote class="twitter-tweet" data-dnt="true"><a href="{}"></a></blockquote>'
 
     for url in filter(lambda u: not u.startswith("#"), map(escape, media_set)):
         if "youtube.com/embed/" in url:
@@ -184,6 +187,9 @@ def mediastamp(media_urls, mode):
         elif "instagram.com/p/" in url:
             html += instagram.format(url)
             has_instagram = True
+        elif ("twitter.com/" in url) and ("/status/" in url):
+            html += twitter.format(url)
+            has_twitter = True
         elif "open.spotify.com/embed/" in url:
             if "/track/" in url:
                 html += spotify.format(url, 80)
@@ -191,7 +197,10 @@ def mediastamp(media_urls, mode):
                 html += spotify.format(url, 400)
 
     if has_instagram:
-        html = '<script async src="//www.instagram.com/embed.js"></script>' + html
+        html += '<script async src="//www.instagram.com/embed.js"></script>'
+
+    if has_twitter:
+        html += '<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
 
     return mark_safe(f'<section class="topic-media-area mt-2">{html}</section>')
 
