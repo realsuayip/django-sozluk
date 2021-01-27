@@ -87,7 +87,7 @@
 
         <span class="mx-2">&sol;</span>
         <a title="{% trans "last page" %}" id="lf_total_pages" role="button" tabindex="0">{{ lf.page.paginator.num_pages }}</a>
-        <a title="{% trans "subsequent page" %}" class="ml-1" id="lf_navigate_after" role="button" tabindex="0">»</a>
+        <a title="{% trans "subsequent page" %}" class="ml-1{{ lf.page.has_next|yesno:", d-none" }}" id="lf_navigate_after" role="button" tabindex="0">»</a>
     </div>
     {# PAGINATION END #}
 

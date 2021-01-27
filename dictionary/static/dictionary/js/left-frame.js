@@ -90,7 +90,7 @@ class LeftFrame {
             $exclusions:[String],$extra:JSONString){topics(slug:$slug,year:$year,page:$page,searchKeys:$searchKeys,
             refresh:$refresh,tab:$tab,exclusions:$exclusions,extra:$extra){
                 safename refreshCount year yearRange slugIdentifier parameters
-                page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages }
+                page { objectList { slug title count } paginator { pageRange numPages } number hasOtherPages hasNext }
                 tabs{current available{name, safename}}
                 exclusions{active, available{name, slug, description}}
             }}`
@@ -110,7 +110,7 @@ class LeftFrame {
         one("#current_category_name").textContent = data.safename
         this.renderRefreshButton(data.refreshCount)
         this.renderYearSelector(data.year, data.yearRange)
-        this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number)
+        this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number, data.page.hasNext)
         this.renderTopicList(data.page.objectList, data.slugIdentifier, data.parameters)
         this.renderShowMoreButton(data.page.number, data.page.hasOtherPages)
         this.renderTabs(data.tabs)
@@ -212,11 +212,12 @@ class LeftFrame {
         }
     }
 
-    renderPagination (isPaginated, pageRange, totalPages, currentPage) {
+    renderPagination (isPaginated, pageRange, totalPages, currentPage, hasNext) {
     // Pagination related selectors
         const paginationWrapper = one("#lf_pagination_wrapper")
         const pageSelector = one("select#left_frame_paginator")
         const totalPagesButton = one("#lf_total_pages")
+        const nextPageButton = one("#lf_navigate_after")
 
         // Render pagination
         if (isPaginated && currentPage !== 1) {
@@ -230,6 +231,7 @@ class LeftFrame {
 
             pageSelector.innerHTML += options
             totalPagesButton.textContent = totalPages
+            nextPageButton.classList[hasNext ? "remove" : "add"]("d-none")
             paginationWrapper.classList.remove("dj-hidden")
         } else {
             paginationWrapper.classList.add("dj-hidden")
