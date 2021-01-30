@@ -1,4 +1,4 @@
-import { Handle, Handler, one, createPopper } from "../utils"
+import { Handle, Handler, one, createPopper, sleep } from "../utils"
 
 const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -86,7 +86,12 @@ class Dropdown {
         })
     }
 
-    toggle () {
+    async toggle () {
+        // To make dynamic dropdowns work (e.g., entry actions)
+        // Normally, we should use popper.update() but in Chrome/Edge the layout shift
+        // is preserved in (fixed) header for some reason?
+        await sleep(0)
+
         if (this.menuElement.style.display === "block") {
             this.destroy()
             return

@@ -169,7 +169,7 @@ const lang = document.documentElement.lang
 
 export {
     cookies, many, one, notify, gqlc,
-    notSafe, template, Handle, Handler,
+    notSafe, template, Handle, Handler, sleep,
     isValidText, updateQueryStringParameter, toggleText,
     createPopper, userIsAuthenticated, lang
 }

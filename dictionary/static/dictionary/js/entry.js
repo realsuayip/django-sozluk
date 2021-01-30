@@ -236,7 +236,6 @@ Handler(".entry-full a.action[role='button']", "click", function () {
     menuItems += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${icon("flag")}${gettext("report")}</a>`
 
     actions.innerHTML = menuItems
-    this._dropdownInstance.popper.update()
     this.classList.add("loaded")
 })
 
