@@ -197,6 +197,7 @@ Handler(".entry-actions", "click", function (event) {
 })
 
 // Render actions
+const icon = (name, a = 16, b = 16) => `<svg fill="currentColor" viewBox="0 0 ${a} ${b}"><use href="#${name}"></use></svg>`
 
 Handler(".entry-full a.action[role='button']", "click", function () {
     if (this.classList.contains("loaded")) {
@@ -210,30 +211,32 @@ Handler(".entry-full a.action[role='button']", "click", function () {
     const pinLabel = entryID === one("body").getAttribute("data-pin") ? gettext("unpin from profile") : gettext("pin to profile")
 
     actions.innerHTML = ""
+    let menuItems = ""
 
     if (userIsAuthenticated) {
         if (entry.classList.contains("commentable")) {
-            actions.innerHTML += `<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">${gettext("comment")}</a>`
+            menuItems += `<a target="_blank" href="/entry/${entryID}/comment/" class="dropdown-item">${icon("comment")}${gettext("comment")}</a>`
         }
         if (entry.classList.contains("owner")) {
-            actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item pin">${pinLabel}</a>`
-            actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item delete">${gettext("delete")}</a>`
-            actions.innerHTML += `<a href="/entry/update/${entryID}/" class="dropdown-item">${gettext("edit")}</a>`
+            menuItems += `<a role="button" tabindex="0" class="dropdown-item pin">${icon("pin")}${pinLabel}</a>`
+            menuItems += `<a role="button" tabindex="0" class="dropdown-item delete">${icon("trash")}${gettext("delete")}</a>`
+            menuItems += `<a href="/entry/update/${entryID}/" class="dropdown-item">${icon("edit", 576, 512)}${gettext("edit")}</a>`
         } else {
             if (!entry.classList.contains("private")) {
-                actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item message">${gettext("message")}</a>`
-                actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item block">${gettext("block")}</a>`
+                menuItems += `<a role="button" tabindex="0" class="dropdown-item message">${icon("message")}${gettext("message")}</a>`
+                menuItems += `<a role="button" tabindex="0" class="dropdown-item block">${icon("block")}${gettext("block")}</a>`
             }
         }
     }
 
-    this._dropdownInstance.popper.update()
-
     if (isTouchDevice) {
-        actions.innerHTML += `<a role="button" tabindex="0" class="dropdown-item copy">${gettext("copy link")}</a>`
+        menuItems += `<a role="button" tabindex="0" class="dropdown-item copy">${icon("link")}${gettext("copy link")}</a>`
     }
 
-    actions.innerHTML += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${gettext("report")}</a>`
+    menuItems += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${icon("flag")}${gettext("report")}</a>`
+
+    actions.innerHTML = menuItems
+    this._dropdownInstance.popper.update()
     this.classList.add("loaded")
 })
 

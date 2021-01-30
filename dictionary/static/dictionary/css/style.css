@@ -193,7 +193,7 @@ nav.sub-nav ul li svg {
 }
 
 nav.sub-nav ul .more_tags_dropdown a {
-    padding: 5px 30px;
+    padding: .5rem 1.5rem;
     text-align: center;
 }
 
@@ -210,10 +210,6 @@ nav.sub-nav ul .more_tags_dropdown a.active,
 nav.sub-nav ul .more_tags_dropdown,
 .usermenu-dropdown {
     top: -3px;
-}
-
-.usermenu-dropdown a {
-    padding: .7rem 1.4rem;
 }
 
 .small-device-alert {
@@ -677,11 +673,6 @@ ul.user-navigation > li > .user-dropdown a:active {
     color: inherit;
 }
 
-ul.user-navigation > li > .user-dropdown a.dropdown-item {
-    font-size: 13px;
-    padding: .3em 1.5em;
-}
-
 body a,
 body a[role="button"]:not(.dropdown-item) {
     color: var(--primary-light);
@@ -1073,10 +1064,6 @@ a.expand::after {
     padding: 2px;
 }
 
-.topic-dropdown a.dropdown-item {
-    padding: .2em .7em;
-    font-size: 14px;
-}
 
 .topic-dropdown a.dropdown-item:focus,
 .topic-dropdown a.dropdown-item:active {
@@ -1269,7 +1256,7 @@ body.dark .btn-django-link.faded {
 }
 
 li.profile-stat-expand .dropdown-menu .dropdown-item {
-    padding: .3em 1em;
+    padding: .5rem 1.5rem;
     color: var(--primary-light);
 }
 
@@ -1443,6 +1430,28 @@ textarea.expandable {
 .danger-area input,
 .danger-area select {
     border: 0;
+}
+
+.dropdown-menu.icon-assisted .dropdown-item {
+    padding: .5rem 1.5rem;
+    font-size: 1rem;
+}
+
+.dropdown-menu.icon-assisted .dropdown-item:focus svg,
+.dropdown-menu.icon-assisted .dropdown-item:active svg {
+    color: inherit;
+}
+
+.dropdown-menu.icon-assisted .dropdown-item > svg {
+    --icon-color: rgba(27, 27, 27, .75);
+    margin-right: 1em;
+    height: 1.25em;
+    width: 1.25em;
+    color: var(--icon-color); /* Not 'fill' for :hov effects! */
+}
+
+body.dark .dropdown-menu.icon-assisted .dropdown-item > svg {
+    --icon-color: rgba(255, 255, 255, .75);
 }
 
 /** MEDIA QUERIES **/

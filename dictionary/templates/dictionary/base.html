@@ -47,7 +47,7 @@
                         </button>
 
                         <button class="btn searchbtn" type="submit" title="{% trans "Search" %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 16 16">
+                            <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 16 16">
                                 <use href="#search"></use>
                             </svg>
                         </button>
@@ -113,16 +113,41 @@
                             </svg>
                         </a>
 
-                            <div class="user-dropdown dropdown-menu no-collapse" aria-labelledby="user-dropdown">
-                                <a class="dropdown-item" href="{% url 'category_list' %}">{% trans "channels" %}</a>
-                                <a class="dropdown-item" href="{% url 'user_preferences' %}">{% trans "settings" %}</a>
-                                {% if not user.is_novice %}
-                                    <a class="dropdown-item" href="{% url 'image-list' %}">{% trans "my images" %}</a>
-                                {% endif %}
-                                <a class="dropdown-item" href="{% url 'people' %}">{% trans "following/blocked" %}</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'logout' %}">{% trans "log out" %}</a>
-                            </div>
+                        <div class="user-dropdown dropdown-menu no-collapse icon-assisted" aria-labelledby="user-dropdown">
+                            <a class="dropdown-item" href="{% url 'category_list' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#bookmarks"></use>
+                                </svg>
+                                {% trans "channels" %}
+                            </a>
+                            <a class="dropdown-item" href="{% url 'user_preferences' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#cog-border"></use>
+                                </svg>
+                                {% trans "settings" %}
+                            </a>
+                            {% if not user.is_novice %}
+                                <a class="dropdown-item" href="{% url 'image-list' %}">
+                                    <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                        <use href="#images"></use>
+                                    </svg>
+                                    {% trans "my images" %}
+                                </a>
+                            {% endif %}
+                            <a class="dropdown-item" href="{% url 'people' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#people"></use>
+                                </svg>
+                                {% trans "following/blocked" %}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'logout' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#logout"></use>
+                                </svg>
+                                {% trans "log out" %}
+                            </a>
+                        </div>
                     </li>
 
                 </ul>
@@ -149,27 +174,77 @@
                 {% render_header_link "acquaintances" %}
 
                 {% if user.is_authenticated %}
-                    <li id="usermenu_mobile" data-toggle="dropdown">
+                    <li class="key-clickable" tabindex="0" id="usermenu_mobile" data-toggle="dropdown">
                         <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <use href="#more"></use>
                             <title>{% trans "Account Menu" %}</title>
                         </svg>
                     </li>
 
-                    <div class="usermenu-dropdown dropdown-menu" aria-labelledby="usermenu_mobile">
-                        <a href="{% url "category_list" %}" class="dropdown-item">{% trans "channels" %}</a>
-                        <a href="{% url "topic_list" slug="drafts" %}" class="dropdown-item">{% trans "drafts" %}</a>
-                        <a href="{% url "topic_list" slug="wishes" %}" class="dropdown-item">{% trans "wishes" %}</a>
-                        <a href="{% url "topic_list" slug="followups" %}" class="dropdown-item">{% trans "followups" %}</a>
-                        <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">{% trans "novices" %}</a>
-                        <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">{% trans "advanced search" %}</a>
-                        <a href="{% url "user_preferences" %}" class="dropdown-item">{% trans "settings" %}</a>
+                    <div class="usermenu-dropdown dropdown-menu icon-assisted" aria-labelledby="usermenu_mobile">
+                        <a href="{% url "category_list" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#bookmarks"></use>
+                            </svg>
+                            {% trans "channels" %}
+                        </a>
+                        <a href="{% url "topic_list" slug="drafts" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#saved"></use>
+                            </svg>
+                            {% trans "drafts" %}
+                        </a>
+                        <a href="{% url "topic_list" slug="wishes" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#present"></use>
+                            </svg>
+                            {% trans "wishes" %}
+                        </a>
+                        <a href="{% url "topic_list" slug="followups" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#side-note"></use>
+                            </svg>
+                            {% trans "followups" %}
+                        </a>
+                        <a href="{% url "topic_list" slug="novices" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#experimental"></use>
+                            </svg>
+                            {% trans "novices" %}
+                        </a>
+                        <a href="{% url "topic_list" slug="search" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#search"></use>
+                            </svg>
+                            {% trans "advanced search" %}
+                        </a>
+                        <a href="{% url "user_preferences" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#cog-border"></use>
+                            </svg>
+                            {% trans "settings" %}
+                        </a>
                         {% if not user.is_novice %}
-                            <a class="dropdown-item" href="{% url 'image-list' %}">{% trans "my images" %}</a>
+                            <a class="dropdown-item" href="{% url 'image-list' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#images"></use>
+                                </svg>
+                                {% trans "my images" %}
+                            </a>
                         {% endif %}
-                        <a href="{% url "people" %}" class="dropdown-item">{% trans "following/blocked" %}</a>
+                        <a href="{% url "people" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#people"></use>
+                            </svg>
+                            {% trans "following/blocked" %}
+                        </a>
                         <div class="dropdown-divider"></div>
-                        <a href="{% url "logout" %}" class="dropdown-item">{% trans "log out" %}</a>
+                        <a href="{% url "logout" %}" class="dropdown-item">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#logout"></use>
+                            </svg>
+                            {% trans "log out" %}
+                        </a>
                     </div>
 
                 {% else %}
