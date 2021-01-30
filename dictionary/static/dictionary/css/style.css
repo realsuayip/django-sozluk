@@ -1691,6 +1691,11 @@ body.dark .dropdown-menu.icon-assisted .dropdown-item > svg {
         grid-gap: .75rem;
     }
 
+    body#ua header.entry_header > .lower {
+        grid-template-columns: max-content max-content;
+        grid-template-rows: none;
+    }
+
     header.entry_header > .lower > .pagination {
         justify-content: flex-end;
     }
@@ -1699,9 +1704,20 @@ body.dark .dropdown-menu.icon-assisted .dropdown-item > svg {
         justify-content: space-between;
         grid-gap: 0;
     }
+
+    body#ua header.entry_header > .lower > .title_sub {
+        grid-template-columns: max-content max-content;
+        grid-gap: 1.25rem;
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 420px) {
+    body#ua header.entry_header > .lower {
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content;
+    }
+
     .logo {
         width: 50px;
     }
