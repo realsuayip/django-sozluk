@@ -25,9 +25,10 @@
     <section class="user_entries" data-topic="{{ topic.title }}">
             {% if topic.exists %}
                 <header class="entry_header">
-                <h1 class="topic-title">
-                    <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
 
+                <div class="upper">
+                <div class="topic-title">
+                    <h1 class="d-inline m-0"><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a></h1>
                     {% if mode == "search" %}<small>[{% trans "search keywords" %}: <strong>{{ request.GET.keywords.strip }}</strong>]</small>
                     {% elif mode == "links" %}<small><strong>[{% trans "links" %}]</strong></small>
                     {% elif mode == "history" %}<small><strong>[{% trans "today in history" %}: </strong>{{ request.GET.year.strip }}]</small>
@@ -37,14 +38,15 @@
                     {% elif mode == "acquaintances" %}<small><strong>[{% trans "acquaintances" %}]</strong></small>
                     {% elif mode == "answered" %}<small><strong>[{% trans "with replies" %}]</strong></small>
                     {% elif mode == "images" %}<small><strong>[{% trans "images" %}]</strong></small>{% endif %}
+                </div>
 
                     {% if topic.is_pinned %}
-                        <svg class="float-right" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <svg style="transform: scaleX(-1);" fill="currentColor" width="16" height="25" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <use href="#pin"></use>
                             <title>{% trans "This topic is pinned" %}</title>
                         </svg>
                     {% endif %}
-                </h1>
+                </div>
 
             {% with mirrors=topic.mirrors.all %}
                 {% if mirrors %}

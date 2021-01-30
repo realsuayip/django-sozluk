@@ -375,6 +375,15 @@ header.entry_header h1 {
     font-weight: 700;
 }
 
+header.entry_header .upper {
+    display: grid;
+    grid-template-columns: minmax(min-content, max-content) min-content;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .75rem;
+    grid-gap: .5rem;
+}
+
 header.entry_header .lower a:not(.active) {
     color: var(--dark-0);
 }
