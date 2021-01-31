@@ -5,7 +5,7 @@
             <a href="{{ entry.topic.get_absolute_url }}"><strong>{{ entry.topic.title }}</strong></a>
             {% if entry == user.pinned_entry %}
                 <a role="button" tabindex="0" class="pin-sync" data-id="{{ entry.pk }}">
-                    <svg class="float-right" fill="currentColor" width="16" height="16" viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg">
+                    <svg style="transform: scaleX(-1);" class="float-right" fill="currentColor" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                         <use href="#pin"></use>
                         <title>{% trans "unpin this from the profile" %}</title>
                     </svg>
