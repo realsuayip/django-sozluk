@@ -44,6 +44,7 @@ from dictionary.utils.decorators import cached_context
 from dictionary.utils.managers import TopicListManager, entry_prefetch
 from dictionary.utils.mixins import IntegratedFormMixin
 from dictionary.utils.serializers import LeftFrame
+from dictionary.utils.views import SafePaginator
 
 
 class Index(ListView):
@@ -310,6 +311,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     form_class = EntryForm
     context_object_name = "entries"
     template_name = "dictionary/list/entry_list.html"
+    paginator_class = SafePaginator
 
     topic = None
     """
