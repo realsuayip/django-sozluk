@@ -442,13 +442,14 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     def history(self):
         year = self.request.GET.get("year", "")
 
-        if year.isdigit() and int(year) in settings.YEAR_RANGE:
-            now = timezone.now()
-            diff = now.year - int(year)
-            delta = timezone.localtime(now - relativedelta(years=diff))
-            return self.topic.entries.filter(date_created__date=delta.date())
+        if not (year.isdigit() and int(year) in settings.YEAR_RANGE):
+            self.redirect = True
+            return None
 
-        return None
+        now = timezone.now()
+        diff = now.year - int(year)
+        delta = timezone.localtime(now - relativedelta(years=diff))
+        return self.topic.entries.filter(date_created__date=delta.date())
 
     def nice(self):
         return self.topic.entries.order_by("-vote_rate")
@@ -460,18 +461,21 @@ class TopicEntryList(IntegratedFormMixin, ListView):
         """In topic (entry content) search."""
         keywords = self.request.GET.get("keywords", "").strip()
 
-        if keywords:
-            if keywords.startswith("@"):
-                with suppress(Author.DoesNotExist):
-                    author = Author.objects.get(username=keywords[1:])
-                    return self.topic.entries.filter(author=author)
-            else:
-                filters = Q(content__icontains=keywords)
-                if connection.vendor == "postgresql":
-                    filters |= Q(content__search=keywords)
-                return self.topic.entries.filter(filters)
+        if not keywords:
+            self.redirect = True
+            return None
 
-        return None
+        filters = Q(content__icontains=keywords)
+
+        if keywords.startswith("@") and (username := keywords[1:]):
+            with suppress(Author.DoesNotExist):
+                author = Author.objects.get(username=username)  # noqa
+                filters |= Q(author=author)
+
+        if connection.vendor == "postgresql":
+            filters |= Q(content__search=keywords)
+
+        return self.topic.entries.filter(filters)
 
     def links(self):
         """Shows the entries with links."""
@@ -718,7 +722,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
                     if not self.request.user.is_authenticated
                     else Entry.objects_published.exclude(author__in=self.request.user.blocked.all())
                 )
-                self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")),)
+                self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")))
                 self.topic = self.entry.topic
                 self.view_mode = "entry_permalink"
 
