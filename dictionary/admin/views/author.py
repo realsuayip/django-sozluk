@@ -37,8 +37,12 @@ class SuspendUser(IntermediateActionView):
             notifications.error(request, gettext("The selected duration was invalid."))
             return response
 
-        ban_hours = math.prod(map(int, factors))
-        suspended_until = timezone.now() + timedelta(hours=ban_hours)
+        try:
+            ban_hours = math.prod(map(int, factors))
+            suspended_until = timezone.now() + timedelta(hours=ban_hours)
+        except OverflowError:
+            notifications.error(self.request, gettext("The selected duration was invalid."))
+            return response
 
         # Evaluate it immediately because it needs to be iterated and we need to call len()
         user_list_raw = list(self.get_object_list())

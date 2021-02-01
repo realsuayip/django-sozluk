@@ -502,7 +502,7 @@ class TopicEntryList(IntegratedFormMixin, ListView):
             try:
                 # epoch + 1 because it does not account for the milliseconds
                 last_read = timezone.make_aware(datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc)
-            except (ValueError, TypeError, OSError):
+            except (ValueError, TypeError, OSError, OverflowError):
                 last_read = None
 
             if last_read and last_read > following.date_created:
