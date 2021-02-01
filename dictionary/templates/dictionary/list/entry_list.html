@@ -62,7 +62,7 @@
             {% endwith %}
 
                 {% if populated %}
-                    <div class="lower d-flex justify-content-between align-items-center">
+                    <div class="lower d-flex justify-content-between align-items-center{{ is_paginated|yesno:" paginated," }}">
                     <div class="title_sub">
                     <span class="nice-filter">{% trans "nice" %}:&nbsp;&nbsp;<a title="{% trans "most liked entries of all time" %}" href="{{ topic.get_absolute_url }}{% if mode != "nice" %}?a=nice{% endif %}" {% if mode == "nice" %}class="active" {% endif %}>{% trans "all" context "nicefilter" %}</a>
                         <span class="sep">|</span>
