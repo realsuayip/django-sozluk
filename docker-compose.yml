@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    command: gunicorn djdict.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+    - static_volume:/usr/src/app/static:rw
+    - media_volume:/usr/src/app/media:rw
+    expose:
+      - 8000
+    env_file:
+      - .env
+    environment:
+      - DJ_INIT_ENV=yes
+    depends_on:
+      - db
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+    ports:
+      - "8000:80"
+    depends_on:
+      - web
+  db:
+    image: postgres
+    user: postgres
+    env_file:
+      - .env.db
+  redis:
+    image: redis
+    user: redis
+  celery:
+    env_file:
+      - .env
+    build: .
+    command: celery -A djdict worker -l info
+    volumes:
+      - media_volume:/usr/src/app/media
+    depends_on:
+      - db
+      - redis
+  celery-beat:
+    env_file:
+      - .env
+    volumes:
+      - media_volume:/usr/src/app/media
+    build: .
+    command: celery -A djdict beat -l info
+    depends_on:
+      - db
+      - redis
+volumes:
+  static_volume:
+  media_volume:
