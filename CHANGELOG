@@ -1,3 +1,45 @@
+[1.0.5-beta](2021.02.03)(compatible)
+--Additions--
+1) It is now possible to embed tweets
+in topic media.
+
+-- Changes --
+1) Optimized codebase for admin's user
+suspension related views. Liberated the
+time choices for suspension times. Also
+changed the UI a bit.
+2) Reduced complexity in some files
+by removing/rearranging redundant blocks.
+3) In left frame desktop, the next page
+button will not be rendered when there is none.
+4) Overhauled dropdown menu designs,
+many with brand new icons.
+6) TopicEntryList changes:
+    a) searching with user handle will also
+    yield results that contain mentions of
+    the user, instead of just showing the
+    entries of that user.
+
+    b) Search and history modes will redirect
+    to the topic itself when given invalid queries.
+
+    c) A user-induced overflow error in following
+    mode will now fail silently (instead of 500).
+
+    d) Improved responsiveness of the header section
+    of the template.
+
+    e) Fixed a breaking bug related to pagination;
+    authenticated users would possibly get the 404
+    page instead of the topic, when they used the
+    links from search engines.
+
+7) Updated Django to 3.1.6, graphene-django to 2.15.0
+and Pillow to 8.1.0
+
+--Deletions--
+None
+
 [1.0.4-beta](2021.01.13)(compatible)
 --Additions--
 None
