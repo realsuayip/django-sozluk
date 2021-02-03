@@ -1,15 +1,15 @@
+from django.core.management.base import BaseCommand
 from django.core.validators import validate_email
 from django.db.utils import IntegrityError
 from django.utils.translation import gettext as _
 
 from dictionary.conf import settings
-from dictionary.management.commands import BaseDebugCommand
 from dictionary.models import Author
 
 # Creates generic users.
 
 
-class Command(BaseDebugCommand):
+class Command(BaseCommand):
     @property
     def help(self):
         return _("Creates a generic user")
@@ -18,11 +18,13 @@ class Command(BaseDebugCommand):
         parser.add_argument("user-type", type=str, help=_("The type of the user to be created"))
         parser.add_argument("password", type=str, help=_("The password of the user to be created"))
         parser.add_argument("email", type=str, help=_("E-mail address of the user to bo be created"))
+        parser.add_argument("--no-input", action="store_true")
 
     def handle(self, **options):
         available_types = ("private", "superuser")
         user_type = options.get("user-type")
         email = options.get("email")
+        no_input = options.get("no_input")
 
         validate_email(email)  # Throws django.core.exceptions.ValidationError if not valid.
 
@@ -32,12 +34,16 @@ class Command(BaseDebugCommand):
         is_private = user_type == "private"
         username = settings.GENERIC_PRIVATEUSER_USERNAME if is_private else settings.GENERIC_SUPERUSER_USERNAME
 
-        confirmation = input(
-            _(
-                "A user with username %(username)s, generic type %(user_type)s"
-                " and email %(email)s will be created. Continue? y/N: "
+        confirmation = (
+            "y"
+            if no_input
+            else input(
+                _(
+                    "A user with username %(username)s, generic type %(user_type)s"
+                    " and email %(email)s will be created. Continue? y/N: "
+                )
+                % {"username": username, "user_type": user_type, "email": email}
             )
-            % {"username": username, "user_type": user_type, "email": email}
         )
 
         if confirmation != "y":
