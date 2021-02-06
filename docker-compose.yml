@@ -5,14 +5,12 @@ services:
     build: .
     command: gunicorn djdict.wsgi:application --bind 0.0.0.0:8000
     volumes:
-    - static_volume:/usr/src/app/static:rw
-    - media_volume:/usr/src/app/media:rw
+      - static_volume:/usr/src/app/static:rw
+      - media_volume:/usr/src/app/media:rw
     expose:
       - 8000
     env_file:
       - .env
-    environment:
-      - DJ_INIT_ENV=yes
     depends_on:
       - db
   nginx:

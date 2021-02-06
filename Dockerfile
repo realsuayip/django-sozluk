@@ -17,4 +17,4 @@ COPY . .
 
 RUN mkdir -p media static
 
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/app/scripts/entrypoint.sh"]

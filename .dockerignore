@@ -1,3 +1,4 @@
+screenshots
 .parcel-cache
 node_modules
 venv-linux
@@ -8,3 +9,6 @@ db.sqlite3
 django_warning.log
 package-lock.json
 .git
+.env
+.env.db
+.idea
