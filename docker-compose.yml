@@ -23,12 +23,12 @@ services:
     depends_on:
       - web
   db:
-    image: postgres
+    image: postgres:13.1-alpine
     user: postgres
     env_file:
       - .env.db
   redis:
-    image: redis
+    image: redis:6.0.10-alpine
     user: redis
   celery:
     env_file:

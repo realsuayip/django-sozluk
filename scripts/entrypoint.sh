@@ -10,7 +10,8 @@ if [ "$DATABASE" = "postgres" ]; then
   echo "PostgreSQL is up."
 fi
 
-chown -R :1017 "$APP_DIR"
-chmod 775 "$APP_DIR" "$APP_DIR"/media "$APP_DIR"/static
+chown :1017 "$APP_DIR" "$APP_DIR"/media "$APP_DIR"/static
+chmod 775 "$APP_DIR"
+chmod 775 -R "$APP_DIR"/media "$APP_DIR"/static
 
 exec gosu django "$@"
