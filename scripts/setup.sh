@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "Starting initial setup..."
 python manage.py makemigrations
 python manage.py migrate
