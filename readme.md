@@ -2,6 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6c2a34dfbd184f139cd32f8f622d4002)](https://www.codacy.com/manual/realsuayip/django-sozluk?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=realsuayip/django-sozluk&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
+Demo website is now available at [sozluk.me](https://sozluk.me/) \
 Check [CHANGELOG](CHANGELOG) before cloning a newer version!
 
 This is a clone of ekşi sözlük. Commonly referred as "collaborative dictionary",
