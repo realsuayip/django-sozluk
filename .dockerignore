@@ -1,0 +1,14 @@
+screenshots
+.parcel-cache
+node_modules
+venv-linux
+venv
+media
+docs
+db.sqlite3
+django_warning.log
+package-lock.json
+.git
+.env
+.env.db
+.idea
