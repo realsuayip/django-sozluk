@@ -2138,7 +2138,7 @@ msgstr "facebook'ta paylaş"
 
 #: .\templates\dictionary\includes\entry.html:46
 msgid "tweet this in twitter"
-msgstr "twiiter'da tweetle"
+msgstr "twitter'da tweetle"
 
 #: .\templates\dictionary\includes\entry.html:55
 #: .\templates\dictionary\includes\entry.html:111
@@ -3384,7 +3384,7 @@ msgid ""
 " return to the original topic."
 msgstr ""
 "bakınız etiketiyle yönlendirildiniz. asıl başlığa dönmek için <a "
-"href='%(url)s'>buraya tıklayın</a."
+"href='%(url)s'>buraya tıklayın</a>"
 
 #: .\views\reporting.py:33
 msgid "it hasn't been long since you last sent a report."
