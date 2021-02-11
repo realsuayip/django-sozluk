@@ -53,6 +53,7 @@ function sleep (ms) {
 }
 
 async function notify (message, level = "default", initialDelay = 1800, persistent = false) {
+    if (toastQueue > 5) { return }
     const toastHolder = document.querySelector(".toast-holder")
     const delay = initialDelay + (toastQueue * 1000)
     const toastTemplate = `
