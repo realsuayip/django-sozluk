@@ -29,3 +29,24 @@ To receive e-mails in development, make sure that a Celery worker is running in 
     python -m smtpd -n -c DebuggingServer localhost:1025
 
 Python 3.8.2+ required.
+
+### Docker usage
+A docker configuration for a (rough) production setup is included; to take a quick look, you
+may serve the project using docker. Use this command to build and serve:
+
+    docker-compose up -d
+
+Initially, you also have to run a script (in the web container) that sets up the
+database, collects static files and generates required users for the dictionary app:
+
+    docker-compose exec web bash scripts/setup.sh
+
+You are most likely to create an admin account after these processes:
+
+    docker-compose exec web python manage.py createsuperuser
+
+If you intend to use this configuration for production, make sure you have
+edited all the `.env` files, Django settings file (`settings_prod.py`) and 
+dictionary settings file (`dictionary/apps.py`) with proper credentials.
+Make sure you change the passwords of users that are generated
+through `setup.sh` script.
