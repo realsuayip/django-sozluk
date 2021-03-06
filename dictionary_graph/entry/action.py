@@ -2,7 +2,7 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import F
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from graphene import ID, Int, Mutation, String
@@ -47,7 +47,7 @@ class DeleteEntry(Action, Mutation):
     @owneraction
     def mutate(_root, _info, entry):
         entry.delete()
-        redirect_url = reverse_lazy("topic", kwargs={"slug": entry.topic.slug})
+        redirect_url = reverse("topic", kwargs={"slug": entry.topic.slug})
 
         if not entry.is_draft:
             # Deduct some karma upon entry deletion.

@@ -1,5 +1,5 @@
 from django.core.validators import ValidationError
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -34,7 +34,7 @@ class DeleteConversation(Mutation):
             url_name = "messages-archive"
 
         model.objects.filter(holder=info.context.user, pk__in=pk_set).delete()
-        return DeleteConversation(redirect=reverse_lazy(url_name))
+        return DeleteConversation(redirect=reverse(url_name))
 
 
 class ArchiveConversation(Mutation):
@@ -58,7 +58,7 @@ class ArchiveConversation(Mutation):
             )
             conversation.archive()
 
-        return ArchiveConversation(redirect=reverse_lazy("messages-archive"))
+        return ArchiveConversation(redirect=reverse("messages-archive"))
 
 
 class ComposeMessage(Mutation):
