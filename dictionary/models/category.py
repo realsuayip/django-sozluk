@@ -93,7 +93,7 @@ class Suggestion(models.Model):
             rate=Coalesce(Sum("direction"), 0)
         )["rate"]
 
-        exists = self.topic.category.filter(pk=self.category.pk).exists()
+        exists = self.topic.category.filter(pk=self.category_id).exists()
 
         if not exists and rate >= settings.SUGGESTIONS_QUALIFY_RATE:
             self.topic.category.add(self.category)

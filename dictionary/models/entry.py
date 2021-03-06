@@ -115,4 +115,4 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return f"{reverse('entry-permalink', kwargs={'entry_id': self.entry.pk})}#comment-{self.pk}"
+        return f"{reverse('entry-permalink', kwargs={'entry_id': self.entry_id})}#comment-{self.pk}"
