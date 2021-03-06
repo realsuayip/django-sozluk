@@ -49,7 +49,7 @@ class WishTopic(Mutation):
             raise ValueError(_("sorry, the genie is now busy"))
 
         topic = Topic.objects.get_or_pseudo(unicode_string=title)
-        hint = smart_lower(hint).strip() or None
+        hint = smart_lower(hint).strip()
 
         if hint:
             validate_user_text(hint, exctype=ValueError)

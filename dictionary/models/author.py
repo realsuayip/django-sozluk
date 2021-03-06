@@ -501,7 +501,7 @@ class Author(AbstractUser):
 
 
 class Memento(models.Model):
-    body = models.TextField(blank=True, null=True)
+    body = models.TextField(blank=True)
     holder = models.ForeignKey(Author, on_delete=models.CASCADE)
     patient = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="+")
 
@@ -515,7 +515,7 @@ class Memento(models.Model):
 class UserVerification(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     verification_token = models.CharField(max_length=128)
-    new_email = models.EmailField(null=True, blank=True)  # new e-mail if it is subject to change
+    new_email = models.EmailField(blank=True)  # new e-mail if it is subject to change
     expiration_date = models.DateTimeField()
 
     def save(self, *args, **kwargs):
@@ -559,9 +559,8 @@ class AccountTerminationQueue(models.Model):
 
 class Badge(models.Model):
     name = models.CharField(max_length=36, verbose_name=_("Name"))
-    description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
     url = models.URLField(
-        null=True,
         blank=True,
         verbose_name=_("Link"),
         help_text=_(

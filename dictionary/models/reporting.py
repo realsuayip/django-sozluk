@@ -14,7 +14,6 @@ class GeneralReport(models.Model):
         max_length=3,
         choices=CategoryPref.choices,
         verbose_name=_("category"),
-        blank=False,
         default=CategoryPref.CONTENT,
     )
     subject = models.CharField(max_length=160, verbose_name=_("Subject"))

@@ -15,7 +15,7 @@ from dictionary.utils.validators import validate_category_name
 class Category(models.Model):
     name = models.CharField(max_length=24, unique=True, verbose_name=_("Name"), validators=[validate_category_name])
     slug = models.SlugField(editable=False)
-    description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
+    description = models.TextField(blank=True, verbose_name=_("Description"))
     is_pseudo = models.BooleanField(
         default=False,
         verbose_name=_("Pseudo channel"),
