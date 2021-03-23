@@ -132,7 +132,7 @@ Handler(".comment-vote .vote", "click", function () {
 })
 
 Handler(".entry-actions", "click", function (event) {
-    const [action] = ["message", "pin", "block", "delete", "copy"].filter(action => event.target.classList.contains(action))
+    const [action] = ["message", "pin", "block", "delete", "copy", "share"].filter(action => event.target.classList.contains(action))
 
     switch (action) {
         case "message" : {
@@ -192,6 +192,13 @@ Handler(".entry-actions", "click", function (event) {
             navigator.clipboard.writeText(link).then(() => {
                 notify(gettext("link copied to clipboard."), "info")
             })
+            break
+        }
+
+        case "share": {
+            const url = this.parentNode.querySelector(".permalink").href
+            navigator.share({ url })
+            break
         }
     }
 })
@@ -229,8 +236,12 @@ Handler(".entry-full a.action[role='button']", "click", function () {
         }
     }
 
-    if (isTouchDevice) {
+    if (isTouchDevice && !navigator.share) {
         menuItems += `<a role="button" tabindex="0" class="dropdown-item copy">${icon("link")}${gettext("copy link")}</a>`
+    }
+
+    if (navigator.share) {
+        menuItems += `<a role="button" tabindex="0" class="dropdown-item share">${icon("share")}${gettext("share")}</a>`
     }
 
     menuItems += `<a class="dropdown-item" href="/contact/?referrer_entry=${entryID}&referrer_topic=${topicTitle}">${icon("flag")}${gettext("report")}</a>`
