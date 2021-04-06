@@ -7,6 +7,7 @@ from dictionary.models import Category, Suggestion
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ("name",)
+    list_editable = ("weight",)
     list_display = ("name", "weight", "description", "is_default", "is_pseudo")
     exclude = ("slug",)
 

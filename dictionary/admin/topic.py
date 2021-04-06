@@ -37,7 +37,9 @@ class TopicAdmin(admin.ModelAdmin):
         ),
     )
 
-    list_display = ("title", "created_by", "is_censored", "is_banned", "date_created")
+    list_per_page = 30
+    list_editable = ("allow_suggestions", "is_censored", "is_banned",)
+    list_display = ("title", "created_by", "allow_suggestions", "is_censored", "is_banned", "date_created")
     list_filter = (
         "category",
         "is_pinned",
