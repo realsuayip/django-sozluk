@@ -360,7 +360,7 @@
 {% if user.is_authenticated %}
     <nav class="mobile-nav">
         {% url "user_preferences" as settings_path %}
-        {% url "topic_list" slug="search" as search_path %}
+        {% url "entry_create" as create_path %}
         {% url "messages"  as messages_path %}
         {% url 'activity' as activity_path %}
 
@@ -382,7 +382,7 @@
             {% endif %}
         </a>
 
-        <a href="{{ search_path }}" aria-label="{% trans "advanced search" %}"{{ request.path|startswith:search_path|yesno:' class=active,' }}>
+        <a href="{{ create_path }}" aria-label="{% trans "create new entry" %}"{{ request.path|startswith:create_path|yesno:' class=active,' }}>
             <svg fill="currentColor" width="24" height="24" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
                 <use href="#edit"></use>
             </svg>

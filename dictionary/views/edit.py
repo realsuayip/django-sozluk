@@ -3,13 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, FormView, UpdateView
 
 from dictionary.forms.edit import EntryForm, PreferencesForm
-from dictionary.models import Author, Comment, Entry
+from dictionary.models import Author, Comment, Entry, Topic
 
 
 class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -25,6 +25,85 @@ class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def form_invalid(self, form):
         notifications.error(self.request, gettext("we couldn't handle your request. try again later."))
         return super().form_invalid(form)
+
+
+class EntryCreateMixin:
+    model = Entry
+    form_class = EntryForm
+
+    def form_valid(self, form):
+        """
+        User sent new entry, whose topic may or may not be existent. If topic
+        exists, adds the entry and redirects to the entry permalink, otherwise
+        the topic is created if the title is valid. Entry.save() sets created_by
+        field of the topic.
+        """
+
+        draft_pk = self.request.POST.get("pub_draft_pk", "")
+        publishing_draft = draft_pk.isdigit()
+
+        if (not publishing_draft) and (self.topic.exists and self.topic.is_banned):
+            # Cannot check is_banned before checking its existence.
+            # Translators: Not likely to occur in normal circumstances so you may include some humor here.
+            notifications.error(self.request, _("no, no i don't think i will."))
+            return self.form_invalid(form)
+
+        status = self.request.user.entry_publishable_status
+
+        if status is not None:
+            notifications.error(self.request, status, extra_tags="persistent")
+            if publishing_draft:
+                return redirect(reverse("entry_update", kwargs={"pk": int(draft_pk)}))
+            return self.form_invalid(form)
+
+        if publishing_draft:
+            try:
+                entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
+                entry.content = form.cleaned_data["content"]
+                entry.is_draft = False
+                entry.date_created = timezone.now()
+                entry.date_edited = None
+            except Entry.DoesNotExist:
+                notifications.error(self.request, _("no, no i don't think i will."))
+                return self.form_invalid(form)
+        else:
+            # Creating a brand new entry.
+            entry = form.save(commit=False)
+            entry.author = self.request.user
+
+            if self.topic.exists:
+                entry.topic = self.topic
+            else:
+                if not self.topic.valid:
+                    notifications.error(self.request, _("curses to such a topic anyway."), extra_tags="persistent")
+                    return self.form_invalid(form)
+
+                entry.topic = Topic.objects.create_topic(title=self.topic.title)
+
+        entry.save()
+        notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
+        return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
+
+    def form_invalid(self, form):
+        if form.errors:
+            for err in form.errors["content"]:
+                notifications.error(self.request, err, extra_tags="persistent")
+
+        return super().form_invalid(form)
+
+
+class EntryCreate(LoginRequiredMixin, EntryCreateMixin, FormView):
+    template_name = "dictionary/edit/entry_create.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.extra_context = {"title": self.request.POST.get("title", "")}
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        if not self.request.POST.get("pub_draft_pk", "").isdigit():
+            # Topic object is only required if not publishing a draft.
+            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.extra_context.get("title"))  # noqa
+        return super().form_valid(form)
 
 
 class EntryUpdate(LoginRequiredMixin, UpdateView):
