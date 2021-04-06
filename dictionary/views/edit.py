@@ -58,7 +58,9 @@ class EntryCreateMixin:
 
         if publishing_draft:
             try:
-                entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
+                entry = Entry.objects_all.get(
+                    pk=int(draft_pk), is_draft=True, author=self.request.user, topic__is_banned=False
+                )
                 entry.content = form.cleaned_data["content"]
                 entry.is_draft = False
                 entry.date_created = timezone.now()
