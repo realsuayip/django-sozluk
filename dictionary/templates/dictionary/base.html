@@ -358,6 +358,7 @@
 </div>
 
 {% if user.is_authenticated %}
+    <div class="mobile-nav-wrapper">
     <nav class="mobile-nav">
         {% url "user_preferences" as settings_path %}
         {% url "entry_create" as create_path %}
@@ -402,6 +403,7 @@
             </svg>
         </a>
     </nav>
+    </div>
 {% endif %}
 
 {% spaceless %}

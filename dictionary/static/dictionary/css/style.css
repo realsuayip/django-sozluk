@@ -1463,17 +1463,24 @@ body.dark .dropdown-menu.icon-assisted .dropdown-item > svg {
     --icon-color: rgba(255, 255, 255, .75);
 }
 
-nav.mobile-nav {
+.mobile-nav-wrapper {
     background: var(--light-0);
     position: fixed;
     bottom: 0;
-    width: 100%;
     display: none;
+    width: 100%;
+}
+
+nav.mobile-nav {
+    background: inherit;
+    display: grid;
     grid-template-columns: repeat(5, max-content);
     justify-content: space-around;
     align-items: center;
     border-top: 1px solid var(--light-1);
     height: 50px;
+    position: relative;
+    bottom: env(safe-area-inset-bottom);
 }
 
 nav.mobile-nav > a {
@@ -1589,8 +1596,8 @@ nav.mobile-nav > a .user-badge {
         display: none !important;
     }
 
-    nav.mobile-nav {
-        display: grid;
+    .mobile-nav-wrapper {
+        display: block;
     }
 
     body {
