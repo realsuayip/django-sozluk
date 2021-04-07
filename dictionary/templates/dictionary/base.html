@@ -70,87 +70,76 @@
 
 
             {% if user.is_authenticated %}
-                <ul class="user-navigation d-inline-flex align-items-start pl-0 m-0">
-                    <li>
-                        <a class="nav-quicklink" href="{{ user.get_absolute_url }}" aria-label="{% trans "my profile" %}">
-                            <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#person"></use>
+                <nav id="user-navigation">
+                    <a href="{{ user.get_absolute_url }}" aria-label="{% trans "my profile" %}">
+                        <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#person"></use>
+                        </svg>
+                        <span>{% trans "me" %}</span>
+                    </a>
+
+                    <a href="{% url 'messages' %}" aria-label="{% trans "messages" %}">
+                        {% if user.unread_message_count > 0 %}
+                            <div class="badge user-badge">{{ user.unread_message_count }}</div>
+                        {% endif %}
+                        <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#chat"></use>
+                        </svg>
+                        <span>{% trans "messages" %}</span>
+                    </a>
+
+                    <a aria-label="{% trans "following topics" %}" href="{% url 'activity' %}">
+                        {% if user.unread_topic_count.sum > 0 %}
+                            <div class="badge user-badge">{{ user.unread_topic_count.sum }}</div>
+                        {% endif %}
+                        <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#bell"></use>
+                        </svg>
+                        <span>{% trans "activity" %}</span>
+                    </a>
+
+                    <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}" id="user-dropdown">
+                        <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#more"></use>
+                        </svg>
+                    </a>
+
+                    <div class="user-dropdown dropdown-menu no-collapse icon-assisted" aria-labelledby="user-dropdown">
+                        <a class="dropdown-item" href="{% url 'category_list' %}">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#bookmarks"></use>
                             </svg>
-                            <span>{% trans "me" %}</span>
+                            {% trans "channels" %}
                         </a>
-                    </li>
-
-
-                    <li {% if user.unread_message_count > 0 %}class="new"{% endif %}>
-                        <a class="nav-quicklink" href="{% url 'messages' %}" aria-label="{% trans "messages" %}">
-                            {% if user.unread_message_count > 0 %}
-                                <div class="badge user-badge">{{ user.unread_message_count }}</div>
-                            {% endif %}
-                            <svg style="transform: scaleX(-1);" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#chat"></use>
+                        <a class="dropdown-item" href="{% url 'user_preferences' %}">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#cog-border"></use>
                             </svg>
-                            <span class="ml-2">{% trans "messages" %}</span>
+                            {% trans "settings" %}
                         </a>
-                    </li>
-
-                    <li {% if user.unread_topic_count.sum > 0 %}class="new"{% endif %}>
-                        <a class="nav-quicklink" aria-label="{% trans "following topics" %}" href="{% url 'activity' %}">
-                            {% if user.unread_topic_count.sum > 0 %}
-                                <div class="badge user-badge">{{ user.unread_topic_count.sum }}</div>
-                            {% endif %}
-                            <svg fill="currentColor" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#bell"></use>
+                        {% if not user.is_novice %}
+                            <a class="dropdown-item" href="{% url 'image-list' %}">
+                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <use href="#images"></use>
+                                </svg>
+                                {% trans "my images" %}
+                            </a>
+                        {% endif %}
+                        <a class="dropdown-item" href="{% url 'people' %}">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#people"></use>
                             </svg>
-                            <span>{% trans "activity" %}</span>
+                            {% trans "following/blocked" %}
                         </a>
-                    </li>
-
-
-                    <li>
-                        <a data-toggle="dropdown" role="button" tabindex="0" aria-haspopup="true" aria-label="{% trans "Account Menu" %}" id="user-dropdown">
-                            <svg fill="currentColor" width="16" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#more"></use>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'logout' %}">
+                            <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <use href="#logout"></use>
                             </svg>
+                            {% trans "log out" %}
                         </a>
-
-                        <div class="user-dropdown dropdown-menu no-collapse icon-assisted" aria-labelledby="user-dropdown">
-                            <a class="dropdown-item" href="{% url 'category_list' %}">
-                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <use href="#bookmarks"></use>
-                                </svg>
-                                {% trans "channels" %}
-                            </a>
-                            <a class="dropdown-item" href="{% url 'user_preferences' %}">
-                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <use href="#cog-border"></use>
-                                </svg>
-                                {% trans "settings" %}
-                            </a>
-                            {% if not user.is_novice %}
-                                <a class="dropdown-item" href="{% url 'image-list' %}">
-                                    <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                        <use href="#images"></use>
-                                    </svg>
-                                    {% trans "my images" %}
-                                </a>
-                            {% endif %}
-                            <a class="dropdown-item" href="{% url 'people' %}">
-                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <use href="#people"></use>
-                                </svg>
-                                {% trans "following/blocked" %}
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'logout' %}">
-                                <svg fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <use href="#logout"></use>
-                                </svg>
-                                {% trans "log out" %}
-                            </a>
-                        </div>
-                    </li>
-
-                </ul>
+                    </div>
+                </nav>
 
 
             {% else %}
@@ -384,7 +373,7 @@
         </a>
 
         <a href="{{ create_path }}" aria-label="{% trans "create new entry" %}"{{ request.path|startswith:create_path|yesno:' class=active,' }}>
-            <svg fill="currentColor" width="24" height="24" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
+            <svg fill="currentColor" width="24" height="24" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
                 <use href="#edit"></use>
             </svg>
         </a>

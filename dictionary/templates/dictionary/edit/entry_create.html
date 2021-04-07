@@ -19,7 +19,7 @@
             <form method="post" id="content-form">
                 {% csrf_token %}
                 <div class="position-relative">
-                    <input name="title" type="text" class="form-control mb-3" placeholder="{% translate "title" %}" aria-label="{% translate "title" %}" value="{{ title }}" id="user_title_edit" required>
+                    <input name="title" type="text" class="form-control mb-3 fs-16" placeholder="{% translate "title" %}" aria-label="{% translate "title" %}" value="{{ title }}" id="user_title_edit" required>
                 </div>
                 {% include "dictionary/includes/editor_buttons.html" %}
 

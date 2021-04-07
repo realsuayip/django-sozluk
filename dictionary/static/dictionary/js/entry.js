@@ -227,7 +227,7 @@ Handler(".entry-full a.action[role='button']", "click", function () {
         if (entry.classList.contains("owner")) {
             menuItems += `<a role="button" tabindex="0" class="dropdown-item pin">${icon("pin")}${pinLabel}</a>`
             menuItems += `<a role="button" tabindex="0" class="dropdown-item delete">${icon("trash")}${gettext("delete")}</a>`
-            menuItems += `<a href="/entry/update/${entryID}/" class="dropdown-item">${icon("edit", 576, 512)}${gettext("edit")}</a>`
+            menuItems += `<a href="/entry/update/${entryID}/" class="dropdown-item">${icon("edit", 44, 44)}${gettext("edit")}</a>`
         } else {
             if (!entry.classList.contains("private")) {
                 menuItems += `<a role="button" tabindex="0" class="dropdown-item message">${icon("message")}${gettext("message")}</a>`
