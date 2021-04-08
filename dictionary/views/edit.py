@@ -1,6 +1,8 @@
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import F, Q
+from django.db.models.functions import Coalesce
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -10,6 +12,7 @@ from django.views.generic import CreateView, FormView, UpdateView
 
 from dictionary.forms.edit import EntryForm, PreferencesForm
 from dictionary.models import Author, Comment, Entry, Topic
+from dictionary.utils import time_threshold
 
 
 class UserPreferences(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -100,6 +103,21 @@ class EntryCreate(LoginRequiredMixin, EntryCreateMixin, FormView):
     def dispatch(self, request, *args, **kwargs):
         self.extra_context = {"title": self.request.POST.get("title", "")}
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["recent_drafts"] = (
+            Entry.objects_all.filter(
+                Q(date_created__gte=time_threshold(hours=24)) | Q(date_edited__gte=time_threshold(hours=24)),
+                is_draft=True,
+                author=self.request.user,
+            )
+            .select_related("topic")
+            .only("topic__title", "date_created", "date_edited")
+            .alias(last_edited=Coalesce(F("date_edited"), F("date_created")))
+            .order_by("-last_edited")[:5]
+        )
+        return context
 
     def form_valid(self, form):
         if not self.request.POST.get("pub_draft_pk", "").isdigit():

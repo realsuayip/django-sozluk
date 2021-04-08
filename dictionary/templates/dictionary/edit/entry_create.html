@@ -1,6 +1,6 @@
 {% extends "dictionary/base.html" %}
 
-{% load i18n widget_tweaks %}
+{% load i18n widget_tweaks filters humanize %}
 
 {% block title %}{% translate "create new entry" %}{% endblock %}
 
@@ -9,6 +9,26 @@
     {% translate "Entry content area" as area_label %}
 
     <h1 class="h4 mb-3"><strong>{% translate "create new entry" %}</strong></h1>
+
+    {% if recent_drafts %}
+        {% url "topic_list" slug="drafts" as drafts_url %}
+        <div class="rounded p-3 bg-light mb-3">
+            <svg class="mr-2" width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <use href="#saved"></use>
+            </svg>
+            {% blocktranslate trimmed with drafts_attr='data-lf-slug="drafts"' %}
+                you have <a {{ drafts_attr }} href="{{ drafts_url }}">recent entries</a> that are awaiting to be published:
+            {% endblocktranslate %}
+            <ul class="list-unstyled mt-2 mb-0">
+                {% for draft in recent_drafts %}
+                    <li>
+                        <a class="mr-2" href="{% url "entry_update" pk=draft.pk %}">{{ draft.topic.title }} (#{{ draft.pk }})</a>
+                        <time><small class="fs-90">{{ draft.date_edited|naturaltime|default:draft.date_created|naturaltime }}</small></time>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     <section class="user-content">
         {% if not user.is_novice %}
