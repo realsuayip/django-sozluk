@@ -204,7 +204,11 @@ class ActivityList(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return self.request.user.get_following_topics_with_receipt().order_by("is_read", "-topicfollowing__read_at")
+        return (
+            self.request.user.get_following_topics_with_receipt()
+            .only("title", "slug")
+            .order_by("is_read", "-topicfollowing__read_at")
+        )
 
     def post(self, *args, **kwargs):
         """Bulk read unread topics."""

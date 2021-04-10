@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import BooleanField, Case, Count, F, Q, Sum, When
+from django.db.models import BooleanField, Case, Count, F, OuterRef, Q, Sum, When
 from django.db.models.functions import Coalesce
 from django.shortcuts import reverse
 from django.template import defaultfilters
@@ -25,9 +25,11 @@ from uuslug import uuslug
 
 from dictionary.conf import settings
 from dictionary.models.category import Category
+from dictionary.models.entry import Entry
 from dictionary.models.m2m import DownvotedEntries, UpvotedEntries
 from dictionary.models.managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
 from dictionary.utils import get_generic_superuser, parse_date_or_none, time_threshold
+from dictionary.utils.db import SubQueryCount
 from dictionary.utils.decorators import cached_context
 from dictionary.utils.serializers import ArchiveSerializer
 from dictionary.utils.validators import validate_username_partial
@@ -225,22 +227,14 @@ class Author(AbstractUser):
 
     def get_following_topics_with_receipt(self):
         """Get user's following topics with read receipts."""
+        new_entries = (
+            Entry.objects.filter(topic=OuterRef("pk"), date_created__gte=OuterRef("topicfollowing__read_at"))
+            .exclude(Q(author=self) | Q(author__in=self.blocked.all()))
+            .only("id")
+        )
 
         return self.following_topics.annotate(
-            count=(
-                Count(
-                    "entries",
-                    filter=(
-                        Q(entries__date_created__gte=F("topicfollowing__read_at"))
-                        & ~(
-                            Q(entries__author=self)
-                            | Q(entries__author__in=self.blocked.all())
-                            | Q(entries__author__is_novice=True)
-                            | Q(entries__is_draft=True)
-                        )
-                    ),
-                )
-            ),
+            count=SubQueryCount(new_entries),
             last_read_at=F("topicfollowing__read_at"),
             is_read=Case(When(Q(count__gt=0), then=False), default=True, output_field=BooleanField()),
         )
