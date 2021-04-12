@@ -599,6 +599,7 @@ section.ama-comments aside.votes strong {
     color: var(--dark-1);
 }
 
+form#signup small,
 .fs-90 {
     font-size: 90%;
 }
@@ -1653,8 +1654,8 @@ nav.mobile-nav > a .user-badge {
     }
 
     header.entry-individual > .mobile > a.permalink {
-        font-size: 12px;
-        line-height: .5;
+        font-size: 90%;
+        line-height: .75;
         color: var(--dark-1);
     }
 
