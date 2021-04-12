@@ -42,7 +42,7 @@ class DraftEdit(Mutation):
             topic = Topic.objects.get_or_pseudo(unicode_string=title)
 
             if (topic.exists and topic.is_banned) or not topic.valid:
-                raise ValueError(_("no, no i don't think i will."))
+                raise ValueError(_("we couldn't handle your request. try again later."))
 
             if not topic.exists:
                 topic = Topic.objects.create_topic(title=topic.title)
