@@ -1,3 +1,42 @@
+[1.1-beta](2021.04.13)(**incompatible)
+--Additions--
+1) Added a Docker setup for production.
+2) Entry action "share" was added for supported devices.
+3) Mobile views now include a bottom navigation menu, replacing
+top right user controls.
+4) A standalone entry creation page was added.
+
+-- Changes --
+1) create_generic_user management command can
+now be used in debug mode & allows --no-input
+parameter to bypass confirmation inputs.
+2) The number of toasts that can be displayed
+at a time is now limited to 5.
+3) A bunch of text based database fields such as CharField
+or TextField had their 'null=True' removed. This is
+**incompatible**. You need to substitute these fields
+with empty strings "", this can be done while migrating
+as Django will ask you to take action for each changed field.
+4) Some 'reverse_lazy' functions were appropriately
+converted to 'reverse'.
+5) CSRF failure view now shows a plain 403 Forbidden message
+rather than Django's default 403 template.
+6) Fixed a bug which allowed publishing of drafts entries
+to banned topics.
+7) In admin panel, some fields are now editable right away
+in the list view.
+8) Django version is upgraded to 3.2
+9) Backup files are now served with nginx.
+10) A bunch of changes are made to improve UI & increase
+accessibility.
+11) A bunch of QuerySet's are changed to improve
+performance.
+12) Upgraded dependencies to latest versions.
+13) Optimized Turkish translation.
+
+--Deletions--
+None
+
 [1.0.5-beta](2021.02.03)(compatible)
 --Additions--
 1) It is now possible to embed tweets
