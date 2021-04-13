@@ -43,7 +43,7 @@ class GeneralReportView(CreateView):
 
         # Prepare and send a verification email.
         key = instance.key
-        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{reverse_lazy('verify-report', kwargs={'key': key})}"
+        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{reverse('verify-report', kwargs={'key': key})}"
 
         message = _(
             "in order reporting form to reach us, you need to follow the link given below."

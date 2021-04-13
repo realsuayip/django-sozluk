@@ -331,3 +331,22 @@ many(".author-search").forEach(input => {
         }
     })
 })
+
+const titleInput = one("#user_title_edit")
+
+if (titleInput) {
+    new AutoComplete({ // eslint-disable-line no-new
+        input: titleInput,
+        highlight: true,
+        cache: true,
+        lookup (name) {
+            return gqlc({
+                query: `query($lookup:String!){autocomplete{topics(lookup:$lookup,limit:7){title}}}`,
+                variables: { lookup: name }
+            }).then(response => response.data.autocomplete.topics.map(topic => ({
+                name: topic.title,
+                value: topic.title
+            })))
+        }
+    })
+}

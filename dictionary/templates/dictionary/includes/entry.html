@@ -9,7 +9,7 @@
 
             <div class="mobile">
                 {% if not entry.author.is_private %}
-                    <a class="username fw-600" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a>
+                    <div><a class="username fs-16 fw-600" href="{{ entry.author.get_absolute_url }}">{{ entry.author.username }}</a></div>
                 {% else %}
                     <span class="username"><i>{% trans "anonymous" %}</i></span>
                 {% endif %}

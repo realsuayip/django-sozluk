@@ -80,7 +80,7 @@ class TopicQueryHandler:
             .annotate(count=Count("entries", filter=Q(**self.day_filter)))
             .filter(Q(count__gte=10) | Q(is_pinned=True))
             .exclude(category__slug__in=exclusions)
-            .annotate(q1=counter(3), q2=counter(6), q3=counter(12), **self.latest)
+            .alias(q1=counter(3), q2=counter(6), q3=counter(12), **self.latest)
             .order_by("-is_pinned", "-q1", "-q2", "-q3", "-count", "-latest")
         )
 
@@ -695,7 +695,7 @@ class UserStatsQueryHandler:
         return base
 
     def popular(self):
-        return self.entries.annotate(count=Count("favorited_by")).filter(count__gte=1)
+        return self.entries.alias(count=Count("favorited_by")).filter(count__gte=1)
 
     def liked(self):
         return self.entries.filter(vote_rate__gt=0)
@@ -712,7 +712,7 @@ class UserStatsQueryHandler:
             for model in (UpvotedEntries, DownvotedEntries)
         )
 
-        return self.entries.annotate(last_voted=Coalesce(Greatest(up, down), up, down)).filter(last_voted__isnull=False)
+        return self.entries.alias(last_voted=Coalesce(Greatest(up, down), up, down)).filter(last_voted__isnull=False)
 
     def wishes(self):
         return (
@@ -736,7 +736,7 @@ class UserStatsQueryHandler:
     def authors(self):
         return (
             Author.objects_accessible.filter(entry__in=self.user.favorite_entries.all())
-            .annotate(frequency=Count("entry"))
+            .alias(frequency=Count("entry"))
             .filter(frequency__gt=1)
             .exclude(Q(pk=self.user.pk) | Q(blocked__in=[self.user.pk]) | Q(pk__in=self.user.blocked.all()))
             .only("username", "slug")

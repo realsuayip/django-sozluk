@@ -23,7 +23,9 @@ class GeneralReportAdmin(admin.ModelAdmin):
         (_("Metadata"), {"fields": ("reporter_email", "date_created", "is_verified", "date_verified")}),
         (_("Evaluation"), {"fields": ("is_open",)}),
     )
+    list_per_page = 30
     list_filter = ("category", "is_open", ("date_created", DateFieldListFilter))
+    list_editable = ("is_open",)
     ordering = ("-is_open",)
     actions = ("close_report", "open_report")
 

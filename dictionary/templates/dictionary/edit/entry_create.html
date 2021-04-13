@@ -1,0 +1,56 @@
+{% extends "dictionary/base.html" %}
+
+{% load i18n widget_tweaks filters humanize %}
+
+{% block title %}{% translate "create new entry" %}{% endblock %}
+
+{% block content %}
+    {% translate "express your thoughts..." as text_placeholder %}
+    {% translate "Entry content area" as area_label %}
+
+    <h1 class="h4 mb-3"><strong>{% translate "create new entry" %}</strong></h1>
+
+    {% if recent_drafts %}
+        {% url "topic_list" slug="drafts" as drafts_url %}
+        <div class="rounded p-3 bg-light mb-3">
+            <svg class="mr-2" width="21" height="21" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <use href="#saved"></use>
+            </svg>
+            {% blocktranslate trimmed with drafts_attr='data-lf-slug="drafts"' %}
+                you have <a {{ drafts_attr }} href="{{ drafts_url }}">recent entries</a> that are awaiting to be published:
+            {% endblocktranslate %}
+            <ul class="list-unstyled mt-2 mb-0">
+                {% for draft in recent_drafts %}
+                    <li>
+                        <a class="mr-2" href="{% url "entry_update" pk=draft.pk %}">{{ draft.topic.title }} (#{{ draft.pk }})</a>
+                        <time><small class="fs-90">{{ draft.date_edited|naturaltime|default:draft.date_created|naturaltime }}</small></time>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <section class="user-content">
+        {% if not user.is_novice %}
+            <form method="post" action="{% url 'image-upload' %}" class="dropzone" id="user-image-upload" style="display: none">{% csrf_token %}</form>
+        {% endif %}
+
+        <section class="user-comments">
+            <form method="post" id="content-form">
+                {% csrf_token %}
+                <div class="position-relative">
+                    <input name="title" type="text" class="form-control mb-3 fs-16" placeholder="{% translate "title" %}" aria-label="{% translate "title" %}" value="{{ title }}" id="user_title_edit" required>
+                </div>
+                {% include "dictionary/includes/editor_buttons.html" %}
+
+                {% render_field form.content placeholder=text_placeholder id="user_content_edit" class="entry_editor form-control allowsave" rows="10" spellcheck="true" aria-label=area_label %}
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <button type="button" class="btn draft-async px-0">{% trans "keep this as draft" %}</button>
+                    </div>
+                    <button type="submit" class="btn btn-django-link"{% if user.is_suspended %} title="{% trans "you lack the required permissions." %}" disabled{% endif %}>{% trans "publish" %}</button>
+                </div>
+            </form>
+        </section>
+    </section>
+{% endblock %}

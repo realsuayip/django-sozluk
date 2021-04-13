@@ -227,7 +227,7 @@ Handler(".entry-full a.action[role='button']", "click", function () {
         if (entry.classList.contains("owner")) {
             menuItems += `<a role="button" tabindex="0" class="dropdown-item pin">${icon("pin")}${pinLabel}</a>`
             menuItems += `<a role="button" tabindex="0" class="dropdown-item delete">${icon("trash")}${gettext("delete")}</a>`
-            menuItems += `<a href="/entry/update/${entryID}/" class="dropdown-item">${icon("edit", 576, 512)}${gettext("edit")}</a>`
+            menuItems += `<a href="/entry/update/${entryID}/" class="dropdown-item">${icon("edit", 44, 44)}${gettext("edit")}</a>`
         } else {
             if (!entry.classList.contains("private")) {
                 menuItems += `<a role="button" tabindex="0" class="dropdown-item message">${icon("message")}${gettext("message")}</a>`
@@ -314,12 +314,15 @@ function draftEntry (content, pk = null, title = null) {
     })
 }
 
+const titleInput = one("#user_title_edit")
+
 Handle("button.draft-async", "click", function () {
-    const title = this.getAttribute("data-title")
+    const title = this.getAttribute("data-title") || (titleInput && titleInput.value)
     const pk = this.getAttribute("data-pk")
     const content = one("#user_content_edit").value
 
-    if (!content.trim()) {
+    if (!content.trim() || ((title !== null) && !title.trim())) {
+        // Check if content is not empty, also check title (if provided).
         notify(gettext("if only you could write down something"), "error")
         return
     }
@@ -340,6 +343,10 @@ Handle("button.draft-async", "click", function () {
                 const pk = response.data.entry.edit.pk
                 this.setAttribute("data-pk", pk)
                 one("#content-form").prepend(template(`<input type="hidden" name="pub_draft_pk" value="${pk}" />`))
+                if (titleInput) {
+                    titleInput.disabled = true
+                    titleInput.classList.add("highlighted")
+                }
             }
         })
     }
@@ -355,6 +362,12 @@ Handle(document, "click", event => {
             btn.textContent = gettext("keep this as draft")
             btn.removeAttribute("data-pk")
             event.target.remove()
+
+            if (titleInput) {
+                titleInput.disabled = false
+                titleInput.classList.remove("highlighted")
+            }
+
             notify(response.data.entry.delete.feedback, "info")
         })
     }

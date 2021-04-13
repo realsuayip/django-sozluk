@@ -11,7 +11,6 @@ from urllib.parse import quote, unquote
 from django.contrib import messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import ValidationError
 from django.db import connection
 from django.db.models import Exists, Max, Min, OuterRef, Prefetch, Q
 from django.http import Http404, HttpResponseBadRequest
@@ -26,7 +25,7 @@ from dateutil.relativedelta import relativedelta
 from uuslug import slugify
 
 from dictionary.conf import settings
-from dictionary.forms.edit import EntryForm, StandaloneMessageForm
+from dictionary.forms.edit import StandaloneMessageForm
 from dictionary.models import (
     Author,
     Category,
@@ -45,6 +44,7 @@ from dictionary.utils.managers import TopicListManager, entry_prefetch
 from dictionary.utils.mixins import IntegratedFormMixin
 from dictionary.utils.serializers import LeftFrame
 from dictionary.utils.views import SafePaginator
+from dictionary.views.edit import EntryCreateMixin
 
 
 class Index(ListView):
@@ -204,7 +204,11 @@ class ActivityList(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return self.request.user.get_following_topics_with_receipt().order_by("is_read", "-topicfollowing__read_at")
+        return (
+            self.request.user.get_following_topics_with_receipt()
+            .only("title", "slug")
+            .order_by("is_read", "-topicfollowing__read_at")
+        )
 
     def post(self, *args, **kwargs):
         """Bulk read unread topics."""
@@ -300,15 +304,12 @@ class TopicList(UserPassesTestMixin, TemplateView):
         return HttpResponseBadRequest()
 
 
-class TopicEntryList(IntegratedFormMixin, ListView):
+class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
     """
     View to list entries of a topic with an entry creation form.
     View to handle search results of header search box.
     View to handle entry permalinks.
     """
-
-    model = Entry
-    form_class = EntryForm
     context_object_name = "entries"
     template_name = "dictionary/list/entry_list.html"
     paginator_class = SafePaginator
@@ -360,75 +361,6 @@ class TopicEntryList(IntegratedFormMixin, ListView):
     When handling queryset, if there are no new entries found, redirect user
     (if desired) to full topic view.
     """
-
-    def form_valid(self, form):
-        """
-        User sent new entry, whose topic may or may not be existent. If topic
-        exists, adds the entry and redirects to the entry permalink, otherwise
-        the topic is created if the title is valid. Entry.save() sets created_by
-        field of the topic.
-        """
-
-        if self.topic.exists and self.topic.is_banned:
-            # Cannot check is_banned before checking its existence.
-            # Translators: Not likely to occur in normal circumstances so you may include some humor here.
-            notifications.error(self.request, _("no, no i don't think i will."))
-            return self.form_invalid(form)
-
-        draft_pk = self.request.POST.get("pub_draft_pk")
-        publishing_draft = draft_pk and draft_pk.isdigit()
-        status = self.request.user.entry_publishable_status
-
-        if status is not None:
-            notifications.error(self.request, status, extra_tags="persistent")
-            if publishing_draft:
-                return redirect(reverse("entry_update", kwargs={"pk": int(draft_pk)}))
-            return self.form_invalid(form)
-
-        if publishing_draft:
-            # Publishing previously draft entry.
-            try:
-                entry = Entry.objects_all.get(is_draft=True, author=self.request.user, pk=int(draft_pk))
-                entry.content = form.cleaned_data["content"]
-                entry.is_draft = False
-                entry.date_created = timezone.now()
-                entry.date_edited = None
-            except Entry.DoesNotExist:
-                notifications.error(self.request, _("no, no i don't think i will."))
-                return self.form_invalid(form)
-        else:
-            # Creating a brand new entry.
-            entry = form.save(commit=False)
-            entry.author = self.request.user
-
-            if self.topic.exists:
-                entry.topic = self.topic
-            else:
-                # Create topic
-                try:
-                    Topic(title=self.topic.title).full_clean()
-                except ValidationError as error:
-                    for msg in error.messages:
-                        notifications.error(self.request, msg)
-                    return self.form_invalid(form)
-
-                entry.topic = Topic.objects.create_topic(title=self.topic.title)
-
-        entry.save()
-        notifications.info(self.request, _("the entry was successfully launched into stratosphere"))
-        return redirect(reverse("entry-permalink", kwargs={"entry_id": entry.id}))
-
-    def form_invalid(self, form):
-        """
-        This can be called by: invalid topic title, banned topic post or invalid
-        content. Because no queryset is set, a custom form_invalid method is
-        necessary. Non-field error messages supplied in form_valid.
-        """
-
-        if form.errors:
-            for err in form.errors["content"]:
-                notifications.error(self.request, err, extra_tags="persistent")
-        return super().form_invalid(form)
 
     def regular(self):
         return self.topic.entries.all()

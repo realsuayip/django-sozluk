@@ -2,14 +2,14 @@
 <div class="editor-buttons d-flex justify-content-between">
     <div>
         {# Translators: Editor button (see) #}
-        <button class="btn add-code insert" data-type="ref" title="{% trans "also see this.." %}">{% trans "(see: thingy)" %}</button>
-        <button class="btn add-code insert" data-type="thingy" title="{% trans "link to entry, author or topic" %}">{% trans "thingy" %}</button>
-        <button class="btn add-code insert" data-type="swh" title="{% trans "see this (ironic)" %}">&#8727;</button>
-        <button class="btn add-code insert" data-type="spoiler" title="{% trans "spoil something" %}">{% trans "--spoiler--" %}</button>
-        <button class="btn add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
+        <button type="button" class="btn add-code insert" data-type="ref" title="{% trans "also see this.." %}">{% trans "(see: thingy)" %}</button>
+        <button type="button" class="btn add-code insert" data-type="thingy" title="{% trans "link to entry, author or topic" %}">{% trans "thingy" %}</button>
+        <button type="button" class="btn add-code insert" data-type="swh" title="{% trans "see this (ironic)" %}">&#8727;</button>
+        <button type="button" class="btn add-code insert" data-type="spoiler" title="{% trans "spoil something" %}">{% trans "--spoiler--" %}</button>
+        <button type="button" class="btn add-code" title="{% trans "link to external sites" %}" id="insert_link">http://</button>
     </div>
     {% if not user.is_novice %}
-        <button class="btn add-code" title="{% trans "add some nice images" %}" id="insert_image">{% trans "image" context "editor" %}</button>
+        <button type="button" class="btn add-code" title="{% trans "add some nice images" %}" id="insert_image">{% trans "image" context "editor" %}</button>
     {% endif %}
     <div class="modal fade" id="editorModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">

@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 from contextlib import suppress
 from smtplib import SMTPException
@@ -6,7 +7,7 @@ from smtplib import SMTPException
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -230,13 +231,16 @@ class CreateBackup(LoginRequiredMixin, CreateView):
 
 
 class DownloadBackup(LoginRequiredMixin, View):
-    http_method_names = ["get"]
     raise_exception = True
 
     def get(self, request):
         with suppress(BackUp.DoesNotExist, ValueError):
             backup = BackUp.objects.get(author=self.request.user, is_ready=True)
-            response = FileResponse(backup.file, as_attachment=True)
+            filename = os.path.basename(backup.file.name)
+
+            response = HttpResponse(content_type="application/json")
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            response[settings.XSENDFILE_HEADER_NAME] = backup.file.url
             return response
 
         self.handle_no_permission()

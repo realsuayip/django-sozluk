@@ -40,19 +40,19 @@ class TopicManager(models.Manager):
         return i18n_lower(title).strip()
 
     def get_or_pseudo(self, slug=None, unicode_string=None, entry_id=None):
-        if unicode_string:
+        if unicode_string is not None:
             unicode_string = self._format_title(unicode_string)
             with suppress(self.model.DoesNotExist):
                 return self.get(title=unicode_string)
             return self._get_pseudo(unicode_string)
 
-        if slug:
+        if slug is not None:
             slug = self._format_title(slug)
             with suppress(self.model.DoesNotExist):
                 return self.get(slug=slug)
             return self._get_pseudo(slug)
 
-        if entry_id:
+        if entry_id is not None:
             entry = get_object_or_404(Entry.objects_published, pk=entry_id)
             return entry.topic
 

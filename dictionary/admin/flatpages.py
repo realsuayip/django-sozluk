@@ -12,6 +12,7 @@ class FlatPageAdmin(_FlatPageAdmin):
         models.TextField: {"widget": Textarea(attrs={"rows": 25, "style": "width: 100%; box-sizing: border-box;"})},
     }
     list_display = ("url", "title", "weight")
+    list_editable = ("weight",)
     fieldsets = (
         (None, {"fields": ("url", "title", "content", "html_only", "weight", "sites")}),
         (_("Advanced options"), {"classes": ("collapse",), "fields": ("registration_required", "template_name")}),
@@ -22,3 +23,4 @@ class FlatPageAdmin(_FlatPageAdmin):
 @admin.register(ExternalURL)
 class ExternalURLAdmin(admin.ModelAdmin):
     list_display = ("name", "url", "weight")
+    list_editable = ("url", "weight")
