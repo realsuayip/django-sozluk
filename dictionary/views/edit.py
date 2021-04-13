@@ -47,7 +47,6 @@ class EntryCreateMixin:
 
         if (not publishing_draft) and (self.topic.exists and self.topic.is_banned):
             # Cannot check is_banned before checking its existence.
-            # Translators: Not likely to occur in normal circumstances so you may include some humor here.
             notifications.error(self.request, _("we couldn't handle your request. try again later."))
             return self.form_invalid(form)
 
