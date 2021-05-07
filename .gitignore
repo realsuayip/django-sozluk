@@ -67,8 +67,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Translations
-*.mo
 
 # Scrapy stuff:
 .scrapy
