@@ -9,7 +9,11 @@ from dictionary.models import Announcement, Author, Category, Entry, Topic
 # https://docs.djangoproject.com/en/3.0/ref/contrib/sitemaps/#pinging-google
 
 
-class AnnouncementSitemap(Sitemap):
+class BaseSitemap(Sitemap):
+    protocol = settings.PROTOCOL
+
+
+class AnnouncementSitemap(BaseSitemap):
     changefreq = "yearly"
     priority = 0.5
 
@@ -20,7 +24,7 @@ class AnnouncementSitemap(Sitemap):
         return obj.date_edited or obj.date_created
 
 
-class AuthorSiteMap(Sitemap):
+class AuthorSitemap(BaseSitemap):
     changefreq = "daily"
     priority = 0.5
     limit = 10000
@@ -29,7 +33,7 @@ class AuthorSiteMap(Sitemap):
         return Author.objects_accessible.order_by("-pk")
 
 
-class EntrySiteMap(Sitemap):
+class EntrySitemap(BaseSitemap):
     changefreq = "weekly"
     priority = 0.4
     limit = 10000
@@ -41,7 +45,7 @@ class EntrySiteMap(Sitemap):
         return obj.date_edited or obj.date_created
 
 
-class TopicSiteMap(Sitemap):
+class TopicSitemap(BaseSitemap):
     changefreq = "daily"
     priority = 1
     limit = 10000
@@ -53,7 +57,7 @@ class TopicSiteMap(Sitemap):
         return obj.date_created
 
 
-class CategorySiteMap(Sitemap):
+class CategorySitemap(BaseSitemap):
     changefreq = "hourly"
     priority = 0.5
 
@@ -61,7 +65,7 @@ class CategorySiteMap(Sitemap):
         return Category.objects.order_by("-weight")
 
 
-class StaticCategorySiteMap(CategorySiteMap):
+class StaticCategorySitemap(CategorySitemap):
     def items(self):
         return [
             category
@@ -73,7 +77,7 @@ class StaticCategorySiteMap(CategorySiteMap):
         return reverse("topic_list", kwargs={"slug": item})
 
 
-class StaticSitemap(Sitemap):
+class StaticSitemap(BaseSitemap):
     changefreq = "yearly"
 
     def items(self):
@@ -93,11 +97,11 @@ class StaticSitemap(Sitemap):
 
 sitemaps = {
     "announcement": AnnouncementSitemap,
-    "author": AuthorSiteMap,
-    "entry": EntrySiteMap,
-    "topic": TopicSiteMap,
-    "category": CategorySiteMap,
-    "static-category": StaticCategorySiteMap,
+    "author": AuthorSitemap,
+    "entry": EntrySitemap,
+    "topic": TopicSitemap,
+    "category": CategorySitemap,
+    "static-category": StaticCategorySitemap,
     "static": StaticSitemap,
     "flatpages": FlatPageSitemap,
 }
