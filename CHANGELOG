@@ -1,3 +1,31 @@
+[1.1.1-beta](2021.06.05)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Fixed Turkish translation. Compiled
+translation files are now included in the repo.
+2) Fixed a minor frontend issue that caused redundant
+margin to appear at the end of the page.
+3) Sitemap links now respect the protocol set
+in settings (apps.py). Thanks to Fatih Toptaş.
+4) Entries larger than 8191 characters would
+result in a crash, fixed that by removing
+redundant index on entry_content. You need
+to run makemigrations+migrate for your app,
+it will be resolved automatically.
+Thanks to Fatih Toptaş.
+5) Fixed incorrect ordering behavior in advanced
+search. Thanks to Aras Diler.
+6) Updated Django to latest version.
+7) DEPRECATED support for database backends
+other than PostgreSQL, please switch to
+PostgreSQL as soon as possible to continue
+getting updates for django-sozluk.
+
+--Deletions--
+None
+
 [1.1-beta](2021.04.13)(**incompatible)
 --Additions--
 1) Added a Docker setup for production.
