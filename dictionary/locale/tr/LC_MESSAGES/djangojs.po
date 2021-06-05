@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-02 20:05+0300\n"
-"PO-Revision-Date: 2020-10-19 13:34+0156\n"
+"POT-Creation-Date: 2021-05-07 21:45+0300\n"
+"PO-Revision-Date: 2021-05-07 21:46+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
 "Language: Turkish\n"
@@ -14,215 +14,272 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Translated-Using: django-rosetta 0.9.5\n"
+"X-Translated-Using: django-rosetta 0.9.6\n"
 
 #: .\static\dictionary\js\accessibility.js:62
-#: .\static\dictionary\js\dialog.js:62 .\static\dictionary\js\topic.js:68
+#: .\static\dictionary\js\dialog.js:62 .\static\dictionary\js\dist\index.js:1
+#: .\static\dictionary\js\topic.js:68
 msgid "this content includes forbidden characters."
 msgstr "bu içerik geçersiz karakterler içeriyor"
 
 #: .\static\dictionary\js\category.js:11
+#: .\static\dictionary\js\dist\index.js:1
 msgctxt "category-list"
 msgid "unfollow"
 msgstr "bırak ya"
 
 #: .\static\dictionary\js\category.js:11
+#: .\static\dictionary\js\dist\index.js:1
 msgctxt "category-list"
 msgid "follow"
 msgstr "takip et"
 
 #: .\static\dictionary\js\conversation.js:49
-#: .\static\dictionary\js\entry.js:173 .\static\dictionary\js\entry.js:243
-#: .\static\dictionary\js\topic.js:95
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:173
+#: .\static\dictionary\js\entry.js:256 .\static\dictionary\js\topic.js:95
 msgid "are you sure to delete?"
 msgstr "harbiden silinsin mi?"
 
 #: .\static\dictionary\js\conversation.js:61
+#: .\static\dictionary\js\dist\index.js:1
 msgid "deleted conversation"
 msgstr "sohbet silindi"
 
 #: .\static\dictionary\js\conversation.js:73
+#: .\static\dictionary\js\dist\index.js:1
 msgid "are you sure to delete all selected conversations?"
 msgstr "seçilen sohbetler harbiden silinsin mi?"
 
 #: .\static\dictionary\js\conversation.js:84
+#: .\static\dictionary\js\dist\index.js:1
 msgid "you need to select at least one conversation to delete"
 msgstr "silmek için bir sohbet seçmedin ki"
 
 #: .\static\dictionary\js\conversation.js:100
+#: .\static\dictionary\js\dist\index.js:1
 msgid "are you sure to archive all selected conversations?"
 msgstr "seçilen sohbetler harbiden arşivlensin mi?"
 
 #: .\static\dictionary\js\conversation.js:111
+#: .\static\dictionary\js\dist\index.js:1
 msgid "you need to select at least one conversation to archive"
 msgstr "arşivlemek için bir sohbet seçmedin ki"
 
 #: .\static\dictionary\js\conversation.js:116
+#: .\static\dictionary\js\dist\index.js:1
 msgid "are you sure to archive?"
 msgstr "harbiden arşivlensin mi?"
 
 #: .\static\dictionary\js\conversation.js:127
+#: .\static\dictionary\js\dist\index.js:1
 msgid "archived conversation"
 msgstr "sohbet arşivlendi"
 
 #: .\static\dictionary\js\conversation.js:138
-#: .\static\dictionary\js\entry.js:220 .\static\dictionary\js\entry.js:295
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:229
+#: .\static\dictionary\js\entry.js:308
 msgid "delete"
 msgstr "sil"
 
 #: .\static\dictionary\js\conversation.js:142
-#: .\static\dictionary\js\editor.js:118 .\static\dictionary\js\editor.js:124
-#: .\static\dictionary\js\entry.js:336 .\static\dictionary\js\image.js:62
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:118
+#: .\static\dictionary\js\editor.js:124 .\static\dictionary\js\entry.js:356
+#: .\static\dictionary\js\image.js:62
 msgid "Are you sure?"
 msgstr "Emin misiniz?"
 
 #: .\static\dictionary\js\conversation.js:158
+#: .\static\dictionary\js\dist\index.js:1
 msgid "hopefully they didn't see that one."
 msgstr "mesajınız görülmemiştir diye umuyoruz."
 
-#: .\static\dictionary\js\dialog.js:57 .\static\dictionary\js\entry.js:310
+#: .\static\dictionary\js\dialog.js:57 .\static\dictionary\js\dist\index.js:1
+#: .\static\dictionary\js\entry.js:326
 msgid "if only you could write down something"
 msgstr "çeşke bi şeyler yazsaydın"
 
-#: .\static\dictionary\js\editor.js:28
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:6
+msgid "image could not be displayed. it might have been deleted."
+msgstr "görsel yüklenemedi. silinmiş olabilir mi?"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:27
+msgid "image"
+msgstr "görsel"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\image.js:28
+msgid "open full image in new tab"
+msgstr "tam görseli yeni sekmede aç"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:28
 msgid "target topic, #entry or @author to reference:"
 msgstr "bkz verilecek başlık, #entry veya @yazar"
 
-#: .\static\dictionary\js\editor.js:28
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:28
 msgctxt "editor"
 msgid "see"
 msgstr "bkz"
 
-#: .\static\dictionary\js\editor.js:31
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:31
 msgid "target topic, #entry or @author to thingy:"
 msgstr "hangi başlık veya #entry için hede oluşturulacak?"
 
-#: .\static\dictionary\js\editor.js:34
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:34
 msgid "what should be referenced in asterisk?"
 msgstr "yıldız içinde ne görünecek?"
 
-#: .\static\dictionary\js\editor.js:37
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:37
 msgid "spoiler"
 msgstr ""
 
-#: .\static\dictionary\js\editor.js:38
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:38
 msgid "what to write between spoiler tags?"
 msgstr "spoiler arasına ne yazılacak?"
 
-#: .\static\dictionary\js\editor.js:55 .\static\dictionary\js\editor.js:86
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:55
+#: .\static\dictionary\js\editor.js:86
 msgid "which address to link?"
 msgstr "hangi adrese gidecek?"
 
-#: .\static\dictionary\js\editor.js:88
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:88
 msgid "alias for the link?"
 msgstr "verilecek linkin adı ne olacak?"
 
-#: .\static\dictionary\js\editor.js:119
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:119
 msgid "click or drop files here to upload"
 msgstr "buraya tıklayıp görselleri seçin veya sürükleyip bırakın"
 
-#: .\static\dictionary\js\editor.js:120
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:120
 msgid "delete image"
 msgstr "görseli sil"
 
-#: .\static\dictionary\js\editor.js:121
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:121
 msgid "File is too big ({{filesize}}MB). Max filesize: {{maxFilesize}}MB."
 msgstr "Dosya çok büyük ({{filesize}}MB). Maksimum boyut: {{maxFilesize}}MB."
 
-#: .\static\dictionary\js\editor.js:122
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:122
 msgid "You can not upload any more files."
 msgstr "Daha fazla dosya yükleyemezsiniz."
 
-#: .\static\dictionary\js\editor.js:123
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:123
 msgid "Upload canceled."
 msgstr "Yükleme iptal edildi."
 
-#: .\static\dictionary\js\editor.js:127 .\static\dictionary\js\editor.js:133
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\editor.js:127
+#: .\static\dictionary\js\editor.js:133
 msgctxt "editor"
 msgid "image"
 msgstr "görsel"
 
-#: .\static\dictionary\js\entry.js:52
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\user.js:26
+msgid "remove block"
+msgstr "engeli kaldır"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\user.js:26
+msgid "block this guy"
+msgstr "bu herifi engelle"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:21
+#: .\static\dictionary\js\user.js:33
+msgid "follow"
+msgstr "takip et"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:21
+#: .\static\dictionary\js\user.js:33
+msgid "unfollow"
+msgstr "takip etme"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:52
 msgid "actually, nothing here."
 msgstr "hiç yok aslında"
 
-#: .\static\dictionary\js\entry.js:67
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:67
 msgid "... %(count)s novice"
 msgid_plural "... %(count)s novices"
 msgstr[0] "... %(count)s çaylak"
 msgstr[1] "... %(count)s çaylak"
 
-#: .\static\dictionary\js\entry.js:193
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:193
 msgid "link copied to clipboard."
 msgstr "bağlantı panoya kopyalandı."
 
-#: .\static\dictionary\js\entry.js:210
-msgid "unpin from profile"
-msgstr "profilimden kaldır"
-
-#: .\static\dictionary\js\entry.js:210
-msgid "pin to profile"
-msgstr "profilime sabitle"
-
-#: .\static\dictionary\js\entry.js:216
-msgid "comment"
-msgstr "yorum yap"
-
-#: .\static\dictionary\js\entry.js:221
-msgid "edit"
-msgstr "düzelt"
-
-#: .\static\dictionary\js\entry.js:224
-msgid "message"
-msgstr "mesaj gönder"
-
-#: .\static\dictionary\js\entry.js:225
-msgid "block"
-msgstr "engelle"
-
-#: .\static\dictionary\js\entry.js:233
-msgid "copy link"
-msgstr "bağlantıyı kopyala"
-
-#: .\static\dictionary\js\entry.js:236
-msgid "report"
-msgstr "şikayet"
-
-#: .\static\dictionary\js\entry.js:263
-msgid "continue reading"
-msgstr "devamını okuyayım"
-
-#: .\static\dictionary\js\entry.js:292
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:305
 msgid "save changes"
 msgstr "değişiklikleri kaydet"
 
-#: .\static\dictionary\js\entry.js:326
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:218
+msgid "unpin from profile"
+msgstr "profilimden kaldır"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:218
+msgid "pin to profile"
+msgstr "profilime sabitle"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:225
+msgid "comment"
+msgstr "yorum yap"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:230
+msgid "edit"
+msgstr "düzelt"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:233
+msgid "message"
+msgstr "mesaj gönder"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:234
+msgid "block"
+msgstr "engelle"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:240
+msgid "copy link"
+msgstr "bağlantıyı kopyala"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:244
+msgid "share"
+msgstr "paylaş"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:247
+msgid "report"
+msgstr "şikayet"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:276
+msgid "continue reading"
+msgstr "devamını okuyayım"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:342
 msgid "preview"
 msgstr "önizleme"
 
-#: .\static\dictionary\js\entry.js:342
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\entry.js:362
 msgid "keep this as draft"
 msgstr "kenarda dursun şimdilik"
 
-#: .\static\dictionary\js\image.js:6
-msgid "image could not be displayed. it might have been deleted."
-msgstr "görsel yüklenemedi. silinmiş olabilir mi?"
-
-#: .\static\dictionary\js\image.js:27
-msgid "image"
-msgstr "görsel"
-
-#: .\static\dictionary\js\image.js:28
-msgid "open full image in new tab"
-msgstr "tam görseli yeni sekmede aç"
-
-#: .\static\dictionary\js\left-frame.js:101 .\static\dictionary\js\utils.js:93
+#: .\static\dictionary\js\dist\index.js:1
+#: .\static\dictionary\js\left-frame.js:101 .\static\dictionary\js\utils.js:94
 msgid "something went wrong"
 msgstr "bir şeyler yanlış gitti"
 
+#: .\static\dictionary\js\dist\index.js:1
 #: .\static\dictionary\js\left-frame.js:198
 msgid "nothing here"
 msgstr "yok ki"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:60
+#: .\static\dictionary\js\topic.js:101
+msgid "someone should populate this"
+msgstr "biri bu başlığı doldursun"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:60
+msgid "nevermind"
+msgstr "boşver"
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:87
+msgid "you just wished for this topic."
+msgstr "bu başlığa az önce ukte verdiniz."
+
+#: .\static\dictionary\js\dist\index.js:1 .\static\dictionary\js\topic.js:87
+msgid "your hint:"
+msgstr "notunuz:"
 
 #: .\static\dictionary\js\lib\autocomplete.js:42
 msgid "-- no corresponding results --"
@@ -232,38 +289,6 @@ msgstr "-- buna yakın bir sonuç yok --"
 msgid "scroll to top"
 msgstr "sayfanın başına dön"
 
-#: .\static\dictionary\js\topic.js:21 .\static\dictionary\js\user.js:33
-msgid "unfollow"
-msgstr "takip etme"
-
-#: .\static\dictionary\js\topic.js:21 .\static\dictionary\js\user.js:33
-msgid "follow"
-msgstr "takip et"
-
-#: .\static\dictionary\js\topic.js:60 .\static\dictionary\js\topic.js:101
-msgid "someone should populate this"
-msgstr "biri bu başlığı doldursun"
-
-#: .\static\dictionary\js\topic.js:60
-msgid "nevermind"
-msgstr "boşver"
-
-#: .\static\dictionary\js\topic.js:87
-msgid "you just wished for this topic."
-msgstr "bu başlığa az önce ukte verdiniz."
-
-#: .\static\dictionary\js\topic.js:87
-msgid "your hint:"
-msgstr "notunuz:"
-
-#: .\static\dictionary\js\user.js:26
-msgid "remove block"
-msgstr "engeli kaldır"
-
-#: .\static\dictionary\js\user.js:26
-msgid "block this guy"
-msgstr "bu herifi engelle"
-
-#: .\static\dictionary\js\utils.js:63
+#: .\static\dictionary\js\utils.js:64
 msgid "Close"
 msgstr "Kapat"

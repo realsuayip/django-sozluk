@@ -1578,7 +1578,7 @@ nav.mobile-nav > a .user-badge {
         display: block;
     }
 
-    body {
+    body#au {
         margin-bottom: 50px; /* space occupied by nav.mobile-nav */
     }
 

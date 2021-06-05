@@ -296,13 +296,16 @@ class TopicQueryHandler:
         if to_date:
             filters["entries__date_created__lte"] = to_date
 
-        ordering_map = {"alpha": ["title"], "newer": ["-date_created"], "popular": ["-count", "-date_created"]}
+        ordering_map = {"alpha": ["title"], "newer": ["-latest"], "popular": ["-count", "-latest"]}
 
         qs = (
             Topic.objects.values(*self.values)
             .filter(**self.base_filter, **filters)
             .annotate(count=Count("entries", distinct=True))
         )
+
+        if ordering in ("newer", "popular"):
+            qs = qs.alias(**self.latest)
 
         return qs.order_by(*ordering_map.get(ordering))[: settings.TOPICS_PER_PAGE_DEFAULT]
 
