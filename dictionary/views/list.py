@@ -654,7 +654,7 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
                     if not self.request.user.is_authenticated
                     else Entry.objects_published.exclude(author__in=self.request.user.blocked.all())
                 )
-                self.entry = get_object_or_404(klass, pk=int(self.kwargs.get("entry_id")))
+                self.entry = get_object_or_404(klass.select_related("topic"), pk=int(self.kwargs.get("entry_id")))
                 self.topic = self.entry.topic
                 self.view_mode = "entry_permalink"
 

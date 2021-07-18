@@ -1,3 +1,17 @@
+[1.1.2-beta](2021.07.18)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Various database queries have been
+optimized.
+2) Slight changes were made in admin image
+list to increase accessibility.
+3) Django upgraded to 3.2.5
+
+--Deletions--
+None
+
 [1.1.1-beta](2021.06.05)(compatible)
 --Additions--
 None

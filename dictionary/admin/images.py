@@ -11,9 +11,11 @@ class ImageAdmin(admin.ModelAdmin):
     list_filter = (("date_created", DateFieldListFilter), "is_deleted")
     ordering = ("-date_created",)
     readonly_fields = ("author", "file", "date_created")
+    list_editable = ("is_deleted",)
 
-    def get_actions(self, request):
-        return []
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related("author")
 
     def has_add_permission(self, request, obj=None):
         return False

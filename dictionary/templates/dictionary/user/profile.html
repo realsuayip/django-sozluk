@@ -4,7 +4,7 @@
 {% block title %}{% trans "user" %}: {{ profile.username }}{% if tab.name != "latest" %} - {{ tab.label }}{% endif %}{% if page_obj.number > 1 %} - {% trans "page" %} {{ page_obj.number }}{% endif %}{% endblock %}
 
 {% block bodyclass %} has-entries{% endblock %}
-{% block bodyattr %}{% if user.is_authenticated and user.pinned_entry %} data-pin="{{ user.pinned_entry.pk }}"{% endif %}{% endblock %}
+{% block bodyattr %}{% if user.is_authenticated and user.pinned_entry_id %} data-pin="{{ user.pinned_entry_id }}"{% endif %}{% endblock %}
 
 {% block content %}
     {% load humanize %}
@@ -88,7 +88,7 @@
         </ul>
 
 
-        {% if profile.pinned_entry %}
+        {% if profile.pinned_entry_id %}
             {% with profile.pinned_entry as entry %}
                 {% include "dictionary/includes/profile_entry_pinned.html" %}
             {% endwith %}

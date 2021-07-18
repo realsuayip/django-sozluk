@@ -54,6 +54,10 @@ class TopicAdmin(admin.ModelAdmin):
     autocomplete_fields = ("category", "mirrors")
     actions = ("move_topic",)
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related("created_by")
+
     def get_readonly_fields(self, request, obj=None):
         readonly = ("created_by", "date_created")
         return readonly + ("title",) if obj else readonly
