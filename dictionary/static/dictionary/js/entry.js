@@ -132,7 +132,8 @@ Handler(".comment-vote .vote", "click", function () {
 })
 
 Handler(".entry-actions", "click", function (event) {
-    const [action] = ["message", "pin", "block", "delete", "copy", "share"].filter(action => event.target.classList.contains(action))
+    const target = event.target.closest(".dropdown-item")
+    const [action] = ["message", "pin", "block", "delete", "copy", "share"].filter(action => target.classList.contains(action))
 
     switch (action) {
         case "message" : {
