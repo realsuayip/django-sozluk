@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "Not a secret! Delete this arg in prod
 DEBUG = True
 
 # SECURITY WARNING: don't allow any other hosts except your real host in production!
-ALLOWED_HOSTS = ["192.168.2.253", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 GRAPHENE = {"SCHEMA": "dictionary_graph.schema.schema"}
 
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Django built-in
-    "django.contrib.postgres",  # Not required if you don't use PostgreSQL.
+    "django.contrib.postgres",
     "django.contrib.humanize",
     "django.contrib.sites",
     "django.contrib.flatpages",
@@ -102,18 +102,16 @@ WSGI_APPLICATION = "djdict.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': os.environ.get("SOZLUK_DB_NAME"),
-#         'USER': os.environ.get("SOZLUK_DB_USER"),
-#         'PASSWORD': os.environ.get("SOZLUK_DB_PASSWORD"),
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": os.environ.get("SQL_ENGINE"),
+        "NAME": os.environ.get("SQL_DATABASE"),
+        "USER": os.environ.get("SQL_USER", "user"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD"),
+        "HOST": os.environ.get("SQL_HOST"),
+        "PORT": os.environ.get("SQL_PORT"),
+    }
+}
 
 
 # Password validation
@@ -139,17 +137,20 @@ SESSION_COOKIE_AGE = 1209600
 SESSION_ENGINE = "dictionary.backends.sessions.db"
 
 
-# In development environment, use Python's local mail server.
-EMAIL_HOST = "localhost"
-EMAIL_PORT = 1025
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
-CELERY_EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # Set your actual email backend here.
-# SECURITY WARNING: Comment out CELERY_BROKER_URL with proper credentials in production.
-# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-
+REDIS_URL = "redis://redis:6379/1"
+CELERY_BROKER_URL = REDIS_URL
 CELERY_EMAIL_TASK_CONFIG = {"default_retry_delay": 40}
-
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
 
 LANGUAGE_COOKIE_NAME = "langcode"
 LANGUAGE_COOKIE_AGE = 180 * 86400
@@ -168,8 +169,7 @@ PASSWORD_RESET_TIMEOUT = 86400
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 
-
-# https://docs.djangoproject.com/en/3.0/howto/static-files/deployment/#serving-static-files-in-production
+STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"

@@ -7,3 +7,5 @@ user-agents==2.2.0
 Pillow==8.2.0
 celery==4.4.7
 django-celery-email==3.0.0
+psycopg2-binary==2.8.6
+django-redis==4.12.1
