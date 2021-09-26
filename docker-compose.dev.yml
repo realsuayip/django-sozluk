@@ -33,9 +33,12 @@ services:
       - .env
     volumes:
       - .:/usr/src/app
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     command: celery -A djdict worker -l info
     depends_on:
+      - web
       - db
       - redis
   celery-beat:
@@ -44,8 +47,11 @@ services:
       - .env
     volumes:
       - .:/usr/src/app
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     command: celery -A djdict beat -l info
     depends_on:
+      - web
       - db
       - redis
