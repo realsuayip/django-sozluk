@@ -10,36 +10,46 @@ this type of social networking can be thought as "urban dictionary on steroids".
 [this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk) to learn more about
 this type of social network.
 
-[Installation guide](docs/turkish/installation.md) is now available in Turkish!
 
-If you want to contribute to the project or have found a bug
+**This project is currently maintained.** If you want to contribute to the project or have found a bug
 or need help about deployment etc., you may contact me via
-Telegram (I use the same username there) or [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
+Telegram (I use the same username there) or, better yet, [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
 
 Check out "todo" keyword in the project files or Github issues to see the to-do's.
 
 Check out [screenshots](screenshots) folder to see current front-end in action with both the desktop and mobile views.
    
-To run the site in development mode, follow regular procedures (setting up virtual environment, installing requirements etc.),
-then create generic users using `create_generic_user` command provided by dictionary app. More information can be found
-about this command via `--help`. Check out djangoproject.com to see how to handle deployment procedures if you already don't know. 
+### Quick installation
 
-To receive e-mails in development, make sure that a Celery worker is running in background. The default set-up allows output in console; have your local email server set up with this command, (if the port 1025 is already in use, change it also in the settings):
+Make sure you have latest versions of Python and Docker installed in your system. Clone
+files via Git/GitHub, in the root directory run this command:
 
-    python -m smtpd -n -c DebuggingServer localhost:1025
+    python docker.py up
 
-Python 3.8.2+ required.
+This will build and start development server for the project. Keep in mind that
+in production mode, the emails will output into console (container logs).
 
-### Docker usage
-A docker configuration for a (rough) production setup is included; to take a quick look, you
-may serve the project using docker. Use this command to build and serve:
+Running in development mode will also create a superuser with email `test@django.org` and password
+`test`. In order for your entries to appear, you need to make yourself an actual author i.e., 
+remove yourself from novice status using admin user edit page.
+
+The website uses cache mechanism frequently, so you may be inclined to disable
+caching using a dummy cache backend, or disabling cache on left frame. Check settings
+on `apps.py` to learn about caching and about all the other settings.
+
+The Python script also allows
+for a production setup, run `python docker.py --help` to learn more.
+
+### Standard docker usage
+If you prefer not use the helper script to gain more granular control, make sure you specify
+the right compose file. Use this command to build and serve:
 
     docker-compose up -d
 
 Initially, you also have to run a script (in the web container) that sets up the
 database, collects static files and generates required users for the dictionary app:
 
-    docker-compose exec web bash scripts/setup.sh
+    docker-compose exec web sh scripts/setup.sh
 
 You are most likely to create an admin account after these processes:
 
