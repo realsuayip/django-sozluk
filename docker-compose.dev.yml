@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    container_name: sozluk_dev_db
+    user: postgres
+    env_file:
+      - .env.db
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: sozluk_dev_backend
+    environment:
+      DJANGO_SETTINGS_MODULE: djdict.settings
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  redis:
+    container_name: sozluk_dev_redis
+    image: redis:6.0.10-alpine
+    user: redis
+  celery:
+    container_name: sozluk_dev_celery_worker
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: celery -A djdict worker -l info
+    depends_on:
+      - web
+      - db
+      - redis
+  celery-beat:
+    container_name: sozluk_dev_celery_beat
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: celery -A djdict beat -l info
+    depends_on:
+      - web
+      - db
+      - redis

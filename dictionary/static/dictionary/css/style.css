@@ -1438,8 +1438,8 @@ textarea.expandable {
     --icon-color: rgba(27, 27, 27, .75);
 
     margin-right: 1em;
-    height: 1.25em;
-    width: 1.25em;
+    height: 1.35rem;
+    width: 1.35rem;
     color: var(--icon-color); /* Not 'fill' for :hov effects! */
 }
 

@@ -4,6 +4,7 @@ import os
 from contextlib import suppress
 from smtplib import SMTPException
 
+from django.conf import settings as django_settings
 from django.contrib import messages as notifications
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -239,6 +240,10 @@ class DownloadBackup(LoginRequiredMixin, View):
             filename = os.path.basename(backup.file.name)
 
             response = HttpResponse(content_type="application/json")
+
+            if django_settings.DEBUG:
+                response.content = backup.file
+
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
             response[settings.XSENDFILE_HEADER_NAME] = backup.file.url
             return response

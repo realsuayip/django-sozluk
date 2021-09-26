@@ -1,9 +1,11 @@
-Django==3.2.5
+Django==3.2.7
 django-uuslug==1.2.0
 django-widget-tweaks==1.4.8
 graphene-django==2.15.0
-python-dateutil==2.8.1
+python-dateutil==2.8.2
 user-agents==2.2.0
-Pillow==8.2.0
+Pillow==8.3.2
 celery==4.4.7
 django-celery-email==3.0.0
+psycopg2-binary==2.9.1
+django-redis==5.0.0

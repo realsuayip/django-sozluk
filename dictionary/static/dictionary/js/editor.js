@@ -86,7 +86,8 @@ Handle("button#insert_link", "click", () => {
         const linkText = prompt(gettext("which address to link?"), "http://")
         if (linkText && linkText !== "http://") {
             const linkName = prompt(gettext("alias for the link?"))
-            linkName && insertAtCaret(userContent, `[${linkText} ${linkName}]`)
+            const text = linkName ? `[${linkText} ${linkName}]` : linkText
+            insertAtCaret(userContent, text)
         }
     }
 })
