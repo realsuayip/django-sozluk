@@ -6,7 +6,8 @@ from smtplib import SMTPException
 
 from django.conf import settings as django_settings
 from django.contrib import messages as notifications
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -150,8 +151,13 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
         notifications.info(self.request, _("your password has been changed."))
         return super().form_valid(form)
 
+    def get_form_class(self):
+        if not self.request.user.has_usable_password():
+            return SetPasswordForm
+        return super().get_form_class()
 
-class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
+
+class ChangeEmail(LoginRequiredMixin, UserPassesTestMixin, PasswordConfirmMixin, FormView):
     template_name = "dictionary/user/preferences/email.html"
     form_class = ChangeEmailForm
     success_url = reverse_lazy("user_preferences")
@@ -162,6 +168,9 @@ class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
             self.request, _("your e-mail will be changed after the confirmation."), extra_tags="persistent"
         )
         return redirect(self.success_url)
+
+    def test_func(self):
+        return not self.request.user.is_social
 
 
 class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):

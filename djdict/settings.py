@@ -56,7 +56,28 @@ INSTALLED_APPS = [
     "graphene_django",
     "widget_tweaks",
     "djcelery_email",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
+        },
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+    }
+}
+
+SOCIALACCOUNT_ADAPTER = "dictionary.social.adapters.SocialAdapter"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_MAX_EMAIL_ADDRESSES = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -174,4 +195,4 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

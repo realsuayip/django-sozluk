@@ -4,7 +4,7 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
-from django.urls import path
+from django.urls import include, path
 
 from dictionary.conf import settings
 from dictionary.views.auth import (
@@ -49,6 +49,7 @@ urlpatterns_password_reset = [
 ]
 
 urlpatterns_auth = urlpatterns_password_reset + [
+    path("oauth/", include("dictionary.social.urls")),
     path("login/", Login.as_view(), name="login"),
     path("register/", SignUp.as_view(), name="register"),
     path("logout/", Logout.as_view(next_page="/"), name="logout"),

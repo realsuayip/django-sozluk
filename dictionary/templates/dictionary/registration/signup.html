@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1 class="h4 mb-3"><strong>{% trans "registration" context "titleblock" %}</strong></h1>
+    {% include "dictionary/includes/social_buttons.html" with classes="mb-4" %}
     <form method="post" id="signup">
         {% csrf_token %}
 

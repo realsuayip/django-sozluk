@@ -21,7 +21,9 @@
     <ul class="settings-nav-mobile collapse list-unstyled bg-light mt-3 rounded" style="font-size: 16px;">
         <li><a class="list-group-item" href="{{ preferences }}">{% trans "preferences" %}</a></li>
         <li><a class="list-group-item" href="{{ password }}">{% trans "password" %}</a></li>
+        {% if not user.is_social %}
         <li><a class="list-group-item" href="{{ email }}">{% trans "e-mail" %}</a></li>
+        {% endif %}
         <li><a class="list-group-item" href="{{ terminate }}">{% trans "account deletion" %}</a></li>
         <li><a class="list-group-item" href="{{ backup }}">{% trans "backup" %}</a></li>
     </ul>
@@ -35,9 +37,11 @@
         <li class="nav-item">
             <a class="nav-link {% if request.path == password %}active{% endif %}" href="{{ password }}">{% trans "password" %}</a>
         </li>
+        {% if not user.is_social %}
         <li class="nav-item">
             <a class="nav-link {% if request.path == email %}active{% endif %}" href="{{ email }}">{% trans "e-mail" %}</a>
         </li>
+        {% endif %}
         <li class="nav-item">
             <a class="nav-link {% if request.path == terminate %}active{% endif %}" href="{{ terminate }}">{% trans "account deletion" %}</a>
         </li>

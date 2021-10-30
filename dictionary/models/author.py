@@ -493,6 +493,10 @@ class Author(AbstractUser):
             return interqueue(self)
         return 1
 
+    @cached_property
+    def is_social(self):
+        return self.socialaccount_set.exists()  # noqa
+
 
 class Memento(models.Model):
     body = models.TextField(blank=True)
