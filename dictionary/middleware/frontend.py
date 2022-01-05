@@ -17,7 +17,7 @@ class MobileDetectionMiddleware:
         else:
             theme = get_theme_from_cookie(request)
 
-        ua_string = request.headers.get("User-Agent")
+        ua_string = request.headers.get("User-Agent", "")
         user_agent = parse(ua_string)
 
         request.is_mobile = user_agent.is_mobile
