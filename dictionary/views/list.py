@@ -77,7 +77,7 @@ class Index(ListView):
     """
 
     def get_queryset(self):
-        queryset = Entry.objects.filter(pk__in=self.get_pk_set())
+        queryset = Entry.objects.filter(pk__in=self.get_pk_set()).order_by()
         return entry_prefetch(queryset, self.request.user)
 
     @method_decorator(cached_context(timeout=page_timeout, prefix="index_view"))
@@ -87,7 +87,7 @@ class Index(ListView):
 
     def random_records(self):
         """Author: Peter Be <peterbe.com>"""
-        qs = Entry.objects.all()
+        qs = Entry.objects.order_by()
 
         max_pk = qs.aggregate(Max("pk"))["pk__max"]
         min_pk = qs.aggregate(Min("pk"))["pk__min"]
