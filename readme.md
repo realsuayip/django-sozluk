@@ -1,62 +1,59 @@
-﻿## django-sozluk, ekşi sözlük clone powered by Python
+﻿## django-sozluk, Python tabanlı ekşisözlük klonu
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6c2a34dfbd184f139cd32f8f622d4002)](https://www.codacy.com/manual/realsuayip/django-sozluk?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=realsuayip/django-sozluk&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
-Demo website is now available at [sozluk.me](https://sozluk.me/) \
-Check [CHANGELOG](CHANGELOG) before cloning a newer version!
+Demo website [sozluk.me](https://sozluk.me/) adresinde ulaşılabilir durumda!\
+Yeni versiyonu klonlamadan önce [CHANGELOG](CHANGELOG)'u kontrol edin
 
-This is a clone of ekşi sözlük. Commonly referred as "collaborative dictionary",
-this type of social networking can be thought as "urban dictionary on steroids". Visit
-[this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk) to learn more about
-this type of social network.
+Bu bir ekşisözlük klonudur. Çoğunlukla anıldığı gibi "işbirlikçi sözlük",
+Bu proje "herkesin yorum yapabildiği sözlük" gibidir.
+Sosyal ağ hakkında daha çok şey öğrenmek için [this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk) 
+adresini ziyaret edin.
 
+**Bu proje anlık olarak korunuyor.** Eğer katkı sağlamak isterseniz ya da bir hata bulduysanız,
+benimle iletişime geçmek isteyebilirsiniz.
+Telegram (Orada da aynı kullanıcı adını kullanmaktayım) veya, daha akıllıca, [bir konu oluşturun](https://github.com/realsuayip/django-sozluk/issues/new).
 
-**This project is currently maintained.** If you want to contribute to the project or have found a bug
-or need help about deployment etc., you may contact me via
-Telegram (I use the same username there) or, better yet, [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
+Yapılacakları görmek için to-do anahtar kelimesini kontrol edin.
 
-Check out "todo" keyword in the project files or Github issues to see the to-do's.
-
-Check out [screenshots](screenshots) folder to see current front-end in action with both the desktop and mobile views.
+Mevcut siteyi görmek için [screenshots](screenshots) klasörünü ziyaret edin.
    
-### Quick installation
+### Kolay indirme
 
-Make sure you have latest versions of Python and Docker installed in your system. Clone
-files via Git/GitHub, in the root directory run this command:
+Sisteminizde Docker ve Python'un son versiyonunun indirilmiş olduğundan emin olun. Dosyaları
+Git/Github yoluyla klonlayın ve projenin kök dizininde şu komutu çalıştırın:
 
     python docker.py up
 
-This will build and start development server for the project. Keep in mind that
-in production mode, the emails will output into console (container logs).
+Bu proje için inşaa ve geliştirme sunucusunu başlatacaktır. Üretim durumunda olduğunu aklınızda tutun
+, elektronik postalar konsola düşecektir (konteyner kayıtları).
 
-Running in development mode will also create a superuser with email `test@django.org` and password
-`test`. In order for your entries to appear, you need to make yourself an actual author i.e., 
-remove yourself from novice status using admin user edit page.
+Geliştirme modunda çalıştırmak ayrıca ```test@django.org``` adında bir elektronik posta ve ```test```  adında bir şifre oluşturacaktır.
+Girişlerinizin görünmesi için kendinizi gerçek bir yazar yapmanız gerekir, yani,
+yönetici kullanıcı düzenleme sayfasını kullanarak kendinizi acemi durumundan kaldırın.
 
-The website uses cache mechanism frequently, so you may be inclined to disable
-caching using a dummy cache backend, or disabling cache on left frame. Check settings
-on `apps.py` to learn about caching and about all the other settings.
+Web sitesi önbellek mekanizmasını sıklıkla kullanır, bu nedenle devre dışı bırakma eğiliminde olabilirsiniz.
+Sahte bir önbellek arka ucu kullanarak önbelleğe almayın veya sol çerçevede önbelleği devre dışı bırakmayın. 
+Önbelleğe almak ile ilgili ayarları ve diğer şeyleri öğrenmek için ```apps.py``` üzerindeki ayarları kontrol edin
 
-The Python script also allows
-for a production setup, run `python docker.py --help` to learn more.
+Python aracı ayrıca üretim kurulumu için önünüze taş koymaz (:D), Daha fazlasını öğrenmek için `python docker.py --help`
+komutunu çalıştırın
 
-### Standard docker usage
-If you prefer not use the helper script to gain more granular control, make sure you specify
-the right compose file. Use this command to build and serve:
+### Standart docker kullanımı
+Daha ayrıntılı kontrol elde etmek için yardımcı komut dosyasını kullanmamayı tercih ediyorsanız, doğru 
+dosyayı belirttiğinizden emin olun. Başlatmak ve çalıştırmak için bu komutu kullanın:
 
     docker-compose up -d
 
-Initially, you also have to run a script (in the web container) that sets up the
-database, collects static files and generates required users for the dictionary app:
+Başlangıçta, aynı zamanda, aşağıdakileri ayarlayan bir komut dosyası (web konteynerinde) çalıştırmanız gerekir.
+Veritabanı, statik dosyaları toplar ve sözlük uygulaması için gerekli kullanıcıları oluşturur:
 
     docker-compose exec web sh scripts/setup.sh
 
-You are most likely to create an admin account after these processes:
+Bu işlemlerden sonra bir yönetici hesabı oluşturmanız olasıdır:
 
     docker-compose exec web python manage.py createsuperuser
 
-If you intend to use this configuration for production, make sure you have
-edited all the `.env` files, Django settings file (`settings_prod.py`) and 
-dictionary settings file (`dictionary/apps.py`) with proper credentials.
-Make sure you change the passwords of users that are generated
-through `setup.sh` script.
+Bu yapılandırmayı kullanmayı düşünüyorsanız, bütün ```.env```, Django ayarlar dosyası (```settings_prod.py```) ve sözlük ayarları dosyası (```dictionary/apps.py```)'i düzgün
+bilgiler ile düzenlediğinizden emin olun. Ayrıca setup.sh aracılığıyla oluşturulan kullanıcıların
+parolalarını değiştirdiğinizden emin olun.
