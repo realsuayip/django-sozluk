@@ -1600,7 +1600,7 @@ msgstr ""
 
 #: .\templates\admin\app_list.html:39
 msgid "You don’t have permission to view or edit anything."
-msgstr ""
+msgstr "Hiçbir şeyi görüntüleme veya düzenleme izniniz yok."
 
 #: .\templates\admin\app_list.html:44
 msgid "Other actions"
@@ -1769,7 +1769,7 @@ msgstr "takip/engellenmiş"
 
 #: .\templates\dictionary\base.html:146 .\templates\dictionary\base.html:236
 msgid "log out"
-msgstr "terk"
+msgstr "çıkış yap"
 
 #: .\templates\dictionary\base.html:155 .\templates\dictionary\base.html:242
 #: .\templates\dictionary\registration\email\resend_form.html:7
