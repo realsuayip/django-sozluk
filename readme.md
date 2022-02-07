@@ -27,7 +27,7 @@ files via Git/GitHub, in the root directory run this command:
     python docker.py up
 
 This will build and start development server for the project. Keep in mind that
-in production mode, the emails will output into console (container logs).
+in development mode, the emails will output into console (container logs).
 
 Running in development mode will also create a superuser with email `test@django.org` and password
 `test`. In order for your entries to appear, you need to make yourself an actual author i.e., 
