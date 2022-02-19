@@ -19,6 +19,7 @@ services:
       - .env
     volumes:
       - .:/code
+      - media_volume:/code/media
     ports:
       - "8000:8000"
     depends_on:
@@ -32,7 +33,7 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/usr/src/app
+      - media_volume:/code/media
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -45,8 +46,6 @@ services:
     container_name: sozluk_dev_celery_beat
     env_file:
       - .env
-    volumes:
-      - .:/usr/src/app
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -55,3 +54,5 @@ services:
       - web
       - db
       - redis
+volumes:
+  media_volume:
