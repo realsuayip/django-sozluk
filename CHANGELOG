@@ -1,3 +1,16 @@
+[1.1.5](2022.02.19)(compatible)
+--Additions--
+None
+
+-- Changes --
+1) Upgrade Python to 3.8.12, upgrade Python
+dependencies to latest versions.
+2) In development docker setup, fixed a configuration
+error that caused celery to not have access to media files.
+
+--Deletions--
+None
+
 [1.1.4-beta](2022.01.05)(compatible)
 
 --Additions--
