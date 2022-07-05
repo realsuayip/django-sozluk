@@ -1,4 +1,4 @@
-Django==3.2.12
+Django==3.2.14
 django-uuslug==2.0.0
 django-widget-tweaks==1.4.12
 graphene-django==2.15.0
