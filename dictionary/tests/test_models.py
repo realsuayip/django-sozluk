@@ -315,10 +315,6 @@ class MementoModelTests(TransactionTestCase):
         with self.assertRaises(IntegrityError):
             Memento.objects.create(holder=self.author_1, patient=self.author_2)
 
-    def test_str(self):
-        memento = Memento.objects.create(holder=self.author_1, patient=self.author_2)
-        self.assertEqual(str(memento), f"Memento#1, from {self.author_1} about {self.author_2}")
-
 
 class UserVerificationModelTests(TestCase):
     @classmethod
