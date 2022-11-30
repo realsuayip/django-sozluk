@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-sozluk"
+version = "1.2.0"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+known_django = "django"
+sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+combine_as_imports = true
+line_length = 120
