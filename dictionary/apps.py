@@ -204,7 +204,7 @@ class DictionaryConfig(AppConfig):
     You may also (better) use this for debugging purposes.
     """
 
-    YEAR_RANGE = (2020, 2019, 2018)
+    YEAR_RANGE = (2023, 2022, 2021, 2020, 2019, 2018)
     """Years available for today-in-history"""
 
     #  <-----> END OF CATEGORY RELATED SETTINGS <----->  #

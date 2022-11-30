@@ -26,7 +26,7 @@ class SignUpForm(UserCreationForm):
         label=_("e-mail"),
     )
     gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date"))
+    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2006, 1900, -1)), label=_("birth date"))
     terms_conditions = forms.BooleanField(required=True)
 
     class Meta:
