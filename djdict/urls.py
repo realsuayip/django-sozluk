@@ -22,7 +22,6 @@ from django.views.i18n import JavaScriptCatalog
 
 from dictionary.sitemaps import sitemaps
 
-
 urlpatterns = [
     path("", include("dictionary.urls")),
     path("graphql/", include("dictionary_graph.urls")),

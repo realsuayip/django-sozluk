@@ -52,7 +52,10 @@ class AuthorAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("username", "karma", "badges")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "gender", "birth_date")},),
+        (
+            _("Personal info"),
+            {"fields": ("first_name", "last_name", "email", "gender", "birth_date")},
+        ),
         (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
         (_("Accessibility details"), {"fields": ("is_frozen", "is_private", "suspended_until")}),
         (

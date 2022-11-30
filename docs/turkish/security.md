@@ -19,7 +19,7 @@ Her ne kadar bu özellik önyüzde kullanışlı mesajlar göstermemize
 yarasa da dikkatli kullanılması gerekiyor.
 
 Bildirimler genel mesajlar içerse de, herhangi bir
-sebeple kullanıcıdan gelen bir giriyi mesajda göstermek istiyorsanız 
+sebeple kullanıcıdan gelen bir giriyi mesajda göstermek istiyorsanız
 kullanıcıdan gelen giriyi *sanitize* etmeniz gerekiyor, yani özel
 HTML karakterlerini kaçış karakterleriyle değiştirmeniz gerekiyor.
 Aksi takdirde XSS açığı oluşacaktır.

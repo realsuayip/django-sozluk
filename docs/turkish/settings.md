@@ -2,13 +2,13 @@
 
 ### GENERIC_SUPERUSER_USERNAME
 `generic_superuser` özel bir kullanıcıdır. Normal kullanıcılardan farklı olarak
-tüm kullanıcılara mesaj gönderme yetkisine sahiptir. Bu kullanıcı, hesabı askıya 
+tüm kullanıcılara mesaj gönderme yetkisine sahiptir. Bu kullanıcı, hesabı askıya
 alınan kullanıcılara bilgi mesajı atma, taşınan başlıklara `bkz` verme,
 ukte veren kullanıcılara müjde verme gibi birtakım ayak işlerini *otomatik olarak*
 yapar.
 
 Bu ayarın değeri `str` tipi olmalıdır. Sözlükteki `generic_superuser` aksiyonlarını
-gerçekleştirecek kullanıcıyı belirler. Kullanıcın `username` adlı alanını birebir 
+gerçekleştirecek kullanıcıyı belirler. Kullanıcın `username` adlı alanını birebir
 girmelisiniz.
 
 Kullanıcıyı oluşturmak için:

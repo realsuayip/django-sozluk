@@ -2,7 +2,6 @@ from django.urls import path
 
 from dictionary.views.announcements import AnnouncementDetail, AnnouncementIndex, AnnouncementMonth
 
-
 urlpatterns_announcements = [
     path("announcements/", AnnouncementIndex.as_view(), name="announcements-index"),
     path(

@@ -1,6 +1,5 @@
 import datetime
 import re
-
 from contextlib import suppress
 
 from django.contrib.auth import get_user_model
@@ -51,6 +50,7 @@ def i18n_lower(value):
         lower_map.update({ord("I"): "ı"})
 
     return value.translate(lower_map).lower()
+
 
 def smart_lower(value):
     url_nc = re.compile(f"({RE_WEBURL_NC})")

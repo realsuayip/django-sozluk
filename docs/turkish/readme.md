@@ -12,7 +12,7 @@ Kategoriler:
 * [Javascript](javascript.md)
     * [Dosyaların derlenmesi](javascript.md#dosyaların-derlenmesi)
 * [Sunucuya kurulum yapacaklar için notlar](deployment.md)
-    
+
 
 Diğer:
 

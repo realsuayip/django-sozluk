@@ -1,6 +1,5 @@
 import datetime
 import hashlib
-
 from uuid import uuid4
 
 from django.core.mail import EmailMessage

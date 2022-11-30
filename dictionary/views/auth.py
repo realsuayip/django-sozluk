@@ -1,6 +1,5 @@
 import hashlib
 import os
-
 from contextlib import suppress
 from smtplib import SMTPException
 

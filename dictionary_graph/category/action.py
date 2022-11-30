@@ -6,7 +6,6 @@ from graphene import ID, Int, Mutation, String
 from dictionary.conf import settings
 from dictionary.models import Category, Suggestion, Topic
 from dictionary.utils import time_threshold
-
 from dictionary_graph.utils import login_required
 
 

@@ -2,13 +2,11 @@ from django.template.defaultfilters import linebreaksbr
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-
 from graphene import ID, Mutation, String
 
 from dictionary.models import Entry, Topic
 from dictionary.templatetags.filters import formatted
 from dictionary.utils.validators import validate_user_text
-
 from dictionary_graph.utils import login_required
 
 

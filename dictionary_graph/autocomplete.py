@@ -1,10 +1,10 @@
 from functools import wraps
 
 from django.db.models import Q
+
 from graphene import Int, List, ObjectType, String
 
 from dictionary.models import Author, Topic
-
 from dictionary_graph.types import AuthorType, TopicType
 
 

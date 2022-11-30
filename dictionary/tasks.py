@@ -3,11 +3,10 @@ from datetime import timedelta
 from django.contrib.auth.models import Permission
 from django.db.models import Count, Q
 
-from djdict import celery_app
-
 from dictionary.conf import settings
 from dictionary.models import AccountTerminationQueue, Author, BackUp, GeneralReport, Image, UserVerification
 from dictionary.utils import time_threshold
+from djdict import celery_app
 
 
 @celery_app.task

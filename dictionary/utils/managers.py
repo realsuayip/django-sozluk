@@ -1,5 +1,4 @@
 import hashlib
-
 from decimal import Decimal
 from functools import wraps
 from typing import List, Union

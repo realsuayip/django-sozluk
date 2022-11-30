@@ -8,7 +8,6 @@ from dictionary.models import Topic, Wish
 from dictionary.templatetags.filters import formatted
 from dictionary.utils import smart_lower
 from dictionary.utils.validators import validate_user_text
-
 from dictionary_graph.utils import login_required
 
 

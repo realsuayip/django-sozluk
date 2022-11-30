@@ -19,7 +19,7 @@ içine almamız gerekiyor, bu sayede sistemdeki Python’a dokunmadan işlerimiz
 paket yöneticisiyle (pip) `virtualenv` kütüphanesini yüklüyoruz:
 
     pip install virtualenv
-   
+
 Not: Linux tabanlı sistemlerde Python sürümüne göre “pip” komutu değişebilir (pip3, pip3.8 vs.). Bu adımdan sonra proje ana
 dizinine sanal ortamı kurabiliriz. Bunu yapmak için:
 
@@ -31,9 +31,9 @@ sanal ortama geçiş yapmak için aynı dizinde şu komutu çalıştırıyoruz:
 Windows için:
 
     venv\Scripts\activate
-    
+
 Linux tabanlı sistemler için (çoğunda):
-    
+
     source venv/bin/activate
 
 Bu adımdan sonra eğer komut satırının başında `(venv)` ibaresi yer alıyor ise sanal ortama geçiş yapmışız demektir.
@@ -60,7 +60,7 @@ Sırada veri tabanında tabloları oluşturmak var. Bunu yapmak için yine ana d
 
 #### Sitenin çalıştırılması
 Artık projeyi çalıştırıp siteye girebiliriz:
-       
+
        python manage.py runserver
 
 Bu komut siteyi `127.0.0.1:8000` adresinde erişilebilir hale getirecek. Bu adrese girdiğinizde siteyi gördüğünüzden emin
@@ -94,7 +94,7 @@ için detaylı bilgi bulunuyor. Bu ayarlardan iki tanesini derhal yapmanız gere
 Son olarak, e-posta gönderen sayfalar ve fonksiyonlar (örneğin yeni kullanıcı kaydı) halihazırda bir e-posta sunucusu
 belirlenmediği için çalışmayacaktır. Fakat yerel ağda iken gönderilen e-postaları komut satırına yazdırabiliriz, bunu
 yapmak için ayrı bir komut satırında şunu çalıştırın:
-    
+
     python -m smtpd -n -c DebuggingServer localhost:1025
 
 Bu komut satırı, açık olduğu sürece sözde e-posta sunucusu görevi görecek.
