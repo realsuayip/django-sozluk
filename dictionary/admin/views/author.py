@@ -1,5 +1,4 @@
 import math
-
 from datetime import timedelta
 
 from django.contrib import messages as notifications

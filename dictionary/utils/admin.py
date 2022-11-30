@@ -4,7 +4,6 @@ from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import redirect, reverse
 
-
 # Admin site specific utilities
 
 

@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.contrib import messages as notifications
+from django.contrib import admin, messages as notifications
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, reverse
 from django.utils.decorators import method_decorator
@@ -85,7 +84,9 @@ class IntermediateActionMixin:
         except InputNotInDesiredRangeError:
             notifications.error(
                 request,
-                gettext("At most, you can only work with %(max_input)d %(obj_name)s objects.",)
+                gettext(
+                    "At most, you can only work with %(max_input)d %(obj_name)s objects.",
+                )
                 % {"obj_name": self.model._meta.verbose_name, "max_input": self.max_input},
             )
             return redirect(self.get_changelist_url())

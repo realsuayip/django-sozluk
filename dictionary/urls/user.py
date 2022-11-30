@@ -3,9 +3,8 @@ from django.urls import path
 
 from dictionary.views.detail import Chat, ChatArchive, UserProfile
 from dictionary.views.edit import UserPreferences
-from dictionary.views.images import ImageList, ImageUpload, ImageDetailProduction, ImageDetailDevelopment
+from dictionary.views.images import ImageDetailDevelopment, ImageDetailProduction, ImageList, ImageUpload
 from dictionary.views.list import ActivityList, ConversationArchiveList, ConversationList, PeopleList
-
 
 ImageDetailView = ImageDetailDevelopment if settings.DEBUG else ImageDetailProduction
 """

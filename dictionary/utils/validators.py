@@ -6,7 +6,6 @@ from uuslug import slugify
 
 from dictionary.conf import settings
 
-
 user_text_re = _lazy_re_compile(r"^[A-Za-z0-9 ğçıöşüĞÇİÖŞÜ#&@()_+=':%/\",.!?*~`\[\]{}<>^;\\|-]+$")
 topic_title_re = _lazy_re_compile(r"^[a-z0-9 ğçıöşü&#()_+='%/\",.!?~\[\]{}<>^;\\|-]+$")
 

@@ -1,5 +1,4 @@
 import re
-
 from html import unescape
 from urllib.parse import quote_plus
 
@@ -13,7 +12,6 @@ from dateutil.parser import parse
 
 from dictionary.conf import settings
 from dictionary.utils import RE_WEBURL, RE_WEBURL_NC
-
 
 register = template.Library()
 
@@ -43,7 +41,7 @@ SEE_EXPR = r"(?:bkz|see)"
 SEARCH_EXPR = r"(?:ara|search)"
 IMAGE_EXPR = r"(?:görsel|image)"
 
-IMAGE_REGEX = fr"\({IMAGE_EXPR}: ([a-z0-9]{{8}})\)"
+IMAGE_REGEX = rf"\({IMAGE_EXPR}: ([a-z0-9]{{8}})\)"
 
 # Translators: Short for "also see this", used in entry editor.
 SEE = pgettext_lazy("editor", "see")
@@ -100,35 +98,38 @@ def formatted(raw_entry):
     entry = escape(raw_entry)  # Prevent XSS
     replacements = (
         # Reference
-        (fr"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", fr'({SEE}: <a href="/entry/\1/">#\1</a>)'),
+        (rf"\({SEE_EXPR}: #{RE_ENTRY_CHARSET}\)", rf'({SEE}: <a href="/entry/\1/">#\1</a>)'),
         (
-            fr"\({SEE_EXPR}: (?!<)(@?{RE_TOPIC_CHARSET})\)",
-            lambda m: fr'({SEE}: <a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>)',
+            rf"\({SEE_EXPR}: (?!<)(@?{RE_TOPIC_CHARSET})\)",
+            lambda m: rf'({SEE}: <a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>)',
         ),
         # Swh
         (
-            fr"`:{RE_TOPIC_CHARSET}`",
-            lambda m: fr'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',  # noqa
+            rf"`:{RE_TOPIC_CHARSET}`",
+            lambda m: rf'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',  # noqa
         ),
         # Reference with no indicator
-        (fr"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
-        (fr"`(@?{RE_TOPIC_CHARSET})`", lambda m: fr'<a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>'),
+        (rf"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),
+        (rf"`(@?{RE_TOPIC_CHARSET})`", lambda m: rf'<a href="/topic/?q={q_unescape(m.group(1))}">{m.group(1)}</a>'),
         # Search
         (
-            fr"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
-            fr'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
+            rf"\({SEARCH_EXPR}: (@?{RE_TOPIC_CHARSET})\)",
+            rf'({SEARCH}: <a data-keywords="\1" class="quicksearch" role="button" tabindex="0">\1</a>)',
         ),
         # Image
-        (IMAGE_REGEX, fr'<a role="button" tabindex="0" data-img="/img/\1" aria-expanded="false">{IMAGE}</a>'),
+        (IMAGE_REGEX, rf'<a role="button" tabindex="0" data-img="/img/\1" aria-expanded="false">{IMAGE}</a>'),
         # Links. Order matters. In order to hinder clash between labelled and linkified:
         # Find links with label, then encapsulate them in anchor tag, which adds " character before the
         # link. Then we find all other links which don't have " at the start.
         # Users can't send " character, they send the escaped version: &quot;
         (
-            fr"\[{RE_WEBURL} (?!\s|{RE_WEBURL_NC})([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
+            rf"\[{RE_WEBURL} (?!\s|{RE_WEBURL_NC})([a-z0-9 ğçıöşü#&@()_+=':%/\",.!?*~`\[{{}}<>^;\\|-]+)(?<!\s)\]",
             r'<a rel="ugc nofollow noopener" target="_blank" href="\1\2">\3</a>',
         ),
-        (fr"(?<!\"){RE_WEBURL}", linkify,),
+        (
+            rf"(?<!\"){RE_WEBURL}",
+            linkify,
+        ),
     )
 
     for tag in replacements:
@@ -140,7 +141,7 @@ def formatted(raw_entry):
 @register.filter
 def mark(formatted_entry, words):
     for word in sorted(words.split(), key=len, reverse=True):
-        tag = (fr"({re.escape(escape(word))})(?!(.(?!<(a|mark)))*<\/(a|mark)>)", r"<mark>\1</mark>")
+        tag = (rf"({re.escape(escape(word))})(?!(.(?!<(a|mark)))*<\/(a|mark)>)", r"<mark>\1</mark>")
         formatted_entry = re.sub(*tag, formatted_entry)
     return mark_safe(formatted_entry)
 

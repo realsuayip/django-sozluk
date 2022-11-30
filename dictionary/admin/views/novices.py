@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.contrib import messages as notifications
+from django.contrib import admin, messages as notifications
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import gettext as _

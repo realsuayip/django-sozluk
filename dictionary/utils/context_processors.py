@@ -1,5 +1,4 @@
 import json
-
 from contextlib import suppress
 from json.decoder import JSONDecodeError
 from urllib.parse import parse_qsl, quote, unquote

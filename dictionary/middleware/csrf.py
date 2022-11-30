@@ -1,6 +1,4 @@
-from django.middleware.csrf import CsrfViewMiddleware as _CsrfViewMiddleware
-from django.middleware.csrf import get_token
-
+from django.middleware.csrf import CsrfViewMiddleware as _CsrfViewMiddleware, get_token
 
 # Normally django.middleware.csrf.CsrfViewMiddleware
 # ensures 'csrftoken' cookie when there is a form in a

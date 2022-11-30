@@ -1,6 +1,5 @@
 import math
 import random
-
 from contextlib import suppress
 from decimal import Decimal
 from functools import wraps
@@ -319,14 +318,11 @@ class Author(AbstractUser):
 
         if delta <= timezone.timedelta(seconds=interval):
             remaining = interval - delta.seconds
-            return (
-                ngettext(
-                    "you are sending entries too frequently. try again in a second.",
-                    "you are sending entries too frequently. try again in %(remaining)d seconds.",
-                    remaining,
-                )
-                % {"remaining": remaining}
-            )
+            return ngettext(
+                "you are sending entries too frequently. try again in a second.",
+                "you are sending entries too frequently. try again in %(remaining)d seconds.",
+                remaining,
+            ) % {"remaining": remaining}
 
         return None
 

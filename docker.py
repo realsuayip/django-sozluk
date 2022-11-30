@@ -11,12 +11,8 @@ parser.add_argument(
     help="Specify docker action.",
     choices=["up", "down", "build", "restart", "start", "stop", "setup"],
 )
-parser.add_argument(
-    "-p", "--production", action="store_true", help="Run in production mode."
-)
-parser.add_argument(
-    "-d", "--detached", action="store_true", help="Run in detached mode."
-)
+parser.add_argument("-p", "--production", action="store_true", help="Run in production mode.")
+parser.add_argument("-d", "--detached", action="store_true", help="Run in detached mode.")
 
 args = parser.parse_args()
 action = args.action

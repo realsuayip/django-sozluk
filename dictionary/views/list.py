@@ -1,9 +1,8 @@
 import datetime
+import json
 import math
 import random
 import re
-import json
-
 from contextlib import suppress
 from json.decoder import JSONDecodeError
 from urllib.parse import quote, unquote
@@ -310,6 +309,7 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
     View to handle search results of header search box.
     View to handle entry permalinks.
     """
+
     context_object_name = "entries"
     template_name = "dictionary/list/entry_list.html"
     paginator_class = SafePaginator
@@ -510,7 +510,7 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
 
             # Redirect to reference?
             if all((self.view_mode == "regular", queryset_size == 1, self.request.GET.get("nr") != "true")) and (
-                reference := re.fullmatch(fr"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content)
+                reference := re.fullmatch(rf"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content)
             ):
                 title = reference.group(1)  # noqa
                 with suppress(Topic.DoesNotExist):

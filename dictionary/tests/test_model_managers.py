@@ -2,7 +2,7 @@ from django.http import Http404
 from django.test import TestCase, TransactionTestCase
 
 from dictionary.conf import settings
-from dictionary.models import Author, Entry, Conversation, Message, Topic
+from dictionary.models import Author, Conversation, Entry, Message, Topic
 
 
 class EntryModelManagersTests(TestCase):

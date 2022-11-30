@@ -6,7 +6,6 @@ from django.utils.translation import gettext as _
 from graphene import Mutation, String
 
 from dictionary.models import Author
-
 from dictionary_graph.utils import login_required
 
 
@@ -73,6 +72,7 @@ class Follow(Action, Mutation):
 
 class ToggleTheme(Mutation):
     """Toggles theme for logged in users."""
+
     theme = String()
 
     @staticmethod

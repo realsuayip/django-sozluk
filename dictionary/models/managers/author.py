@@ -7,7 +7,6 @@ from django.utils import timezone
 
 from dictionary.utils import get_generic_privateuser, time_threshold
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 from pathlib import Path
+
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -67,11 +68,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
     "django.middleware.locale.LocaleMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
-
     "dictionary.middleware.users.NoviceActivityMiddleware",
     "dictionary.middleware.frontend.MobileDetectionMiddleware",  # 1
     "dictionary.middleware.frontend.LeftFrameMiddleware",  # 2
@@ -174,4 +173,4 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

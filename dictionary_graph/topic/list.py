@@ -5,7 +5,6 @@ from graphene import Boolean, Field, Int, JSONString, List, ObjectType, String
 from dictionary.templatetags.filters import humanize_count
 from dictionary.utils.managers import TopicListManager
 from dictionary.utils.serializers import LeftFrame
-
 from dictionary_graph.types import CategoryType
 
 

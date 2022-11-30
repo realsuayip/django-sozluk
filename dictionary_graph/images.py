@@ -1,8 +1,6 @@
-from graphene import ObjectType
-from graphene import Mutation, String
+from graphene import Mutation, ObjectType, String
 
 from dictionary.models import Image
-
 from dictionary_graph.utils import login_required
 
 

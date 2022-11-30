@@ -3,7 +3,6 @@ from django.db.models import Q
 from graphene import Int, List, ObjectType
 
 from dictionary.models import Entry
-
 from dictionary_graph.types import AuthorType
 from dictionary_graph.utils import login_required
 

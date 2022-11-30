@@ -6,10 +6,8 @@ from django.utils.translation import gettext as _
 from graphene import ID, List, Mutation, String
 
 from dictionary.conf import settings
-
 from dictionary.models import Author, Conversation, ConversationArchive, Message
 from dictionary.utils.validators import validate_user_text
-
 from dictionary_graph.utils import login_required
 
 

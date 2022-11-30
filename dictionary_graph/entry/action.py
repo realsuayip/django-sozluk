@@ -8,8 +8,7 @@ from django.utils.translation import gettext as _
 from graphene import ID, Int, Mutation, String
 
 from dictionary.conf import settings
-from dictionary.models import Entry, Comment
-
+from dictionary.models import Comment, Entry
 from dictionary_graph.utils import AnonymousUserStorage, login_required
 
 # pylint: disable=too-many-arguments
