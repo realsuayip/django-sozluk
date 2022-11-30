@@ -1,6 +1,5 @@
 import datetime
 import time
-
 from decimal import Decimal
 from unittest import mock
 
@@ -204,22 +203,24 @@ class AuthorModelTests(TestCase):
 
     def test_entry_nice(self):
         # No entry = No nice entry
-        self.assertEqual(None, self.author.entry_nice)
+        cache.clear()
+        author = self.author
+        self.assertEqual(None, author.entry_nice)
 
         # Entry with low vote rate
-        entry = Entry.objects.create(**self.entry_base)
-        del self.author.entry_nice
+        entry = Entry.objects.create(topic=self.topic, author=author)
+        del author.entry_nice
         cache.clear()
 
-        self.assertEqual(None, self.author.entry_nice)
+        self.assertEqual(None, author.entry_nice)
 
         # Entry with enough vote rate
         entry.vote_rate = Decimal("1.1")
         entry.save()
 
-        del self.author.entry_nice
+        del author.entry_nice
         cache.clear()
-        self.assertEqual(entry, self.author.entry_nice)
+        self.assertEqual(entry, author.entry_nice)
 
 
 class CategoryModelTests(TransactionTestCase):
@@ -364,10 +365,6 @@ class MessageModelTests(TestCase):
         self.assertIsNone(some_message.read_at)
         some_message.mark_read()
         self.assertIsNotNone(some_message.read_at)
-
-    def test_str(self):
-        some_message = Message.objects.compose(self.author_1, self.author_2, "body")
-        self.assertEqual(str(some_message), "1")
 
 
 class ConversationModelTests(TestCase):
