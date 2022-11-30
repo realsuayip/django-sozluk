@@ -160,7 +160,7 @@ class TopicModelManagersTest(TransactionTestCase):
 
     def test_create_topic(self):
         # Just writing this test to inform the user (that he may have been messed up with this method)
-        topic_1 = Topic.objects.get(pk=1)
+        topic_1 = Topic.objects.get(title="şeker çocuk")
         self.assertEqual(topic_1, self.topic_1)
         self.assertEqual(topic_1.created_by, self.author)
 

@@ -47,7 +47,7 @@ def i18n_lower(value):
     # (İ -> i) can be applied to the both of the languages.
     lower_map = {ord("İ"): "i"}
 
-    if get_language() == "tr":
+    if get_language() == "tr-tr":
         lower_map.update({ord("I"): "ı"})
 
     return value.translate(lower_map).lower()
