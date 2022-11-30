@@ -3,6 +3,7 @@ version: '3.7'
 services:
   web:
     build: .
+    container_name: sozluk_backend
     command: gunicorn djdict.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/usr/src/app/static:rw
@@ -15,6 +16,7 @@ services:
       - db
   nginx:
     build: ./nginx
+    container_name: sozluk_nginx
     volumes:
       - static_volume:/home/app/web/static
       - media_volume:/home/app/web/media
@@ -24,16 +26,19 @@ services:
       - web
   db:
     image: postgres:13.1-alpine
+    container_name: sozluk_db
     user: postgres
     env_file:
       - .env.db
   redis:
     image: redis:6.0.10-alpine
+    container_name: sozluk_redis
     user: redis
   celery:
     env_file:
       - .env
     build: .
+    container_name: sozluk_celery_worker
     command: celery -A djdict worker -l info
     volumes:
       - media_volume:/usr/src/app/media
@@ -46,6 +51,7 @@ services:
     volumes:
       - media_volume:/usr/src/app/media
     build: .
+    container_name: sozluk_celery_beat
     command: celery -A djdict beat -l info
     depends_on:
       - db
