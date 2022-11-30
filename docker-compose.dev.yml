@@ -3,7 +3,7 @@ version: '3.7'
 services:
   db:
     image: postgres
-    container_name: sozluk_dev_db
+    container_name: sozluk_db
     user: postgres
     env_file:
       - .env.db
@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     command: python manage.py runserver 0.0.0.0:8000
-    container_name: sozluk_dev_backend
+    container_name: sozluk_backend
     environment:
       DJANGO_SETTINGS_MODULE: djdict.settings
     env_file:
@@ -25,11 +25,11 @@ services:
     depends_on:
       - db
   redis:
-    container_name: sozluk_dev_redis
+    container_name: sozluk_redis
     image: redis:6.0.10-alpine
     user: redis
   celery:
-    container_name: sozluk_dev_celery_worker
+    container_name: sozluk_celery_worker
     env_file:
       - .env
     volumes:
@@ -43,7 +43,7 @@ services:
       - db
       - redis
   celery-beat:
-    container_name: sozluk_dev_celery_beat
+    container_name: sozluk_celery_beat
     env_file:
       - .env
     build:
