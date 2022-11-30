@@ -1,4 +1,4 @@
-FROM python:3.8.12-alpine as builder
+FROM python:3.10.8-alpine as builder
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -17,14 +17,14 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 
 ############################
 
-FROM python:3.8.12-alpine
+FROM python:3.10.8-alpine
 
 RUN addgroup --gid 1017 django_g && adduser django -S  --disabled-password --ingroup django_g
 
 ENV APP_DIR=/usr/src/app
 WORKDIR $APP_DIR
 
-RUN apk update && apk add libpq libjpeg
+RUN apk update && apk add libpq libjpeg bash
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --no-cache /wheels/*

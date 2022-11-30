@@ -40,6 +40,7 @@ def main(parser, environment):  # noqa
         "shell": f"{_django} shell",
         "test": f"{_django} test" " --parallel 4 --shuffle --timing",
         "console": "docker exec -it sozluk_backend /bin/bash",
+        "setup": "docker exec -it sozluk_backend sh ./scripts/setup.sh",
     }
 
     if action is None:
@@ -101,6 +102,7 @@ if __name__ == "__main__":
             "stop",
             "shell",
             "console",
+            "setup",
             "test",
             "logs",
         ],
