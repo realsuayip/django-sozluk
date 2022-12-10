@@ -23,7 +23,7 @@ services:
       - static_volume:/home/app/web/static
       - media_volume:/home/app/web/media
     ports:
-      - "8000:8080"
+      - "80:8080"
     depends_on:
       - web
   db:
