@@ -272,12 +272,13 @@
                 </li>
 
                 <div class="more_tags_dropdown dropdown-menu" aria-labelledby="category-expand">
-
                     {% for category in nav_categories|slice:"4:12" %}
                         <a title="{{ category.description }}" data-lf-slug="{{ category.slug }}" class="dropdown-item{% if left_frame.slug == category.slug %} active{% endif %}" href="{{ category.get_absolute_url }}">#{{ category.name }}</a>
                     {% endfor %}
 
-                    <div class="dropdown-divider"></div>
+                    {% if nav_categories|slice:"4:12" %}
+                        <div class="dropdown-divider"></div>
+                    {% endif %}
                     <a title="{% trans "topics with no channels" %}" class="dropdown-item{% if left_frame.slug == "uncategorized" %} active{% endif %}" data-lf-slug="uncategorized" href="{% url 'topic_list' slug='uncategorized' %}">{% trans "uncategorized" %}</a>
                     <a href="{% url 'category_list' %}" class="dropdown-item regular">{% trans "all channels" %}</a>
                 </div>
