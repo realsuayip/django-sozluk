@@ -10,8 +10,8 @@
     "stylelint-config-standard": "^20.0.0"
   },
   "dependencies": {
-    "@popperjs/core": "^2.5.3",
-    "dropzone": "^5.7.2",
-    "js-cookie": "^3.0.0-rc.1"
+    "@popperjs/core": "2.5.3",
+    "dropzone": "5.7.2",
+    "js-cookie": "3.0.0-rc.1",
   }
 }
