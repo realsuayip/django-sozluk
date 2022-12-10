@@ -1,8 +1,8 @@
 {% extends "dictionary/announcements/base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 {# Variables created outside of a {% block %} using the template tag as syntax can’t be used inside the block #}
-{% block title %}{% blocktrans with date_month=month|date:"F Y"|lower %}{{ date_month }} announcements{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans with date_month=month|date:"F Y"|i18n_lower %}{{ date_month }} announcements{% endblocktrans %}{% endblock %}
 {% block crumb %}
     <span class="mx-1">&raquo;</span>
-    <span class="fs-90">{% blocktrans with date_month=month|date:"F Y"|lower %}{{ date_month }} announcements{% endblocktrans %}</span>
+    <span class="fs-90">{% blocktrans with date_month=month|date:"F Y"|i18n_lower %}{{ date_month }} announcements{% endblocktrans %}</span>
 {% endblock %}

@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _, gettext_lazy, pgettext_lazy
 from dateutil.parser import parse
 
 from dictionary.conf import settings
-from dictionary.utils import RE_WEBURL, RE_WEBURL_NC
+from dictionary.utils import RE_WEBURL, RE_WEBURL_NC, i18n_lower as _i18n_lower
 
 register = template.Library()
 
@@ -30,6 +30,11 @@ def startswith(arg1, arg2):
 def addstr(arg1, arg2):
     """concatenate arg1 & arg2"""
     return str(arg1) + str(arg2)
+
+
+@register.filter
+def i18n_lower(arg):
+    return _i18n_lower(arg)
 
 
 RE_ENTRY_CHARSET = r"([1-9]\d{0,10})"

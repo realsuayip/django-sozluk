@@ -1,5 +1,5 @@
 {% extends "dictionary/base.html" %}
-{% load functions widget_tweaks i18n %}
+{% load functions widget_tweaks i18n filters %}
 {% block title %}{% trans "contact" context "titleblock" %}{% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     <form method="post" class="reporting-form">
         {% if not user.is_authenticated %}
             <div class="form-group">
-                <label for="reporter_email">{{ form.reporter_email.label|lower }}</label>
+                <label for="reporter_email">{{ form.reporter_email.label|i18n_lower }}</label>
                 {% render_field form.reporter_email class="form-control" id="reporter_email" %}
             </div>
         {% else %}
@@ -24,15 +24,15 @@
         {% endif %}
 
         <div class="form-group">
-            <label for="report_category">{{ form.category.label|lower }}</label>
+            <label for="report_category">{{ form.category.label|i18n_lower }}</label>
             {% render_field form.category class="form-control" id="report_category" %}
         </div>
         <div class="form-group">
-            <label for="reporter_subject">{{ form.subject.label|lower }}</label>
+            <label for="reporter_subject">{{ form.subject.label|i18n_lower }}</label>
             {% render_field form.subject|attr:"autofocus" class="form-control" id="reporter_subject" %}
         </div>
         <div class="form-group">
-            <label for="reporter_content">{{ form.content.label|lower }}</label>
+            <label for="reporter_content">{{ form.content.label|i18n_lower }}</label>
             {% render_field form.content rows="5" class="form-control" id="reporter_content" %}
         </div>
 
