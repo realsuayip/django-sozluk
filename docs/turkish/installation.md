@@ -1,6 +1,7 @@
 # Kurulum
 
-***Güncelleme**: Artık Docker kullanarak çok daha zahmetsiz bir şekilde projeyi ayağa kaldırabilirsiniz.*
+***Güncelleme**: Artık Docker kullanarak çok daha zahmetsiz bir şekilde projeyi ayağa kaldırabilirsiniz. Aşağıdaki
+adımları takip etmenizi önermiyorum.*
 
 Projeyi yerel ağda çalıştırabilmek için gerekli yönergeler ile ilk kurulumdan hemen sonra yapılması gereken ayarlar
 burada anlatılacak. Eğer projeyi bir sunucuya yükleyip canlı ortama geçmek istiyorsanız, `django deployment` anahtar

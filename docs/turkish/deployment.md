@@ -7,7 +7,7 @@ Aksini yapmak için spesifik bir sebebiniz yok ise sunucuya kurulum yaparken şu
 `XSendfile` yoluyla servis ediliyor.
 * Veritabanı için `PostgreSQL` kullanın.
 * Sunucunuza bir önbellekleme sistemi kurmanız veya önbellekleme için ayrı bir sunucu açmanız gerekiyor. Önbellekleme
-sistemi için `memcached` test edildi, fakat Django'da önbellek sistemi ortak bir arayüz kullandığı için herhangi bir
+sistemi için `redis` test edildi, fakat Django'da önbellek sistemi ortak bir arayüz kullandığı için herhangi bir
 sistemi kullanabilirsiniz.
 * E-postaların gönderilmesi ve periyodik işlemlerin gerçekleştirebilmesi için Celery kullanılıyor. Celery için broker
 seçerken `RabbitMQ` kullanın. Celery'i nasıl ayarlayıp daemonize edebileceğiniz bilgisini  Celery dökümantasyonunda bulabilirsiniz.
