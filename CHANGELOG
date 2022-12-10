@@ -1,3 +1,32 @@
+[1.2](2022.12.10)(compatible)
+--Additions--
+ * Include migrations in the repository
+ * Add base pyproject.toml
+ * Add pre-commit config & run against all files
+
+--Changes--
+ * Update readme.md
+ * Fix i18n issue caused by the usage of lower tag
+ * Minor improvement in category admin
+ * Fix visual clutter when no channels are added
+ * Update devinfo
+ * Add notice about settings file
+ * Add notice on installation docs
+ * More optimization on Docker setup
+ * Optimize docker-compose.yml
+ * Fix issue with GraphQL types
+ * Work on production setup
+ * Update year-related things
+ * Refactor docker.py & related Docker settings
+ * Update all libraries to latest versions
+ * Fix tests
+ * Update Python version in dev Dockerfile
+
+--Deletions--
+ * Remove unnecessary command from dev entrypoint
+ * Remove unnecessary test
+ * Remove requirements-prod.txt
+
 [1.1.5](2022.02.19)(compatible)
 --Additions--
 None
