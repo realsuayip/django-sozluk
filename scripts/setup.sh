@@ -1,7 +1,6 @@
 #!/bin/sh
 
 echo "Starting initial setup..."
-python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic --no-input
 python manage.py create_generic_user superuser BVT8WnWNF8wJvb4K superuser@example.com --no-input
