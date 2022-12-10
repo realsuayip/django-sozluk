@@ -77,8 +77,8 @@ class LeftFrame {
         this.loadIndicator.style.display = "inline"
         const variables = {
             slug: this.slug,
-            year: this.year,
-            page: this.page,
+            year: parseInt(this.year, 10),
+            page: parseInt(this.page, 10),
             searchKeys: this.searchKeys,
             refresh: this.refresh,
             tab: this.tab,
