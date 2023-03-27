@@ -82,7 +82,7 @@ python-slugify==7.0.0
     # via django-uuslug
 pytz==2022.6
     # via celery
-redis==4.3.5
+redis==4.5.3
     # via django-redis
 six==1.16.0
     # via
