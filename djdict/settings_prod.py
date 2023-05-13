@@ -134,6 +134,12 @@ PASSWORD_RESET_TIMEOUT = 86400
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
