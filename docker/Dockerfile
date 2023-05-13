@@ -12,7 +12,7 @@ RUN apk update \
     && apk add jpeg-dev zlib-dev libjpeg
 
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
+COPY ../requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 ############################
@@ -57,8 +57,8 @@ RUN set -eux; \
 	gosu --version; \
 	gosu nobody true
 
-COPY . .
+COPY .. .
 
 RUN mkdir -p media static
 
-ENTRYPOINT ["/usr/src/app/scripts/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/app/docker/scripts/entrypoint.sh"]

@@ -7,6 +7,6 @@ COPY requirements.txt /code/
 
 RUN apt-get update && apt-get install -y netcat
 RUN pip install -r requirements.txt --no-cache-dir --no-deps
-COPY . /code/
+COPY .. /code/
 
-ENTRYPOINT ["/code/scripts/entrypoint.dev.sh"]
+ENTRYPOINT ["/code/docker/scripts/entrypoint.dev.sh"]

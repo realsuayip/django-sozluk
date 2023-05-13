@@ -6,19 +6,19 @@ services:
     container_name: sozluk_db
     user: postgres
     env_file:
-      - .env.db
+      - ../conf/postgres.env
   web:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     command: python manage.py runserver 0.0.0.0:8000
     container_name: sozluk_backend
     environment:
       DJANGO_SETTINGS_MODULE: djdict.settings
     env_file:
-      - .env
+      - ../conf/django.env
     volumes:
-      - .:/code
+      - ..:/code
       - media_volume:/code/media
     ports:
       - "8000:8000"
@@ -31,12 +31,12 @@ services:
   celery:
     container_name: sozluk_celery_worker
     env_file:
-      - .env
+      - ../conf/django.env
     volumes:
       - media_volume:/code/media
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     command: celery -A djdict worker -l info
     depends_on:
       - web
@@ -45,10 +45,10 @@ services:
   celery-beat:
     container_name: sozluk_celery_beat
     env_file:
-      - .env
+      - ../conf/django.env
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     command: celery -A djdict beat -l info
     depends_on:
       - web
