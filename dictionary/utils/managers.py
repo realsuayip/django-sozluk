@@ -151,7 +151,7 @@ class TopicQueryHandler:
             .order_by("-latest")
         )
 
-    def followups(self, user):  # noqa
+    def followups(self, user):
         """
         Author: Emre Tuna (https://github.com/emretuna01) <emretuna@outlook.com>
 
@@ -374,7 +374,7 @@ class TopicListHandler:
     def __init__(
         self,
         slug: str,
-        user: Union[Author, AnonymousUser] = AnonymousUser(),
+        user: Union[Author, AnonymousUser] = AnonymousUser(),  # noqa: B008
         year: Union[str, int] = None,
         search_keys: dict = None,
         tab: str = None,

@@ -121,7 +121,7 @@ class EntryCreate(LoginRequiredMixin, EntryCreateMixin, FormView):
     def form_valid(self, form):
         if not self.request.POST.get("pub_draft_pk", "").isdigit():
             # Topic object is only required if not publishing a draft.
-            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.extra_context.get("title"))  # noqa
+            self.topic = Topic.objects.get_or_pseudo(unicode_string=self.extra_context.get("title"))
         return super().form_valid(form)
 
 

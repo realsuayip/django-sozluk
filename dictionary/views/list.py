@@ -401,7 +401,7 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
 
         if keywords.startswith("@") and (username := keywords[1:]):
             with suppress(Author.DoesNotExist):
-                author = Author.objects.get(username=username)  # noqa
+                author = Author.objects.get(username=username)
                 filters |= Q(author=author)
 
         if connection.vendor == "postgresql":
@@ -512,7 +512,7 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
             if all((self.view_mode == "regular", queryset_size == 1, self.request.GET.get("nr") != "true")) and (
                 reference := re.fullmatch(rf"\({SEE_EXPR}: (?!<)({RE_TOPIC_CHARSET})\)", first_entry.content)
             ):
-                title = reference.group(1)  # noqa
+                title = reference.group(1)
                 with suppress(Topic.DoesNotExist):
                     topic = Topic.objects_published.get(title=title)
                     # Reference needs to have at least 2 entries to hinder mirror references.

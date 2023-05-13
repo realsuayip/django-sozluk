@@ -73,7 +73,6 @@ def update_topic_disambiguation(instance, action, pk_set, **kwargs):
         return
 
     for topic in appended_topics:
-
         related = topic.mirrors.all()
 
         for mirror in related:

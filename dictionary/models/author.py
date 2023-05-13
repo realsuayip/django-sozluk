@@ -605,7 +605,7 @@ class BackUp(models.Model):
         )
 
     def process_async(self):
-        from dictionary.tasks import process_backup  # noqa
+        from dictionary.tasks import process_backup
 
         process_backup.delay(self.pk)
 

@@ -23,9 +23,40 @@ dependencies = [
 [tool.black]
 line-length = 120
 
-[tool.isort]
-profile = "black"
-known_django = "django"
-sections = "FUTURE,STDLIB,DJANGO,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-combine_as_imports = true
-line_length = 120
+[tool.ruff]
+fix = true
+fixable = ["I", "F401"]
+show-fixes = true
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+    "RUF", # Ruff-specific
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "I", # isort
+]
+line-length = 120
+exclude = ["migrations"]
+ignore = ["B904", "RUF001", "RUF003", "RUF005", "B905"]
+
+[tool.ruff.isort]
+combine-as-imports = true
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "rest_framework",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.isort.sections]
+django = ["django"]
+rest_framework = ["rest_framework"]
+
+[tool.ruff.mccabe]
+max-complexity = 20
