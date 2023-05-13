@@ -1,7 +1,7 @@
 FROM nginx:1.23.4-alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d
+COPY ../../conf/nginx.conf /etc/nginx/conf.d
 
 ENV APP_HOME=/home/app/web
 WORKDIR $APP_HOME

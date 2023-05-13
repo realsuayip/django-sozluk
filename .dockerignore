@@ -12,3 +12,11 @@ package-lock.json
 .env
 .env.db
 .idea
+Makefile
+package.json
+CHANGELOG
+.eslintrc
+.stylelintrc
+.ruff_cache
+.pre-commit-config.yaml
+.gitignore

@@ -4,9 +4,9 @@ $(eval $(WHATEVER):;@:)
 # to pass options, you may do so by using "--" e.g.:
 # make up -- --build
 
-file = docker-compose.dev.yml
+file = docker/docker-compose.dev.yml
 ifeq (${CONTEXT}, production)
-	file = docker-compose.yml
+	file = docker/docker-compose.yml
 endif
 
 project = sozluk
@@ -42,4 +42,4 @@ test:
 format:
 	pre-commit run
 setup:
-	$(ex) sh ./scripts/setup.sh
+	$(ex) sh ./docker/scripts/setup.sh
