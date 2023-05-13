@@ -20,10 +20,10 @@ Check out [screenshots](screenshots) folder to see current front-end in action w
 
 ### Quick installation
 
-Make sure you have latest versions of Python and Docker installed in your system. Clone
-files via Git/GitHub, in the root directory run this command:
+Installation requires Docker (with compose plugin) and GNU Makefile installed.
+Run this command in the project root:
 
-    python docker.py up
+    make
 
 This will build and start development server for the project. Keep in mind that
 in development mode, the emails will output into console (container logs).
@@ -36,19 +36,29 @@ The website uses cache mechanism frequently, so you may be inclined to disable
 caching using a dummy cache backend, or disabling cache on left frame. Check settings
 on `apps.py` to learn about caching and about all the other settings.
 
-The Python script also allows
-for a production setup, run `python docker.py --help` to learn more.
+A production setup is also available if you set `CONTEXT` environment variable
+to `production`. For example, to do deployment in production mode you would run:
+
+    CONTEXT=production make
+
+If you are going to use the production setup, you'll need to run setup script
+once, after the initial build completes (otherwise a server error is shown):
+
+    CONTEXT=production make setup
+
+Makefile also includes other miscellaneous commands. You can browse it to learn
+more.
 
 ### Standard docker usage
 If you prefer not use the helper script to gain more granular control, make sure you specify
 the right compose file. Use this command to build and serve:
 
-    docker-compose up -d
+    docker-compose -f docker/docker-compose.yml up -d
 
 Initially, you also have to run a script (in the web container) that sets up the
 database, collects static files and generates required users for the dictionary app:
 
-    docker-compose exec web sh scripts/setup.sh
+    docker-compose exec web sh docker/scripts/setup.sh
 
 You are most likely to create an admin account after these processes:
 
