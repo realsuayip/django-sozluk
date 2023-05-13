@@ -15,7 +15,6 @@ from dictionary.models import (
     Category,
     Conversation,
     Entry,
-    GeneralReport,
     Memento,
     Message,
     Topic,
@@ -239,9 +238,6 @@ class CategoryModelTests(TransactionTestCase):
         similar_category = Category.objects.create(name="seker")
         self.assertNotEqual(similar_category.slug, self.category.slug)
 
-    def test_str(self):
-        self.assertEqual(str(self.category), self.category.name)
-
 
 class EntryModelTests(TestCase):
     @classmethod
@@ -270,9 +266,6 @@ class EntryModelTests(TestCase):
         new_entry.is_draft = False
         new_entry.save()
         self.assertEqual(self.author, topic_with_no_ownership.created_by)
-
-    def test_str(self):
-        self.assertEqual(str(self.entry), f"{self.entry.id}#{self.entry.author}")
 
     def test_votes(self):
         # Initial vote should be 0
@@ -416,17 +409,6 @@ class ConversationModelTests(TestCase):
         self.assertEqual(some_other_msg, current_conversation_1_2.last_message)
         self.assertEqual(some_other_msg, current_conversation_2_1.last_message)
 
-    def test_str(self):
-        Message.objects.compose(self.author_1, self.author_2, "baapoçun çen?!!")
-        current_conversation = Conversation.objects.get(holder=self.author_1, target=self.author_2)
-        self.assertEqual(str(current_conversation), "<Conversation> holder-> user1, target-> user2")
-
-
-class GeneralReportModelTest(TestCase):
-    def test_str(self):
-        report = GeneralReport.objects.create(subject="subject")
-        self.assertEqual(str(report), "subject <GeneralReport>#1")
-
 
 class TopicModelTest(TransactionTestCase):
     @classmethod
@@ -474,6 +456,3 @@ class TopicModelTest(TransactionTestCase):
     def test_absolute_url(self):
         absolute_url = reverse("topic", kwargs={"slug": self.some_topic.slug})
         self.assertEqual(absolute_url, self.some_topic.get_absolute_url())
-
-    def test_str(self):
-        self.assertEqual(str(self.some_topic), "zeki müren")

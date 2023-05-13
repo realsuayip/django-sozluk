@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 
 from dictionary.conf import settings
 from dictionary.models import Author, Conversation, Entry, Message, Topic
@@ -143,7 +143,7 @@ class ConversationModelManagersTest(TestCase):
         self.assertIn(self.convo_1_2_msg, conversation_1_2_messages)
 
 
-class TopicModelManagersTest(TransactionTestCase):
+class TopicModelManagersTest(TestCase):
     @classmethod
     def setUp(cls):
         cls.author = Author.objects.create(username="user666", email="666", is_novice=False)
