@@ -2,6 +2,7 @@ from django.utils import timezone
 
 from user_agents import parse
 
+from dictionary.conf import settings
 from dictionary.utils import get_theme_from_cookie
 from dictionary.utils.context_processors import lf_proxy
 
@@ -43,6 +44,11 @@ class LeftFrameMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
+        # Add default category to response cookies, if no category
+        # is already selected.
+        active_category = request.COOKIES.get("lfac")
+        if active_category is None:
+            response.set_cookie("lfac", settings.DEFAULT_CATEGORY)
         return response
 
     def process_template_response(self, request, response):
