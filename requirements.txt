@@ -30,7 +30,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-django==4.2.1
+django==4.2.3
     # via
     #   django-appconf
     #   django-celery-email
