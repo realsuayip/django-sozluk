@@ -375,11 +375,11 @@ class TopicListHandler:
         self,
         slug: str,
         user: Union[Author, AnonymousUser] = AnonymousUser(),  # noqa: B008
-        year: Union[str, int] = None,
-        search_keys: dict = None,
-        tab: str = None,
-        exclusions: List[str] = None,
-        extra: dict = None,
+        year: Union[str, int] | None = None,
+        search_keys: dict | None = None,
+        tab: str | None = None,
+        exclusions: List[str] | None = None,
+        extra: dict | None = None,
     ):
         """
         :param user: User requesting the list. Used for topics per page and

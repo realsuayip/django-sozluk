@@ -40,7 +40,7 @@ select = [
 ]
 line-length = 120
 exclude = ["migrations"]
-ignore = ["B904", "RUF001", "RUF003", "RUF005", "B905"]
+ignore = ["B904", "RUF001", "RUF012","RUF003", "RUF005", "B905"]
 
 [tool.ruff.isort]
 combine-as-imports = true
