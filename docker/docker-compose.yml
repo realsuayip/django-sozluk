@@ -31,14 +31,14 @@ services:
     depends_on:
       - web
   db:
-    image: postgres:14.8-alpine
+    image: postgres:15.4-alpine
     restart: always
     container_name: sozluk_db
     user: postgres
     env_file:
       - ../conf/postgres.env
   redis:
-    image: redis:6.2.12-alpine
+    image: redis:7.2-alpine
     restart: always
     container_name: sozluk_redis
     user: redis
