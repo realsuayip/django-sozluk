@@ -1,3 +1,15 @@
+[1.4](2023.08.19)(compatible)
+--Additions--
+None
+
+--Changes--
+ * Update packages & dependencies
+ * Fix left frame rendering issue when no active category is set in
+ cookies. Thanks to Aras Diler.
+
+--Deletions--
+None
+
 [1.3](2023.05.13)(compatible)
 --Additions--
 None
