@@ -85,25 +85,28 @@ class Index(ListView):
         return list(records)
 
     def random_records(self):
-        """Author: Peter Be <peterbe.com>"""
         qs = Entry.objects.order_by()
 
         max_pk = qs.aggregate(Max("pk"))["pk__max"]
         min_pk = qs.aggregate(Min("pk"))["pk__min"]
 
-        if not max_pk or max_pk < self.size * 2:
-            return []
+        if not (min_pk and max_pk):
+            return
 
-        ids = set()
+        seen, size, attempts = set(), 0, 0
+        while size < self.size:
+            if attempts > 200:
+                return
+            attempts += 1
 
-        while len(ids) < self.size:
             next_pk = random.randint(min_pk, max_pk)  # nosec
-            while next_pk in ids:
-                next_pk = random.randint(min_pk, max_pk)  # nosec
+            if next_pk in seen:
+                continue
+            seen.add(next_pk)
 
-            found = qs.model.objects.filter(pk=next_pk).exists()
+            found = Entry.objects.filter(pk=next_pk).exists()
             if found:
-                ids.add(next_pk)
+                size += 1
                 yield next_pk
 
     def nice_records(self):
