@@ -64,7 +64,7 @@ kombu==5.3.1
     # via celery
 packaging==23.1
     # via gunicorn
-pillow==10.0.0
+pillow==10.0.1
     # via django-sozluk (pyproject.toml)
 promise==2.3
     # via graphene-django
