@@ -83,7 +83,7 @@ def linkify(weburl_match):
             return f'({SEE}: <a href="{path}">{guess}</a>)'
 
         if image := re.match(r"^/img/([a-z0-9]{8})/?$", path):
-            return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'  # noqa
+            return f'<a role="button" tabindex="0" data-img="/img/{image.group(1)}" aria-expanded="false">{IMAGE}</a>'
 
     path_repr = f"/...{path[-32:]}" if len(path) > 35 else path  # Shorten long urls
     url = domain + path
