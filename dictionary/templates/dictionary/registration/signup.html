@@ -42,7 +42,7 @@
             <div class="form-group">
                 <label for="signup_password1">{{ form.password1.label|i18n_lower }}</label>
                 {% render_field form.password1 class="form-control" id="signup_password1" aria-describedby="signup_password1Help" %}
-                <small id="signup_password1Help" class="form-text text-muted password-help">{{ form.password1.help_text|i18n_lower }}</small>
+                <small id="signup_password1Help" class="form-text text-muted password-help">{{ form.password1.help_text|i18n_lower|safe }}</small>
             </div>
 
             <div class="form-group">
