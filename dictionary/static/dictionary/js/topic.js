@@ -47,7 +47,7 @@ Handler(".suggestion-vote button", "click", function () {
 
 // Wish
 
-function wishTopic (title, hint = null) {
+function wishTopic (title, hint = "") {
     const query = `mutation wish($title:String!,$hint:String){topic{wish(title:$title,hint:$hint){feedback hint}}}`
     const variables = { title, hint }
     return gqlc({ query, variables })
