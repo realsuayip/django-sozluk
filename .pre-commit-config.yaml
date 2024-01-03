@@ -6,6 +6,8 @@ repos:
       - id: mixed-line-ending
         args: [ '--fix=lf' ]
       - id: end-of-file-fixer
+        exclude: "dist\/.*"
+
   - repo: https://github.com/psf/black
     rev: 23.9.1
     hooks:
