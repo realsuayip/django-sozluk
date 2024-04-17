@@ -58,7 +58,7 @@ graphql-relay==3.2.0
     # via
     #   graphene
     #   graphene-django
-gunicorn==21.2.0
+gunicorn==22.0.0
     # via django-sozluk (pyproject.toml)
 kombu==5.3.4
     # via celery
