@@ -13,7 +13,7 @@ from django.core.files.base import ContentFile
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.db.models import BooleanField, Case, Count, F, OuterRef, Q, Sum, When
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Lower
 from django.shortcuts import reverse
 from django.template import defaultfilters
 from django.utils import timezone
@@ -195,6 +195,13 @@ class Author(AbstractUser):
         )
         verbose_name = _("author")
         verbose_name_plural = _("authors")
+        constraints = [
+            models.UniqueConstraint(
+                Lower("email"),
+                name="unique_author_lower_email",
+                violation_error_message=_("this e-mail is already in use."),
+            ),
+        ]
 
     def __str__(self):
         return str(self.username)
