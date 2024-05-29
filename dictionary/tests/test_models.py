@@ -221,6 +221,32 @@ class AuthorModelTests(TestCase):
         cache.clear()
         self.assertEqual(entry, author.entry_nice)
 
+    def test_username_change_simple(self):
+        self.author.username = "hello world"
+        with self.assertNumQueries(3):
+            self.author.save()
+        self.author.refresh_from_db()
+        self.assertEqual("hello-world", self.author.slug)
+
+    def test_username_change_update_fields(self):
+        self.author.username = "hello world"
+        with self.assertNumQueries(3):
+            self.author.save(update_fields=["username"])
+        self.author.refresh_from_db()
+        self.assertEqual("hello-world", self.author.slug)
+
+    def test_username_change_update_fields_ignored(self):
+        with self.assertNumQueries(1):
+            self.author.save(update_fields=["date_joined"])
+        self.author.refresh_from_db()
+        self.assertEqual("user", self.author.slug)
+
+    def test_username_change_unchanged_ignored(self):
+        with self.assertNumQueries(2):
+            self.author.save()
+        self.author.refresh_from_db()
+        self.assertEqual("user", self.author.slug)
+
 
 class CategoryModelTests(TransactionTestCase):
     @classmethod

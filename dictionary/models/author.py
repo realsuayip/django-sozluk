@@ -206,12 +206,25 @@ class Author(AbstractUser):
     def __str__(self):
         return str(self.username)
 
+    def check_username_changed(self, kwargs):
+        # Apply slug change if username gets changed.
+        update_fields = kwargs.get("update_fields")
+        if (update_fields is not None) and ("username" not in update_fields):
+            return
+        current = Author.objects.only("username").get(pk=self.pk)
+        if current.username == self.username:
+            return
+        self.slug = uuslug(self.username, instance=self)
+        if update_fields is not None:
+            kwargs["update_fields"] = ["slug", *update_fields]
+
     def save(self, *args, **kwargs):
         created = self.pk is None  # If True, the user is created (not updated).
 
         if created:
             self.slug = uuslug(self.username, instance=self)
-
+        else:
+            self.check_username_changed(kwargs)
         super().save(*args, **kwargs)
 
         if created:
