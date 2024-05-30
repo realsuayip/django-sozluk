@@ -1,3 +1,18 @@
+[1.6](2024.05.30)(compatible)
+--Additions--
+None
+
+--Changes--
+ * Update year-related stuff
+ * Update pre-commit configuration
+ * Update Python dependencies
+ * Trigger slug change if author username gets changed
+ * Add unique constraint for lowercase email. Make sure your
+   emails are unique before migrating.
+
+--Deletions--
+None
+
 [1.5.1](2024.01.03)(compatible)
 --Additions--
 None
