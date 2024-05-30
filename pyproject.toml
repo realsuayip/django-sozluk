@@ -20,13 +20,15 @@ dependencies = [
     "gunicorn~=22.0"
 ]
 
-[tool.black]
-line-length = 120
-
 [tool.ruff]
 fix = true
-fixable = ["I", "F401"]
 show-fixes = true
+target-version = "py311"
+line-length = 120
+exclude = ["migrations"]
+
+[tool.ruff.lint]
+fixable = ["I"]
 select = [
     "E", # pycodestyle errors
     "W", # pycodestyle warnings
@@ -38,25 +40,21 @@ select = [
     "C90", # mccabe
     "I", # isort
 ]
-line-length = 120
-exclude = ["migrations"]
 ignore = ["B904", "RUF001", "RUF012","RUF003", "RUF005", "B905"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 section-order = [
     "future",
     "standard-library",
     "django",
-    "rest_framework",
     "third-party",
     "first-party",
     "local-folder",
 ]
 
-[tool.ruff.isort.sections]
+[tool.ruff.lint.isort.sections]
 django = ["django"]
-rest_framework = ["rest_framework"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 20
