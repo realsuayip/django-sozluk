@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.forms.widgets import SelectDateWidget
 from django.utils.translation import gettext, gettext_lazy as _
 
+from dictionary.conf import settings
 from dictionary.models import AccountTerminationQueue, Author
 
 
@@ -26,7 +27,7 @@ class SignUpForm(UserCreationForm):
         label=_("e-mail"),
     )
     gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2006, 1900, -1)), label=_("birth date"))
+    birth_date = forms.DateField(widget=SelectDateWidget(years=settings.BIRTH_YEAR_RANGE), label=_("birth date"))
     terms_conditions = forms.BooleanField(required=True)
 
     class Meta:

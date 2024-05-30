@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.forms.widgets import SelectDateWidget
 from django.utils.translation import gettext, gettext_lazy as _
 
+from dictionary.conf import settings
 from dictionary.models import Author, Entry, Memento, Message
 
 
@@ -10,7 +11,7 @@ class PreferencesForm(UserChangeForm):
     password = None
 
     gender = forms.ChoiceField(choices=Author.Gender.choices, label=_("gender"))
-    birth_date = forms.DateField(widget=SelectDateWidget(years=range(2000, 1900, -1)), label=_("birth date"))
+    birth_date = forms.DateField(widget=SelectDateWidget(years=settings.BIRTH_YEAR_RANGE), label=_("birth date"))
     entries_per_page = forms.ChoiceField(choices=Author.EntryCount.choices, label=_("entries per page"))
     topics_per_page = forms.ChoiceField(choices=Author.TopicCount.choices, label=_("topics per page"))
     message_preference = forms.ChoiceField(choices=Author.MessagePref.choices, label=_("message preference"))

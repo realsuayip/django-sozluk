@@ -1,7 +1,10 @@
 from decimal import Decimal
 
 from django.apps import AppConfig
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+now = timezone.now()
 
 
 # pylint: disable=C0415,W0611
@@ -204,7 +207,7 @@ class DictionaryConfig(AppConfig):
     You may also (better) use this for debugging purposes.
     """
 
-    YEAR_RANGE = (2023, 2022, 2021, 2020, 2019, 2018)
+    YEAR_RANGE = tuple(range(now.year - 1, 2018 - 1, -1))
     """Years available for today-in-history"""
 
     #  <-----> END OF CATEGORY RELATED SETTINGS <----->  #
@@ -221,6 +224,8 @@ class DictionaryConfig(AppConfig):
 
     FIRST_GENERATION_DATE = "13.08.2019"
     """Set this to first user's registration date. (day should be first)"""
+
+    BIRTH_YEAR_RANGE = range(now.year - 18, now.year - 100, -1)
 
     GENERATION_GAP_DAYS = 180
     """Set the interval for seperating generations."""
