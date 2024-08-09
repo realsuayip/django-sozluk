@@ -1,3 +1,16 @@
+[1.6.1](2024.08.09)(compatible)
+--Additions--
+None
+
+--Changes--
+ * Update pre-commit configuration
+ * Update Python dependencies. These updates contain
+   important security updates that affect some parts of
+   django-sozluk.
+
+--Deletions--
+None
+
 [1.6](2024.05.30)(compatible)
 --Additions--
 None
