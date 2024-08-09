@@ -417,14 +417,19 @@ class TopicListHandler:
 
         # Arguments to be passed for TopicQueryHandler methods.
         arg_map = {
-            **dict.fromkeys(("today", "drafts", "followups"), [self.user]),
-            **dict.fromkeys(("acquaintances", "wishes"), [self.user, self.tab]),
-            "today_in_history": [self.year],
-            "generic_category": [self.extra.get("generic_category")],
-            "search": [self.user, self.search_keys],
-            "popular": [self.exclusions],
-            "top": [self.tab],
-            "userstats": [self.user, self.extra.get("user_object"), self.extra.get("channel_object"), self.tab],
+            **dict.fromkeys(("today", "drafts", "followups"), (self.user,)),
+            **dict.fromkeys(("acquaintances", "wishes"), (self.user, self.tab)),
+            "today_in_history": (self.year,),
+            "generic_category": (self.extra.get("generic_category"),),
+            "search": (self.user, self.search_keys),
+            "popular": (self.exclusions,),
+            "top": (self.tab,),
+            "userstats": (
+                self.user,
+                self.extra.get("user_object"),
+                self.extra.get("channel_object"),
+                self.tab,
+            ),
         }
 
         # Convert today-in-history => today_in_history
