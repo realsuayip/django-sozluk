@@ -65,4 +65,4 @@ services:
   celery-beat:
     <<: *celery
     container_name: sozluk-celery-beat
-    command: celery -A djdict beat -l info
+    command: celery -A djdict beat -l info -s /app/dictionary/celerybeat-schedule
