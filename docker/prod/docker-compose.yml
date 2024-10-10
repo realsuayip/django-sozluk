@@ -1,0 +1,68 @@
+volumes:
+  pg-data:
+  static:
+  media:
+
+services:
+  db:
+    container_name: sozluk-postgres
+    image: postgres:16.4-alpine
+    user: postgres
+    env_file: ../../conf/prod/postgres.env
+    restart: unless-stopped
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  redis:
+    container_name: sozluk-redis
+    image: redis:7.4-alpine
+    user: redis
+    restart: unless-stopped
+
+  rabbitmq:
+    container_name: sozluk-rabbitmq
+    image: rabbitmq:3.13-alpine
+    restart: unless-stopped
+
+  nginx:
+    container_name: sozluk-nginx
+    build:
+      context: ../..
+      dockerfile: docker/prod/nginx/Dockerfile
+    ports:
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - static:/app/static
+      - media:/app/media
+
+  web:
+    container_name: sozluk-web
+    build:
+      context: ../..
+      dockerfile: docker/prod/django/prod.Dockerfile
+    command: >
+      gunicorn
+      djdict.wsgi
+      --bind 0.0.0.0:8000
+      --workers 4
+      --access-logfile '-'
+    extends:
+      file: django/common.yml
+      service: python
+
+  celery-worker: &celery
+    container_name: sozluk-celery-worker
+    command: celery -A djdict worker -l info
+    depends_on:
+      - rabbitmq
+      - db
+      - redis
+    extends:
+      file: django/common.yml
+      service: python
+
+  celery-beat:
+    <<: *celery
+    container_name: sozluk-celery-beat
+    command: celery -A djdict beat -l info
