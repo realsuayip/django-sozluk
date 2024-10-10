@@ -1,0 +1,13 @@
+services:
+  python:
+    image: sozluk-python
+    env_file:
+      - ../../conf/dev/django.env
+      - ../../conf/dev/postgres.env
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ../..:/app
+      - /app/.venv
