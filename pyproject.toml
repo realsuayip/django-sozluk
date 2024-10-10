@@ -14,7 +14,8 @@ dependencies = [
     "django-celery-email~=3.0",
     "psycopg[c]~=3.2",
     "django-redis~=5.4",
-    "gunicorn~=23.0"
+    "gunicorn~=23.0",
+    "sentry-sdk~=2.16",
 ]
 
 [tool.ruff]

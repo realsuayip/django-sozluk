@@ -20,6 +20,12 @@ class GeneralReportView(CreateView):
     success_url = reverse_lazy("home")
 
     def form_valid(self, form):
+        notifications.info(
+            self.request,
+            "This feature is disabled on demo server. Use GitHub issues to report bugs.",
+            extra_tags="persistent",
+        )
+        return self.form_invalid(form)
         instance = form.save(commit=False)
 
         if self.request.user.is_authenticated:

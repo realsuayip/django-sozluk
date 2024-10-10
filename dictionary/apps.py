@@ -1,8 +1,16 @@
+import os
 from decimal import Decimal
 
 from django.apps import AppConfig
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import ignore_logger
+
+ignore_logger("django.security.DisallowedHost")
 
 now = timezone.now()
 
@@ -15,11 +23,18 @@ class DictionaryConfig(AppConfig):
     def ready(self):
         import dictionary.signals  # noqa
 
+        sentry_sdk.init(
+            dsn=os.environ.get("SENTRY_DSN"),
+            integrations=[DjangoIntegration(), CeleryIntegration()],
+            traces_sample_rate=0.1,
+            send_default_pii=True,
+        )
+
     # Settings
 
-    DOMAIN = "xyzsozluk.com"
-    PROTOCOL = "http"
-    FROM_EMAIL = "noreply@xyzsozluk.org"
+    DOMAIN = "sozluk.me"
+    PROTOCOL = "https"
+    FROM_EMAIL = "djangosozluk@gmail.com"
 
     # Default options for content object counts
     TOPICS_PER_PAGE_DEFAULT = 50  # For guests only
@@ -180,7 +195,7 @@ class DictionaryConfig(AppConfig):
     them to use the default.
     """
 
-    REFRESH_TIMEOUT = 0.1337
+    REFRESH_TIMEOUT = 30
     """
     ADVANCED: For 'today', set the timeout for refresh interval. (This also sets
     the delimiter for manual cache deleting when delimiter is set to True.)
@@ -400,5 +415,5 @@ class DictionaryConfig(AppConfig):
     AUTHOR_ENTRY_INTERVAL = 0
     """Time interval for publishing entries (seconds)."""
 
-    NOVICE_ENTRY_INTERVAL = 0
+    NOVICE_ENTRY_INTERVAL = 30
     """Same with above, but for novices."""

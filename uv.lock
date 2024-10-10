@@ -61,6 +61,15 @@ wheels = [
 ]
 
 [[package]]
+name = "certifi"
+version = "2024.8.30"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/ee/9b19140fe824b367c04c5e1b369942dd754c4c5462d5674002f75c4dedc1/certifi-2024.8.30.tar.gz", hash = "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9", size = 168507 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/90/3c9ff0512038035f59d279fddeb79f5f1eccd8859f06d6163c58798b9487/certifi-2024.8.30-py3-none-any.whl", hash = "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8", size = 167321 },
+]
+
+[[package]]
 name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.org/simple" }
@@ -173,7 +182,7 @@ wheels = [
 
 [[package]]
 name = "django-sozluk"
-version = "1.6.1"
+version = "1.7.0"
 source = { virtual = "." }
 dependencies = [
     { name = "celery" },
@@ -187,6 +196,7 @@ dependencies = [
     { name = "pillow" },
     { name = "psycopg", extra = ["c"] },
     { name = "python-dateutil" },
+    { name = "sentry-sdk" },
     { name = "user-agents" },
 ]
 
@@ -203,6 +213,7 @@ requires-dist = [
     { name = "pillow", specifier = "~=10.4" },
     { name = "psycopg", extras = ["c"], specifier = "~=3.2" },
     { name = "python-dateutil", specifier = "~=2.9" },
+    { name = "sentry-sdk", specifier = "~=2.16" },
     { name = "user-agents", specifier = "~=2.2" },
 ]
 
@@ -423,6 +434,19 @@ wheels = [
 ]
 
 [[package]]
+name = "sentry-sdk"
+version = "2.16.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/80/63/59640a54963747d2c4b2d149412b2024abed13bacd4e8d16ae5babb97da0/sentry_sdk-2.16.0.tar.gz", hash = "sha256:90f733b32e15dfc1999e6b7aca67a38688a567329de4d6e184154a73f96c6892", size = 290180 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/aa/9f8dce2aec2e95d48c057ff3bcac48958cd15f67d4e9e80e74b46c324abf/sentry_sdk-2.16.0-py2.py3-none-any.whl", hash = "sha256:49139c31ebcd398f4f6396b18910610a0c1602f6e67083240c33019d1f6aa30c", size = 313785 },
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -474,6 +498,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/72/c3/5e715a16a9f8117a9ed92f5112911e07d40cfdf0f81cd4139f0c6307c57c/ua-parser-0.18.0.tar.gz", hash = "sha256:db51f1b59bfaa82ed9e2a1d99a54d3e4153dddf99ac1435d51828165422e624e", size = 40659 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/db/d5/3cf1bdc3401dda1c45894deac836aaab571c26858f83e1b6d6a7c249d444/ua_parser-0.18.0-py2.py3-none-any.whl", hash = "sha256:9d94ac3a80bcb0166823956a779186c746b50ea4c9fd9bf30fdb758553c38950", size = 38314 },
+]
+
+[[package]]
+name = "urllib3"
+version = "2.2.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ed/63/22ba4ebfe7430b76388e7cd448d5478814d3032121827c12a2cc287e2260/urllib3-2.2.3.tar.gz", hash = "sha256:e7d814a81dad81e6caf2ec9fdedb284ecc9c73076b62654547cc64ccdcae26e9", size = 300677 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ce/d9/5f4c13cecde62396b0d3fe530a50ccea91e7dfc1ccf0e09c228841bb5ba8/urllib3-2.2.3-py3-none-any.whl", hash = "sha256:ca899ca043dcb1bafa3e262d73aa25c465bfb49e0bd9dd5d59f1d0acba2f8fac", size = 126338 },
 ]
 
 [[package]]
