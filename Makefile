@@ -4,7 +4,7 @@ $(eval $(WHATEVER):;@:)
 # to pass options, you may do so by using "--" e.g.:
 # make up -- --build
 
-file = docker/dev/docker-compose.dev.yml
+file = docker/dev/docker-compose.yml
 ifeq (${CONTEXT}, production)
 	file = docker/prod/docker-compose.yml
 endif
