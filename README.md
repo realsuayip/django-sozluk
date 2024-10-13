@@ -1,71 +1,61 @@
 ﻿## django-sozluk, ekşi sözlük clone powered by Python
+
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
 Demo website is now available at [sozluk.me](https://sozluk.me/) \
 Check [CHANGELOG](CHANGELOG) before cloning a newer version!
 
-This is a clone of ekşi sözlük. Commonly referred as "collaborative dictionary",
-this type of social networking can be thought as "urban dictionary on steroids". Visit
-[this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk) to learn more about
-this type of social network.
+This is a clone of ekşi sözlük. Commonly referred as "collaborative
+dictionary", this type of social networking can be thought as "urban dictionary
+on steroids". Visit
+[this Wikipedia article](https://en.wikipedia.org/wiki/Ek%C5%9Fi_S%C3%B6zl%C3%BCk)
+to learn more about this type of social network.
 
+**This project is currently maintained.** If you want to contribute to the
+project or have found a bug or need help about deployment
+etc., [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
 
-**This project is currently maintained.** If you want to contribute to the project or have found a bug
-or need help about deployment etc., you may contact me via
-Telegram (I use the same username there) or, better yet, [create an issue](https://github.com/realsuayip/django-sozluk/issues/new).
+Check out [screenshots](screenshots) folder to see current front-end in action
+with both the desktop and mobile views.
 
-Check out "todo" keyword in the project files or Github issues to see the to-do's.
+### Deployment Guide
 
-Check out [screenshots](screenshots) folder to see current front-end in action with both the desktop and mobile views.
+#### Requirements
 
-### Quick installation
+1. Have Docker, with Compose plugin (v2) installed in your system.
+2. Have GNU make installed in your system.
+3. Have your SSL certificates and dhparam file under `docker/prod/nginx/certs`.
+   They should be named exactly as following: `server.crt`, `server.key`
+   and `dhparam.pem`
+4. Change and configure secrets in `django.env` and `postgres.env` files
+   under `conf/prod`
+5. Configure your preferences in `dictionary/apps.py`
 
-Installation requires Docker (with compose plugin) and GNU Makefile installed.
-Run this command in the project root:
+#### Deployment
 
-    make
+> [!IMPORTANT]
+> When running any `make` command make sure `CONTEXT` environment variable is
+> set to `production`
 
-This will build and start development server for the project. Keep in mind that
-in development mode, the emails will output into console (container logs).
+**In the project directory, run this command:**
 
-Running in development mode will also create a superuser with email `test@django.org` and password
-`test`. In order for your entries to appear, you need to make yourself an actual author i.e.,
-remove yourself from novice status using admin user edit page.
+```shell
+CONTEXT=production make
+```
 
-The website uses cache mechanism frequently, so you may be inclined to disable
-caching using a dummy cache backend, or disabling cache on left frame. Check settings
-on `apps.py` to learn about caching and about all the other settings.
+At this point, your server will start serving requests via https port (443).
+You should see a 'server error' page when you navigate to your website.
 
-A production setup is also available if you set `CONTEXT` environment variable
-to `production`. For example, to do deployment in production mode you would run:
+**To complete the installation, you need to run a initialization script:**
 
-    CONTEXT=production make
+```shell
+CONTEXT=production make setup
+```
 
-If you are going to use the production setup, you'll need to run setup script
-once, after the initial build completes (otherwise a server error is shown):
+After running this command, you should be able to navigate through your website
+without any issues. At this point, you should create an administrator account
+to log in and manage your website:
 
-    CONTEXT=production make setup
-
-Makefile also includes other miscellaneous commands. You can browse it to learn
-more.
-
-### Standard docker usage
-If you prefer not use the helper script to gain more granular control, make sure you specify
-the right compose file. Use this command to build and serve:
-
-    docker-compose -f docker/docker-compose.yml up -d
-
-Initially, you also have to run a script (in the web container) that sets up the
-database, collects static files and generates required users for the dictionary app:
-
-    docker-compose exec web sh docker/scripts/setup.sh
-
-You are most likely to create an admin account after these processes:
-
-    docker-compose exec web python manage.py createsuperuser
-
-If you intend to use this configuration for production, make sure you have
-edited all the `.env` files, Django settings file (`settings_prod.py`) and
-dictionary settings file (`dictionary/apps.py`) with proper credentials.
-Make sure you change the passwords of users that are generated
-through `setup.sh` script.
+```shell
+CONTEXT=production make run createsuperuser
+```

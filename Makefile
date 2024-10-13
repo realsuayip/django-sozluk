@@ -4,14 +4,14 @@ $(eval $(WHATEVER):;@:)
 # to pass options, you may do so by using "--" e.g.:
 # make up -- --build
 
-file = docker/docker-compose.dev.yml
+file = docker/dev/docker-compose.dev.yml
 ifeq (${CONTEXT}, production)
-	file = docker/docker-compose.yml
+	file = docker/prod/docker-compose.yml
 endif
 
 project = sozluk
 cc = docker compose -p $(project) -f $(file)
-ex = docker exec -it sozluk_backend
+ex = docker exec -it sozluk-web
 dj = $(ex) python manage.py
 
 .PHONY: *
@@ -42,4 +42,4 @@ test:
 format:
 	pre-commit run
 setup:
-	$(ex) sh ./docker/scripts/setup.sh
+	$(dj) quicksetup
