@@ -55,3 +55,10 @@ django = ["django"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 20
+
+[tool.uv]
+dev-dependencies = [
+  "django-extensions==3.2.3",
+  "ipython==8.14.0"
+]
+

@@ -37,6 +37,8 @@ run:
 	$(dj) $(WHATEVER)
 shell:
 	$(dj) shell
+shell_plus:
+	$(dj) shell_plus
 test:
 	$(dj) test --settings=djdict.settings --shuffle --timing --keepdb
 format:
