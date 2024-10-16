@@ -32,7 +32,7 @@ compose:
 logs:
 	docker logs $(WHATEVER) --tail 500 --follow
 console:
-	$(ex) /bin/bash
+	$(ex) /bin/sh
 run:
 	$(dj) $(WHATEVER)
 shell:
