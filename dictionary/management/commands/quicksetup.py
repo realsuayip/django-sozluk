@@ -22,7 +22,7 @@ class Command(BaseCommand):
             username=settings.GENERIC_PRIVATEUSER_USERNAME,
             defaults={
                 **attrs,
-                "email": "private@sozluk.me",
+                "email": "private@%s" % settings.DOMAIN,
                 "is_private": True,
             },
         )
@@ -30,7 +30,7 @@ class Command(BaseCommand):
             username=settings.GENERIC_SUPERUSER_USERNAME,
             defaults={
                 **attrs,
-                "email": "generic@sozluk.me",
-                "is_private": True,
+                "email": "generic@%s" % settings.DOMAIN,
+                "is_private": False,
             },
         )
