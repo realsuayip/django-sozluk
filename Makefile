@@ -32,11 +32,13 @@ compose:
 logs:
 	docker logs $(WHATEVER) --tail 500 --follow
 console:
-	$(ex) /bin/bash
+	$(ex) /bin/sh
 run:
 	$(dj) $(WHATEVER)
 shell:
 	$(dj) shell
+shell_plus:
+	$(dj) shell_plus
 test:
 	$(dj) test --settings=djdict.settings --shuffle --timing --keepdb
 format:
