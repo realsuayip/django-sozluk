@@ -50,6 +50,8 @@ services:
     extends:
       file: django/common.yml
       service: python
+    ports:
+      - "8000:8000"
 
   celery-worker: &celery
     container_name: sozluk-celery-worker
