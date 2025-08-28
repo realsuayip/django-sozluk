@@ -6,7 +6,7 @@ from unittest import mock
 from django.core.cache import cache
 from django.db import IntegrityError
 from django.shortcuts import reverse
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 
 from dictionary.conf import settings
@@ -271,7 +271,8 @@ class EntryModelTests(TestCase):
         cls.author = Author.objects.create(username="user", email="0")
         cls.topic = Topic.objects.create_topic("test_topic")
         cls.entry_base = {"topic": cls.topic, "author": cls.author}
-        cls.entry = Entry.objects.create(**cls.entry_base, content="CONtent İŞçI")
+        with override_settings(LANGUAGE_CODE="tr"):
+            cls.entry = Entry.objects.create(**cls.entry_base, content="CONtent İŞçI")
 
     def test_absolute_url(self):
         absolute_url = reverse("entry-permalink", kwargs={"entry_id": self.entry.pk})
@@ -475,9 +476,14 @@ class TopicModelTest(TransactionTestCase):
         TopicFollowing.objects.create(topic=self.some_topic, author=self.author)
         self.assertEqual(self.some_topic.follow_check(self.author), True)
 
+    @override_settings(LANGUAGE_CODE="tr")
     def test_title_lower(self):
-        weird_topic = Topic.objects.create_topic("wEİIrdo")
-        self.assertEqual("weiırdo", weird_topic.title)
+        weird_topic = Topic.objects.create_topic("WINTER")
+        self.assertEqual("wınter", weird_topic.title)
+
+    def test_title_lower_case_en(self):
+        weird_topic = Topic.objects.create_topic("WINTER")
+        self.assertEqual("winter", weird_topic.title)
 
     def test_absolute_url(self):
         absolute_url = reverse("topic", kwargs={"slug": self.some_topic.slug})

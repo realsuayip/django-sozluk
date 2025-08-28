@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from dictionary.conf import settings
 from dictionary.models import Author, Conversation, Entry, Message, Topic
@@ -164,6 +164,7 @@ class TopicModelManagersTest(TestCase):
         self.assertEqual(topic_1, self.topic_1)
         self.assertEqual(topic_1.created_by, self.author)
 
+    @override_settings(LANGUAGE_CODE="tr")
     def test_get_or_pseudo(self):
         # Non-existent slug
         no_slug = Topic.objects.get_or_pseudo(slug="engIİn ")
