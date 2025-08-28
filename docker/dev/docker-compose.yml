@@ -1,10 +1,12 @@
 volumes:
   pg-data:
+  mq-data:
 
 services:
   db:
     container_name: sozluk-postgres
-    image: postgres:16.4-alpine
+    # postgres:17.6-alpine3.22
+    image: postgres@sha256:3406990b6e4c7192317b6fdc5680498744f6142f01f0287f4ee0420d8c74063c
     user: postgres
     env_file: ../../conf/dev/postgres.env
     ports:
@@ -14,12 +16,17 @@ services:
 
   redis:
     container_name: sozluk-redis
-    image: redis:7.4-alpine
+    # redis:8.2-alpine3.22
+    image: redis@sha256:987c376c727652f99625c7d205a1cba3cb2c53b92b0b62aade2bd48ee1593232
     user: redis
 
   rabbitmq:
     container_name: sozluk-rabbitmq
-    image: rabbitmq:3.13-alpine
+    # rabbitmq:4.1-alpine
+    image: rabbitmq@sha256:a6dbb0d4e409a371b0c4baa0cc844903be8702ad29e7917fd7f3d19207cb468e
+    hostname: rabbitmq_local
+    volumes:
+      - mq-data:/var/lib/rabbitmq
 
   web:
     container_name: sozluk-web

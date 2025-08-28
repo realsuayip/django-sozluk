@@ -1,19 +1,19 @@
 [project]
 name = "django-sozluk"
 version = "1.7.0"
-requires-python = "==3.12.*"
+requires-python = "==3.13.*"
 dependencies = [
-    "Django ~= 4.2",
+    "django ~= 5.2",
     "django-uuslug ~= 2.0",
     "django-widget-tweaks~=1.5",
     "graphene-django~=3.2",
     "python-dateutil~=2.9",
     "user-agents~=2.2",
-    "Pillow~=10.4",
-    "celery~=5.4",
+    "pillow~=11.3",
+    "celery~=5.5",
     "django-celery-email~=3.0",
     "psycopg[c]~=3.2",
-    "django-redis~=5.4",
+    "django-redis~=6.0",
     "gunicorn~=23.0"
 ]
 
