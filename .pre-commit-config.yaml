@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: mixed-line-ending
@@ -9,6 +9,6 @@ repos:
         exclude: "dist\/.*"
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.5.7'
+    rev: 'v0.12.11'
     hooks:
       - id: ruff

@@ -32,7 +32,7 @@ class ArchiveSerializer(Serializer):
                     value = obj
                     for item in fields:
                         value = getattr(value, item)
-                    if value != obj and isinstance(value, JSON_ALLOWED_OBJECTS) or value is None:
+                    if (value != obj and isinstance(value, JSON_ALLOWED_OBJECTS)) or value is None:
                         self._current[field] = value
 
         super().end_object(obj)
