@@ -6,12 +6,12 @@ from django.contrib.auth.views import (
 )
 from django.urls import path
 
-from dictionary.conf import settings
 from dictionary.views.auth import (
     ChangeEmail,
     ChangePassword,
     ConfirmEmail,
     CreateBackup,
+    CustomPasswordResetForm,
     DownloadBackup,
     Login,
     Logout,
@@ -26,8 +26,7 @@ urlpatterns_password_reset = [
         "password/",
         PasswordResetView.as_view(
             template_name="dictionary/registration/password_reset/form.html",
-            html_email_template_name="dictionary/registration/password_reset/email_template.html",
-            from_email=settings.FROM_EMAIL,
+            form_class=CustomPasswordResetForm,
         ),
         name="password_reset",
     ),

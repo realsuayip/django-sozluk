@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "dictionary_graph",
     "graphene_django",
     "widget_tweaks",
-    "djcelery_email",
 ]
 
 MIDDLEWARE = [
@@ -89,12 +88,9 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
-CELERY_EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
 
 REDIS_URL = os.environ.get("REDIS_URL")
 CELERY_BROKER_URL = os.environ.get("RABBITMQ_URL")
-CELERY_EMAIL_TASK_CONFIG = {"default_retry_delay": 40}
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

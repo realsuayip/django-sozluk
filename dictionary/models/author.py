@@ -27,7 +27,7 @@ from dictionary.models.category import Category
 from dictionary.models.entry import Entry
 from dictionary.models.m2m import DownvotedEntries, UpvotedEntries
 from dictionary.models.managers.author import AccountTerminationQueueManager, AuthorManagerAccessible, InNoviceList
-from dictionary.utils import get_generic_superuser, parse_date_or_none, time_threshold
+from dictionary.utils import get_generic_superuser, mailing, parse_date_or_none, time_threshold
 from dictionary.utils.db import SubQueryCount
 from dictionary.utils.decorators import cached_context
 from dictionary.utils.serializers import ArchiveSerializer
@@ -508,6 +508,14 @@ class Author(AbstractUser):
                 return superior_count + interqueue(self)
             return interqueue(self)
         return 1
+
+    def send_simple_email(self, message: mailing.Message) -> None:
+        mailing.send(
+            "simple.html",
+            title=message.title,
+            content=message.content,
+            recipients=[self.email],
+        )
 
 
 class Memento(models.Model):

@@ -1,0 +1,9 @@
+{% load i18n %}
+<p>
+    {% blocktranslate trimmed %}
+        in order reporting form to reach us, you need to follow the link given below.
+        if you are in mindset such as 'what the hell? i did not send such report', you
+        can continue with your life as if nothing ever happened. the link:
+    {% endblocktranslate %}
+</p>
+<a href="{{ link }}">{{ link }}</a>
