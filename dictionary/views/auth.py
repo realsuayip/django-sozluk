@@ -1,14 +1,17 @@
 import hashlib
 import os
 from contextlib import suppress
-from smtplib import SMTPException
+from functools import partial
 
 from django.conf import settings as django_settings
 from django.contrib import messages as notifications
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.template import loader
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic import CreateView, FormView, View
@@ -17,8 +20,8 @@ from dictionary.backends.sessions.utils import flush_all_sessions
 from dictionary.conf import settings
 from dictionary.forms.auth import ChangeEmailForm, LoginForm, ResendEmailForm, SignUpForm, TerminateAccountForm
 from dictionary.models import AccountTerminationQueue, Author, BackUp, UserVerification
-from dictionary.utils import get_theme_from_cookie, time_threshold
-from dictionary.utils.email import send_email_confirmation
+from dictionary.utils import get_theme_from_cookie, mailing, time_threshold
+from dictionary.utils.mailing import send_email_confirmation
 from dictionary.utils.mixins import PasswordConfirmMixin
 
 
@@ -140,14 +143,35 @@ class ChangePassword(LoginRequiredMixin, PasswordChangeView):
         ) % {"username": self.request.user.username}
 
         # Send a 'your password has been changed' message to ensure security.
-        try:
-            self.request.user.email_user(_("your password has been changed."), message, settings.FROM_EMAIL)
-        except SMTPException:
-            notifications.error(self.request, _("we couldn't handle your request. try again later."))
-            return super().form_invalid(form)
-
+        msg = mailing.Message(
+            title=_("your password has been changed."),
+            content=message,
+        )
+        self.request.user.send_simple_email(msg)
         notifications.info(self.request, _("your password has been changed."))
         return super().form_valid(form)
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def send_mail(
+        self,
+        subject_template_name,
+        email_template_name,
+        context,
+        from_email,
+        to_email,
+        html_email_template_name=None,
+    ):
+        subject = loader.render_to_string(subject_template_name, context)
+        subject = "".join(subject.splitlines())
+        user = context.pop("user")
+        context["user"] = {"username": user.username}
+        mailing.send(
+            "password_reset.html",
+            title=subject,
+            recipients=[to_email],
+            context=context,
+        )
 
 
 class ChangeEmail(LoginRequiredMixin, PasswordConfirmMixin, FormView):
@@ -178,16 +202,18 @@ class TerminateAccount(LoginRequiredMixin, PasswordConfirmMixin, FormView):
         ) % {"username": self.request.user.username}
 
         # Send a message to ensure security.
-        try:
-            self.request.user.email_user(_("your account is now frozen"), message, settings.FROM_EMAIL)
-        except SMTPException:
-            notifications.error(self.request, _("we couldn't handle your request. try again later."))
-            return super().form_invalid(form)
+        msg = mailing.Message(
+            title=_("your account is now frozen"),
+            content=message,
+        )
+        send_email = partial(self.request.user.send_simple_email, msg)
 
         termination_choice = form.cleaned_data.get("state")
-        AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
-        # Unlike logout(), this invalidates ALL sessions across devices.
-        flush_all_sessions(self.request.user)
+        with transaction.atomic():
+            AccountTerminationQueue.objects.create(author=self.request.user, state=termination_choice)
+            # Unlike logout(), this invalidates ALL sessions across devices.
+            flush_all_sessions(self.request.user)
+            transaction.on_commit(send_email)
         notifications.info(self.request, _("your request was taken. farewell."))
         return super().form_valid(form)
 

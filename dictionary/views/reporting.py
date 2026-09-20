@@ -1,16 +1,15 @@
-from smtplib import SMTPException
+from urllib.parse import ParseResult
 
 from django.contrib import messages as notifications
-from django.core.mail import EmailMessage
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.views.generic import CreateView, View
 
 from dictionary.conf import settings
 from dictionary.models import GeneralReport
-from dictionary.utils import time_threshold
+from dictionary.utils import mailing, time_threshold
 
 
 class GeneralReportView(CreateView):
@@ -42,32 +41,32 @@ class GeneralReportView(CreateView):
             return super().form_valid(form)
 
         # Prepare and send a verification email.
-        key = instance.key
-        link = f"{settings.PROTOCOL}://{settings.DOMAIN}{reverse('verify-report', kwargs={'key': key})}"
-
-        message = _(
-            "in order reporting form to reach us, you need to follow the link given below."
-            " if you are in mindset such as 'what the hell? i did not send such report', you"
-            " can continue with your life as if nothing ever happened. the link:"
+        p = ParseResult(
+            scheme=settings.PROTOCOL,
+            netloc=settings.DOMAIN,
+            path=reverse(
+                "verify-report",
+                kwargs={"key": instance.key},
+            ),
+            params="",
+            query="",
+            fragment="",
+        )
+        mailing.send(
+            "report_confirmation.html",
+            title=gettext("confirmation of reporting"),
+            recipients=[instance.reporter_email],
+            context={"link": p.geturl()},
         )
 
-        body = f'<p>{message}</p><a href="{link}">{link}</a>'
-
-        try:
-            email = EmailMessage(_("confirmation of reporting"), body, settings.FROM_EMAIL, [instance.reporter_email])
-            email.content_subtype = "html"
-            email.send()
-            notifications.info(
-                self.request,
-                _(
-                    "a confirmation link has been sent to your e-mail address."
-                    " your report will reach us if you follow the given link."
-                ),
-                extra_tags="persistent",
-            )
-        except (SMTPException, ConnectionRefusedError):
-            return self.form_invalid(form)
-
+        notifications.info(
+            self.request,
+            _(
+                "a confirmation link has been sent to your e-mail address."
+                " your report will reach us if you follow the given link."
+            ),
+            extra_tags="persistent",
+        )
         return super().form_valid(form)
 
     def form_invalid(self, form):

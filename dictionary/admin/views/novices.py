@@ -4,9 +4,8 @@ from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
-from dictionary.conf import settings
 from dictionary.models import Author, Entry, Message
-from dictionary.utils import get_generic_superuser
+from dictionary.utils import get_generic_superuser, mailing
 from dictionary.utils.admin import log_admin
 
 
@@ -99,7 +98,12 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " authorship by logging in."
         ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user(_("your authorship has been approved"), user_info_msg, settings.FROM_EMAIL)
+
+        msg = mailing.Message(
+            title=_("your authorship has been approved"),
+            content=user_info_msg,
+        )
+        user.send_simple_email(msg)
 
         notifications.success(self.request, admin_info_msg)
         return True
@@ -123,7 +127,11 @@ class NoviceLookup(PermissionRequiredMixin, ListView):
             " fill up 10 entries, you will be admitted to novice list again."
         ) % {"username": user.username}
         Message.objects.compose(get_generic_superuser(), user, user_info_msg)
-        user.email_user(_("your authorship has been rejected"), user_info_msg, settings.FROM_EMAIL)
+        msg = mailing.Message(
+            title=_("your authorship has been rejected"),
+            content=user_info_msg,
+        )
+        user.send_simple_email(msg)
 
         notifications.success(self.request, admin_info_msg)
         return True
