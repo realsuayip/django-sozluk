@@ -5,25 +5,22 @@ volumes:
 services:
   db:
     container_name: sozluk-postgres
-    # postgres:17.6-alpine3.22
-    image: postgres@sha256:3406990b6e4c7192317b6fdc5680498744f6142f01f0287f4ee0420d8c74063c
+    image: postgres:18.6-trixie@sha256:86c951e05bf56c93d95d397747fb8820ac76cc3bedb78f43abd83eedbe3666ae
     user: postgres
     env_file: ../../conf/dev/postgres.env
     ports:
       - "5432:5432"
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql
 
   redis:
     container_name: sozluk-redis
-    # redis:8.2-alpine3.22
-    image: redis@sha256:987c376c727652f99625c7d205a1cba3cb2c53b92b0b62aade2bd48ee1593232
+    image: redis:8.10.1-trixie@sha256:8a1efc5f479551822b47424ccae982026b633f28818eab0387348120a61e10e2
     user: redis
 
   rabbitmq:
     container_name: sozluk-rabbitmq
-    # rabbitmq:4.1-alpine
-    image: rabbitmq@sha256:a6dbb0d4e409a371b0c4baa0cc844903be8702ad29e7917fd7f3d19207cb468e
+    image: rabbitmq:4.2.9-alpine@sha256:bed607c376d239d21203e7c04eb4b4a355bec7d64f04335f58aab867c92fe399
     hostname: rabbitmq_local
     volumes:
       - mq-data:/var/lib/rabbitmq
@@ -40,9 +37,9 @@ services:
       file: common.yml
       service: python
 
-  celery-worker: &celery
-    container_name: sozluk-celery-worker
-    command: celery -A djdict worker -l info
+  worker: &celery
+    container_name: sozluk-worker
+    command: celery worker --loglevel INFO --autoscale=4,0
     depends_on:
       - db
       - redis
@@ -51,7 +48,7 @@ services:
       file: common.yml
       service: python
 
-  celery-beat:
+  beat:
     <<: *celery
-    container_name: sozluk-celery-beat
-    command: celery -A djdict beat -l info
+    container_name: sozluk-scheduler
+    command: celery beat --loglevel INFO

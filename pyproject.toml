@@ -1,7 +1,7 @@
 [project]
 name = "django-sozluk"
 version = "1.7.0"
-requires-python = "==3.13.*"
+requires-python = "==3.14.*"
 dependencies = [
     "django ~= 5.2",
     "django-uuslug ~= 2.0",
@@ -20,9 +20,8 @@ dependencies = [
 [tool.ruff]
 fix = true
 show-fixes = true
-target-version = "py312"
+target-version = "py314"
 line-length = 120
-exclude = ["migrations"]
 
 [tool.ruff.lint]
 fixable = ["I"]
@@ -36,6 +35,25 @@ select = [
     "C4", # flake8-comprehensions
     "C90", # mccabe
     "I", # isort
+    "N", # pep8-naming
+    "BLE", # flake8-blind-except
+    "DTZ", # flake8-datetimez
+    "DJ", # flake8-django
+    "FA", # flake8-future-annotations
+    "G", # flake8-logging-format
+    "T20", # flake8-print
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "PL", # pylint
+    "PERF", # perflint
+    "PIE", # flake8-pie
+    "PYI", # flake8-pyi
+    "PT", # flake8-pytest-style
+    "TC", # flake8-type-checking
+    "UP", # pyupgrade
+    "FURB", # refurb
 ]
 ignore = ["B904", "RUF001", "RUF012","RUF003", "RUF005", "B905"]
 
@@ -49,6 +67,9 @@ section-order = [
     "first-party",
     "local-folder",
 ]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"*/migrations/*" = ["E501"]
 
 [tool.ruff.lint.isort.sections]
 django = ["django"]

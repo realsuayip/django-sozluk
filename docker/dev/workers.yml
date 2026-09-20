@@ -1,0 +1,14 @@
+services:
+  worker: &celery
+    container_name: sozluk-worker
+    command: celery worker --loglevel INFO --autoscale=4,0
+    depends_on:
+      - rabbitmq
+    extends:
+      file: common.yml
+      service: python
+
+  beat:
+    <<: *celery
+    container_name: sozluk-scheduler
+    command: celery beat --loglevel INFO

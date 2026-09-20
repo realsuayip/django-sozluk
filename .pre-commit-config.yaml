@@ -4,11 +4,22 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: mixed-line-ending
-        args: [ '--fix=lf' ]
+        args: ['--fix=lf']
+      - id: debug-statements
+      - id: detect-private-key
+      - id: check-merge-conflict
       - id: end-of-file-fixer
-        exclude: "dist\/.*"
+      - id: check-toml
+      - id: check-yaml
+        args: ['--allow-multiple-documents']
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.12.11'
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.16.8'
     hooks:
-      - id: ruff
+      - id: ruff-check
+        args: ['--output-format', 'concise']
+      - id: ruff-format
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.12.17
+    hooks:
+      - id: uv-lock

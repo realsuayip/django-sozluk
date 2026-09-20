@@ -10,4 +10,3 @@ services:
       - redis
     volumes:
       - ../..:/app
-      - /app/.venv
