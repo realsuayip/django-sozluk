@@ -29,10 +29,10 @@ console *args: (exec '/bin/sh' args)
 uv *args: (exec 'uv' args)
 
 # Create or update translation files
-makemessages: (exec '/bin/sh -c "./manage.py makemessages --all --no-obsolete"')
+makemessages: (exec '/bin/sh -c "python manage.py makemessages --all --no-obsolete"')
 
 # Compile translation files
-compilemessages: (exec '/bin/sh -c "./manage.py compilemessages --ignore .venv"')
+compilemessages: (exec '/bin/sh -c "python manage.py compilemessages --ignore .venv"')
 
 # Compile documentation
 docs:
