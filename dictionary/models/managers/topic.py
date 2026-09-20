@@ -59,8 +59,7 @@ class TopicManager(models.Manager):
         raise ValueError("No arguments given.")
 
     def create_topic(self, title, created_by=None):
-        topic = self.create(title=title, created_by=created_by)
-        return topic
+        return self.create(title=title, created_by=created_by)
 
 
 class TopicManagerPublished(models.Manager):

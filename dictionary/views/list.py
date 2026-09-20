@@ -3,6 +3,7 @@ import json
 import math
 import random
 import re
+import zoneinfo
 from contextlib import suppress
 from json.decoder import JSONDecodeError
 from urllib.parse import quote, unquote
@@ -140,7 +141,7 @@ class PeopleList(LoginRequiredMixin, ListView):
     def dispatch(self, request, *args, **kwargs):
         tab = kwargs.get("tab")
 
-        if tab is not None and tab not in self.tabs.keys():
+        if tab is not None and tab not in self.tabs:
             raise Http404
 
         self.tab = tab or "following"
@@ -264,7 +265,7 @@ class TopicList(UserPassesTestMixin, TemplateView):
                     exclusions = parsed
                 else:
                     raise ValueError
-            except (JSONDecodeError, ValueError):
+            except JSONDecodeError, ValueError:
                 exclusions = None
 
         if exclusions is None:
@@ -432,12 +433,11 @@ class TopicEntryList(EntryCreateMixin, IntegratedFormMixin, ListView):
         following = TopicFollowing.objects.filter(author=self.request.user, topic=self.topic).first()
 
         if following:
-            epoch = self.request.GET.get("d")
-
             try:
+                epoch = self.request.GET["d"]
                 # epoch + 1 because it does not account for the milliseconds
-                last_read = timezone.make_aware(datetime.datetime.utcfromtimestamp(int(epoch) + 1), timezone.utc)
-            except (ValueError, TypeError, OSError, OverflowError):
+                last_read = datetime.datetime.fromtimestamp(int(epoch) + 1, tz=zoneinfo.ZoneInfo("UTC"))
+            except ValueError, TypeError, OSError, OverflowError:
                 last_read = None
 
             if last_read and last_read > following.date_created:

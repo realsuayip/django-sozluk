@@ -80,15 +80,13 @@ def update_topic_disambiguation(instance, action, pk_set, **kwargs):
                 if action == "post_add":
                     if mirror not in current:
                         instance.mirrors.add(mirror)
-                else:
-                    if mirror in current:
-                        instance.mirrors.remove(mirror)
+                elif mirror in current:
+                    instance.mirrors.remove(mirror)
 
         for neighbor in current:
             if neighbor != topic:
                 if neighbor not in related:
                     if action == "post_add":
                         topic.mirrors.add(neighbor)
-                else:
-                    if action == "post_remove":
-                        topic.mirrors.remove(neighbor)
+                elif action == "post_remove":
+                    topic.mirrors.remove(neighbor)

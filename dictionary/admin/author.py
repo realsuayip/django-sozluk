@@ -80,7 +80,10 @@ class AuthorAdmin(UserAdmin):
             return []
         return self.readonly_fields
 
-    add_fieldsets = ((None, {"fields": ("email",)}),) + UserAdmin.add_fieldsets
+    add_fieldsets = (
+        (None, {"fields": ("email",)}),
+        *UserAdmin.add_fieldsets,
+    )
     actions = ("suspend_user", "unsuspend_user")
 
     def get_urls(self):

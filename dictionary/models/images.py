@@ -40,9 +40,9 @@ class Image(models.Model):
     def __str__(self):
         return str(self.slug)
 
+    def get_absolute_url(self):
+        return reverse("image-detail", kwargs={"slug": self.slug})
+
     def delete(self, *args, **kwargs):
         super().delete()
         self.file.delete(save=False)
-
-    def get_absolute_url(self):
-        return reverse("image-detail", kwargs={"slug": self.slug})

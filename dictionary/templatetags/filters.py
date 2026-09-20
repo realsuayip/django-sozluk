@@ -111,7 +111,9 @@ def formatted(raw_entry):
         # Swh
         (
             rf"`:{RE_TOPIC_CHARSET}`",
-            lambda m: rf'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>',  # noqa
+            lambda m: (
+                rf'<a data-sup="({SEE}: {m.group(1)})" href="/topic/?q={q_unescape(m.group(1))}" title="({SEE}: {m.group(1)})">*</a>'  # noqa: E501
+            ),
         ),
         # Reference with no indicator
         (rf"`#{RE_ENTRY_CHARSET}`", r'<a href="/entry/\1/">#\1</a>'),

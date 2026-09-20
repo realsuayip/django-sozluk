@@ -47,7 +47,8 @@ urlpatterns_password_reset = [
     ),
 ]
 
-urlpatterns_auth = urlpatterns_password_reset + [
+urlpatterns_auth = [
+    *urlpatterns_password_reset,
     path("login/", Login.as_view(), name="login"),
     path("register/", SignUp.as_view(), name="register"),
     path("logout/", Logout.as_view(next_page="/"), name="logout"),

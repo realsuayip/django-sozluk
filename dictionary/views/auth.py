@@ -1,7 +1,7 @@
 import hashlib
-import os
 from contextlib import suppress
 from functools import partial
+from pathlib import Path
 
 from django.conf import settings as django_settings
 from django.contrib import messages as notifications
@@ -262,7 +262,7 @@ class DownloadBackup(LoginRequiredMixin, View):
     def get(self, request):
         with suppress(BackUp.DoesNotExist, ValueError):
             backup = BackUp.objects.get(author=self.request.user, is_ready=True)
-            filename = os.path.basename(backup.file.name)
+            filename = Path(backup.file.name).name
 
             response = HttpResponse(content_type="application/json")
 
@@ -273,4 +273,4 @@ class DownloadBackup(LoginRequiredMixin, View):
             response[settings.XSENDFILE_HEADER_NAME] = backup.file.url
             return response
 
-        self.handle_no_permission()
+        return self.handle_no_permission()

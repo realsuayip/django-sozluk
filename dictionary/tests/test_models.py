@@ -116,7 +116,7 @@ class AuthorModelTests(TestCase):
         self.assertEqual(novice.application_status, Author.Status.ON_HOLD)
         self.assertIsNone(novice.application_date)
 
-    def test_message_preferences(self):
+    def test_message_preferences(self):  # noqa: PLR0915
         some_author = Author.objects.create(username="author", email="3", is_novice=False, is_active=True)
         some_novice = Author.objects.create(username="novice", email="4", is_active=True)
         frozen_account = Author.objects.create(username="frozen", email="5", is_frozen=True, is_active=True)
@@ -296,7 +296,7 @@ class EntryModelTests(TestCase):
 
     def test_votes(self):
         # Initial vote should be 0
-        self.assertEqual(self.entry.vote_rate.conjugate(), Decimal("0"))
+        self.assertEqual(self.entry.vote_rate.conjugate(), Decimal(0))
 
         # Increase by .2
         self.entry.update_vote(Decimal(".2"))

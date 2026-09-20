@@ -27,12 +27,7 @@ def cached_context(initial_func=None, *, timeout=None, vary_on_user=False, prefi
 
             if vary_on_user:
                 request = kwargs.get("request")
-
-                if request is not None:
-                    user = request.user
-                else:
-                    user = kwargs.get("user")
-
+                user = request.user if request is not None else kwargs.get("user")
                 user_prefix = "_anonymous" if not user.is_authenticated else f"_usr{user.pk}"
 
             func_name = ""

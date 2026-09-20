@@ -10,8 +10,7 @@ class MessageManager(models.Manager):
             return False
 
         has_receipt = sender.allow_receipts and recipient.allow_receipts
-        message = self.create(sender=sender, recipient=recipient, body=body, has_receipt=has_receipt)
-        return message
+        return self.create(sender=sender, recipient=recipient, body=body, has_receipt=has_receipt)
 
 
 class ConversationManager(models.Manager):

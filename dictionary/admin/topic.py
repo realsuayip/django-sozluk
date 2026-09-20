@@ -64,7 +64,7 @@ class TopicAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly = ("created_by", "date_created")
-        return readonly + ("title",) if obj else readonly
+        return (*readonly, "title") if obj else readonly
 
     def get_urls(self):
         urls = super().get_urls()

@@ -114,7 +114,7 @@ def print_entry_class(context):
     if gap := context.get("gap"):
         classes.append(f"mb-{gap}")
 
-    return mark_safe(f"class=\"{' '.join(classes)}\"")
+    return mark_safe(f'class="{" ".join(classes)}"')
 
 
 @register.inclusion_tag("dictionary/includes/header_link.html", takes_context=True)

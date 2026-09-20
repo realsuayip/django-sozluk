@@ -13,10 +13,7 @@ class MobileDetectionMiddleware:
         self.get_response = get_response  # One-time configuration and initialization.
 
     def __call__(self, request):
-        if request.user.is_authenticated:
-            theme = request.user.theme
-        else:
-            theme = get_theme_from_cookie(request)
+        theme = request.user.theme if request.user.is_authenticated else get_theme_from_cookie(request)
 
         ua_string = request.headers.get("User-Agent", "")
         user_agent = parse(ua_string)

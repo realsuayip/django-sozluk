@@ -1,7 +1,6 @@
 import hashlib
 from decimal import Decimal
 from functools import wraps
-from typing import List, Union
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
@@ -237,7 +236,7 @@ class TopicQueryHandler:
             )
 
             columns = [col[0] for col in cursor.description]
-            return [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return [dict(zip(columns, row, strict=False)) for row in cursor.fetchall()]
 
     def novices(self):
         return (
@@ -281,7 +280,7 @@ class TopicQueryHandler:
             filters["entries__favorited_by"] = user
 
         if nice_only:
-            filters["entries__vote_rate__gte"] = Decimal("100")
+            filters["entries__vote_rate__gte"] = Decimal(100)
 
         if author_nick:
             filters["entries__author__username"] = author_nick
@@ -374,11 +373,11 @@ class TopicListHandler:
     def __init__(
         self,
         slug: str,
-        user: Union[Author, AnonymousUser] = AnonymousUser(),  # noqa: B008
-        year: Union[str, int] | None = None,
+        user: Author | AnonymousUser = AnonymousUser(),  # noqa: B008
+        year: str | int | None = None,
         search_keys: dict | None = None,
         tab: str | None = None,
-        exclusions: List[str] | None = None,
+        exclusions: list[str] | None = None,
         extra: dict | None = None,
     ):
         """
@@ -786,6 +785,7 @@ def entry_prefetch(queryset, user, comments=False):
                         Exists(model.objects.filter(author=user, comment=OuterRef("pk")))
                         for model in (Comment.upvoted_by.through, Comment.downvoted_by.through)
                     ),
+                    strict=True,
                 )
             )
             comments_qs = comments_qs.annotate(**vote_states)
@@ -820,6 +820,7 @@ def entry_prefetch(queryset, user, comments=False):
                     Exists(model.objects.filter(author=user, entry=OuterRef("pk")))
                     for model in (UpvotedEntries, DownvotedEntries, EntryFavorites)
                 ),
+                strict=True,
             )
         )
 

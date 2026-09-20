@@ -307,19 +307,16 @@ class Author(AbstractUser):
         if self.username == settings.GENERIC_SUPERUSER_USERNAME:
             return True
 
-        if (
-            (recipient.is_frozen or recipient.is_private or (not recipient.is_active))
-            or (recipient.message_preference == Author.MessagePref.DISABLED)
+        return not (
+            (recipient.is_frozen or recipient.is_private or not recipient.is_active)
+            or recipient.message_preference == Author.MessagePref.DISABLED
             or (self.is_novice and recipient.message_preference == Author.MessagePref.AUTHOR_ONLY)
             or (
                 recipient.message_preference == Author.MessagePref.FOLLOWING_ONLY
                 and not recipient.following.filter(pk=self.pk).exists()
             )
             or (recipient.blocked.filter(pk=self.pk).exists() or self.blocked.filter(pk=recipient.pk).exists())
-        ):
-            return False
-
-        return True
+        )
 
     @property
     def entry_publishable_status(self):
@@ -586,12 +583,12 @@ class Badge(models.Model):
         ),
     )
 
-    def __str__(self):
-        return str(self.name)
-
     class Meta:
         verbose_name = _("badge")
         verbose_name_plural = _("badges")
+
+    def __str__(self):
+        return str(self.name)
 
 
 def user_directory_backup(instance, _filename):
@@ -633,7 +630,7 @@ class BackUp(models.Model):
         )
 
     def process_async(self):
-        from dictionary.tasks import process_backup
+        from dictionary.tasks import process_backup  # noqa: PLC0415
 
         process_backup.delay(self.pk)
 

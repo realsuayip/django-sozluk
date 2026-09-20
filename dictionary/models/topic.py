@@ -136,8 +136,7 @@ class Topic(models.Model):
 
             message = (
                 gettext(
-                    "`%(title)s`, the topic you wished for, had an entry"
-                    " entered by `@%(username)s`: (see: #%(entry)d)"
+                    "`%(title)s`, the topic you wished for, had an entry entered by `@%(username)s`: (see: #%(entry)d)"
                 )
                 % {
                     "title": self.title,

@@ -52,7 +52,7 @@ class LeftFrameProcessor:
     @cached_property
     def slug(self):
         _slug = self.get_cookie("lfac")
-        return _slug if _slug else settings.DEFAULT_CATEGORY
+        return _slug or settings.DEFAULT_CATEGORY
 
     @cached_property
     def _page(self):
@@ -95,7 +95,7 @@ class LeftFrameProcessor:
                 if isinstance(parsed, dict):
                     return parsed
                 raise ValueError
-            except (JSONDecodeError, ValueError):
+            except JSONDecodeError, ValueError:
                 self.delete_cookie("lfea")
         return {}
 
@@ -108,7 +108,7 @@ class LeftFrameProcessor:
                 self.slug, self.user, self._year, self._search_keys, self._tab, self._exclusions, self._extra
             )
             context = LeftFrame(handler, page=self._page).as_context()
-        except (Http404, PermissionDenied):
+        except Http404, PermissionDenied:
             self.set_cookie("lfac", settings.DEFAULT_CATEGORY)
             return self._get_context(manager=TopicListManager(settings.DEFAULT_CATEGORY), attempt=attempt + 1)
 

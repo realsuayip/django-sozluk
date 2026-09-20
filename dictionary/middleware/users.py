@@ -26,9 +26,4 @@ class NoviceActivityMiddleware:
                 Author.objects.filter(id=request.user.id).update(
                     last_activity=timezone.now(), queue_priority=F("queue_priority") + 1
                 )
-        # Code to be executed for each request before
-        # the view (and later middleware) are called.
-        response = self.get_response(request)
-        # Code to be executed for each request/response after
-        # the view is called.
-        return response
+        return self.get_response(request)

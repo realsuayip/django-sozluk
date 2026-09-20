@@ -61,8 +61,7 @@ class TopicMove(IntermediateActionView):
 
             # Admin log
             log_admin(
-                f"TopicMove action, count: {entries_count}. sources->{topic_list_raw},"
-                f"from->{from_date} to->{to_date}",
+                f"TopicMove action, count: {entries_count}. sources->{topic_list_raw},from->{from_date} to->{to_date}",
                 request.user,
                 Topic,
                 target_topic,

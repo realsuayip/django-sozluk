@@ -106,15 +106,14 @@ class IntermediateActionMixin:
 
     def get_queryset(self):
         # Filter selected objects
-        queryset = self.model.objects.filter(pk__in=self.get_source_ids())
-        return queryset
+        return self.model.objects.filter(pk__in=self.get_source_ids())
 
     def get_source_ids(self):
         source_list = self.request.GET.get("source_list", "")
 
         try:
             source_ids = [int(pk) for pk in source_list.split("-")]
-        except (ValueError, OverflowError):
+        except ValueError, OverflowError:
             source_ids = []
 
         if not source_ids:
@@ -129,8 +128,7 @@ class IntermediateActionMixin:
         admin_context = admin.site.each_context(self.request)
         meta = {"title": self.page_title}
         source = {"sources": self.get_object_list()}
-        context = {**admin_context, **meta, **source}
-        return context
+        return {**admin_context, **meta, **source}
 
     def get_changelist_url(self):
         return reverse(f"admin:{self.model._meta.app_label}_{self.model.__name__.lower()}_changelist")

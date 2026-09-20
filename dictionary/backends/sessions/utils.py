@@ -9,7 +9,7 @@ def flush_all_sessions(user):
     """Invalidate ALL sessions of a user."""
 
     sessions = PairedSession.objects.filter(user=user)
-    cached = settings.SESSION_ENGINE == cached_db_name
+    cached = cached_db_name == settings.SESSION_ENGINE
 
     for session in sessions:
         if cached:

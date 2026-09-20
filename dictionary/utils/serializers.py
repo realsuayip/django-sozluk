@@ -23,7 +23,7 @@ class ArchiveSerializer(Serializer):
             if field == "pk":
                 continue
 
-            if field in self._current.keys():
+            if field in self._current:
                 continue
 
             with suppress(AttributeError):
@@ -60,7 +60,7 @@ class PlainSerializer:
             for key, value in {
                 name: getattr(self, name)
                 for name in dir(self)
-                if not name.startswith(("_", "get_serialized", "exclude") + self.exclude)
+                if not name.startswith(("_", "get_serialized", "exclude", *self.exclude))
             }.items()
             if value is not None
         }

@@ -26,7 +26,7 @@ class SessionStore(DBStore):
         try:
             user_id = int(data.get("_auth_user_id"))
             user = User.objects.get(pk=user_id)
-        except (ValueError, TypeError, User.DoesNotExist):
+        except ValueError, TypeError, User.DoesNotExist:
             user = None
         obj.user = user
         return obj

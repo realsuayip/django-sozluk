@@ -31,7 +31,7 @@ RE_WEBURL_NC = (
 """RE_WEBURL but with no capturing groups."""
 
 
-class proceed_or_404(suppress):
+class proceed_or_404(suppress):  # noqa: N801
     """If the supplied exceptions occur in a block of code, raise Http404"""
 
     def __exit__(self, exctype, excinst, exctb):
@@ -87,7 +87,7 @@ def parse_date_or_none(date_string, delta=None, dayfirst=True, **timedelta_kwarg
     try:
         # Check if date is parsable (raises ValueError if not)
         parsed_date = parse(date_string, dayfirst=dayfirst)
-    except (ValueError, OverflowError):
+    except ValueError, OverflowError:
         return None
 
     # Calculate timedalte if delta & kargsa are specified

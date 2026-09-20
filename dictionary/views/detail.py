@@ -121,14 +121,13 @@ class UserProfile(IntegratedFormMixin, ListView):
             else:
                 existing_memento.body = body
                 existing_memento.save()
+        elif not body:
+            notifications.info(self.request, gettext("if only you could write down something"))
         else:
-            if not body:
-                notifications.info(self.request, gettext("if only you could write down something"))
-            else:
-                memento = form.save(commit=False)
-                memento.holder = self.request.user
-                memento.patient = self.profile
-                memento.save()
+            memento = form.save(commit=False)
+            memento.holder = self.request.user
+            memento.patient = self.profile
+            memento.save()
         return redirect(reverse("user-profile", kwargs={"slug": self.profile.slug}))
 
     def get_form_kwargs(self):
@@ -186,7 +185,7 @@ class UserProfile(IntegratedFormMixin, ListView):
 
         tab = kwargs.get("tab")
 
-        if tab is not None and tab not in self.tabs.keys():
+        if tab is not None and tab not in self.tabs:
             raise Http404
 
         self.tab = tab or "latest"
