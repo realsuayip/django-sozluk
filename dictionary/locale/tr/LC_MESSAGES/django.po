@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-12 22:10+0300\n"
+"POT-Creation-Date: 2026-09-20 18:31+0300\n"
 "PO-Revision-Date: 2021-04-12 22:18+0156\n"
 "Last-Translator: b'  <test@django.org>'\n"
 "Language-Team: \n"
@@ -16,218 +16,218 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.9.6\n"
 
-#: .\admin\__init__.py:20
+#: dictionary/admin/__init__.py:21
 msgid "Administration"
 msgstr "Yönetim"
 
-#: .\admin\announcements.py:12
+#: dictionary/admin/announcements.py:12
 msgid "Publish status"
 msgstr "Yayınlanma durumu"
 
-#: .\admin\announcements.py:16
+#: dictionary/admin/announcements.py:16
 msgid "Published"
 msgstr "Yayınlanmış"
 
-#: .\admin\announcements.py:16
+#: dictionary/admin/announcements.py:16
 msgid "Waiting for publication date"
 msgstr "Yayınlanma tarihini bekliyor"
 
-#: .\admin\author.py:16
+#: dictionary/admin/author.py:16
 msgid "Suspension status"
 msgstr "Uzaklaştırılma durumu"
 
-#: .\admin\author.py:20
+#: dictionary/admin/author.py:20
 msgid "Suspended"
 msgstr "Askıya alınmış"
 
-#: .\admin\author.py:20
+#: dictionary/admin/author.py:20
 msgid "Not suspended"
 msgstr "Askıya alınmamış"
 
-#: .\admin\author.py:55
+#: dictionary/admin/author.py:56
 msgid "Personal info"
 msgstr ""
 
-#: .\admin\author.py:56
+#: dictionary/admin/author.py:59
 msgid "Permissions"
 msgstr ""
 
-#: .\admin\author.py:57
+#: dictionary/admin/author.py:60
 msgid "Accessibility details"
 msgstr "Erişilebilirlik detayları"
 
-#: .\admin\author.py:59 .\models\author.py:126
+#: dictionary/admin/author.py:62 dictionary/models/author.py:125
 msgid "Novice status"
 msgstr "Çaylak durumu"
 
-#: .\admin\author.py:62
+#: dictionary/admin/author.py:65
 msgid "Important dates"
 msgstr ""
 
-#: .\admin\author.py:113
+#: dictionary/admin/author.py:116
 msgid "Suspend selected authors"
 msgstr "Seçilen yazarları askıya al"
 
-#: .\admin\author.py:114
+#: dictionary/admin/author.py:117
 msgid "Unsuspend selected authors"
 msgstr "Seçilen yazarları askıdan kaldır"
 
-#: .\admin\entry.py:23 .\admin\general_report.py:23 .\admin\topic.py:19
+#: dictionary/admin/entry.py:23 dictionary/admin/general_report.py:23
+#: dictionary/admin/topic.py:19
 msgid "Metadata"
 msgstr "Üstveri"
 
-#: .\admin\entry.py:40 .\models\category.py:66 .\models\entry.py:16
-#: .\models\topic.py:178
+#: dictionary/admin/entry.py:40 dictionary/models/category.py:66
+#: dictionary/models/entry.py:16 dictionary/models/topic.py:178
 msgid "Topic"
 msgstr "Başlık"
 
-#: .\admin\entry.py:41
+#: dictionary/admin/entry.py:41
 msgid "Entry"
 msgstr "Entry"
 
-#: .\admin\flatpages.py:18
+#: dictionary/admin/flatpages.py:18
 msgid "Advanced options"
 msgstr "Gelişmiş seçenekler"
 
-#: .\admin\general_report.py:22
+#: dictionary/admin/general_report.py:22
 msgid "Report content"
 msgstr "Rapor içeriği"
 
-#: .\admin\general_report.py:24
+#: dictionary/admin/general_report.py:24
 msgid "Evaluation"
 msgstr "Değerlendirme"
 
-#: .\admin\general_report.py:37
+#: dictionary/admin/general_report.py:37
 msgid "Selected reports' status were marked as closed."
 msgstr "Seçilen raporların statüsü kapalı olarak işaretlendi."
 
-#: .\admin\general_report.py:41
+#: dictionary/admin/general_report.py:41
 msgid "Selected reports' status were marked as open."
 msgstr "Seçilen raporların statüsü açık olarak işaretlendi."
 
-#: .\admin\general_report.py:43
+#: dictionary/admin/general_report.py:43
 msgid "Mark selected reports' status as closed."
 msgstr "Seçilen raporların statüsünü kapalı olarak işaretle."
 
-#: .\admin\general_report.py:44
+#: dictionary/admin/general_report.py:44
 msgid "Mark selected reports' status as open."
 msgstr "Seçilen raporların statüsünü açık olarak işaretle."
 
-#: .\admin\topic.py:16
+#: dictionary/admin/topic.py:16
 msgid "Accessibility settings"
 msgstr "Erişilebilirlik seçenekleri"
 
-#: .\admin\topic.py:21
+#: dictionary/admin/topic.py:21
 msgid "Media"
 msgstr "Medya"
 
-#: .\admin\topic.py:26
+#: dictionary/admin/topic.py:26
 msgid ""
 "<br>You can embed social media content into topics. You need to specify "
-"links of the media line by line. Available options and example "
-"links:<br><br><b>YouTube video: "
-"</b>(https://www.youtube.com/embed/qXN15uh4DLU)<br><b>Instagram post: "
-"</b>(https://www.instagram.com/p/B4nfnuRg0sp/)<br><b>Spotify song: "
-"</b>(https://open.spotify.com/embed/track/1idpc4Pr94WH9GYU5umNfz)<br><b>Spotify"
-" album: "
-"</b>(https://open.spotify.com/embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br><b>Spotify"
-" playlist: "
-"</b>(https://open.spotify.com/embed/user/spotify/playlist/37i9dQZF1DX1tz6EDao8it)<br><b>Tweet:"
-" </b>(https://twitter.com/kaankural/status/16867365789)<br>"
+"links of the media line by line. Available options and example links:"
+"<br><br><b>YouTube video: </b>(https://www.youtube.com/embed/"
+"qXN15uh4DLU)<br><b>Instagram post: </b>(https://www.instagram.com/p/"
+"B4nfnuRg0sp/)<br><b>Spotify song: </b>(https://open.spotify.com/embed/track/"
+"1idpc4Pr94WH9GYU5umNfz)<br><b>Spotify album: </b>(https://open.spotify.com/"
+"embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br><b>Spotify playlist: </b>(https://"
+"open.spotify.com/embed/user/spotify/playlist/"
+"37i9dQZF1DX1tz6EDao8it)<br><b>Tweet: </b>(https://twitter.com/kaankural/"
+"status/16867365789)<br>"
 msgstr ""
 "<br>Sosyal medya sitelerindeki içerikleri başlığa gömebilirsiniz. Gömmek "
-"istediğiniz içeriğin adreslerini satır satır girmelisiniz. Mevcut seçenekler"
-" ve örnek adresler:<br><br><b>YouTube videosu: "
-"</b>(https://www.youtube.com/embed/qXN15uh4DLU)<br><b>Instagram gönderisi: "
-"</b>(https://www.instagram.com/p/B4nfnuRg0sp/)<br><b>Spotify şarkısı: "
-"</b>(https://open.spotify.com/embed/track/1idpc4Pr94WH9GYU5umNfz)<br><b>Spotify"
-" albümü: "
-"</b>(https://open.spotify.com/embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br><b>Spotify"
-" çalma listesi: "
-"</b>(https://open.spotify.com/embed/user/spotify/playlist/37i9dQZF1DX1tz6EDao8it)<br><b>Tweet:"
-" </b>(https://twitter.com/kaankural/status/16867365789)<br>"
+"istediğiniz içeriğin adreslerini satır satır girmelisiniz. Mevcut seçenekler "
+"ve örnek adresler:<br><br><b>YouTube videosu: </b>(https://www.youtube.com/"
+"embed/qXN15uh4DLU)<br><b>Instagram gönderisi: </b>(https://www.instagram.com/"
+"p/B4nfnuRg0sp/)<br><b>Spotify şarkısı: </b>(https://open.spotify.com/embed/"
+"track/1idpc4Pr94WH9GYU5umNfz)<br><b>Spotify albümü: </b>(https://"
+"open.spotify.com/embed/album/1yGbNOtRIgdIiGHOEBaZWf)<br><b>Spotify çalma "
+"listesi: </b>(https://open.spotify.com/embed/user/spotify/playlist/"
+"37i9dQZF1DX1tz6EDao8it)<br><b>Tweet: </b>(https://twitter.com/kaankural/"
+"status/16867365789)<br>"
 
-#: .\admin\topic.py:77
+#: dictionary/admin/topic.py:85
 msgid "Move entries from selected topics"
 msgstr "Seçili başlıklardaki entry'leri taşı"
 
-#: .\admin\views\author.py:28
+#: dictionary/admin/views/author.py:27
 msgid "Suspend authors"
 msgstr "Yazarları askıya al"
 
-#: .\admin\views\author.py:37 .\admin\views\author.py:44
+#: dictionary/admin/views/author.py:36 dictionary/admin/views/author.py:43
 msgid "The selected duration was invalid."
 msgstr "Geçersiz bir süre seçtiniz."
 
-#: .\admin\views\author.py:50
+#: dictionary/admin/views/author.py:49
 msgid "No information was given."
 msgstr "Bilgi verilmedi."
 
-#: .\admin\views\author.py:52
+#: dictionary/admin/views/author.py:51
 #, python-format
 msgid ""
 "your account has been suspended. administration message: %(message)s\n"
 "\n"
-"in your profile page, you can see the remaining time until your account gets reactivated."
+"in your profile page, you can see the remaining time until your account gets "
+"reactivated."
 msgstr ""
 "hesabınız askıya alındı. yetkili mesajı: %(message)s\n"
 "\n"
-"profil sayfanızda hesabınızın tekrar aktifleştirilmesi için kalan süreyi görebilirsiniz."
+"profil sayfanızda hesabınızın tekrar aktifleştirilmesi için kalan süreyi "
+"görebilirsiniz."
 
-#: .\admin\views\author.py:73
+#: dictionary/admin/views/author.py:72
 #, python-format
 msgid "%(count)d author was suspended."
 msgid_plural "%(count)d authors were suspended."
 msgstr[0] "%(count)d yazar askıya alındı."
 msgstr[1] "%(count)d yazar askıya alındı."
 
-#: .\admin\views\author.py:82
+#: dictionary/admin/views/author.py:81
 msgid "Unsuspend authors"
 msgstr "Yazarların askıya alınmasını durdur"
 
-#. Translators: Not likely to occur in normal circumstances so you may include
-#. some humor here.
-#: .\admin\views\author.py:95 .\views\auth.py:146 .\views\auth.py:184
-#: .\views\edit.py:29 .\views\edit.py:51 .\views\edit.py:72
-#: .\views\reporting.py:75
+#: dictionary/admin/views/author.py:94 dictionary/views/edit.py:29
+#: dictionary/views/edit.py:50 dictionary/views/edit.py:71
+#: dictionary/views/reporting.py:74
 msgid "we couldn't handle your request. try again later."
 msgstr "işleminizi gerçekleştiremedik. daha sonra tekrar deneyin."
 
-#: .\admin\views\author.py:111
+#: dictionary/admin/views/author.py:110
 #, python-format
 msgid "%(count)d author was unsuspended."
 msgid_plural "%(count)d authors were unsuspended."
 msgstr[0] "%(count)d yazarın askıdan alınma durumu sona erdi."
 msgstr[1] "%(count)d yazarın askıdan alınma durumu sona erdi."
 
-#: .\admin\views\novices.py:27 .\templates\admin\app_list.html:47
-#: .\templates\admin\novice_lookup.html:8
+#: dictionary/admin/views/novices.py:25
+#: dictionary/templates/admin/app_list.html:47
+#: dictionary/templates/admin/novice_lookup.html:8
 msgid "Novice review list"
 msgstr "Çaylak onay listesi"
 
-#: .\admin\views\novices.py:51
+#: dictionary/admin/views/novices.py:49
 msgid "The user is not on the novice list."
 msgstr "Kullanıcı çaylak listesinde değil."
 
-#: .\admin\views\novices.py:55
+#: dictionary/admin/views/novices.py:53
 msgid "The user is not at the top of the novice list."
 msgstr "Kullanıcı çaylak listesinin başında değil."
 
-#: .\admin\views\novices.py:68
+#: dictionary/admin/views/novices.py:66
 #, python-format
 msgid "First ten entries of: %(username)s"
 msgstr "%(username)s nickli kullanıcın ilk 10 entry'si"
 
-#: .\admin\views\novices.py:75
+#: dictionary/admin/views/novices.py:73
 msgid "The selected operation was invalid."
 msgstr "Geçersiz bir işlem seçtiniz."
 
-#: .\admin\views\novices.py:93
+#: dictionary/admin/views/novices.py:91
 #, python-format
 msgid "Authorship of the user '%(username)s' was approved."
 msgstr "%(username)s nickli kullanıcının yazarlık talebi kabul edildi."
 
-#: .\admin\views\novices.py:98
+#: dictionary/admin/views/novices.py:96
 #, python-format
 msgid ""
 "dear %(username)s, congratulations! your application of authorship has been "
@@ -236,16 +236,16 @@ msgstr ""
 "sayın %(username)s, tebrikler! yazarlık başvurunuz kabul edildi. giriş "
 "yaparak yazar olmanın olanaklarından faydalanabilirsin."
 
-#: .\admin\views\novices.py:103
+#: dictionary/admin/views/novices.py:103
 msgid "your authorship has been approved"
 msgstr "yazarlık başvurunuz kabul edildi"
 
-#: .\admin\views\novices.py:117
+#: dictionary/admin/views/novices.py:120
 #, python-format
 msgid "Authorship of the user '%(username)s' was rejected."
 msgstr "%(username)s nickli kullanıcının yazarlık talebi kabul reddedildi."
 
-#: .\admin\views\novices.py:122
+#: dictionary/admin/views/novices.py:125
 #, python-format
 msgid ""
 "dear %(username)s, your application of authorship has been rejected and all "
@@ -256,356 +256,370 @@ msgstr ""
 "silindi. eğer 10 entry doldurursanız tekrar çaylak onay listesine "
 "alınacaksınız."
 
-#: .\admin\views\novices.py:127
+#: dictionary/admin/views/novices.py:131
 msgid "your authorship has been rejected"
 msgstr "yazarlık başvurunuz reddedildi"
 
-#: .\admin\views\sites.py:19 .\templates\admin\app_list.html:50
-#: .\templates\admin\sites\clear_cache.html:32
+#: dictionary/admin/views/sites.py:19
+#: dictionary/templates/admin/app_list.html:50
+#: dictionary/templates/admin/sites/clear_cache.html:32
 msgid "Clear cache"
 msgstr "Önbelleği temizle"
 
-#: .\admin\views\sites.py:24
+#: dictionary/admin/views/sites.py:24
 #, python-format
 msgid "The cache with key '%(key)s' has been invalidated."
 msgstr "%(key)s anahtarına ait önbellek temizlendi."
 
-#: .\admin\views\sites.py:27
+#: dictionary/admin/views/sites.py:27
 msgid "All of cache has been invalidated."
 msgstr "Tüm önbellek temizlendi."
 
-#: .\admin\views\topic.py:22
+#: dictionary/admin/views/topic.py:22
 msgid "Topic transfer"
 msgstr "Başlık taşıma"
 
-#: .\admin\views\topic.py:73
+#. Translators: Short for "also see this", used in entry editor.
+#: dictionary/admin/views/topic.py:55 dictionary/templatetags/filters.py:52
+msgctxt "editor"
+msgid "see"
+msgstr "bkz"
+
+#: dictionary/admin/views/topic.py:73
 #, python-format
 msgid "%(count)d entry was transferred"
 msgid_plural "%(count)d entries were transferred"
 msgstr[0] "%(count)d tane entry güncellendi."
 msgstr[1] "%(count)d tane entry güncellendi."
 
-#: .\admin\views\topic.py:77
+#: dictionary/admin/views/topic.py:77
 msgid "Couldn't find the target topic."
 msgstr "Hedef başlık bulunamadı."
 
-#: .\admin\views\topic.py:79
+#: dictionary/admin/views/topic.py:79
 msgid "GENERIC_SUPERUSER is missing?"
 msgstr "GENERIC_SUPERUSER bulunamadı?"
 
-#: .\apps.py:10 .\templates\admin\actions\suspend_user.html:7
-#: .\templates\admin\actions\topic_move.html:7
-#: .\templates\admin\actions\unsuspend_user.html:7
+#: dictionary/apps.py:13 dictionary/templates/admin/actions/suspend_user.html:7
+#: dictionary/templates/admin/actions/topic_move.html:7
+#: dictionary/templates/admin/actions/unsuspend_user.html:7
 msgid "Dictionary"
 msgstr "Sözlük"
 
-#: .\apps.py:53 .\templates\dictionary\list\entry_list.html:69
-#: .\templates\dictionary\list\entry_list.html:79
+#: dictionary/apps.py:56
+#: dictionary/templates/dictionary/list/entry_list.html:69
+#: dictionary/templates/dictionary/list/entry_list.html:79
 msgid "today"
 msgstr "bugün"
 
-#: .\apps.py:53
+#: dictionary/apps.py:56
 msgid "most recent entries"
 msgstr "en son girilenler"
 
-#: .\apps.py:54 .\templatetags\functions.py:77
+#: dictionary/apps.py:57 dictionary/templatetags/functions.py:77
 msgid "popular"
 msgstr "gündem"
 
-#: .\apps.py:54
+#: dictionary/apps.py:57
 msgid "whats happening?"
 msgstr "neler olup bitiyor"
 
-#: .\apps.py:55 .\templates\dictionary\base.html:281
+#: dictionary/apps.py:58 dictionary/templates/dictionary/base.html:282
 msgid "uncategorized"
 msgstr "başıboşlar"
 
-#: .\apps.py:55 .\templates\dictionary\base.html:281
+#: dictionary/apps.py:58 dictionary/templates/dictionary/base.html:282
 msgid "topics with no channels"
 msgstr "kanalsız başlıklar"
 
-#: .\apps.py:57 .\templates\dictionary\list\entry_list.html:38
-#: .\templates\dictionary\list\entry_list.html:112
-#: .\templatetags\functions.py:84
+#: dictionary/apps.py:60
+#: dictionary/templates/dictionary/list/entry_list.html:38
+#: dictionary/templates/dictionary/list/entry_list.html:112
+#: dictionary/templatetags/functions.py:84
 msgid "acquaintances"
 msgstr "takip"
 
-#: .\apps.py:58
+#: dictionary/apps.py:61
 msgid "what are users i follow up to?"
 msgstr "takip ettiğim yazarlar ne yapmış?"
 
-#: .\apps.py:59 .\models\entry.py:31
-#: .\templates\dictionary\user\profile.html:109 .\views\detail.py:102
+#: dictionary/apps.py:62 dictionary/models/entry.py:32
+#: dictionary/templates/dictionary/user/profile.html:109
+#: dictionary/views/detail.py:102
 msgid "entries"
 msgstr "entry'ler"
 
-#: .\apps.py:59 .\templates\dictionary\user\profile.html:110
-#: .\views\detail.py:103
+#: dictionary/apps.py:62 dictionary/templates/dictionary/user/profile.html:110
+#: dictionary/views/detail.py:103
 msgid "favorites"
 msgstr "favorileri"
 
-#: .\apps.py:62 .\models\topic.py:185 .\templates\dictionary\base.html:197
-#: .\templates\dictionary\user\profile.html:121 .\views\detail.py:110
+#: dictionary/apps.py:65 dictionary/models/topic.py:185
+#: dictionary/templates/dictionary/base.html:197
+#: dictionary/templates/dictionary/user/profile.html:121
+#: dictionary/views/detail.py:110
 msgid "wishes"
 msgstr "ukteler"
 
-#: .\apps.py:63
+#: dictionary/apps.py:66
 msgid "the topics that some authors want populated"
 msgstr "diğer yazarların entry girilmesini istediği başlıklar"
 
-#: .\apps.py:64
+#: dictionary/apps.py:67
 msgid "all"
 msgstr "hepsi"
 
-#: .\apps.py:64
+#: dictionary/apps.py:67
 msgid "owned"
 msgstr "benimkiler"
 
-#: .\apps.py:66 .\templates\dictionary\list\entry_list.html:34
+#: dictionary/apps.py:69
+#: dictionary/templates/dictionary/list/entry_list.html:34
 msgid "today in history"
 msgstr "tarihte bugün"
 
-#: .\apps.py:66
+#: dictionary/apps.py:69
 msgid "what has been said around this time in the past years?"
 msgstr "geçen yıllarda bu zamanlar ne denmiş?"
 
-#: .\apps.py:67 .\templates\dictionary\base.html:191
+#: dictionary/apps.py:70 dictionary/templates/dictionary/base.html:191
 msgid "drafts"
 msgstr "kenar"
 
-#: .\apps.py:67
+#: dictionary/apps.py:70
 msgid "the entries that i've yet to publish"
 msgstr "kenara attığım entry'ler"
 
-#: .\apps.py:68 .\templates\dictionary\base.html:203
-#: .\templates\dictionary\list\entry_list.html:37
+#: dictionary/apps.py:71 dictionary/templates/dictionary/base.html:203
+#: dictionary/templates/dictionary/list/entry_list.html:37
 msgid "followups"
 msgstr "son"
 
-#: .\apps.py:68
+#: dictionary/apps.py:71
 msgid "what other authors wrote down after me?"
 msgstr "benden sonra neler girilmiş?"
 
-#: .\apps.py:69 .\templates\dictionary\base.html:209
-#: .\templates\dictionary\list\entry_list.html:35
-#: .\templatetags\functions.py:78
+#: dictionary/apps.py:72 dictionary/templates/dictionary/base.html:209
+#: dictionary/templates/dictionary/list/entry_list.html:35
+#: dictionary/templatetags/functions.py:78
 msgid "novices"
 msgstr "çaylaklar"
 
-#: .\apps.py:69
+#: dictionary/apps.py:72
 msgid "the entries of novice users"
 msgstr "çömezlerin girdikleri"
 
-#: .\apps.py:71
+#: dictionary/apps.py:74
 msgid "top"
 msgstr "en'ler"
 
-#: .\apps.py:72
+#: dictionary/apps.py:75
 msgid "most liked entries"
 msgstr "en beğenilen entry'ler"
 
-#: .\apps.py:73
+#: dictionary/apps.py:76
 msgid "yesterday"
 msgstr "dün"
 
-#: .\apps.py:73
+#: dictionary/apps.py:76
 msgid "last week"
 msgstr "geçen hafta"
 
-#: .\apps.py:75 .\templates\dictionary\list\people_list.html:4
-#: .\templates\dictionary\list\people_list.html:21
+#: dictionary/apps.py:78
+#: dictionary/templates/dictionary/list/people_list.html:4
+#: dictionary/templates/dictionary/list/people_list.html:21
 msgid "search"
 msgstr "arama"
 
-#: .\apps.py:75 .\templates\dictionary\base.html:215
+#: dictionary/apps.py:78 dictionary/templates/dictionary/base.html:215
 msgid "advanced search"
 msgstr "hayvan ara"
 
-#: .\apps.py:77 .\apps.py:78
+#: dictionary/apps.py:80 dictionary/apps.py:81
 msgid "user statistics"
 msgstr "kullanıcı istatistiği"
 
-#: .\apps.py:81
+#: dictionary/apps.py:84
 #, python-format
 msgid "@%(username)s - entries"
 msgstr "@%(username)s - entry'leri"
 
-#: .\apps.py:82
+#: dictionary/apps.py:85
 #, python-format
 msgid "@%(username)s - most favorited"
 msgstr "@%(username)s - en çok favorilenenleri"
 
-#: .\apps.py:83
+#: dictionary/apps.py:86
 #, python-format
 msgid "@%(username)s - favorites"
 msgstr "@%(username)s - favorileri"
 
-#: .\apps.py:84
+#: dictionary/apps.py:87
 #, python-format
 msgid "@%(username)s - recently voted"
 msgstr "@%(username)s - son oylananları"
 
-#: .\apps.py:85
+#: dictionary/apps.py:88
 #, python-format
 msgid "@%(username)s - most liked"
 msgstr "@%(username)s - en beğenilenleri"
 
-#: .\apps.py:86
+#: dictionary/apps.py:89
 #, python-format
 msgid "@%(username)s - attracting entries of this week"
 msgstr "@%(username)s - bu hafta dikkat çekenleri"
 
-#: .\apps.py:87
+#: dictionary/apps.py:90
 #, python-format
 msgid "@%(username)s - beloved entries"
 msgstr "@%(username)s - el emeği göz nuru"
 
-#: .\apps.py:88
+#: dictionary/apps.py:91
 #, python-format
 msgid "@%(username)s - #%(channel)s topics"
 msgstr "@%(username)s - #%(channel)s başlıkları"
 
-#: .\apps.py:93
+#: dictionary/apps.py:96
 msgid "ama"
 msgstr "soru cevap"
 
-#: .\apps.py:93
+#: dictionary/apps.py:96
 msgid "question-and-answer themed interactive interviews"
 msgstr "interaktif soru cevap temalı başlıklar"
 
-#: .\apps.py:275
+#: dictionary/apps.py:280
 msgid "chaotic neutral"
 msgstr "kaotik nötral"
 
-#: .\apps.py:276
+#: dictionary/apps.py:281
 msgid "chronic backup"
 msgstr "müzmin yedek"
 
-#: .\apps.py:277
+#: dictionary/apps.py:282
 msgid "padawan"
 msgstr "padawan"
 
-#: .\apps.py:278
+#: dictionary/apps.py:283
 msgid "lunatic"
 msgstr "çılgın"
 
-#: .\apps.py:279
+#: dictionary/apps.py:284
 msgid "fragile anarchist"
 msgstr "kofti anarşist"
 
-#: .\apps.py:280
+#: dictionary/apps.py:285
 msgid "anarchist"
 msgstr "anarşist"
 
-#: .\apps.py:281
+#: dictionary/apps.py:286
 msgid "turbulent kicker"
 msgstr "hırçın golcü"
 
-#: .\apps.py:282
+#: dictionary/apps.py:287
 msgid "anatolian boy"
 msgstr "anadolu çocuğu"
 
-#: .\apps.py:283
+#: dictionary/apps.py:288
 msgid "battal gazi"
 msgstr "battal gazi"
 
-#: .\apps.py:284
+#: dictionary/apps.py:289
 msgid "thorny"
 msgstr "çetrefilli"
 
-#: .\apps.py:285
+#: dictionary/apps.py:290
 msgid "hippy"
 msgstr "hippi"
 
-#: .\apps.py:286
+#: dictionary/apps.py:291
 msgid "lad"
 msgstr "delikanlı"
 
-#: .\apps.py:287
+#: dictionary/apps.py:292
 msgid "staid"
 msgstr "ağır abi"
 
-#: .\apps.py:288
+#: dictionary/apps.py:293
 msgid "rowdy"
 msgstr "bıçkın"
 
-#: .\apps.py:289
+#: dictionary/apps.py:294
 msgid "richard the blazeheart "
 msgstr "mangal yürekli rişar"
 
-#: .\apps.py:290
+#: dictionary/apps.py:295
 msgid "compliant yet sympathetic"
 msgstr "mülayim ama sempatik"
 
-#: .\apps.py:291
+#: dictionary/apps.py:296
 msgid "right minded"
 msgstr "aklı selim"
 
-#: .\apps.py:292
+#: dictionary/apps.py:297
 msgid "presentable"
 msgstr "prezentabl"
 
-#: .\apps.py:293
+#: dictionary/apps.py:298
 msgid "sugar"
 msgstr "şeker abi"
 
-#: .\apps.py:294
+#: dictionary/apps.py:299
 msgid "honeypot"
 msgstr "bal küpü"
 
-#: .\apps.py:295
+#: dictionary/apps.py:300
 msgid "yummier honey"
 msgstr "baldan tatlı"
 
-#: .\apps.py:296
+#: dictionary/apps.py:301
 msgid "luscious"
 msgstr "leziz"
 
-#: .\apps.py:297
+#: dictionary/apps.py:302
 msgid "addicted"
 msgstr "entry uğruna ruhunu satmış"
 
-#: .\apps.py:298
+#: dictionary/apps.py:303
 msgid "switheet"
 msgstr "şekerpare"
 
-#: .\apps.py:299
+#: dictionary/apps.py:304
 msgid "damascus apricot"
 msgstr "şamda kayısı"
 
-#: .\apps.py:300
+#: dictionary/apps.py:305
 msgid "household"
 msgstr "her eve lazım"
 
-#: .\apps.py:301
+#: dictionary/apps.py:306
 msgid "exuberant"
 msgstr "tadına doyum olmaz"
 
-#: .\apps.py:302
+#: dictionary/apps.py:307
 msgid "energizer bunny"
 msgstr "energizer tavşanı"
 
-#: .\apps.py:303
+#: dictionary/apps.py:308
 msgid "courteous"
 msgstr "gençlerin sevgilisi"
 
-#: .\apps.py:304
+#: dictionary/apps.py:309
 msgid "inhuman"
 msgstr "fevkalbeşer"
 
-#: .\apps.py:305
+#: dictionary/apps.py:310
 msgid "rating beast"
 msgstr "rating canavarı"
 
-#: .\apps.py:327
+#: dictionary/apps.py:332
 msgid "imbecile"
 msgstr "geri zekâlı"
 
-#: .\apps.py:330
+#: dictionary/apps.py:335
 msgid "the champion"
 msgstr "halkın şampiyonu"
 
-#: .\forms\auth.py:13
+#: dictionary/forms/auth.py:14
 msgid ""
 "could not log in. make sure that you entered correct combination of e-mail "
 "and password. your credentials are case sensitive. make sure that you "
@@ -615,127 +629,132 @@ msgstr ""
 "olun. bilgileriniz büyük-küçük harf duyarlıdır. e-posta adresinizi "
 "onayladığınızdan emin olun."
 
-#: .\forms\auth.py:19
+#: dictionary/forms/auth.py:20
 msgid "remember me"
 msgstr "beni hatırla"
 
-#: .\forms\auth.py:25
+#: dictionary/forms/auth.py:26
 msgid ""
 "required. in order to complete registration, provide a valid e-mail address."
-msgstr ""
-"gerekli. kayıt işlemini tamamlamak için geçerli bir mail adresi girin."
+msgstr "gerekli. kayıt işlemini tamamlamak için geçerli bir mail adresi girin."
 
-#: .\forms\auth.py:26 .\models\author.py:116 .\models\reporting.py:12
-#: .\templates\dictionary\user\preferences\base.html:24
-#: .\templates\dictionary\user\preferences\base.html:39
+#: dictionary/forms/auth.py:27 dictionary/models/author.py:115
+#: dictionary/models/reporting.py:12
+#: dictionary/templates/dictionary/user/preferences/base.html:24
+#: dictionary/templates/dictionary/user/preferences/base.html:39
 msgid "e-mail"
 msgstr "e-posta"
 
-#: .\forms\auth.py:28 .\forms\edit.py:12
+#: dictionary/forms/auth.py:29 dictionary/forms/edit.py:13
 msgid "gender"
 msgstr "cinsiyet"
 
-#: .\forms\auth.py:29 .\forms\edit.py:13
+#: dictionary/forms/auth.py:30 dictionary/forms/edit.py:14
 msgid "birth date"
 msgstr "doğum tarihi"
 
-#: .\forms\auth.py:40 .\models\author.py:100
+#: dictionary/forms/auth.py:41 dictionary/models/author.py:99
 msgid "nickname"
 msgstr "nick"
 
-#: .\forms\auth.py:44
+#: dictionary/forms/auth.py:45
 msgid "the e-mail address you used to register your account"
 msgstr "kayıt olurken kullandığınız e-posta adresiniz"
 
-#: .\forms\auth.py:51
+#: dictionary/forms/auth.py:52
 msgid "this e-mail has already been confirmed."
 msgstr "bu e-posta çoktan onaylanmış."
 
-#: .\forms\auth.py:53
+#: dictionary/forms/auth.py:54
 msgid "no such e-mail, never heard of it."
 msgstr "böyle bir e-posta yok yalnız, hiç duymadım."
 
-#: .\forms\auth.py:59
+#: dictionary/forms/auth.py:60
 msgid "new e-mail address"
 msgstr "yeni e-posta adresi"
 
-#: .\forms\auth.py:60
+#: dictionary/forms/auth.py:61
 msgid "new e-mail address (again)"
 msgstr "yeni e-posta adresi (tekrar)"
 
-#: .\forms\auth.py:61 .\forms\auth.py:76
+#: dictionary/forms/auth.py:62 dictionary/forms/auth.py:77
 msgid "confirm your password"
 msgstr "parolanızı onaylayın"
 
-#: .\forms\auth.py:67
+#: dictionary/forms/auth.py:68
 msgid "e-mails didn't match."
 msgstr "e-postalar uyuşmadı"
 
-#: .\forms\auth.py:70
+#: dictionary/forms/auth.py:71 dictionary/models/author.py:202
 msgid "this e-mail is already in use."
 msgstr "bu e-posta kullanımda"
 
-#: .\forms\edit.py:14
+#: dictionary/forms/edit.py:15
 msgid "entries per page"
 msgstr "sayfa başına entry"
 
-#: .\forms\edit.py:15
+#: dictionary/forms/edit.py:16
 msgid "topics per page"
 msgstr "sayfa başına başlık"
 
-#: .\forms\edit.py:16
+#: dictionary/forms/edit.py:17
 msgid "message preference"
 msgstr "mesajlaşma tercihi"
 
-#: .\forms\edit.py:17
+#: dictionary/forms/edit.py:18
 msgid "show read receipts"
 msgstr "okundu bilgileri gösterilsin"
 
-#: .\forms\edit.py:18
+#: dictionary/forms/edit.py:19
 msgid "allow uncategorized topics in today"
 msgstr "bugün'de başıboş başlıklar da gözüksün"
 
-#: .\forms\edit.py:19
+#: dictionary/forms/edit.py:20
 msgid "include site announcements in my activity"
 msgstr "olay'da sözlük duyuruları bulunsun"
 
-#: .\forms\edit.py:39 .\utils\validators.py:27
+#: dictionary/forms/edit.py:40 dictionary/utils/validators.py:26
 msgid "my dear, just write your entry, how hard could it be?"
 msgstr "bebeğim, alt tarafı bir entry gireceksin, ne kadar zor olabilir ki?"
 
-#: .\forms\edit.py:47 .\templates\dictionary\user\profile.html:33
+#: dictionary/forms/edit.py:48
+#: dictionary/templates/dictionary/user/profile.html:33
 msgid "message"
 msgstr "mesaj gönder"
 
-#: .\forms\edit.py:49
+#: dictionary/forms/edit.py:50
 msgid "can't really understand you"
 msgstr "ne diyorsun anlaşılmıyor"
 
-#: .\forms\edit.py:55
+#: dictionary/forms/edit.py:56
 msgid "that message is just too short"
 msgstr "bu mesaj çok kısa be koçum"
 
-#: .\forms\edit.py:62
+#: dictionary/forms/edit.py:63
 msgid "to who"
 msgstr "kime"
 
-#: .\management\commands\create_generic_user.py:15
+#: dictionary/management/commands/create_generic_user.py:15
 msgid "Creates a generic user"
 msgstr "Generic kullanıcı oluşturur"
 
-#: .\management\commands\create_generic_user.py:18
+#: dictionary/management/commands/create_generic_user.py:18
 msgid "The type of the user to be created"
 msgstr "Oluşturulacak kullanıcının tipi"
 
-#: .\management\commands\create_generic_user.py:19
+#: dictionary/management/commands/create_generic_user.py:19
 msgid "The password of the user to be created"
 msgstr "Oluşturulacak kullanıcının parolası"
 
-#: .\management\commands\create_generic_user.py:20
+#: dictionary/management/commands/create_generic_user.py:20
 msgid "E-mail address of the user to bo be created"
 msgstr "Oluşturulacak kullanıcının e-posta adresi"
 
-#: .\management\commands\create_generic_user.py:42
+#: dictionary/management/commands/create_generic_user.py:32
+msgid "Invalid user type, available types:"
+msgstr ""
+
+#: dictionary/management/commands/create_generic_user.py:42
 #, python-format
 msgid ""
 "A user with username %(username)s, generic type %(user_type)s and email "
@@ -744,22 +763,22 @@ msgstr ""
 "%(username)s ismiyle %(user_type)s tipiyle ve %(email)s e-posta adresiyle "
 "oluşturulacak. devam edilsin mi? y/N: "
 
-#: .\management\commands\create_generic_user.py:50
+#: dictionary/management/commands/create_generic_user.py:50
 msgid "Command aborted."
 msgstr "İşlem iptal edildi."
 
-#: .\management\commands\create_generic_user.py:67
+#: dictionary/management/commands/create_generic_user.py:67
 #, python-format
 msgid ""
 "generic_%(user_type)s has been created with the username %(username)s and "
-"email %(email)s. You can edit the details of this user via admin page if you"
-" wish."
+"email %(email)s. You can edit the details of this user via admin page if you "
+"wish."
 msgstr ""
 "%(username)s ismi ve %(email)s e-posta adresiyle generic_%(user_type)s "
 "oluşturuldu. daha sonra arzu ederseniz bu kullanıcıyı admin sitesinde "
 "bulabilirsiniz."
 
-#: .\management\commands\create_generic_user.py:74
+#: dictionary/management/commands/create_generic_user.py:74
 msgid ""
 "Error: either there is an existing user with given username or e-mail is in "
 "use."
@@ -767,41 +786,41 @@ msgstr ""
 "Hata: Bu isimle bir kullanıcı zaten oluşturulmuş veya e-posta adresi "
 "kullanımda."
 
-#: .\models\announcements.py:12
+#: dictionary/models/announcements.py:12
 msgid "Title"
 msgstr "Başlık"
 
-#: .\models\announcements.py:13 .\models\entry.py:18 .\models\entry.py:98
-#: .\models\reporting.py:20
+#: dictionary/models/announcements.py:13 dictionary/models/entry.py:18
+#: dictionary/models/entry.py:99 dictionary/models/reporting.py:20
 msgid "Content"
 msgstr "İçerik"
 
-#: .\models\announcements.py:21
+#: dictionary/models/announcements.py:21
 msgid "Discussion topic"
 msgstr "Tartışma başlığı"
 
-#: .\models\announcements.py:22
+#: dictionary/models/announcements.py:22
 msgid ""
 "Optional. The topic where the users will be discussing this announcement."
 msgstr ""
 "Opsiyonel. Sözlükteki yazarların bu duyuru hakkında yazacakları başlık."
 
-#: .\models\announcements.py:27 .\models\flatpages.py:9
+#: dictionary/models/announcements.py:27 dictionary/models/flatpages.py:9
 msgid "Allow HTML"
 msgstr "HTML açık"
 
-#: .\models\announcements.py:28 .\models\flatpages.py:10
+#: dictionary/models/announcements.py:28 dictionary/models/flatpages.py:10
 msgid ""
 "Check this to only use HTML, otherwise you can use entry formatting options."
 msgstr ""
 "Sadece HTML kullanmak için bunu seçin aksi halde entry biçimlendirme "
 "seçenekleri kullanılabilir."
 
-#: .\models\announcements.py:33
+#: dictionary/models/announcements.py:33
 msgid "Notify users"
 msgstr "Kullanıcılara duyur"
 
-#: .\models\announcements.py:34
+#: dictionary/models/announcements.py:34
 msgid ""
 "When checked, users will get a notification when the announcement gets "
 "released."
@@ -809,83 +828,84 @@ msgstr ""
 "İşaretlendiği takdirde duyuru yayınlandığı zaman kullanıcılar bildirim "
 "alacak."
 
-#: .\models\announcements.py:40
+#: dictionary/models/announcements.py:40
 msgid "Publication date"
 msgstr "Yayınlanma tarihi"
 
-#: .\models\announcements.py:41
+#: dictionary/models/announcements.py:41
 msgid "You can set future dates for the publication date."
 msgstr "Yayınlanma tarihini ileriki bir zaman olarak da belirleyebilirsiniz."
 
-#: .\models\announcements.py:45
+#: dictionary/models/announcements.py:45
 msgid "announcement"
 msgstr "duyuru"
 
-#: .\models\announcements.py:46 .\templates\dictionary\base.html:327
+#: dictionary/models/announcements.py:46
+#: dictionary/templates/dictionary/base.html:328
 msgid "announcements"
 msgstr "duyurular"
 
-#: .\models\author.py:61
+#: dictionary/models/author.py:60
 msgid ""
-"unlike what you sent, an appropriate nickname would only consist of letters,"
-" numbers and spaces."
+"unlike what you sent, an appropriate nickname would only consist of letters, "
+"numbers and spaces."
 msgstr ""
 "boşluk dışında türkçe ve özel karakter içermeyen alfabe harflerinden oluşan "
 "bir nick münasiptir."
 
-#: .\models\author.py:66
+#: dictionary/models/author.py:65
 msgid "male"
 msgstr "erkek"
 
-#: .\models\author.py:67
+#: dictionary/models/author.py:66
 msgid "female"
 msgstr "kadın"
 
-#: .\models\author.py:68
+#: dictionary/models/author.py:67
 msgid "other"
 msgstr "diğer"
 
-#: .\models\author.py:69
+#: dictionary/models/author.py:68
 msgid "forget it"
 msgstr "boşver"
 
-#: .\models\author.py:72
+#: dictionary/models/author.py:71
 msgid "in novice list"
 msgstr "çaylak listesinde"
 
-#: .\models\author.py:73
+#: dictionary/models/author.py:72
 msgid "waiting for first ten entries"
 msgstr "entry girmesi bekleniyor"
 
-#: .\models\author.py:74
+#: dictionary/models/author.py:73
 msgid "authorship approved"
 msgstr "yazarlık başvurusu kabul edildi"
 
-#: .\models\author.py:77
+#: dictionary/models/author.py:76
 msgid "nobody"
 msgstr "kimse"
 
-#: .\models\author.py:78
+#: dictionary/models/author.py:77
 msgid "authors and novices"
 msgstr "yazarlar ve çaylaklar"
 
-#: .\models\author.py:79 .\models\author.py:198
+#: dictionary/models/author.py:78 dictionary/models/author.py:197
 msgid "authors"
 msgstr "yazarlar"
 
-#: .\models\author.py:80
+#: dictionary/models/author.py:79
 msgid "people who i follow"
 msgstr "takip ettiklerim"
 
-#: .\models\author.py:83
+#: dictionary/models/author.py:82
 msgid "Light"
 msgstr "Aydınlık"
 
-#: .\models\author.py:84
+#: dictionary/models/author.py:83
 msgid "Dark"
 msgstr "Karanlık"
 
-#: .\models\author.py:104
+#: dictionary/models/author.py:103
 msgid ""
 "the nickname that will represent you in the site. can be 3-35 characters "
 "long, can include only letters, numbers and spaces"
@@ -893,35 +913,35 @@ msgstr ""
 "sözlükte sizi temsil edecek rumuz. 3-35 karakter uzunluğunda, boşluk "
 "içerebilir özel ve türkçe karakter içeremez."
 
-#: .\models\author.py:110
+#: dictionary/models/author.py:109
 msgid "this nickname is too tiny"
 msgstr "bu nick çok minnoş"
 
-#: .\models\author.py:112
+#: dictionary/models/author.py:111
 msgid "this nickname is already taken"
 msgstr "bu nick kapılmış"
 
-#: .\models\author.py:117
+#: dictionary/models/author.py:116
 msgid "active"
 msgstr "aktif"
 
-#: .\models\author.py:128
+#: dictionary/models/author.py:127
 msgid "Application status"
 msgstr "Başvuru durumu"
 
-#: .\models\author.py:130 .\templates\admin\novices.html:18
+#: dictionary/models/author.py:129 dictionary/templates/admin/novices.html:18
 msgid "Application date"
 msgstr "Başvuru tarihi"
 
-#: .\models\author.py:131
+#: dictionary/models/author.py:130
 msgid "Last activity as novice"
 msgstr "Çaylak olarak son etkinlik"
 
-#: .\models\author.py:134
+#: dictionary/models/author.py:133
 msgid "Queue priority"
 msgstr "Sıra önceliği"
 
-#: .\models\author.py:135
+#: dictionary/models/author.py:134
 msgid ""
 "Novices with high priority are more likely to appear on the top of the "
 "novice list."
@@ -929,84 +949,85 @@ msgstr ""
 "Yüksek sıra önceliğine sahip çaylakların çaylak listesinin üstüne çıkmaları "
 "daha olasıdır."
 
-#: .\models\author.py:139
+#: dictionary/models/author.py:138
 msgid "Suspended until"
 msgstr "Şu tarihe kadar uzaklaştırıldı"
 
-#: .\models\author.py:140
+#: dictionary/models/author.py:139
 msgid "Frozen status"
 msgstr "Donuk durumu"
 
-#: .\models\author.py:141
+#: dictionary/models/author.py:140
 msgid "Anonymous status"
 msgstr "Anonim durumu"
 
-#: .\models\author.py:166
+#: dictionary/models/author.py:165
 msgid "Birth date"
 msgstr "Doğum tarihi"
 
-#: .\models\author.py:167
+#: dictionary/models/author.py:166
 msgid "Gender"
 msgstr "Cinsiyet"
 
-#: .\models\author.py:179
+#: dictionary/models/author.py:178
 msgid "Karma points"
 msgstr "Karma puanı"
 
-#: .\models\author.py:180
+#: dictionary/models/author.py:179
 msgid "Badges"
 msgstr "Rozetler"
 
-#: .\models\author.py:191
+#: dictionary/models/author.py:190
 msgid "Can access to the novice list"
 msgstr "Çaylak listesine erişebilir"
 
-#: .\models\author.py:192
+#: dictionary/models/author.py:191
 msgid "Can suspend users"
 msgstr "Kullanıcıları askıya alabilir"
 
-#: .\models\author.py:193
+#: dictionary/models/author.py:192
 msgid "Can clear cache"
 msgstr "Önbelleği temizleyebilir"
 
-#: .\models\author.py:194
+#: dictionary/models/author.py:193
 msgid "Can comment on entries"
 msgstr "Entry'lere yorum yapabilir"
 
-#: .\models\author.py:195
+#: dictionary/models/author.py:194
 msgid "Can suggest categories for topics"
 msgstr "Başlıklara kanal önerisi yapabilir"
 
-#: .\models\author.py:197
-#: .\templates\dictionary\includes\forms\extended_search.html:7
+#: dictionary/models/author.py:196
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:7
 msgid "author"
 msgstr "yazar"
 
-#: .\models\author.py:265
+#: dictionary/models/author.py:284
 msgid "you have used up all the vote claims you have today. try again later."
 msgstr ""
 "bir gün içerisinde kullanabileceğiniz oy hakkınızı doldurdunuz. daha sonra "
 "tekrar deneyin."
 
-#: .\models\author.py:273
+#: dictionary/models/author.py:292
 msgid "sorry, you have been haunting this person for a long time."
 msgstr "olmaz. bu kullanıcıyla yeterince haşır neşir oldunuz."
 
-#: .\models\author.py:280
+#: dictionary/models/author.py:299
 msgid ""
 "this person has taken enough of your votes today, maybe try other users?"
 msgstr ""
 "bu kullanıcı günlük oy hakkınızdan payını zaten aldı. başka kullanıcılara "
 "baksanız?"
 
-#: .\models\author.py:310 .\templates\dictionary\edit\entry_create.html:51
-#: .\templates\dictionary\edit\entry_update.html:42
-#: .\templates\dictionary\list\entry_list.html:281 .\views\edit.py:139
-#: .\views\images.py:33
+#: dictionary/models/author.py:329
+#: dictionary/templates/dictionary/edit/entry_create.html:51
+#: dictionary/templates/dictionary/edit/entry_update.html:42
+#: dictionary/templates/dictionary/list/entry_list.html:281
+#: dictionary/views/edit.py:138 dictionary/views/images.py:33
 msgid "you lack the required permissions."
 msgstr "gereken yetkilere sahip değilsiniz."
 
-#: .\models\author.py:324
+#: dictionary/models/author.py:342
 #, python-format
 msgid "you are sending entries too frequently. try again in a second."
 msgid_plural ""
@@ -1015,36 +1036,37 @@ msgstr[0] "çok hızlı entry gönderiyorsunuz. şimdi yeniden deneyin."
 msgstr[1] ""
 "çok hızlı entry gönderiyorsunuz. %(remaining)d saniye içinde tekrar deneyin."
 
-#: .\models\author.py:522
+#: dictionary/models/author.py:546
 msgid "delete account completely"
 msgstr "hesabı komple sil"
 
-#: .\models\author.py:523
+#: dictionary/models/author.py:547
 msgid "delete account with legacy"
 msgstr "hesabı miras bırakarak sil"
 
-#: .\models\author.py:524
+#: dictionary/models/author.py:548
 msgid "freeze account"
 msgstr "hesabı dondur"
 
-#: .\models\author.py:527
-#: .\templates\dictionary\user\preferences\terminate.html:42
+#: dictionary/models/author.py:551
+#: dictionary/templates/dictionary/user/preferences/terminate.html:42
 msgid "last words?"
 msgstr "son sözünüz?"
 
-#: .\models\author.py:555 .\models\category.py:16 .\models\flatpages.py:21
+#: dictionary/models/author.py:579 dictionary/models/category.py:16
+#: dictionary/models/flatpages.py:21
 msgid "Name"
 msgstr "İsim"
 
-#: .\models\author.py:556 .\models\category.py:18
+#: dictionary/models/author.py:580 dictionary/models/category.py:18
 msgid "Description"
 msgstr "Açıklama"
 
-#: .\models\author.py:559 .\models\flatpages.py:22
+#: dictionary/models/author.py:583 dictionary/models/flatpages.py:22
 msgid "Link"
 msgstr "Bağlantı"
 
-#: .\models\author.py:561
+#: dictionary/models/author.py:585
 msgid ""
 "The link to follow when users click the badge. If no link is provided, "
 "related topic will be used."
@@ -1052,27 +1074,27 @@ msgstr ""
 "Rozete tıklayınca gidilecek bağlantı. Eğer boş bırakırsanız ilgili başlığa "
 "yönlendirecek."
 
-#: .\models\author.py:569
+#: dictionary/models/author.py:593
 msgid "badge"
 msgstr "rozet"
 
-#: .\models\author.py:570
+#: dictionary/models/author.py:594
 msgid "badges"
 msgstr "rozetler"
 
-#: .\models\author.py:606
+#: dictionary/models/author.py:630
 msgid ""
 "your backup is now ready. you may download your backup file using the link "
 "provided in the backup tab of settings."
 msgstr ""
-"yedeğiniz hazırlandı. yedek dosyanızı ayarlar sayfanızdaki yedek sekmesinden"
-" indirebilirsiniz."
+"yedeğiniz hazırlandı. yedek dosyanızı ayarlar sayfanızdaki yedek sekmesinden "
+"indirebilirsiniz."
 
-#: .\models\category.py:21
+#: dictionary/models/category.py:21
 msgid "Pseudo channel"
 msgstr "Sözde kanal"
 
-#: .\models\category.py:23
+#: dictionary/models/category.py:23
 msgid ""
 "Pseudo channels cannot be browsed by the users but can be assigned to the "
 "topics. You can add these channels to popular exclusions."
@@ -1080,11 +1102,11 @@ msgstr ""
 "Sözde kanallar kullanıcılar tarafından gezilemez fakat başlıklara "
 "atanabilir. Bu kanalları gündem filtresine de ekleyebilirsiniz."
 
-#: .\models\category.py:29
+#: dictionary/models/category.py:29
 msgid "Default"
 msgstr "Varsayılan"
 
-#: .\models\category.py:31
+#: dictionary/models/category.py:31
 msgid ""
 "When checked, this channel will be present in the following channels of "
 "newly registered users. (Pseudo channels are excluded.)"
@@ -1092,71 +1114,75 @@ msgstr ""
 "İşaretlendiği takdirde bu kanal siteye yeni kayıt olan kullanıcıların takip "
 "edilen kanallar listesine eklenecek. (Sözde kanallar buna dahil değildir.)"
 
-#: .\models\category.py:35 .\models\flatpages.py:12 .\models\flatpages.py:23
+#: dictionary/models/category.py:35 dictionary/models/flatpages.py:12
+#: dictionary/models/flatpages.py:23
 msgid "Weight"
 msgstr "Sıra"
 
-#: .\models\category.py:42
+#: dictionary/models/category.py:42
 msgid "channel"
 msgstr "kanal"
 
-#: .\models\category.py:43 .\templates\dictionary\base.html:125
-#: .\templates\dictionary\base.html:185
+#: dictionary/models/category.py:43
+#: dictionary/templates/dictionary/base.html:125
+#: dictionary/templates/dictionary/base.html:185
 msgid "channels"
 msgstr "kanallar"
 
-#: .\models\category.py:61
+#: dictionary/models/category.py:61
 msgid "Positive"
 msgstr "Pozitif"
 
-#: .\models\category.py:62
+#: dictionary/models/category.py:62
 msgid "Negative"
 msgstr "Negatif"
 
-#: .\models\category.py:64 .\models\entry.py:17 .\models\entry.py:97
-#: .\models\images.py:30 .\models\topic.py:177
+#: dictionary/models/category.py:64 dictionary/models/entry.py:17
+#: dictionary/models/entry.py:98 dictionary/models/images.py:30
+#: dictionary/models/topic.py:177
 msgid "Author"
 msgstr "Yazar"
 
-#: .\models\category.py:68
+#: dictionary/models/category.py:68
 msgid "Channel"
 msgstr "Kanal"
 
-#: .\models\category.py:70
+#: dictionary/models/category.py:70
 msgid "Direction"
 msgstr "Yön"
 
-#: .\models\category.py:71 .\models\entry.py:19 .\models\entry.py:103
-#: .\models\images.py:34 .\models\reporting.py:34 .\models\topic.py:96
-#: .\models\topic.py:181
+#: dictionary/models/category.py:71 dictionary/models/entry.py:19
+#: dictionary/models/entry.py:104 dictionary/models/images.py:34
+#: dictionary/models/reporting.py:34 dictionary/models/topic.py:96
+#: dictionary/models/topic.py:181
 msgid "Date created"
 msgstr "Oluşturulma tarihi"
 
-#: .\models\category.py:74
+#: dictionary/models/category.py:74
 msgid "suggestion"
 msgstr "Başlık önerisi"
 
-#: .\models\category.py:75
+#: dictionary/models/category.py:75
 msgid "suggestions"
 msgstr "Başlık önerileri"
 
-#: .\models\entry.py:20 .\models\entry.py:104
+#: dictionary/models/entry.py:20 dictionary/models/entry.py:105
 msgid "Date edited"
 msgstr "Değiştirilme tarihi"
 
-#: .\models\entry.py:21
+#: dictionary/models/entry.py:21
 msgid "Vote rate"
 msgstr "Oylanma puanı"
 
-#: .\models\entry.py:22
+#: dictionary/models/entry.py:22
 msgid "Draft status"
 msgstr "Taslak durumu"
 
-#: .\models\entry.py:30
+#: dictionary/models/entry.py:31
 msgid "entry"
 msgstr "entry"
 
-#: .\models\entry.py:55
+#: dictionary/models/entry.py:56
 msgid ""
 "as you entered your first 10 entries, you have been admitted to the novice "
 "list. you can see your queue number in your profile page. if your entry "
@@ -1166,102 +1192,103 @@ msgstr ""
 "profilinizden sıranızı görebilirsiniz. entry sayınız 10'un altına düştüğü "
 "takdirde çaylak listesinden şutlanacaksınız."
 
-#: .\models\entry.py:107
+#: dictionary/models/entry.py:108
 msgid "comment"
 msgstr "yorum"
 
-#: .\models\entry.py:108
+#: dictionary/models/entry.py:109
 msgid "comments"
 msgstr "yorumlar"
 
-#: .\models\entry.py:111
+#: dictionary/models/entry.py:112
 #, python-format
 msgid "Comment #%(number)d"
 msgstr "Yorum #%(number)d"
 
-#: .\models\flatpages.py:16
+#: dictionary/models/flatpages.py:16
 msgid "flat page"
 msgstr "düz sayfa"
 
-#: .\models\flatpages.py:17
+#: dictionary/models/flatpages.py:17
 msgid "flat pages"
 msgstr "düz sayfalar"
 
-#: .\models\flatpages.py:27
+#: dictionary/models/flatpages.py:27
 msgid "external url"
 msgstr "dış bağlantı"
 
-#: .\models\flatpages.py:28
+#: dictionary/models/flatpages.py:28
 msgid "external urls"
 msgstr "dış bağlantılar"
 
-#: .\models\images.py:31
+#: dictionary/models/images.py:31
 msgid "File"
 msgstr "Dosya"
 
-#: .\models\images.py:33
+#: dictionary/models/images.py:33
 msgid "Unpublished"
 msgstr "Yayından kaldırılmış"
 
-#: .\models\images.py:37
+#: dictionary/models/images.py:37
 msgid "image"
 msgstr "görsel"
 
-#: .\models\images.py:38 .\templates\dictionary\list\entry_list.html:40
-#: .\templates\dictionary\list\entry_list.html:99
-#: .\templatetags\functions.py:88
+#: dictionary/models/images.py:38
+#: dictionary/templates/dictionary/list/entry_list.html:40
+#: dictionary/templates/dictionary/list/entry_list.html:99
+#: dictionary/templatetags/functions.py:88
 msgid "images"
 msgstr "görseller"
 
-#: .\models\reporting.py:9
+#: dictionary/models/reporting.py:9
 msgid "about the some content published"
 msgstr "sözlükte yayınlanan içerikler hakkında"
 
-#: .\models\reporting.py:10
+#: dictionary/models/reporting.py:10
 msgid "about other subjects"
 msgstr "sözlükle ilgili diğer konular hakkında"
 
-#: .\models\reporting.py:16
+#: dictionary/models/reporting.py:16
 msgid "category"
 msgstr "kategori"
 
-#: .\models\reporting.py:19
+#: dictionary/models/reporting.py:19
 msgid "Subject"
 msgstr "Konu"
 
-#: .\models\reporting.py:23
+#: dictionary/models/reporting.py:23
 msgid "Report is open"
 msgstr "Raporun statüsü açık"
 
-#: .\models\reporting.py:24
+#: dictionary/models/reporting.py:24
 msgid "Indicates the current status of the report."
 msgstr "Bu raporun değerlendirilme durumunu belirtir."
 
-#: .\models\reporting.py:30
+#: dictionary/models/reporting.py:30
 msgid "Verified"
 msgstr "Onaylanmış"
 
-#: .\models\reporting.py:31
+#: dictionary/models/reporting.py:31
 msgid "Indicates whether this report has been verified by e-mail"
 msgstr "Bu raporun e-posta aracılığıyla onaylanıp onaylanmadığını belirtir."
 
-#: .\models\reporting.py:35
+#: dictionary/models/reporting.py:35
 msgid "Date verified"
 msgstr "Onaylanma tarihi"
 
-#: .\models\reporting.py:38
+#: dictionary/models/reporting.py:38
 msgid "report"
 msgstr "rapor"
 
-#: .\models\reporting.py:39
+#: dictionary/models/reporting.py:39
 msgid "reports"
 msgstr "raporlar"
 
-#: .\models\topic.py:22
+#: dictionary/models/topic.py:22
 msgid "Definition"
 msgstr "Tanım"
 
-#: .\models\topic.py:24
+#: dictionary/models/topic.py:24
 msgid ""
 "In order to change the definition of the topic after it has been created, "
 "you need to use topic moving feature."
@@ -1269,57 +1296,56 @@ msgstr ""
 "Başlık oluşturulduktan sonra tanımını değiştirmek için başlık taşıma "
 "özelliğini kullanmalısınız."
 
-#: .\models\topic.py:36
+#: dictionary/models/topic.py:36
 msgid "First user to write an entry"
 msgstr "İlk entry giren kullanıcı"
 
-#: .\models\topic.py:37
+#: dictionary/models/topic.py:37
 msgid ""
 "The author or novice who entered the first entry for this topic publicly."
 msgstr ""
 "Bu başlığa ilk kez halka açık bir şekilde entry giren yazar veya çaylak."
 
-#: .\models\topic.py:40
+#: dictionary/models/topic.py:40
 msgid "Channels"
 msgstr "Kanallar"
 
-#: .\models\topic.py:44
+#: dictionary/models/topic.py:44
 msgid "Allow suggestions"
 msgstr "Kanal önerileri açık"
 
-#: .\models\topic.py:45
+#: dictionary/models/topic.py:45
 msgid "When checked, users will be able to suggest channels to this topic."
 msgstr ""
 "İşaretlendiği takdirde kullanıcılar bu başlığa kanal önerisi yapabilecek."
 
-#: .\models\topic.py:51
+#: dictionary/models/topic.py:51
 msgid "Title disambiguation"
 msgstr "Başlık ayrımı"
 
-#: .\models\topic.py:53
+#: dictionary/models/topic.py:53
 msgid ""
 "<p style='color: #ba2121'><b>Warning!</b> The topics that you enter will "
 "automatically get related disambiguations. For this reason you should be "
 "working on a main topic that you selected.<br> Removing a topic from will "
-"cause the removal of <b>ALL</b> disambiguations, so you should note down the"
-" topics that you don't want to be removed to add them later.</p>"
+"cause the removal of <b>ALL</b> disambiguations, so you should note down the "
+"topics that you don't want to be removed to add them later.</p>"
 msgstr ""
 "<p style='color: #ba2121'><b>Dikkat!</b> Girdiğiniz başlıklara otomatik "
 "olarak başlık ayrımı eklenecek. Bu nedenle seçtiğiniz bir ana başlık "
 "üzerinde çalışmanız önerilir.<br>Bir başlığı ayrımdan kaldırmak <b>tüm</b> "
-"ayrımların silinmesine neden olacaktır; bu nedenle silmek istediğiniz başlık"
-" haricindeki başlıkları tekrar toplu halde eklemek üzere not "
-"etmelisiniz.</p>"
+"ayrımların silinmesine neden olacaktır; bu nedenle silmek istediğiniz başlık "
+"haricindeki başlıkları tekrar toplu halde eklemek üzere not etmelisiniz.</p>"
 
-#: .\models\topic.py:60
+#: dictionary/models/topic.py:60
 msgid "Media links"
 msgstr "Medya bağlantıları"
 
-#: .\models\topic.py:64
+#: dictionary/models/topic.py:64
 msgid "Prohibited"
 msgstr "Yasaklı"
 
-#: .\models\topic.py:65
+#: dictionary/models/topic.py:65
 msgid ""
 "Check this if you want to hinder authors and novices from entering new "
 "entries to this topic."
@@ -1327,11 +1353,11 @@ msgstr ""
 "Yazar ve çaylakların bu başlığa entry girmesini engellemek istiyorsanız "
 "işaretleyin."
 
-#: .\models\topic.py:70
+#: dictionary/models/topic.py:70
 msgid "Censored"
 msgstr "Sansürlü"
 
-#: .\models\topic.py:72
+#: dictionary/models/topic.py:72
 msgid ""
 "Check this if you don't want this topic to appear in in-site searches and "
 "<strong>public</strong> topic lists."
@@ -1339,47 +1365,47 @@ msgstr ""
 "Bu başlığın sözlük içi aramalarda ve <strong>halka açık</strong> başlık "
 "listelerinde gözükmesini istemiyorsanız işaretleyin."
 
-#: .\models\topic.py:79
+#: dictionary/models/topic.py:79
 msgid "Pinned"
 msgstr "Sabitlenmiş"
 
-#: .\models\topic.py:81
+#: dictionary/models/topic.py:81
 msgid ""
 "Check this if you want this topic to be pinned in popular topics.<br>The "
 "topic needs to have at least one entry."
 msgstr ""
-"Bu başlığın gündemde en üstte görünmesini istiyorsanız "
-"işaretleyin.<br>Başlığa en az 1 entry girilmiş olmalı."
+"Bu başlığın gündemde en üstte görünmesini istiyorsanız işaretleyin."
+"<br>Başlığa en az 1 entry girilmiş olmalı."
 
-#: .\models\topic.py:88
+#: dictionary/models/topic.py:88
 msgid "Ask me anything"
 msgstr "Soru cevap etkinliği"
 
-#: .\models\topic.py:90
+#: dictionary/models/topic.py:90
 msgid ""
-"If checked, comments will be visible in this topic. Authorized users will be"
-" able to comment on entries."
+"If checked, comments will be visible in this topic. Authorized users will be "
+"able to comment on entries."
 msgstr ""
 "Bu başlığa ait entry'lere ait yorumlar görünür hale gelecek. Yetkili "
 "kullanıcılar entry'lere cevap yazabilecekler."
 
-#: .\models\topic.py:97
+#: dictionary/models/topic.py:97
 msgid "<i>Might not always correspond to first entry.</i>"
 msgstr "<i>Her zaman ilk entry ile örtüşmeyebilir.</i>"
 
-#: .\models\topic.py:104
+#: dictionary/models/topic.py:104
 msgid "Can move topics"
 msgstr "Başlık taşıyabilir"
 
-#: .\models\topic.py:105
+#: dictionary/models/topic.py:105
 msgid "topic"
 msgstr "başlık"
 
-#: .\models\topic.py:106
+#: dictionary/models/topic.py:106
 msgid "topics"
 msgstr "başlıklar"
 
-#: .\models\topic.py:139
+#: dictionary/models/topic.py:139
 #, python-format
 msgid ""
 "`%(title)s`, the topic you wished for, had an entry entered by "
@@ -1388,26 +1414,26 @@ msgstr ""
 "ukte verdiğiniz `%(title)s` başlığına `@%(username)s` tarafından entry "
 "girildi: (bkz: #%(entry)d)"
 
-#: .\models\topic.py:148
+#: dictionary/models/topic.py:148
 #, python-format
 msgid ""
 "`%(title)s`, the topic you wished for, is now populated with some entries."
 msgstr "ukte verdiğiniz `%(title)s` başlığına entry geldi."
 
-#: .\models\topic.py:180
+#: dictionary/models/topic.py:180
 msgid "Hint"
 msgstr "Not"
 
-#: .\models\topic.py:184
+#: dictionary/models/topic.py:184
 msgid "wish"
 msgstr "ukte"
 
-#: .\templates\404.html:4 .\templates\404.html:27
+#: dictionary/templates/404.html:4 dictionary/templates/404.html:27
 msgctxt "titleblock"
 msgid "page not found"
 msgstr "sayfa bulunamadı"
 
-#: .\templates\404.html:11
+#: dictionary/templates/404.html:11
 #, python-format
 msgid ""
 "you may return to <a href=\"%(home_url)s\">home page</a> or keep looking "
@@ -1417,35 +1443,35 @@ msgstr ""
 "href=\"%(search_url)s\">gelişmiş arama</a> özelliğini kullanarak bakınmaya "
 "devam edebilirsiniz."
 
-#: .\templates\404.html:18
+#: dictionary/templates/404.html:18
 msgid "entry not found"
 msgstr "entry bulunamadı"
 
-#: .\templates\404.html:20
+#: dictionary/templates/404.html:20
 #, python-format
 msgid ""
-"entry with identity <strong>(#%(entry_id)s)</strong> was not found. it might"
-" have been deleted and could be lurking in the limbo now, who knows? "
+"entry with identity <strong>(#%(entry_id)s)</strong> was not found. it might "
+"have been deleted and could be lurking in the limbo now, who knows? "
 "%(navigation_message)s"
 msgstr ""
 "<strong>(#%(entry_id)s)</strong> kimlikli entry bulunamadı. belki de "
 "silinmiştir ve şu an arafta dolaşıyordur, kim bilir? %(navigation_message)s"
 
-#: .\templates\404.html:29
+#: dictionary/templates/404.html:29
 #, python-format
 msgid "the page you requested was not found. %(navigation_message)s"
 msgstr "talep ettiğiniz sayfa bulunamadı. %(navigation_message)s"
 
-#: .\templates\500.html:19 .\templates\500.html:22
+#: dictionary/templates/500.html:19 dictionary/templates/500.html:22
 msgctxt "titleblock"
 msgid "server error"
 msgstr "sunucu hatası"
 
-#: .\templates\500.html:24
+#: dictionary/templates/500.html:24
 msgid ""
 "sorry, an unexpected error occurred while processing your request. this "
-"error has been recorded and will be revised by the system admins. meanwhile,"
-" you may return to home page as if nothing happened. if you are seeing this "
+"error has been recorded and will be revised by the system admins. meanwhile, "
+"you may return to home page as if nothing happened. if you are seeing this "
 "error continuously, please try again in a few moments."
 msgstr ""
 "üzgünüz, talebinizi işlerken beklenmedik bir hata oluştu. bu hata sistem "
@@ -1453,196 +1479,196 @@ msgstr ""
 "arada hiç bir şey olmamış gibi ana sayfaya dönebilirsiniz. eğer bu hatayı "
 "sürekli olarak alıyorsanız, lütfen birkaç dakika içinde tekrar deneyin."
 
-#: .\templates\admin\actions\suspend_user.html:5
-#: .\templates\admin\actions\topic_move.html:5
-#: .\templates\admin\actions\unsuspend_user.html:5
-#: .\templates\admin\novice_lookup.html:6
-#: .\templates\admin\sites\clear_cache.html:5
+#: dictionary/templates/admin/actions/suspend_user.html:5
+#: dictionary/templates/admin/actions/topic_move.html:5
+#: dictionary/templates/admin/actions/unsuspend_user.html:5
+#: dictionary/templates/admin/novice_lookup.html:6
+#: dictionary/templates/admin/sites/clear_cache.html:5
 msgid "Home"
 msgstr ""
 
-#: .\templates\admin\actions\suspend_user.html:9
-#: .\templates\admin\actions\unsuspend_user.html:9
+#: dictionary/templates/admin/actions/suspend_user.html:9
+#: dictionary/templates/admin/actions/unsuspend_user.html:9
 msgid "Authors"
 msgstr "Yazarlar"
 
-#: .\templates\admin\actions\suspend_user.html:17
+#: dictionary/templates/admin/actions/suspend_user.html:17
 msgid "You have selected these users to suspend:"
 msgstr "Şu yazarları askıya almayı seçtiniz:"
 
-#: .\templates\admin\actions\suspend_user.html:26
+#: dictionary/templates/admin/actions/suspend_user.html:26
 msgid "last entry date:"
 msgstr "son entry:"
 
-#: .\templates\admin\actions\suspend_user.html:33
+#: dictionary/templates/admin/actions/suspend_user.html:33
 msgid "Time interval for suspension:"
 msgstr "Askıya alınacak zaman zarfı:"
 
-#: .\templates\admin\actions\suspend_user.html:37
+#: dictionary/templates/admin/actions/suspend_user.html:37
 msgid "hour(s)"
 msgstr "saat"
 
-#: .\templates\admin\actions\suspend_user.html:38
+#: dictionary/templates/admin/actions/suspend_user.html:38
 msgid "day(s)"
 msgstr "gün"
 
-#: .\templates\admin\actions\suspend_user.html:39
+#: dictionary/templates/admin/actions/suspend_user.html:39
 msgid "week(s)"
 msgstr "hafta"
 
-#: .\templates\admin\actions\suspend_user.html:40
+#: dictionary/templates/admin/actions/suspend_user.html:40
 msgid "month(s)"
 msgstr "ay"
 
-#: .\templates\admin\actions\suspend_user.html:41
+#: dictionary/templates/admin/actions/suspend_user.html:41
 msgid "year(s)"
 msgstr "yıl"
 
-#: .\templates\admin\actions\suspend_user.html:46
+#: dictionary/templates/admin/actions/suspend_user.html:46
 msgid "Information messages to be shown for users:"
 msgstr "Kullanıcılara gönderilecek bilgi mesajı:"
 
-#: .\templates\admin\actions\suspend_user.html:49
+#: dictionary/templates/admin/actions/suspend_user.html:49
 msgid "(entry formatting options are available)"
 msgstr "(entry biçimlendirme seçenekleri kullanılabilir)"
 
-#: .\templates\admin\actions\suspend_user.html:52
+#: dictionary/templates/admin/actions/suspend_user.html:52
 msgid "Suspend"
 msgstr "Askıya al"
 
-#: .\templates\admin\actions\topic_move.html:9
+#: dictionary/templates/admin/actions/topic_move.html:9
 msgid "Topics"
 msgstr "Başlıklar"
 
-#: .\templates\admin\actions\topic_move.html:17
+#: dictionary/templates/admin/actions/topic_move.html:17
 msgid "You have selected these topics to move:"
 msgstr "Şu başlıkları taşımayı seçtiniz:"
 
-#: .\templates\admin\actions\topic_move.html:25
+#: dictionary/templates/admin/actions/topic_move.html:25
 msgid "entry count:"
 msgstr "entry sayısı:"
 
-#: .\templates\admin\actions\topic_move.html:34
+#: dictionary/templates/admin/actions/topic_move.html:34
 msgid "Target topic:"
 msgstr "Nereye taşınacak?"
 
-#: .\templates\admin\actions\topic_move.html:35
+#: dictionary/templates/admin/actions/topic_move.html:35
 msgid "Enter the exact title of the target topic"
 msgstr "Hedef başlığın bire bir ismini girin"
 
-#: .\templates\admin\actions\topic_move.html:39
+#: dictionary/templates/admin/actions/topic_move.html:39
 msgid "Give a date interval for entries (optional):"
 msgstr "Entry'ler için tarih aralığı belirt (opsiyonel):"
 
-#: .\templates\admin\actions\topic_move.html:41
-#: .\templates\dictionary\includes\forms\extended_search.html:28
+#: dictionary/templates/admin/actions/topic_move.html:41
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:28
 msgid "from date:"
 msgstr "şu tarihten:"
 
 #. Translators: Day should come first. It should be a parsable date.
-#: .\templates\admin\actions\topic_move.html:43
-#: .\templates\admin\actions\topic_move.html:48
+#: dictionary/templates/admin/actions/topic_move.html:43
+#: dictionary/templates/admin/actions/topic_move.html:48
 msgid "dd.mm.yyyy hh:mm"
 msgstr "gg.aa.yyyy ss:dd"
 
-#: .\templates\admin\actions\topic_move.html:47
-#: .\templates\dictionary\includes\forms\extended_search.html:32
+#: dictionary/templates/admin/actions/topic_move.html:47
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:32
 msgid "to date:"
 msgstr "bu tarihe kadar:"
 
-#: .\templates\admin\actions\topic_move.html:54
+#: dictionary/templates/admin/actions/topic_move.html:54
 msgid "Leave a reference to the new topic after moving"
 msgstr "Taşıdıktan sonra eski başlıklara bkz ver"
 
-#: .\templates\admin\actions\topic_move.html:59
+#: dictionary/templates/admin/actions/topic_move.html:59
 msgid "Move topic"
 msgstr "Başlık taşı"
 
-#: .\templates\admin\actions\unsuspend_user.html:17
+#: dictionary/templates/admin/actions/unsuspend_user.html:17
 msgid "You have selected these users to unsuspend:"
 msgstr "Şu yazarların askıya alınmasını durdurmayı seçtiniz:"
 
-#: .\templates\admin\actions\unsuspend_user.html:24
+#: dictionary/templates/admin/actions/unsuspend_user.html:24
 msgid "suspension expiration date:"
 msgstr "askıya alınma bitiş tarihi:"
 
-#: .\templates\admin\actions\unsuspend_user.html:29
-#: .\templates\admin\sites\clear_cache.html:32
-#: .\templates\dictionary\edit\comment_form.html:39
-#: .\templates\dictionary\list\activity_list.html:34
+#: dictionary/templates/admin/actions/unsuspend_user.html:29
+#: dictionary/templates/admin/sites/clear_cache.html:32
+#: dictionary/templates/dictionary/edit/comment_form.html:39
+#: dictionary/templates/dictionary/list/activity_list.html:34
 msgid "Are you sure?"
 msgstr "Emin misiniz?"
 
-#: .\templates\admin\actions\unsuspend_user.html:34
+#: dictionary/templates/admin/actions/unsuspend_user.html:34
 msgid "Yes, I'm sure"
 msgstr ""
 
-#: .\templates\admin\actions\unsuspend_user.html:35
+#: dictionary/templates/admin/actions/unsuspend_user.html:35
 msgid "No, take me back"
 msgstr ""
 
-#: .\templates\admin\app_list.html:8
+#: dictionary/templates/admin/app_list.html:8
 #, python-format
 msgid "Models in the %(name)s application"
 msgstr ""
 
-#: .\templates\admin\app_list.html:19
+#: dictionary/templates/admin/app_list.html:19
 msgid "Add"
 msgstr ""
 
-#: .\templates\admin\app_list.html:26
+#: dictionary/templates/admin/app_list.html:26
 msgid "View"
 msgstr ""
 
-#: .\templates\admin\app_list.html:28
+#: dictionary/templates/admin/app_list.html:28
 msgid "Change"
 msgstr ""
 
-#: .\templates\admin\app_list.html:39
+#: dictionary/templates/admin/app_list.html:39
 msgid "You don’t have permission to view or edit anything."
 msgstr ""
 
-#: .\templates\admin\app_list.html:44
+#: dictionary/templates/admin/app_list.html:44
 msgid "Other actions"
 msgstr "Diğer aksiyonlar"
 
-#: .\templates\admin\novice_lookup.html:27
+#: dictionary/templates/admin/novice_lookup.html:27
 msgid "Operation:"
 msgstr "İşlem:"
 
-#: .\templates\admin\novice_lookup.html:29
+#: dictionary/templates/admin/novice_lookup.html:29
 msgid "Select operation"
 msgstr "İşlem seçin"
 
-#: .\templates\admin\novice_lookup.html:30
+#: dictionary/templates/admin/novice_lookup.html:30
 msgid "Approve authorship"
 msgstr "Yazarlık başvurusunu kabul et"
 
-#: .\templates\admin\novice_lookup.html:31
+#: dictionary/templates/admin/novice_lookup.html:31
 msgid "Reject authorship and purge all entries"
 msgstr "Yazarlık başvurusunu reddet ve tüm entrylerini sil"
 
-#: .\templates\admin\novice_lookup.html:34
+#: dictionary/templates/admin/novice_lookup.html:34
 msgid "Apply and go back"
 msgstr "İşlemi uygula ve listeye dön"
 
-#: .\templates\admin\novices.html:8
+#: dictionary/templates/admin/novices.html:8
 msgid "Username"
 msgstr "Kullanıcı adı"
 
-#: .\templates\admin\novices.html:13
+#: dictionary/templates/admin/novices.html:13
 msgid "E-mail"
 msgstr "E-posta adresi"
 
-#: .\templates\admin\novices.html:23
+#: dictionary/templates/admin/novices.html:23
 msgid "Registration date"
 msgstr "Kayıt olma tarihi"
 
-#: .\templates\admin\novices.html:41
+#: dictionary/templates/admin/novices.html:41
 msgid "current number of users in novice list:"
 msgstr "çaylak listesindeki mevcut kullanıcı sayısı:"
 
-#: .\templates\admin\sites\clear_cache.html:16
+#: dictionary/templates/admin/sites/clear_cache.html:16
 msgid ""
 "You can use this utility to clear expired/invalid objects from cache. You "
 "may specify a cache key to delete a specific object. If you leave the cache "
@@ -1656,368 +1682,375 @@ msgstr ""
 "önbellek temizlenecek. Eğer site yüksek trafiğe sahip ise tüm önbelleği bir "
 "anda temizlemek istek sayısını yükseltecektir."
 
-#: .\templates\admin\sites\clear_cache.html:28
+#: dictionary/templates/admin/sites/clear_cache.html:28
 msgid "Cache key"
 msgstr "Önbellek anahtarı"
 
-#: .\templates\dictionary\announcements\base.html:4
+#: dictionary/templates/dictionary/announcements/base.html:4
 msgctxt "titleblock"
 msgid "announcements"
 msgstr "duyurular"
 
-#: .\templates\dictionary\announcements\base.html:8
-#: .\templates\dictionary\list\activity_list.html:17
+#: dictionary/templates/dictionary/announcements/base.html:8
+#: dictionary/templates/dictionary/list/activity_list.html:17
 msgid "site announcements"
 msgstr "sözlük duyuruları"
 
-#: .\templates\dictionary\announcements\base.html:19
+#: dictionary/templates/dictionary/announcements/base.html:19
 msgid "there are no announcements yet."
 msgstr "henüz bir duyuru yapılmamış."
 
-#: .\templates\dictionary\announcements\base.html:27
+#: dictionary/templates/dictionary/announcements/base.html:27
 msgid "announcement history"
 msgstr "duyuru geçmişi"
 
-#: .\templates\dictionary\announcements\month.html:4
-#: .\templates\dictionary\announcements\month.html:7
+#: dictionary/templates/dictionary/announcements/month.html:4
+#: dictionary/templates/dictionary/announcements/month.html:7
 #, python-format
 msgid "%(date_month)s announcements"
 msgstr "%(date_month)s duyuruları"
 
-#: .\templates\dictionary\base.html:28
+#: dictionary/templates/dictionary/base.html:28
 msgid "the device is too small!"
 msgstr "cihaz çok küçük!"
 
-#: .\templates\dictionary\base.html:32
+#: dictionary/templates/dictionary/base.html:32
 msgid "Skip to main content"
 msgstr "Ana içeriğe geç"
 
-#: .\templates\dictionary\base.html:36
+#: dictionary/templates/dictionary/base.html:36
 msgid "Dictionary home page"
 msgstr "Sözlük ana sayfası"
 
-#: .\templates\dictionary\base.html:42
+#: dictionary/templates/dictionary/base.html:42
 msgid "topic, #entry or @author"
 msgstr "başlık, #entry ya da @yazar"
 
-#: .\templates\dictionary\base.html:42
+#: dictionary/templates/dictionary/base.html:42
 msgid "Search term"
 msgstr "Arama terimi"
 
-#: .\templates\dictionary\base.html:46
+#: dictionary/templates/dictionary/base.html:46
 msgid "Open advanced search menu"
 msgstr "Gelişmiş arama menüsünü aç"
 
-#: .\templates\dictionary\base.html:49
-#: .\templates\dictionary\list\entry_list.html:125
+#: dictionary/templates/dictionary/base.html:49
+#: dictionary/templates/dictionary/list/entry_list.html:125
 msgid "Search"
 msgstr "Ara"
 
-#: .\templates\dictionary\base.html:59
-#: .\templates\dictionary\list\topic_list.html:72
+#: dictionary/templates/dictionary/base.html:59
+#: dictionary/templates/dictionary/list/topic_list.html:72
 msgid "search fabulously"
 msgstr "çok güzel ara"
 
-#: .\templates\dictionary\base.html:61
+#: dictionary/templates/dictionary/base.html:61
 msgid "nevermind"
 msgstr "boşver"
 
-#: .\templates\dictionary\base.html:75 .\templates\dictionary\base.html:364
+#: dictionary/templates/dictionary/base.html:75
+#: dictionary/templates/dictionary/base.html:365
 msgid "following topics"
 msgstr "takip ettiğim başlıklar"
 
-#: .\templates\dictionary\base.html:75 .\templates\dictionary\base.html:86
-#: .\templates\dictionary\conversation\inbox_base.html:10
+#: dictionary/templates/dictionary/base.html:75
+#: dictionary/templates/dictionary/base.html:86
+#: dictionary/templates/dictionary/conversation/inbox_base.html:10
 msgid "unread"
 msgstr "okunmamış"
 
-#: .\templates\dictionary\base.html:82
-#: .\templates\dictionary\list\entry_list.html:36
-#: .\templatetags\functions.py:81
+#: dictionary/templates/dictionary/base.html:82
+#: dictionary/templates/dictionary/list/entry_list.html:36
+#: dictionary/templatetags/functions.py:81
 msgid "activity"
 msgstr "olay"
 
-#: .\templates\dictionary\base.html:86 .\templates\dictionary\base.html:93
-#: .\templates\dictionary\base.html:373
+#: dictionary/templates/dictionary/base.html:86
+#: dictionary/templates/dictionary/base.html:93
+#: dictionary/templates/dictionary/base.html:374
 msgid "messages"
 msgstr "mesajlar"
 
-#: .\templates\dictionary\base.html:96 .\templates\dictionary\base.html:153
-#: .\templates\dictionary\base.html:176
+#: dictionary/templates/dictionary/base.html:96
+#: dictionary/templates/dictionary/base.html:153
+#: dictionary/templates/dictionary/base.html:176
 msgid "Account Menu"
 msgstr "Hesap Menüsü"
 
-#: .\templates\dictionary\base.html:101
+#: dictionary/templates/dictionary/base.html:101
 msgid "me"
 msgstr "ben"
 
-#: .\templates\dictionary\base.html:113 .\templates\dictionary\base.html:389
+#: dictionary/templates/dictionary/base.html:113
+#: dictionary/templates/dictionary/base.html:390
 msgid "my profile"
 msgstr "profilim"
 
-#: .\templates\dictionary\base.html:119 .\templates\dictionary\base.html:396
+#: dictionary/templates/dictionary/base.html:119
+#: dictionary/templates/dictionary/base.html:397
 msgid "settings"
 msgstr "ayarlar"
 
-#: .\templates\dictionary\base.html:132 .\templates\dictionary\base.html:222
+#: dictionary/templates/dictionary/base.html:132
+#: dictionary/templates/dictionary/base.html:222
 msgid "my images"
 msgstr "görsellerim"
 
-#: .\templates\dictionary\base.html:139 .\templates\dictionary\base.html:229
+#: dictionary/templates/dictionary/base.html:139
+#: dictionary/templates/dictionary/base.html:229
 msgid "following/blocked"
 msgstr "takip/engellenmiş"
 
-#: .\templates\dictionary\base.html:146 .\templates\dictionary\base.html:236
+#: dictionary/templates/dictionary/base.html:146
+#: dictionary/templates/dictionary/base.html:236
 msgid "log out"
 msgstr "terk"
 
-#: .\templates\dictionary\base.html:155 .\templates\dictionary\base.html:242
-#: .\templates\dictionary\registration\email\resend_form.html:7
-#: .\templates\dictionary\registration\login.html:49
-#: .\templates\dictionary\registration\password_reset\form.html:5
+#: dictionary/templates/dictionary/base.html:155
+#: dictionary/templates/dictionary/base.html:242
+#: dictionary/templates/dictionary/registration/email/resend_form.html:7
+#: dictionary/templates/dictionary/registration/login.html:49
+#: dictionary/templates/dictionary/registration/password_reset/form.html:5
 msgid "log in"
 msgstr "giriş yap"
 
-#: .\templates\dictionary\base.html:156 .\templates\dictionary\base.html:245
-#: .\templates\dictionary\registration\signup.html:84
+#: dictionary/templates/dictionary/base.html:156
+#: dictionary/templates/dictionary/base.html:245
+#: dictionary/templates/dictionary/registration/signup.html:84
 msgid "register"
 msgstr "kayıt ol"
 
-#: .\templates\dictionary\base.html:164
+#: dictionary/templates/dictionary/base.html:164
 msgid "Category menu"
 msgstr "Kategori menüsü"
 
-#: .\templates\dictionary\base.html:268
+#: dictionary/templates/dictionary/base.html:268
 msgid "Other Channels"
 msgstr "Diğer Kanallar"
 
-#: .\templates\dictionary\base.html:282
+#: dictionary/templates/dictionary/base.html:283
 msgid "all channels"
 msgstr "tüm kanallar"
 
-#: .\templates\dictionary\base.html:296
+#: dictionary/templates/dictionary/base.html:297
 msgid "Topic list"
 msgstr "Başlık listesi"
 
-#: .\templates\dictionary\base.html:321
+#: dictionary/templates/dictionary/base.html:322
 msgid "Toggle dark mode"
 msgstr "Tema geçişi yap"
 
-#: .\templates\dictionary\base.html:326
+#: dictionary/templates/dictionary/base.html:327
 msgid "contact"
 msgstr "iletişim"
 
-#: .\templates\dictionary\base.html:382
-#: .\templates\dictionary\edit\entry_create.html:5
-#: .\templates\dictionary\edit\entry_create.html:11
-#| msgid "create a new backup file"
+#: dictionary/templates/dictionary/base.html:383
+#: dictionary/templates/dictionary/edit/entry_create.html:5
+#: dictionary/templates/dictionary/edit/entry_create.html:11
 msgid "create new entry"
 msgstr "yeni entry oluştur"
 
-#: .\templates\dictionary\conversation\conversation.html:4
+#: dictionary/templates/dictionary/conversation/conversation.html:4
 #, python-format
 msgctxt "titleblock"
 msgid "@%(username)s - conversation"
 msgstr "@%(username)s ile sohbet muhabbet"
 
-#: .\templates\dictionary\conversation\conversation.html:7
+#: dictionary/templates/dictionary/conversation/conversation.html:7
 #, python-format
-msgid "<strong>conversation with <a href=\"%(url)s\">@%(username)s</a></strong>"
+msgid ""
+"<strong>conversation with <a href=\"%(url)s\">@%(username)s</a></strong>"
 msgstr ""
 "<strong><a href=\"%(url)s\">@%(username)s</a> ile sohbet muhabbet</strong>"
 
-#: .\templates\dictionary\conversation\conversation.html:15
-#: .\templates\dictionary\conversation\conversation_archive.html:16
+#: dictionary/templates/dictionary/conversation/conversation.html:15
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:16
 msgid "enough lingering here"
 msgstr "çok oyalandım burda"
 
-#: .\templates\dictionary\conversation\conversation.html:19
-#: .\templates\dictionary\conversation\conversation_archive.html:20
+#: dictionary/templates/dictionary/conversation/conversation.html:19
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:20
 msgid "back to messages"
 msgstr "mesajlara dön"
 
-#: .\templates\dictionary\conversation\conversation.html:21
+#: dictionary/templates/dictionary/conversation/conversation.html:21
 msgid "remove block,block this guy"
 msgstr "engeli kaldır,bu herifi engelle"
 
-#: .\templates\dictionary\conversation\conversation.html:28
-#: .\templates\dictionary\conversation\conversation.html:30
-#: .\templates\dictionary\conversation\conversation_archive.html:29
-#: .\templates\dictionary\conversation\inbox.html:31
-#: .\templates\dictionary\conversation\inbox_archive.html:25
-#: .\templates\dictionary\conversation\inbox_base.html:40
-#: .\templates\dictionary\edit\comment_form.html:39
-#: .\templates\dictionary\edit\entry_update.html:40
-#: .\templates\dictionary\list\image_list.html:18
+#: dictionary/templates/dictionary/conversation/conversation.html:28
+#: dictionary/templates/dictionary/conversation/conversation.html:30
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:29
+#: dictionary/templates/dictionary/conversation/inbox.html:31
+#: dictionary/templates/dictionary/conversation/inbox_archive.html:25
+#: dictionary/templates/dictionary/conversation/inbox_base.html:40
+#: dictionary/templates/dictionary/edit/comment_form.html:39
+#: dictionary/templates/dictionary/edit/entry_update.html:40
+#: dictionary/templates/dictionary/list/image_list.html:18
 msgid "delete"
 msgstr "sil"
 
-#: .\templates\dictionary\conversation\conversation.html:36
-#: .\templates\dictionary\conversation\conversation.html:38
-#: .\templates\dictionary\conversation\inbox.html:33
-#: .\templates\dictionary\conversation\inbox_base.html:47
+#: dictionary/templates/dictionary/conversation/conversation.html:36
+#: dictionary/templates/dictionary/conversation/conversation.html:38
+#: dictionary/templates/dictionary/conversation/inbox.html:33
+#: dictionary/templates/dictionary/conversation/inbox_base.html:47
 msgctxt "verb"
 msgid "archive"
 msgstr "arşivle"
 
-#: .\templates\dictionary\conversation\conversation.html:45
-#: .\templates\dictionary\conversation\conversation_archive.html:37
-#: .\templates\dictionary\includes\left_frame.html:75
+#: dictionary/templates/dictionary/conversation/conversation.html:45
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:37
+#: dictionary/templates/dictionary/includes/left_frame.html:75
 msgid "make it rain"
 msgstr "akıt gelsin"
 
-#: .\templates\dictionary\conversation\conversation.html:45
-#: .\templates\dictionary\conversation\conversation_archive.html:37
+#: dictionary/templates/dictionary/conversation/conversation.html:45
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:37
 msgid "only the last 10 messages are shown. click here to show all messages."
 msgstr "sadece son 10 mesaj gösteriliyor. tüm mesajları görmek için tıklayın."
 
-#: .\templates\dictionary\conversation\conversation.html:57
+#: dictionary/templates/dictionary/conversation/conversation.html:57
 #, python-format
 msgid "seen, %(read_at)s"
 msgstr "görüldü, %(read_at)s"
 
-#: .\templates\dictionary\conversation\conversation.html:64
+#: dictionary/templates/dictionary/conversation/conversation.html:64
 msgid "sent"
 msgstr "gönderildi"
 
-#: .\templates\dictionary\conversation\conversation.html:81
+#: dictionary/templates/dictionary/conversation/conversation.html:81
 msgid "no messages left in this conversation 🤷"
 msgstr "hiç mesaj kalmamış burda 🤷"
 
-#: .\templates\dictionary\conversation\conversation.html:87
+#: dictionary/templates/dictionary/conversation/conversation.html:87
 msgid "you are not allowed to send messages to this user."
 msgstr "bu kullanıcıya mesaj gönderemezsiniz."
 
-#: .\templates\dictionary\conversation\conversation.html:89
+#: dictionary/templates/dictionary/conversation/conversation.html:89
 msgid "write message"
 msgstr "mesaj yaz"
 
-#: .\templates\dictionary\conversation\conversation.html:101
-#: .\templates\dictionary\conversation\inbox_base.html:86
-#: .\templates\dictionary\includes\send_message_modal.html:20
-#: .\templates\dictionary\registration\password_reset\form.html:20
-#: .\templates\dictionary\reporting\general.html:40
+#: dictionary/templates/dictionary/conversation/conversation.html:101
+#: dictionary/templates/dictionary/conversation/inbox_base.html:86
+#: dictionary/templates/dictionary/includes/send_message_modal.html:20
+#: dictionary/templates/dictionary/registration/password_reset/form.html:20
+#: dictionary/templates/dictionary/reporting/general.html:40
 msgid "send"
 msgstr "gönder"
 
-#: .\templates\dictionary\conversation\conversation_archive.html:5
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:5
 #, python-format
 msgctxt "titleblock"
 msgid "@%(username)s - conversation archive"
 msgstr "@%(username)s ile arşivlenmiş sohbet"
 
-#: .\templates\dictionary\conversation\conversation_archive.html:9
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:9
 #, python-format
 msgid "<strong>archived conversation with @%(username)s</strong>"
 msgstr "<strong>@%(username)s ile arşivlenmiş sohbet</strong>"
 
 #. Translators: Archived conversation timestamp
-#: .\templates\dictionary\conversation\conversation_archive.html:44
+#: dictionary/templates/dictionary/conversation/conversation_archive.html:44
 msgid "M j, Y g:i a"
 msgstr "d.m.Y H:i"
 
-#: .\templates\dictionary\conversation\inbox.html:4
-#: .\templates\dictionary\conversation\inbox_base.html:7
+#: dictionary/templates/dictionary/conversation/inbox.html:4
+#: dictionary/templates/dictionary/conversation/inbox_base.html:7
 msgctxt "titleblock"
 msgid "messages"
 msgstr "mesajlar"
 
-#: .\templates\dictionary\conversation\inbox.html:8
-#: .\templates\dictionary\conversation\inbox_base.html:65
-#: .\templates\dictionary\list\entry_list.html:32
+#: dictionary/templates/dictionary/conversation/inbox.html:8
+#: dictionary/templates/dictionary/conversation/inbox_base.html:65
+#: dictionary/templates/dictionary/list/entry_list.html:32
 msgid "search keywords"
 msgstr "arama terimi"
 
-#: .\templates\dictionary\conversation\inbox.html:23
-#: .\templates\dictionary\conversation\inbox_archive.html:17
+#: dictionary/templates/dictionary/conversation/inbox.html:23
+#: dictionary/templates/dictionary/conversation/inbox_archive.html:17
 msgid "select"
 msgstr "seç"
 
-#: .\templates\dictionary\conversation\inbox.html:26
+#: dictionary/templates/dictionary/conversation/inbox.html:26
 msgid "<em>no messages</em>"
 msgstr "<em>mesaj yok</em>"
 
-#: .\templates\dictionary\conversation\inbox.html:45
-#: .\templates\dictionary\list\image_list.html:25
+#: dictionary/templates/dictionary/conversation/inbox.html:45
+#: dictionary/templates/dictionary/list/image_list.html:25
 msgid "sorry, but couldn't find anything 🤷"
 msgstr "pek bir şey bulamadım açıkçası 🤷"
 
-#: .\templates\dictionary\conversation\inbox_archive.html:4
+#: dictionary/templates/dictionary/conversation/inbox_archive.html:4
 msgctxt "titleblock"
 msgid "conversation archive"
 msgstr "sohbet arşivi"
 
-#: .\templates\dictionary\conversation\inbox_archive.html:34
+#: dictionary/templates/dictionary/conversation/inbox_archive.html:34
 msgid "your archive is empty 🤔"
 msgstr "arşiviniz bomboş 🤔"
 
-#: .\templates\dictionary\conversation\inbox_base.html:22
+#: dictionary/templates/dictionary/conversation/inbox_base.html:22
 msgid "inbox"
 msgstr "gelen kutusu"
 
-#: .\templates\dictionary\conversation\inbox_base.html:25
+#: dictionary/templates/dictionary/conversation/inbox_base.html:25
 msgid "archive"
 msgstr "arşiv"
 
-#: .\templates\dictionary\conversation\inbox_base.html:55
+#: dictionary/templates/dictionary/conversation/inbox_base.html:55
 msgid "invert"
 msgstr "evir"
 
-#: .\templates\dictionary\conversation\inbox_base.html:63
+#: dictionary/templates/dictionary/conversation/inbox_base.html:63
 msgid "search in messages"
 msgstr "mesajlarda ara"
 
-#: .\templates\dictionary\conversation\inbox_base.html:67
-#: .\templates\dictionary\list\people_list.html:23
+#: dictionary/templates/dictionary/conversation/inbox_base.html:67
+#: dictionary/templates/dictionary/list/people_list.html:23
 msgid "go"
 msgstr "ara"
 
-#: .\templates\dictionary\conversation\inbox_base.html:73
+#: dictionary/templates/dictionary/conversation/inbox_base.html:73
 msgid "new message"
 msgstr "yeni mesaj"
 
-#: .\templates\dictionary\edit\comment_form.html:5
-#: .\templates\dictionary\edit\comment_form.html:10
+#: dictionary/templates/dictionary/edit/comment_form.html:5
+#: dictionary/templates/dictionary/edit/comment_form.html:10
 msgid " - updating comment, - commenting"
 msgstr "yorumu düzeltiliyor,yorumlanıyor"
 
-#: .\templates\dictionary\edit\comment_form.html:13
+#: dictionary/templates/dictionary/edit/comment_form.html:13
 #, python-format
 msgid ""
 "<strong>user with nickname <a href=\"%(url)s\">%(name)s</a> wrote:</strong>"
 msgstr ""
-"<strong><a href=\"%(url)s\">%(name)s</a> takma isimli kullanıcı demiş "
-"ki:</strong>"
+"<strong><a href=\"%(url)s\">%(name)s</a> takma isimli kullanıcı demiş ki:</"
+"strong>"
 
-#: .\templates\dictionary\edit\comment_form.html:33
+#: dictionary/templates/dictionary/edit/comment_form.html:33
 #, python-format
 msgid "comment on this entry written in %(title)s..."
 msgstr "%(title)s başlığına yapılan bu entry'i yorumlayın..."
 
-#: .\templates\dictionary\edit\comment_form.html:34
+#: dictionary/templates/dictionary/edit/comment_form.html:34
 msgid "Comment content area"
 msgstr "Yorum içerik alanı"
 
-#: .\templates\dictionary\edit\comment_form.html:41
+#: dictionary/templates/dictionary/edit/comment_form.html:41
 msgid "update comment,comment"
 msgstr "yorumu düzelt,yorumla"
 
-#: .\templates\dictionary\edit\entry_create.html:8
-#| msgid "express your thoughts on %(title)s.."
+#: dictionary/templates/dictionary/edit/entry_create.html:8
 msgid "express your thoughts..."
 msgstr "düşüncelerinizi ifade edin..."
 
-#: .\templates\dictionary\edit\entry_create.html:9
-#: .\templates\dictionary\edit\entry_update.html:32
-#: .\templates\dictionary\list\entry_list.html:275
+#: dictionary/templates/dictionary/edit/entry_create.html:9
+#: dictionary/templates/dictionary/edit/entry_update.html:32
+#: dictionary/templates/dictionary/list/entry_list.html:275
 msgid "Entry content area"
 msgstr "Entry içerik alanı"
 
-#: .\templates\dictionary\edit\entry_create.html:19
+#: dictionary/templates/dictionary/edit/entry_create.html:19
 #, python-format
-#| msgid ""
-#| "<span>you have <a %(drafts_attr)s href=\"%(drafts_url)s\">drafted</a> "
-#| "entries belonging to <strong>%(title)s</strong>:</span>"
 msgid ""
 "you have <a %(drafts_attr)s href=\"%(drafts_url)s\">recent entries</a> that "
 "are awaiting to be published:"
@@ -2025,348 +2058,337 @@ msgstr ""
 "henüz <a %(drafts_attr)s href=\"%(drafts_url)s\">yayımlanmayı bekleyen</a> "
 "körpe entry'leriniz var:"
 
-#: .\templates\dictionary\edit\entry_create.html:42
-#| msgid "Title"
+#: dictionary/templates/dictionary/edit/entry_create.html:42
 msgid "title"
 msgstr "başlık"
 
-#: .\templates\dictionary\edit\entry_create.html:49
-#: .\templates\dictionary\list\entry_list.html:279
+#: dictionary/templates/dictionary/edit/entry_create.html:49
+#: dictionary/templates/dictionary/list/entry_list.html:279
 msgid "keep this as draft"
 msgstr "kenarda dursun şimdilik"
 
-#: .\templates\dictionary\edit\entry_create.html:51
-#: .\templates\dictionary\edit\entry_update.html:42
-#: .\templates\dictionary\list\entry_list.html:281
+#: dictionary/templates/dictionary/edit/entry_create.html:51
+#: dictionary/templates/dictionary/edit/entry_update.html:42
+#: dictionary/templates/dictionary/list/entry_list.html:281
 msgid "publish"
 msgstr "yayınla"
 
-#: .\templates\dictionary\edit\entry_update.html:4
+#: dictionary/templates/dictionary/edit/entry_update.html:4
 msgctxt "titleblock"
 msgid "edit"
 msgstr "düzelt"
 
-#: .\templates\dictionary\edit\entry_update.html:14
+#: dictionary/templates/dictionary/edit/entry_update.html:14
 msgid "preview"
 msgstr "önizleme"
 
-#: .\templates\dictionary\edit\entry_update.html:30
-#: .\templates\dictionary\list\entry_list.html:273
+#: dictionary/templates/dictionary/edit/entry_update.html:30
+#: dictionary/templates/dictionary/list/entry_list.html:273
 #, python-format
 msgid "express your thoughts on %(title)s.."
 msgstr "%(title)s başlığı hakkında bilgi verin.."
 
-#: .\templates\dictionary\edit\entry_update.html:38
+#: dictionary/templates/dictionary/edit/entry_update.html:38
 msgid "save changes"
 msgstr "değişiklikleri kaydet"
 
-#: .\templates\dictionary\includes\block_user_modal.html:6
+#: dictionary/templates/dictionary/includes/block_user_modal.html:6
 msgid "block the person"
 msgstr "kişiyi engelle"
 
-#: .\templates\dictionary\includes\block_user_modal.html:7
-#: .\templates\dictionary\includes\editor_buttons.html:21
-#: .\templates\dictionary\includes\send_message_modal.html:7
+#: dictionary/templates/dictionary/includes/block_user_modal.html:7
+#: dictionary/templates/dictionary/includes/editor_buttons.html:21
+#: dictionary/templates/dictionary/includes/send_message_modal.html:7
 msgid "Close"
 msgstr "Kapat"
 
-#: .\templates\dictionary\includes\block_user_modal.html:13
+#: dictionary/templates/dictionary/includes/block_user_modal.html:13
 msgid ""
 "are you sure about blocking this user? you will be devoid from some things:"
 msgstr ""
 "bu kullanıcıyı gerçekten engellemek istiyor musunuz? şunlardan mahrum "
 "olacaksınız"
 
-#: .\templates\dictionary\includes\block_user_modal.html:16
+#: dictionary/templates/dictionary/includes/block_user_modal.html:16
 msgid "you won't be able to send messages to this user (vice versa)"
 msgstr "kişiye mesaj gönderemeyeceksiniz (vice versa)"
 
-#: .\templates\dictionary\includes\block_user_modal.html:17
+#: dictionary/templates/dictionary/includes/block_user_modal.html:17
 msgid "you won't be able to visit the profile of this user (vice versa)"
 msgstr "kişinin profiline bakamayacaksınız (vice versa)"
 
-#: .\templates\dictionary\includes\block_user_modal.html:18
+#: dictionary/templates/dictionary/includes/block_user_modal.html:18
 msgid "topics created by this user won't be visible in your today list"
 msgstr "kişinin bugün'e giren başlıklarını göremeyeceksiniz"
 
-#: .\templates\dictionary\includes\block_user_modal.html:19
+#: dictionary/templates/dictionary/includes/block_user_modal.html:19
 msgid "you won't be able to see the entries of this user"
 msgstr "kişinin entry'lerini göremeyeceksiniz"
 
-#: .\templates\dictionary\includes\block_user_modal.html:24
-#: .\templates\dictionary\includes\editor_buttons.html:31
+#: dictionary/templates/dictionary/includes/block_user_modal.html:24
+#: dictionary/templates/dictionary/includes/editor_buttons.html:31
 msgid "oops, sorry"
 msgstr "ay pardon"
 
-#: .\templates\dictionary\includes\block_user_modal.html:25
+#: dictionary/templates/dictionary/includes/block_user_modal.html:25
 msgid "get it over with"
 msgstr "engelle gitsin"
 
 #. Translators: Editor button (see)
-#: .\templates\dictionary\includes\editor_buttons.html:5
+#: dictionary/templates/dictionary/includes/editor_buttons.html:5
 msgid "also see this.."
 msgstr "bakınız.."
 
-#: .\templates\dictionary\includes\editor_buttons.html:5
+#: dictionary/templates/dictionary/includes/editor_buttons.html:5
 msgid "(see: thingy)"
 msgstr "(bkz: hede)"
 
-#: .\templates\dictionary\includes\editor_buttons.html:6
+#: dictionary/templates/dictionary/includes/editor_buttons.html:6
 msgid "link to entry, author or topic"
 msgstr "başlık, entry ya da yazara link"
 
-#: .\templates\dictionary\includes\editor_buttons.html:6
+#: dictionary/templates/dictionary/includes/editor_buttons.html:6
 msgid "thingy"
 msgstr "hede"
 
-#: .\templates\dictionary\includes\editor_buttons.html:7
+#: dictionary/templates/dictionary/includes/editor_buttons.html:7
 msgid "see this (ironic)"
 msgstr "ironik bakınız"
 
-#: .\templates\dictionary\includes\editor_buttons.html:8
+#: dictionary/templates/dictionary/includes/editor_buttons.html:8
 msgid "spoil something"
 msgstr "sürprizbozan diye de bilinir"
 
-#: .\templates\dictionary\includes\editor_buttons.html:8
+#: dictionary/templates/dictionary/includes/editor_buttons.html:8
 msgid "--spoiler--"
 msgstr ""
 
-#: .\templates\dictionary\includes\editor_buttons.html:9
+#: dictionary/templates/dictionary/includes/editor_buttons.html:9
 msgid "link to external sites"
 msgstr "dış dünyaya bağlantı"
 
-#: .\templates\dictionary\includes\editor_buttons.html:12
+#: dictionary/templates/dictionary/includes/editor_buttons.html:12
 msgid "add some nice images"
 msgstr "güzelinden bir görsel ekle"
 
-#: .\templates\dictionary\includes\editor_buttons.html:12
-#: .\templates\dictionary\list\image_list.html:14
-#: .\templates\dictionary\list\image_list.html:17 .\templatetags\filters.py:51
+#: dictionary/templates/dictionary/includes/editor_buttons.html:12
+#: dictionary/templates/dictionary/list/image_list.html:14
+#: dictionary/templates/dictionary/list/image_list.html:17
+#: dictionary/templatetags/filters.py:54
 msgctxt "editor"
 msgid "image"
 msgstr "görsel"
 
-#: .\templates\dictionary\includes\editor_buttons.html:32
+#: dictionary/templates/dictionary/includes/editor_buttons.html:32
 msgid "done"
 msgstr "ekle"
 
-#: .\templates\dictionary\includes\entry.html:14
-#: .\templates\dictionary\includes\entry.html:91
+#: dictionary/templates/dictionary/includes/entry.html:14
+#: dictionary/templates/dictionary/includes/entry.html:91
 msgid "anonymous"
 msgstr "anonim"
 
-#: .\templates\dictionary\includes\entry.html:17
-#: .\templates\dictionary\includes\entry.html:94
+#: dictionary/templates/dictionary/includes/entry.html:17
+#: dictionary/templates/dictionary/includes/entry.html:94
 msgid "entry actions"
 msgstr "entry aksiyonları"
 
-#: .\templates\dictionary\includes\entry.html:41
+#: dictionary/templates/dictionary/includes/entry.html:41
 msgid "share to facebook"
 msgstr "facebook'ta paylaş"
 
-#: .\templates\dictionary\includes\entry.html:46
+#: dictionary/templates/dictionary/includes/entry.html:46
 msgid "tweet this in twitter"
 msgstr "twitter'da tweetle"
 
-#: .\templates\dictionary\includes\entry.html:55
-#: .\templates\dictionary\includes\entry.html:111
+#: dictionary/templates/dictionary/includes/entry.html:55
+#: dictionary/templates/dictionary/includes/entry.html:111
 msgid "nice!"
 msgstr "şükela!"
 
-#: .\templates\dictionary\includes\entry.html:61
-#: .\templates\dictionary\includes\entry.html:117
+#: dictionary/templates/dictionary/includes/entry.html:61
+#: dictionary/templates/dictionary/includes/entry.html:117
 msgid "awful"
 msgstr "çok kötü"
 
-#: .\templates\dictionary\includes\entry.html:71
+#: dictionary/templates/dictionary/includes/entry.html:71
 msgid "remove from favorites"
 msgstr "favorilerden çıkar"
 
-#: .\templates\dictionary\includes\entry.html:71
+#: dictionary/templates/dictionary/includes/entry.html:71
 msgid "add to favorites"
 msgstr "favorilere ekle"
 
-#: .\templates\dictionary\includes\entry.html:77
+#: dictionary/templates/dictionary/includes/entry.html:77
 msgid "Favorites"
 msgstr "Favoriler"
 
-#: .\templates\dictionary\includes\entry.html:127
+#: dictionary/templates/dictionary/includes/entry.html:127
 #, python-format
 msgid "replied by <a href=\"%(name_url)s\">%(name)s</a>."
 msgstr "<a href=\"%(name_url)s\">%(name)s</a> tarafından yanıtlandı."
 
-#: .\templates\dictionary\includes\entry.html:130
-#: .\templates\dictionary\includes\profile_entry_pinned.html:19
+#: dictionary/templates/dictionary/includes/entry.html:130
+#: dictionary/templates/dictionary/includes/profile_entry_pinned.html:19
 msgid "edit"
 msgstr "düzelt"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:4
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:4
 msgid "keywords"
 msgstr "kelimeler"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:15
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:15
 msgid "goodies"
 msgstr "güzelinden olsun"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:21
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:21
 msgid "only the topics which i have favorite entries in"
 msgstr "sadece entry favorilediğim başlıklarda ara"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:38
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:38
 msgid "ordering"
 msgstr "sıralama şekli"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:40
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:40
 msgid "alphabetical"
 msgstr "alfabetik"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:41
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:41
 msgid "recent"
 msgstr "yeniden eskiye"
 
-#: .\templates\dictionary\includes\forms\extended_search.html:42
+#: dictionary/templates/dictionary/includes/forms/extended_search.html:42
 msgid "number of entries"
 msgstr "dolu dolu"
 
-#: .\templates\dictionary\includes\forms\wish.html:7
+#: dictionary/templates/dictionary/includes/forms/wish.html:7
 #, python-format
 msgid ""
 "the user <a href=\"%(url)s\">%(username)s</a> wants this topic to be "
 "populated. it was wished %(naturaltime)s."
-msgstr "%(naturaltime)s verilen <a href=\"%(url)s\">%(username)s</a> uktesi bu."
+msgstr ""
+"%(naturaltime)s verilen <a href=\"%(url)s\">%(username)s</a> uktesi bu."
 
-#: .\templates\dictionary\includes\forms\wish.html:10
+#: dictionary/templates/dictionary/includes/forms/wish.html:10
 msgid "hints:"
 msgstr "notu da şöyle:"
 
-#: .\templates\dictionary\includes\forms\wish.html:19
+#: dictionary/templates/dictionary/includes/forms/wish.html:19
 msgid "hints (optional)"
 msgstr "notlar (opsiyonel)"
 
-#: .\templates\dictionary\includes\forms\wish.html:19
+#: dictionary/templates/dictionary/includes/forms/wish.html:19
 msgid "Wish hint"
 msgstr "Ukte notu"
 
-#: .\templates\dictionary\includes\forms\wish.html:20
-#: .\templates\dictionary\includes\forms\wish.html:23
+#: dictionary/templates/dictionary/includes/forms/wish.html:20
+#: dictionary/templates/dictionary/includes/forms/wish.html:23
 msgid "someone should populate this"
 msgstr "biri bu başlığı doldursun"
 
-#: .\templates\dictionary\includes\forms\wish.html:22
+#: dictionary/templates/dictionary/includes/forms/wish.html:22
 msgid "remove the wish i asked"
 msgstr "bu başlığa verdiğim ukteyi sil"
 
-#: .\templates\dictionary\includes\left_frame.html:19
-#: .\templates\dictionary\list\topic_list.html:20
+#: dictionary/templates/dictionary/includes/left_frame.html:19
+#: dictionary/templates/dictionary/list/topic_list.html:20
 msgid "channel exclusions"
 msgstr "gündem filtresi"
 
-#: .\templates\dictionary\includes\left_frame.html:28
+#: dictionary/templates/dictionary/includes/left_frame.html:28
 msgid "loading"
 msgstr "yükleniyor"
 
-#: .\templates\dictionary\includes\left_frame.html:35
-#: .\templates\dictionary\list\topic_list.html:60
+#: dictionary/templates/dictionary/includes/left_frame.html:35
+#: dictionary/templates/dictionary/list/topic_list.html:60
 msgid "Year selector"
 msgstr "Yıl seçici"
 
-#: .\templates\dictionary\includes\left_frame.html:46
-#: .\templates\dictionary\list\topic_list.html:50
+#: dictionary/templates/dictionary/includes/left_frame.html:46
+#: dictionary/templates/dictionary/list/topic_list.html:50
 msgid "personalize popular topics:"
 msgstr "gündeminizi kişiselleştirin:"
 
-#: .\templates\dictionary\includes\left_frame.html:75
-#: .\templates\dictionary\list\topic_list.html:43
+#: dictionary/templates/dictionary/includes/left_frame.html:75
+#: dictionary/templates/dictionary/list/topic_list.html:43
 msgid "refresh"
 msgstr "yenile"
 
-#: .\templates\dictionary\includes\left_frame.html:80
-#: .\templates\dictionary\includes\paginaton.html:8
+#: dictionary/templates/dictionary/includes/left_frame.html:80
+#: dictionary/templates/dictionary/includes/paginaton.html:8
 msgid "previous page"
 msgstr "önceki sayfa"
 
-#: .\templates\dictionary\includes\left_frame.html:82
-#: .\templates\dictionary\includes\paginaton.html:11
+#: dictionary/templates/dictionary/includes/left_frame.html:82
+#: dictionary/templates/dictionary/includes/paginaton.html:11
 msgid "Page selector"
 msgstr "Sayfa seçici"
 
-#: .\templates\dictionary\includes\left_frame.html:89
-#: .\templates\dictionary\includes\paginaton.html:16
+#: dictionary/templates/dictionary/includes/left_frame.html:89
+#: dictionary/templates/dictionary/includes/paginaton.html:16
 msgid "last page"
 msgstr "son sayfa"
 
-#: .\templates\dictionary\includes\left_frame.html:90
-#: .\templates\dictionary\includes\paginaton.html:19
+#: dictionary/templates/dictionary/includes/left_frame.html:90
+#: dictionary/templates/dictionary/includes/paginaton.html:19
 msgid "subsequent page"
 msgstr "sonraki sayfa"
 
-#: .\templates\dictionary\includes\left_frame.html:104
-#: .\templates\dictionary\list\people_list.html:49
-#: .\templates\dictionary\list\topic_list.html:85
-#: .\templates\dictionary\user\profile.html:196
+#: dictionary/templates/dictionary/includes/left_frame.html:104
+#: dictionary/templates/dictionary/list/people_list.html:49
+#: dictionary/templates/dictionary/list/topic_list.html:85
+#: dictionary/templates/dictionary/user/profile.html:196
 msgid "nothing here"
 msgstr "yok ki"
 
-#: .\templates\dictionary\includes\left_frame.html:111
+#: dictionary/templates/dictionary/includes/left_frame.html:111
 msgid "show more"
 msgstr "daha da.."
 
-#: .\templates\dictionary\includes\profile_entry_pinned.html:10
+#: dictionary/templates/dictionary/includes/profile_entry_pinned.html:10
 msgid "unpin this from the profile"
 msgstr "profilimden kaldır"
 
-#: .\templates\dictionary\includes\profile_entry_pinned.html:21
+#: dictionary/templates/dictionary/includes/profile_entry_pinned.html:21
 msgid "read more »"
 msgstr "tamamını oku »"
 
-#: .\templates\dictionary\includes\send_message_modal.html:6
+#: dictionary/templates/dictionary/includes/send_message_modal.html:6
 msgid "send message"
 msgstr "mesaj gönder"
 
-#: .\templates\dictionary\includes\send_message_modal.html:14
+#: dictionary/templates/dictionary/includes/send_message_modal.html:14
 msgid "your message:"
 msgstr "mesajınız:"
 
-#: .\templates\dictionary\index.html:19
+#: dictionary/templates/dictionary/index.html:19
 msgid "no entries found suitable for display 🤷"
 msgstr "gösterime uygun entry yok 🤷"
 
-#: .\templates\dictionary\index.html:23
-msgid ""
-"<b>random records:</b> in order entries to appear in home page, there needs "
-"to be at least 15×2 entries (in default settings). if the number of entries "
-"<u>written by authors</u> is less than 15, despite the count of all time "
-"written entries being more than 15×2, the home page will not respond."
-msgstr ""
-"<b>random records:</b> ana sayfa'da entry'lerin gözükmesi için varsayılan "
-"ayarlarda tüm zamanlarda en az 15×2 entry girilmiş olmalı. tüm zamanlarda "
-"15×2 entry girilmesine rağmen <u>yazarlar tarafından yayımlanmış</u> toplam "
-"entry sayısı 15'ten az ise ana sayfa yanıt vermeyecektir."
-
-#: .\templates\dictionary\list\activity_list.html:4
-#: .\templates\dictionary\list\activity_list.html:7
+#: dictionary/templates/dictionary/list/activity_list.html:4
+#: dictionary/templates/dictionary/list/activity_list.html:7
 msgctxt "titleblock"
 msgid "activity"
 msgstr "olan biten"
 
-#: .\templates\dictionary\list\activity_list.html:30
+#: dictionary/templates/dictionary/list/activity_list.html:30
 #, python-format
 msgid "following %(topic_count)s topic"
 msgid_plural "following %(topic_count)s topics"
 msgstr[0] "%(topic_count)s başlık takipte"
 msgstr[1] "%(topic_count)s başlık takipte"
 
-#: .\templates\dictionary\list\activity_list.html:34
+#: dictionary/templates/dictionary/list/activity_list.html:34
 msgid "mark all topics as read"
 msgstr "başlıkları okundu olarak işaretle"
 
-#: .\templates\dictionary\list\category_list.html:4
-#: .\templates\dictionary\list\category_list.html:6
+#: dictionary/templates/dictionary/list/category_list.html:4
+#: dictionary/templates/dictionary/list/category_list.html:6
 msgctxt "titleblock"
 msgid "channels"
 msgstr "kanallar"
 
-#: .\templates\dictionary\list\category_list.html:11
+#: dictionary/templates/dictionary/list/category_list.html:11
 #, python-format
 msgid ""
 "<p>the complete list of channels that classify the topics with general "
@@ -2377,122 +2399,123 @@ msgstr ""
 "<p>sözlükteki başlıkları konularına göre sınıflandıran kanalların tam "
 "listesi. <a %(today_attr)s href=\"%(today_url)s\">bugün</a>'de sadece takip "
 "ettiğiniz kanalların başlıkları ve <a %(uncategorized_attr)s "
-"href=\"%(uncategorized_url)s\">sınıflandırılmamış başlıklar</a> "
-"listelenir.</p>"
+"href=\"%(uncategorized_url)s\">sınıflandırılmamış başlıklar</a> listelenir.</"
+"p>"
 
-#: .\templates\dictionary\list\category_list.html:27
+#: dictionary/templates/dictionary/list/category_list.html:27
 msgctxt "category-list"
 msgid "unfollow,follow"
 msgstr "bırak ya,takip et"
 
-#: .\templates\dictionary\list\entry_list.html:33
-#: .\templates\dictionary\list\entry_list.html:85
-#: .\templatetags\functions.py:83
+#: dictionary/templates/dictionary/list/entry_list.html:33
+#: dictionary/templates/dictionary/list/entry_list.html:85
+#: dictionary/templatetags/functions.py:83
 msgid "links"
 msgstr "linkler"
 
-#: .\templates\dictionary\list\entry_list.html:39
-#: .\templates\dictionary\list\entry_list.html:92
+#: dictionary/templates/dictionary/list/entry_list.html:39
+#: dictionary/templates/dictionary/list/entry_list.html:92
 msgid "with replies"
 msgstr "yanıtlanmış"
 
-#: .\templates\dictionary\list\entry_list.html:46
+#: dictionary/templates/dictionary/list/entry_list.html:46
 msgid "This topic is pinned"
 msgstr "Bu başlık sabitlenmiş"
 
-#: .\templates\dictionary\list\entry_list.html:54
+#: dictionary/templates/dictionary/list/entry_list.html:54
 msgid "topics with the same title:"
 msgstr "aynı isimdeki diğer başlıklar:"
 
-#: .\templates\dictionary\list\entry_list.html:67
+#: dictionary/templates/dictionary/list/entry_list.html:67
 msgid "nice"
 msgstr "şükela"
 
-#: .\templates\dictionary\list\entry_list.html:67
-#: .\templatetags\functions.py:79
+#: dictionary/templates/dictionary/list/entry_list.html:67
+#: dictionary/templatetags/functions.py:79
 msgid "most liked entries of all time"
 msgstr "tüm zamanların en beğenilen entry'leri"
 
-#: .\templates\dictionary\list\entry_list.html:67
+#: dictionary/templates/dictionary/list/entry_list.html:67
 msgctxt "nicefilter"
 msgid "all"
 msgstr "tümü"
 
-#: .\templates\dictionary\list\entry_list.html:69
-#: .\templatetags\functions.py:80
+#: dictionary/templates/dictionary/list/entry_list.html:69
+#: dictionary/templatetags/functions.py:80
 msgid "most liked entries of today"
 msgstr "bugün en çok beğenilen entry'ler"
 
-#: .\templates\dictionary\list\entry_list.html:72
+#: dictionary/templates/dictionary/list/entry_list.html:72
 msgid "search in topic"
 msgstr "başlıkta ara"
 
-#: .\templates\dictionary\list\entry_list.html:106
+#: dictionary/templates/dictionary/list/entry_list.html:106
 msgid "my entries"
 msgstr "benimkiler"
 
-#: .\templates\dictionary\list\entry_list.html:120
+#: dictionary/templates/dictionary/list/entry_list.html:120
 msgid "words or @author"
 msgstr "kelime ya da @yazar"
 
-#: .\templates\dictionary\list\entry_list.html:135
-#: .\templates\dictionary\user\profile.html:25
-#: .\templates\dictionary\user\profile.html:166
+#: dictionary/templates/dictionary/list/entry_list.html:135
+#: dictionary/templates/dictionary/user/profile.html:25
+#: dictionary/templates/dictionary/user/profile.html:166
 msgid "unfollow,follow"
 msgstr "takip etme,takip et"
 
-#: .\templates\dictionary\list\entry_list.html:139
+#: dictionary/templates/dictionary/list/entry_list.html:139
 msgid "Skip to entry content area"
 msgstr "Entry içerik alanına geç"
 
-#: .\templates\dictionary\list\entry_list.html:156
+#: dictionary/templates/dictionary/list/entry_list.html:156
 #, python-format
 msgid "%(previous_count)s more entry"
 msgid_plural "%(previous_count)s more entries"
 msgstr[0] "%(previous_count)s entry daha"
 msgstr[1] "%(previous_count)s entry daha"
 
-#: .\templates\dictionary\list\entry_list.html:157
-#: .\templates\dictionary\list\entry_list.html:202
+#: dictionary/templates/dictionary/list/entry_list.html:157
+#: dictionary/templates/dictionary/list/entry_list.html:202
 msgid "show all"
 msgstr "tümünü göster"
 
-#: .\templates\dictionary\list\entry_list.html:181
+#: dictionary/templates/dictionary/list/entry_list.html:181
 msgid "there has been no entries written by novices today."
 msgstr "bu başlığa bugün pek çaylak entry'si girilmemiş."
 
-#: .\templates\dictionary\list\entry_list.html:183
+#: dictionary/templates/dictionary/list/entry_list.html:183
 msgid "this topic has no entries written by <u>authors</u>."
 msgstr "bu başlıkta hiç <u>yazar</u> entry'si yok."
 
-#: .\templates\dictionary\list\entry_list.html:185
+#: dictionary/templates/dictionary/list/entry_list.html:185
 msgid "no suitable entries were found with the criteria you specified."
 msgstr "başlıkta aradığınız kritere uygun entry bulunamadı."
 
-#: .\templates\dictionary\list\entry_list.html:190
+#: dictionary/templates/dictionary/list/entry_list.html:190
 #, python-format
 msgid "show all (%(all_count)s entry)"
 msgid_plural "show all (%(all_count)s entries)"
 msgstr[0] "tümünü göster (%(all_count)s entry)"
 msgstr[1] "tümünü göster (%(all_count)s entry)"
 
-#: .\templates\dictionary\list\entry_list.html:201
+#: dictionary/templates/dictionary/list/entry_list.html:201
 #, python-format
 msgid "%(subsequent_count)s more entry"
 msgid_plural "%(subsequent_count)s more entries"
 msgstr[0] "%(subsequent_count)s entry daha"
 msgstr[1] "%(subsequent_count)s entry daha"
 
-#: .\templates\dictionary\list\entry_list.html:209
-#: .\templates\dictionary\list\entry_list.html:222
+#: dictionary/templates/dictionary/list/entry_list.html:209
+#: dictionary/templates/dictionary/list/entry_list.html:222
 msgid "no such thing known to humankind."
 msgstr "böyle bir şey yok."
 
-#: .\templates\dictionary\list\entry_list.html:225 .\views\edit.py:83
+#: dictionary/templates/dictionary/list/entry_list.html:225
+#: dictionary/views/edit.py:82
 msgid "curses to such a topic anyway."
 msgstr "lanet olsun böyle başlığa zaten."
 
-#: .\templates\dictionary\list\entry_list.html:248
+#: dictionary/templates/dictionary/list/entry_list.html:248
 #, python-format
 msgid ""
 "<span>you have <a %(drafts_attr)s href=\"%(drafts_url)s\">drafted</a> "
@@ -2501,62 +2524,62 @@ msgstr ""
 "<span><strong>%(title)s</strong> başlığına ait <a %(drafts_attr)s "
 "href=\"%(drafts_url)s\">kenar</a>'da duran entry'leriniz var:</span>"
 
-#: .\templates\dictionary\list\entry_list.html:299
+#: dictionary/templates/dictionary/list/entry_list.html:299
 msgid "belonging channels"
 msgstr "başlığın kanalları"
 
-#: .\templates\dictionary\list\entry_list.html:313
+#: dictionary/templates/dictionary/list/entry_list.html:313
 msgid "this topic is yet to be classified"
 msgstr "bu başlık henüz sınıflandırılmamış"
 
-#: .\templates\dictionary\list\entry_list.html:318
+#: dictionary/templates/dictionary/list/entry_list.html:318
 msgid "suggest channels"
 msgstr "kanal öner"
 
-#: .\templates\dictionary\list\entry_list.html:333
+#: dictionary/templates/dictionary/list/entry_list.html:333
 msgid "suggest"
 msgstr "öner"
 
-#: .\templates\dictionary\list\entry_list.html:339
+#: dictionary/templates/dictionary/list/entry_list.html:339
 msgid "put down"
 msgstr "önerme"
 
-#: .\templates\dictionary\list\image_list.html:4
-#: .\templates\dictionary\list\image_list.html:7
+#: dictionary/templates/dictionary/list/image_list.html:4
+#: dictionary/templates/dictionary/list/image_list.html:7
 msgctxt "titleblock"
 msgid "my images"
 msgstr "görsellerim"
 
-#: .\templates\dictionary\list\people_list.html:4
-#: .\templates\dictionary\user\profile.html:4
-#: .\templates\dictionary\user\profile.html:132
+#: dictionary/templates/dictionary/list/people_list.html:4
+#: dictionary/templates/dictionary/user/profile.html:4
+#: dictionary/templates/dictionary/user/profile.html:132
 msgid "page"
 msgstr "sayfa"
 
-#: .\templates\dictionary\list\people_list.html:7
+#: dictionary/templates/dictionary/list/people_list.html:7
 msgctxt "titleblock"
 msgid "following/blocked"
 msgstr "takip/engellenmiş"
 
-#: .\templates\dictionary\list\people_list.html:11
+#: dictionary/templates/dictionary/list/people_list.html:11
 msgctxt "people"
 msgid "following"
 msgstr "takip"
 
-#: .\templates\dictionary\list\people_list.html:14
+#: dictionary/templates/dictionary/list/people_list.html:14
 msgctxt "people"
 msgid "blocked"
 msgstr "engellenmiş"
 
-#: .\templates\dictionary\list\people_list.html:35
+#: dictionary/templates/dictionary/list/people_list.html:35
 msgid "unfollow"
 msgstr "takip etme"
 
-#: .\templates\dictionary\list\people_list.html:42
+#: dictionary/templates/dictionary/list/people_list.html:42
 msgid "remove block"
 msgstr "engeli kaldır"
 
-#: .\templates\dictionary\list\topic_list.html:6
+#: dictionary/templates/dictionary/list/topic_list.html:6
 #, python-format
 msgid ""
 "latest topics in %(safename)s channel. join %(site_name)s community to "
@@ -2566,29 +2589,12 @@ msgstr ""
 "başlatmak veya mevcut tartışmalara katılmak için %(site_name)s topluluğuna "
 "katılın."
 
-#: .\templates\dictionary\registration\email\confirmation_email_template.html:3
-#, python-format
-msgid ""
-"<h4>dear %(name)s</h4> <p>to confirm your e-mail, follow this link:</p> <a "
-"href=\"%(protocol)s://%(domain)s%(confirm_url)s\">confirm e-mail</a> <p>if "
-"you can't see or click the link, navigate to this link via the address "
-"bar:</p> <p>%(protocol)s://%(domain)s%(confirm_url)s</p> <p>if you didn't "
-"request such thing, you don't need to worry about anything.</p> <p>have a "
-"good day.</p>"
-msgstr ""
-"<h4>sayın %(name)s</h4><p>e-postanızı onaylamak için bu bağlantıya tıklayın:"
-" </p><a href=\"%(protocol)s://%(domain)s%(confirm_url)s\">e-postayı "
-"onayla</a><p>eğer bağlantı gözükmüyor ise şunu kopyalayıp adres satırına "
-"yapıştır: </p><p>%(protocol)s://%(domain)s%(confirm_url)s</p><p>eğer e-posta"
-" onaylama talebinde bulunmadıysanız bu e-postayı hiç kafanıza takmanıza "
-"gerek yok. </p><p>iyi günler dileriz.</p>"
-
-#: .\templates\dictionary\registration\email\confirmation_result.html:4
+#: dictionary/templates/dictionary/registration/email/confirmation_result.html:4
 msgctxt "titleblock"
 msgid "e-mail confirmation"
 msgstr "e-posta onaylaması"
 
-#: .\templates\dictionary\registration\email\confirmation_result.html:10
+#: dictionary/templates/dictionary/registration/email/confirmation_result.html:10
 #, python-format
 msgid ""
 "congratulations, your e-mail was successfully confirmed. you may <a "
@@ -2597,57 +2603,57 @@ msgstr ""
 "tebrikler. e-mail adresiniz başarıyla onaylandı. <a "
 "href=\"%(login_url)s\">buradan</a> giriş yapabilirsiniz."
 
-#: .\templates\dictionary\registration\email\confirmation_result.html:12
+#: dictionary/templates/dictionary/registration/email/confirmation_result.html:12
 msgid ""
 "we couldn't confirm your e-mail. the confirmation link was wrong or expired."
 msgstr ""
 "e-posta adresinizi onaylayamadık. e-postanıza gönderilen bağlantı zaman "
 "aşımına uğradı veya adresi yanlış kopyaladınız."
 
-#: .\templates\dictionary\registration\email\resend_form.html:4
-#: .\templates\dictionary\registration\email\resend_form.html:7
+#: dictionary/templates/dictionary/registration/email/resend_form.html:4
+#: dictionary/templates/dictionary/registration/email/resend_form.html:7
 msgctxt "titleblock"
 msgid "resend e-mail confirmation"
 msgstr "e-posta onaylaması"
 
-#: .\templates\dictionary\registration\email\resend_form.html:25
+#: dictionary/templates/dictionary/registration/email/resend_form.html:25
 msgid "send it again please"
 msgstr "yolla bakayım bir daha"
 
-#: .\templates\dictionary\registration\login.html:4
-#: .\templates\dictionary\registration\login.html:6
+#: dictionary/templates/dictionary/registration/login.html:4
+#: dictionary/templates/dictionary/registration/login.html:6
 msgctxt "titleblock"
 msgid "log in"
 msgstr "giriş yap"
 
-#: .\templates\dictionary\registration\login.html:14
+#: dictionary/templates/dictionary/registration/login.html:14
 #, python-format
 msgid "just to let you know, you are already logged in as '%(name)s'."
 msgstr "şuan zaten '%(name)s' olaraktan giriş yapmışsınız ona göre."
 
-#: .\templates\dictionary\registration\login.html:45
+#: dictionary/templates/dictionary/registration/login.html:45
 msgid "what was it?"
 msgstr "parola emekti"
 
-#: .\templates\dictionary\registration\login.html:45
+#: dictionary/templates/dictionary/registration/login.html:45
 msgid "umm, password?"
 msgstr "parola neydi"
 
-#: .\templates\dictionary\registration\login.html:46
+#: dictionary/templates/dictionary/registration/login.html:46
 msgid "didn't receive confirmation email"
 msgstr "onaylama maili gelmedi"
 
-#: .\templates\dictionary\registration\password_reset\complete.html:3
-#: .\templates\dictionary\registration\password_reset\complete.html:5
-#: .\templates\dictionary\registration\password_reset\done.html:4
-#: .\templates\dictionary\registration\password_reset\done.html:6
-#: .\templates\dictionary\registration\password_reset\form.html:3
-#: .\templates\dictionary\registration\password_reset\form.html:5
+#: dictionary/templates/dictionary/registration/password_reset/complete.html:3
+#: dictionary/templates/dictionary/registration/password_reset/complete.html:5
+#: dictionary/templates/dictionary/registration/password_reset/done.html:4
+#: dictionary/templates/dictionary/registration/password_reset/done.html:6
+#: dictionary/templates/dictionary/registration/password_reset/form.html:3
+#: dictionary/templates/dictionary/registration/password_reset/form.html:5
 msgctxt "titleblock"
 msgid "what was my password"
 msgstr "parola neydi"
 
-#: .\templates\dictionary\registration\password_reset\complete.html:7
+#: dictionary/templates/dictionary/registration/password_reset/complete.html:7
 #, python-format
 msgid ""
 "your password has been changed, use it wisely now. you might want to <a "
@@ -2656,29 +2662,29 @@ msgstr ""
 "parolanız sıfırlandı efendim güle güle kullanın. ahanda <a "
 "href=\"%(login_url)s\">buradan</a> giriş yapabilirsiniz."
 
-#: .\templates\dictionary\registration\password_reset\complete.html:10
-#: .\templates\dictionary\registration\password_reset\done.html:16
+#: dictionary/templates/dictionary/registration/password_reset/complete.html:10
+#: dictionary/templates/dictionary/registration/password_reset/done.html:16
 msgid ""
-"notice: this page was made to inform those who want to reset their password."
-" <strong>if you are not trying to reset your password</strong> and somehow "
+"notice: this page was made to inform those who want to reset their password. "
+"<strong>if you are not trying to reset your password</strong> and somehow "
 "found yourself here, you don't need to worry."
 msgstr ""
-"not: bu sayfayı parolasını sıfırlamaya çalışan arkadaşlar için bilgilendirme"
-" amacıyla yaptık. <strong>eğer parolanızı sıfırlamaya "
-"çalışmıyorsanız</strong> ve kendinizi bir şekilde bu sayfada bulduysanız "
-"endişelenmenize gerek yok."
+"not: bu sayfayı parolasını sıfırlamaya çalışan arkadaşlar için bilgilendirme "
+"amacıyla yaptık. <strong>eğer parolanızı sıfırlamaya çalışmıyorsanız</"
+"strong> ve kendinizi bir şekilde bu sayfada bulduysanız endişelenmenize "
+"gerek yok."
 
-#: .\templates\dictionary\registration\password_reset\confirm.html:3
-#: .\templates\dictionary\registration\password_reset\confirm.html:5
+#: dictionary/templates/dictionary/registration/password_reset/confirm.html:3
+#: dictionary/templates/dictionary/registration/password_reset/confirm.html:5
 msgctxt "titleblock"
 msgid "password reset"
 msgstr "parola sıfırlama"
 
-#: .\templates\dictionary\registration\password_reset\confirm.html:44
+#: dictionary/templates/dictionary/registration/password_reset/confirm.html:44
 msgid "hopefully i won't forget it again"
 msgstr "bir daha unutmam inşallah"
 
-#: .\templates\dictionary\registration\password_reset\confirm.html:49
+#: dictionary/templates/dictionary/registration/password_reset/confirm.html:49
 #, python-format
 msgid ""
 "hello dear, we couldn't really understand you. if you want to reset your "
@@ -2687,7 +2693,7 @@ msgstr ""
 "selam canım. ne dediğini pek anlayamadık açıkçası. parolanı sıfırlamak "
 "istiyorsan seni <a href=\"%(password_reset_url)s\">şuraya</a> alalım."
 
-#: .\templates\dictionary\registration\password_reset\done.html:8
+#: dictionary/templates/dictionary/registration/password_reset/done.html:8
 msgid ""
 "we sent something that may help you reset your password to the e-mail you "
 "entered. it should arrive shortly. if you don't receive anything, make sure "
@@ -2698,26 +2704,7 @@ msgstr ""
 "gönderdik. en kısa sürede gelir. eğer bir şey ulaşmadıysa doğru e-posta "
 "adresi girdiğinizden emin olun. spam klasörüne de bir bakın orda olabilir."
 
-#: .\templates\dictionary\registration\password_reset\email_template.html:3
-#, python-format
-msgid ""
-"<h4>dear %(name)s</h4> <p>you requested password reset link as you somehow "
-"forget your password. here is the link:</p> <a "
-"href=\"%(protocol)s://%(domain)s%(confirm_url)s\">reset my password</a> "
-"<p>if you can't see or click the link, navigate to this link via the address"
-" bar:</p> <p>%(protocol)s://%(domain)s%(confirm_url)s</p> <p>if you didn't "
-"request such thing, you don't need to worry about anything.</p> <p>have a "
-"good day.</p>"
-msgstr ""
-"<h4>sayın %(name)s</h4><p>parolanızı unuttuğunuz için bizden parola "
-"sıfırlama bağlantısını talep ettiniz. işte o bağlantı: </p><a "
-"href=\"%(protocol)s://%(domain)s%(confirm_url)s\">parolamı "
-"sıfırla</a><p>eğer bağlantı gözükmüyor ise şunu kopyalayıp adres satırına "
-"yapıştır: </p><p>%(protocol)s://%(domain)s%(confirm_url)s</p><p>eğer parola "
-"yenileme talebinde bulunmadıysanız bu e-postayı hiç kafanıza takmanıza gerek"
-" yok. </p><p>iyi günler dileriz.</p>"
-
-#: .\templates\dictionary\registration\password_reset\form.html:10
+#: dictionary/templates/dictionary/registration/password_reset/form.html:10
 msgid ""
 "provide your registered e-mail address so that we can send you something to "
 "reset your password."
@@ -2725,37 +2712,37 @@ msgstr ""
 "e-posta adresini verirsen parolanı sıfırlamana yardımcı olacak bir şeyler "
 "gönderebiliriz."
 
-#: .\templates\dictionary\registration\signup.html:3
+#: dictionary/templates/dictionary/registration/signup.html:3
 msgctxt "titleblock"
 msgid "register"
 msgstr "kayıt ol"
 
-#: .\templates\dictionary\registration\signup.html:6
+#: dictionary/templates/dictionary/registration/signup.html:6
 msgctxt "titleblock"
 msgid "registration"
 msgstr "yeni kullanıcı kaydı"
 
-#: .\templates\dictionary\registration\signup.html:11
-#: .\templates\dictionary\user\preferences\password.html:8
+#: dictionary/templates/dictionary/registration/signup.html:11
+#: dictionary/templates/dictionary/user/preferences/password.html:8
 msgid "please try again after checking specified errors."
 msgstr "lütfen belirtilen hataları kontrol edip tekrar deneyin."
 
-#: .\templates\dictionary\registration\signup.html:67
-#: .\templates\dictionary\user\preferences\index.html:50
+#: dictionary/templates/dictionary/registration/signup.html:67
+#: dictionary/templates/dictionary/user/preferences/index.html:50
 msgid "Day of birth"
 msgstr "Doğum günü"
 
-#: .\templates\dictionary\registration\signup.html:68
-#: .\templates\dictionary\user\preferences\index.html:51
+#: dictionary/templates/dictionary/registration/signup.html:68
+#: dictionary/templates/dictionary/user/preferences/index.html:51
 msgid "Month of birth"
 msgstr "Doğum ayı"
 
-#: .\templates\dictionary\registration\signup.html:69
-#: .\templates\dictionary\user\preferences\index.html:52
+#: dictionary/templates/dictionary/registration/signup.html:69
+#: dictionary/templates/dictionary/user/preferences/index.html:52
 msgid "Year of birth"
 msgstr "Doğum yılı"
 
-#: .\templates\dictionary\registration\signup.html:79
+#: dictionary/templates/dictionary/registration/signup.html:79
 #, python-format
 msgid ""
 "i have read and agree with the <a target=\"_blank\" "
@@ -2764,17 +2751,17 @@ msgstr ""
 "<a target=\"_blank\" href=\"%(terms_url)s\">kullanıcı sözleşmesi</a>'ni "
 "okudum ve kabul ediyorum."
 
-#: .\templates\dictionary\reporting\general.html:3
-#: .\templates\dictionary\reporting\general.html:6
+#: dictionary/templates/dictionary/reporting/general.html:3
+#: dictionary/templates/dictionary/reporting/general.html:6
 msgctxt "titleblock"
 msgid "contact"
 msgstr "iletişim"
 
-#: .\templates\dictionary\reporting\general.html:7
+#: dictionary/templates/dictionary/reporting/general.html:7
 msgid "matters to consider"
 msgstr "dikkat edilecek hususlar"
 
-#: .\templates\dictionary\reporting\general.html:9
+#: dictionary/templates/dictionary/reporting/general.html:9
 #, python-format
 msgid ""
 "please visit <a href=\"%(faq_url)s\">frequently asked questions</a> page "
@@ -2783,13 +2770,13 @@ msgstr ""
 "iletişime geçmeden önce lütfen <a href=\"%(faq_url)s\">sıkça sorulan "
 "sorular</a> kısmını ziyaret edin."
 
-#: .\templates\dictionary\reporting\general.html:10
+#: dictionary/templates/dictionary/reporting/general.html:10
 msgid ""
 "please state your requests and complaints in a comprehensible and concise "
 "way."
 msgstr "lütfen istek veya şikayetinizi anlaşılır bir şekilde dile getirin."
 
-#: .\templates\dictionary\reporting\general.html:11
+#: dictionary/templates/dictionary/reporting/general.html:11
 msgid ""
 "we will not notify other authors if you decide to report them, this is done "
 "anonymously."
@@ -2797,7 +2784,7 @@ msgstr ""
 "yazarları ilgilendiren şikayetlerinizde yazarların şikayetinizden haberi "
 "olmayacaktır, bu işlem anonim olarak yapılmaktadır."
 
-#: .\templates\dictionary\reporting\general.html:12
+#: dictionary/templates/dictionary/reporting/general.html:12
 msgid ""
 "provide an e-mail address for confirmation and feedback. if you are logged "
 "in already, we will use your registered e-mail address."
@@ -2806,31 +2793,31 @@ msgstr ""
 "halihazırda üye iseniz kayıt olurken kullandığınız e-posta adresiniz "
 "kullanılacak."
 
-#: .\templates\dictionary\reporting\general.html:13
+#: dictionary/templates/dictionary/reporting/general.html:13
 msgid ""
-"if have multiple statements, please consider them all in a report instead of"
-" sending them in seperate reports."
+"if have multiple statements, please consider them all in a report instead of "
+"sending them in seperate reports."
 msgstr ""
 "her bir entry, başlık veya kullanıcı için ayrı şikayet oluşturmak yerine "
 "toplu halde bir şikayet oluşturmanız, dert dinleyenlerin akıl sağlığı için "
 "iyi olacaktır."
 
-#: .\templates\dictionary\user\preferences\backup.html:4
+#: dictionary/templates/dictionary/user/preferences/backup.html:4
 msgctxt "titleblock"
 msgid "backup"
 msgstr "yedek"
 
-#: .\templates\dictionary\user\preferences\backup.html:7
+#: dictionary/templates/dictionary/user/preferences/backup.html:7
 msgid ""
 "you can request a backup file that will include all of your published "
 "entries and archived conversations. the output file will be in JSON format. "
 "you can only create one backup file per day."
 msgstr ""
-"yayınlanmış tüm entry'lerinizi ve arşivlenmiş mesajlarınızı içeren bir yedek"
-" isteğinde bulunabilirsiniz. çıktı dosyası JSON formatında olacak. gün "
-"başına sadece bir tane yedek isteyebilirsiniz."
+"yayınlanmış tüm entry'lerinizi ve arşivlenmiş mesajlarınızı içeren bir yedek "
+"isteğinde bulunabilirsiniz. çıktı dosyası JSON formatında olacak. gün başına "
+"sadece bir tane yedek isteyebilirsiniz."
 
-#: .\templates\dictionary\user\preferences\backup.html:18
+#: dictionary/templates/dictionary/user/preferences/backup.html:18
 #, python-format
 msgid ""
 "click <a href=\"%(download_url)s\">here</a> to download the backup file you "
@@ -2839,61 +2826,61 @@ msgstr ""
 "%(date)s tarihinde istediğiniz yedek dosyanızı indirmek için <a "
 "href=\"%(download_url)s\">buraya</a> tıklayın."
 
-#: .\templates\dictionary\user\preferences\backup.html:20
+#: dictionary/templates/dictionary/user/preferences/backup.html:20
 msgid "you have a pending backup. you will be notified when its ready."
 msgstr ""
 "henüz işlenen bir yedek dosyanız var. hazır olduğu zaman bir bildirim "
 "alacaksınız."
 
-#: .\templates\dictionary\user\preferences\backup.html:24
+#: dictionary/templates/dictionary/user/preferences/backup.html:24
 msgid "you have yet to request a backup."
 msgstr "henüz bir yedek istemediniz."
 
-#: .\templates\dictionary\user\preferences\backup.html:29
+#: dictionary/templates/dictionary/user/preferences/backup.html:29
 msgid "create a new backup file"
 msgstr "yeni yedek oluştur"
 
-#: .\templates\dictionary\user\preferences\base.html:3
-#: .\templates\dictionary\user\preferences\base.html:6
-#: .\templates\dictionary\user\preferences\index.html:3
+#: dictionary/templates/dictionary/user/preferences/base.html:3
+#: dictionary/templates/dictionary/user/preferences/base.html:6
+#: dictionary/templates/dictionary/user/preferences/index.html:3
 msgctxt "titleblock"
 msgid "settings"
 msgstr "ayarlar"
 
-#: .\templates\dictionary\user\preferences\base.html:10
+#: dictionary/templates/dictionary/user/preferences/base.html:10
 msgid "Settings menu"
 msgstr "Ayarlar menüsü"
 
-#: .\templates\dictionary\user\preferences\base.html:22
-#: .\templates\dictionary\user\preferences\base.html:33
+#: dictionary/templates/dictionary/user/preferences/base.html:22
+#: dictionary/templates/dictionary/user/preferences/base.html:33
 msgid "preferences"
 msgstr "tercihler"
 
-#: .\templates\dictionary\user\preferences\base.html:23
-#: .\templates\dictionary\user\preferences\base.html:36
+#: dictionary/templates/dictionary/user/preferences/base.html:23
+#: dictionary/templates/dictionary/user/preferences/base.html:36
 msgid "password"
 msgstr "parola"
 
-#: .\templates\dictionary\user\preferences\base.html:25
-#: .\templates\dictionary\user\preferences\base.html:42
+#: dictionary/templates/dictionary/user/preferences/base.html:25
+#: dictionary/templates/dictionary/user/preferences/base.html:42
 msgid "account deletion"
 msgstr "hesabı kapat"
 
-#: .\templates\dictionary\user\preferences\base.html:26
-#: .\templates\dictionary\user\preferences\base.html:45
+#: dictionary/templates/dictionary/user/preferences/base.html:26
+#: dictionary/templates/dictionary/user/preferences/base.html:45
 msgid "backup"
 msgstr "yedek"
 
-#: .\templates\dictionary\user\preferences\email.html:3
+#: dictionary/templates/dictionary/user/preferences/email.html:3
 msgctxt "titleblock"
 msgid "change e-mail"
 msgstr "e-posta değişimi"
 
-#: .\templates\dictionary\user\preferences\email.html:14
+#: dictionary/templates/dictionary/user/preferences/email.html:14
 msgid "current e-mail in use:"
 msgstr "kullanımdaki e-posta adresiniz:"
 
-#: .\templates\dictionary\user\preferences\email.html:20
+#: dictionary/templates/dictionary/user/preferences/email.html:20
 msgid ""
 "a confirmation link has been sent to your new e-mail address. by following "
 "this link you can complete your e-mail change. if you didn't receive any "
@@ -2904,47 +2891,47 @@ msgstr ""
 "onaylayabilirsiniz. eğer onaylama bağlantısını almadıysanız aşağıdakiformu "
 "tekrar doldurun."
 
-#: .\templates\dictionary\user\preferences\email.html:53
+#: dictionary/templates/dictionary/user/preferences/email.html:53
 msgid "a confirmation link will be sent to the new e-mail address."
 msgstr ""
-"e-posta değişikliğini onaylamak için yeni adresinize bir onaylama bağlantısı"
-" gönderilecek."
+"e-posta değişikliğini onaylamak için yeni adresinize bir onaylama bağlantısı "
+"gönderilecek."
 
-#: .\templates\dictionary\user\preferences\email.html:54
+#: dictionary/templates/dictionary/user/preferences/email.html:54
 msgid "change e-mail"
 msgstr "e-posta adresimi değiştir"
 
-#: .\templates\dictionary\user\preferences\index.html:10
+#: dictionary/templates/dictionary/user/preferences/index.html:10
 msgid "what groups can send me messages?"
 msgstr "kimler bana mesaj gönderebilir?"
 
-#: .\templates\dictionary\user\preferences\index.html:62
+#: dictionary/templates/dictionary/user/preferences/index.html:62
 msgid "save preferences"
 msgstr "tercihleri kaydet"
 
-#: .\templates\dictionary\user\preferences\password.html:3
+#: dictionary/templates/dictionary/user/preferences/password.html:3
 msgctxt "titleblock"
 msgid "password change"
 msgstr "parola değişimi"
 
-#: .\templates\dictionary\user\preferences\password.html:42
+#: dictionary/templates/dictionary/user/preferences/password.html:42
 msgid "change password"
 msgstr "parolayı değiştir"
 
-#: .\templates\dictionary\user\preferences\terminate.html:3
+#: dictionary/templates/dictionary/user/preferences/terminate.html:3
 msgctxt "titleblock"
 msgid "account deletion"
 msgstr "hesabı kapat"
 
-#: .\templates\dictionary\user\preferences\terminate.html:7
+#: dictionary/templates/dictionary/user/preferences/terminate.html:7
 msgid "here are the options you may choose for account deactivation:"
 msgstr "işte, hesap kapatmak için seçenekleriniz şunlar:"
 
-#: .\templates\dictionary\user\preferences\terminate.html:9
+#: dictionary/templates/dictionary/user/preferences/terminate.html:9
 msgid "a) delete account completely"
 msgstr "a) hesabı komple sil"
 
-#: .\templates\dictionary\user\preferences\terminate.html:11
+#: dictionary/templates/dictionary/user/preferences/terminate.html:11
 msgid ""
 "ideal for those who don't want to leave any trace behind. all the "
 "information about your account, including entries and messages, will be "
@@ -2953,11 +2940,11 @@ msgstr ""
 "iz bırakmadan temiz bir şekilde gitmek isteyenler için ideal. hesabınıza "
 "dair her şey: entry'leriniz ve mesajlarınız da dahil olmak üzere silinecek."
 
-#: .\templates\dictionary\user\preferences\terminate.html:19
+#: dictionary/templates/dictionary/user/preferences/terminate.html:19
 msgid "b) delete account with legacy"
 msgstr "b) hesabı miras bırakarak sil"
 
-#: .\templates\dictionary\user\preferences\terminate.html:21
+#: dictionary/templates/dictionary/user/preferences/terminate.html:21
 msgid ""
 "your account will be deleted completely. if you have authorship, your "
 "entries will be preserved anonymously for the next generations."
@@ -2965,11 +2952,11 @@ msgstr ""
 "hesabınız komple silinecek. yazar iseniz, entry'leriniz gelecek nesiller "
 "tarafından okunması için anonim olarak tutulacak."
 
-#: .\templates\dictionary\user\preferences\terminate.html:29
+#: dictionary/templates/dictionary/user/preferences/terminate.html:29
 msgid "c) freeze account"
 msgstr "c) hesabı dondur"
 
-#: .\templates\dictionary\user\preferences\terminate.html:31
+#: dictionary/templates/dictionary/user/preferences/terminate.html:31
 msgid ""
 "ideal if you have emotional bond with your account. when your account is "
 "frozen, no one can access to your profile and send you messages. your "
@@ -2977,16 +2964,16 @@ msgid ""
 msgstr ""
 "hesabınızla duygusal bir bağ kurduysanız ideal. hesabınız donukken "
 "profilinize kimse ulaşamaz ve size mesaj gönderilemez. entry'leriniz "
-"görülebilir halde durur. hesabınıza giriş yaparsanız hesabınız tekrar aktive"
-" olur."
+"görülebilir halde durur. hesabınıza giriş yaparsanız hesabınız tekrar aktive "
+"olur."
 
-#: .\templates\dictionary\user\preferences\terminate.html:47
+#: dictionary/templates/dictionary/user/preferences/terminate.html:47
 msgid ""
 "except for the scenario where you choose to freeze your account, in order "
 "for your account to be deleted, 120 hours (5 days) needs to be passed after "
 "you confirm your action. for the time being, your account will be in frozen "
-"status and if you decide to cancel your action you may log in before its too"
-" late."
+"status and if you decide to cancel your action you may log in before its too "
+"late."
 msgstr ""
 "hesabınızı dondurduğunuz senaryonun dışında, seçtiğiniz senaryonun "
 "gerçekleşebilmesi için, işlemi yaptığınız andan itibaren 120 saat (5 gün) "
@@ -2994,33 +2981,33 @@ msgstr ""
 "şekilde gerçekleştirilecektir. bu süre boyunca hesabınız donuk statüsünde "
 "olacaktır. işlemi iptal etmek için giriş yapabilirsiniz."
 
-#: .\templates\dictionary\user\preferences\terminate.html:61
+#: dictionary/templates/dictionary/user/preferences/terminate.html:61
 msgid "farewell"
 msgstr "elveda et"
 
-#: .\templates\dictionary\user\profile.html:4
+#: dictionary/templates/dictionary/user/profile.html:4
 msgid "user"
 msgstr "kullanıcı"
 
-#: .\templates\dictionary\user\profile.html:16
+#: dictionary/templates/dictionary/user/profile.html:16
 msgid "novice,author"
 msgstr "çaylak,yazar"
 
-#: .\templates\dictionary\user\profile.html:16
+#: dictionary/templates/dictionary/user/profile.html:16
 #, python-format
 msgid "%(gen_ordinal)s generation %(user_type)s"
 msgstr "%(gen_ordinal)s nesil %(user_type)s"
 
-#: .\templates\dictionary\user\profile.html:29
+#: dictionary/templates/dictionary/user/profile.html:29
 msgid "block"
 msgstr "engelle"
 
-#: .\templates\dictionary\user\profile.html:41
+#: dictionary/templates/dictionary/user/profile.html:41
 #, python-format
 msgid ""
 "Your account was suspended until the date %(date)s. For a detailed "
-"information check the private message we sent to you. If you think something"
-" is wrong, you can use this <a href=\"%(report_url)s\">report form</a> to "
+"information check the private message we sent to you. If you think something "
+"is wrong, you can use this <a href=\"%(report_url)s\">report form</a> to "
 "contact us."
 msgstr ""
 "Hesabınız %(date)s tarihine kadar askıya alınmıştır. Ayrıntılı bilgi için "
@@ -3028,389 +3015,159 @@ msgstr ""
 "düşünüyorsanız  <a href=\"%(report_url)s\">iletişim formu</a>'nu kullanarak "
 "bizimle iletişime geçin."
 
-#: .\templates\dictionary\user\profile.html:50
+#: dictionary/templates/dictionary/user/profile.html:50
 msgid "total number of entries"
 msgstr "toplam entry sayısı"
 
-#: .\templates\dictionary\user\profile.html:51
+#: dictionary/templates/dictionary/user/profile.html:51
 msgid "number of entries last month"
 msgstr "son 1 ayda girdiği entry sayısı"
 
-#: .\templates\dictionary\user\profile.html:52
+#: dictionary/templates/dictionary/user/profile.html:52
 msgid "number of entries last week"
 msgstr "son 1 haftada girdiği entry sayısı"
 
-#: .\templates\dictionary\user\profile.html:53
+#: dictionary/templates/dictionary/user/profile.html:53
 msgid "number of entries last 24 hours"
 msgstr "son 24 saatte girdiği entry sayısı"
 
-#: .\templates\dictionary\user\profile.html:54
+#: dictionary/templates/dictionary/user/profile.html:54
 msgid "latest entry when?"
 msgstr "son entry girdiği zaman"
 
-#: .\templates\dictionary\user\profile.html:54
+#: dictionary/templates/dictionary/user/profile.html:54
 msgid "never"
 msgstr "hiç"
 
-#: .\templates\dictionary\user\profile.html:57
+#: dictionary/templates/dictionary/user/profile.html:57
 #, python-format
 msgid "you are the %(queue_ordinal)s person in the novice list."
 msgstr "çaylak onay listesinde %(queue_ordinal)s sıradasınız."
 
-#: .\templates\dictionary\user\profile.html:62
+#: dictionary/templates/dictionary/user/profile.html:62
 msgid "novice"
 msgstr "çaylak"
 
-#: .\templates\dictionary\user\profile.html:66
+#: dictionary/templates/dictionary/user/profile.html:66
 #, python-format
 msgid "throughout %(time)s"
 msgstr "%(time)s boyunca"
 
-#: .\templates\dictionary\user\profile.html:67
+#: dictionary/templates/dictionary/user/profile.html:67
 msgid "cursed"
 msgstr "lanetli"
 
-#: .\templates\dictionary\user\profile.html:71
+#: dictionary/templates/dictionary/user/profile.html:71
 msgid "zealous"
 msgstr "azimli"
 
-#: .\templates\dictionary\user\profile.html:71
+#: dictionary/templates/dictionary/user/profile.html:71
 msgid "has at least 1000 entries"
 msgstr "en azından 1000 entry girmiş"
 
-#: .\templates\dictionary\user\profile.html:77
+#: dictionary/templates/dictionary/user/profile.html:77
 msgid "assorter"
 msgstr "tasnifçi"
 
-#: .\templates\dictionary\user\profile.html:77
+#: dictionary/templates/dictionary/user/profile.html:77
 msgid "can suggest categories to topics"
 msgstr "başlıklara kanal önerisi yapabilir"
 
-#: .\templates\dictionary\user\profile.html:107
+#: dictionary/templates/dictionary/user/profile.html:107
 msgid "Profile navigation menu"
 msgstr "Profil gezinme menüsü"
 
-#: .\templates\dictionary\user\profile.html:113
+#: dictionary/templates/dictionary/user/profile.html:113
 msgid "statistics"
 msgstr "istatistikler"
 
-#: .\templates\dictionary\user\profile.html:115 .\views\detail.py:104
+#: dictionary/templates/dictionary/user/profile.html:115
+#: dictionary/views/detail.py:104
 msgid "most favorited"
 msgstr "en çok favorilenenleri"
 
-#: .\templates\dictionary\user\profile.html:116 .\views\detail.py:109
+#: dictionary/templates/dictionary/user/profile.html:116
+#: dictionary/views/detail.py:109
 msgid "recently voted"
 msgstr "son oylananları"
 
-#: .\templates\dictionary\user\profile.html:117 .\views\detail.py:105
+#: dictionary/templates/dictionary/user/profile.html:117
+#: dictionary/views/detail.py:105
 msgid "most liked"
 msgstr "en beğenilenleri"
 
-#: .\templates\dictionary\user\profile.html:118 .\views\detail.py:106
+#: dictionary/templates/dictionary/user/profile.html:118
+#: dictionary/views/detail.py:106
 msgid "attracting entries of this week"
 msgstr "bu hafta dikkat çekenleri"
 
-#: .\templates\dictionary\user\profile.html:119 .\views\detail.py:107
+#: dictionary/templates/dictionary/user/profile.html:119
+#: dictionary/views/detail.py:107
 msgid "beloved entries"
 msgstr "el emeği göz nuru"
 
-#: .\templates\dictionary\user\profile.html:120 .\views\detail.py:108
+#: dictionary/templates/dictionary/user/profile.html:120
+#: dictionary/views/detail.py:108
 msgid "favorite authors"
 msgstr "favori yazarları"
 
-#: .\templates\dictionary\user\profile.html:122 .\views\detail.py:111
+#: dictionary/templates/dictionary/user/profile.html:122
+#: dictionary/views/detail.py:111
 msgid "contributed channels"
 msgstr "katkıda bulunduğu kanallar"
 
-#: .\templates\dictionary\user\profile.html:140
+#: dictionary/templates/dictionary/user/profile.html:140
 msgid "navigate to the topic list"
 msgstr "başlık listesine taşı"
 
-#: .\templates\dictionary\user\profile.html:213
+#: dictionary/templates/dictionary/user/profile.html:213
 msgid "memento"
 msgstr "notlar"
 
-#: .\templates\dictionary\user\profile.html:216
+#: dictionary/templates/dictionary/user/profile.html:216
 #, python-format
 msgid "your thoughts about the user '%(username)s'"
 msgstr "%(username)s hakkındaki düşünceleriniz"
 
-#: .\templates\dictionary\user\profile.html:219
+#: dictionary/templates/dictionary/user/profile.html:219
 msgid "save"
 msgstr "kaydet"
 
-#. Translators: Short for "also see this", used in entry editor.
-#: .\templatetags\filters.py:49
-msgctxt "editor"
-msgid "see"
-msgstr "bkz"
-
-#: .\templatetags\filters.py:50
-msgctxt "editor"
-msgid "search"
-msgstr "ara"
-
-#. Translators: Entry date format.
-#. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
-#: .\templatetags\filters.py:54
-msgid "M j, Y"
-msgstr "d.m.Y"
-
-#. Translators: Entry time format.
-#. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
-#: .\templatetags\filters.py:57
-msgid "g:i a"
-msgstr "H:i"
-
-#. Translators: Short letter for "thousand", e.g. 1000 = 1.0k
-#: .\templatetags\filters.py:228
-msgid "k"
-msgstr "b"
-
-#: .\templatetags\functions.py:76
-msgid "today's entries"
-msgstr "bugün girilen entry'ler"
-
-#: .\templatetags\functions.py:82
-msgid "entries written after me"
-msgstr "benden sonra girilenler"
-
-#: .\templatetags\functions.py:85
-#, python-format
-msgid "search: %(keywords)s"
-msgstr "arama: %(keywords)s"
-
-#: .\templatetags\functions.py:86
-#, python-format
-msgid "today in history: %(year)s"
-msgstr "tarihte bugün: %(year)s"
-
-#: .\templatetags\functions.py:87
-msgid "entries with replies"
-msgstr "yanıtlanmış entry'ler"
-
-#: .\templatetags\functions.py:95
-#, python-format
-msgid "page %(page)d"
-msgstr "sayfa %(page)d"
-
-#: .\utils\context_processors.py:105
-msgid "something went wrong. try reloading the page."
-msgstr "bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin."
-
-#: .\utils\email.py:26
-msgid "e-mail confirmation"
-msgstr "e-posta onayı"
-
-#. Translators: This is the default keyword to search when users search with
-#. no input.
-#: .\utils\managers.py:276
-msgid "common sense"
-msgstr "akıl fikir"
-
-#: .\utils\managers.py:396 .\views\list.py:293 .\views\list.py:600
-msgid "actually, you may benefit from this feature by logging in."
-msgstr "giriş yaparsan bu özellikten yararlanabilirsin aslında."
-
-#: .\utils\mixins.py:20
-msgid "your password was incorrect"
-msgstr "parolanızı yanlış girdiniz."
-
-#: .\utils\mixins.py:81
-#, python-format
-msgid "Couldn't find any suitable %(obj_name)s objects."
-msgstr "Uygun kaynak %(obj_name)s nesneleri bulunamadı."
-
-#: .\utils\mixins.py:88
-#, python-format
-msgid "At most, you can only work with %(max_input)d %(obj_name)s objects."
-msgstr ""
-"Bir anda en fazla %(max_input)d %(obj_name)s nesnesi üzerinde işlem "
-"yapabilirsiniz."
-
-#: .\utils\validators.py:16
-msgid "that title is just too nasty."
-msgstr "öyle başlık mı olur hıyarağası."
-
-#: .\utils\validators.py:19
-msgid "this title is too long"
-msgstr "bu başlığın tanımı çok uzun"
-
-#: .\utils\validators.py:22
-msgid "the definition of this topic includes forbidden characters"
-msgstr "bu başlığın tanımı geçersiz karakterler içeriyor"
-
-#: .\utils\validators.py:30
-msgid "this content includes forbidden characters."
-msgstr "bu içerik geçersiz karakterler içeriyor"
-
-#: .\utils\validators.py:41
-msgid ""
-"The channel couldn't be created as the name of this channel clashes with a "
-"reserved category lister. The complete list of forbidden names follows:"
-msgstr ""
-"Bu kanalın ismi özel başlık listeyicilerinden biriyle tamamen örtüştüğü için"
-" bu ismi kullanamazsınız. Yasaklı isimlerin tam listesi şöyle:"
-
-#: .\utils\validators.py:50
-msgid "this nickname is reserved by the boss"
-msgstr "bu nicki patron rezerve etmiş"
-
-#: .\views\auth.py:41
-msgid "welcome back. your account has been reactivated."
-msgstr "tekrar hoşgeldiniz. hesabınız aktif oldu."
-
-#: .\views\auth.py:44
-msgid "successfully logged in, dear"
-msgstr "başarıyla giriş yaptınız efendim"
-
-#: .\views\auth.py:51
-msgid "successfully logged out, dear"
-msgstr "başarıyla çıkış yaptınız efendim"
-
-#: .\views\auth.py:76 .\views\auth.py:124
-msgid ""
-"a confirmation link has been sent to your e-mail address. by following this "
-"link you can activate and login into your account."
-msgstr ""
-"e-posta adresinize bir onay bağlantısı gönderildi. bu bağlantıya tıklayarak "
-"hesabınızı aktif hale getirip giriş yapabilirsiniz."
-
-#: .\views\auth.py:137
+#: dictionary/templates/mailing/email_confirmation.html:2
 #, python-format
 msgid ""
-"dear %(username)s, your password was changed. If you aware of this action, "
-"there is nothing to worry about. If you didn't do such action, you can use "
-"your e-mail to recover your account."
+"<h4>dear %(name)s</h4> <p>to confirm your e-mail, follow this link:</p> <a "
+"href=\"%(confirm_url)s\">confirm e-mail</a> <p>if you can't see or click the "
+"link, navigate to this link via the address bar:</p> <p>%(confirm_url)s</p> "
+"<p>if you didn't request such thing, you don't need to worry about anything."
+"</p> <p>have a good day.</p>"
 msgstr ""
-"sayın %(username)s, parolanız değiştirildi. Eğer bu işlemden haberdar iseniz"
-" sıkıntı yok. Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle "
-"hesabınızı kurtarabilirsiniz."
+"<h4>sayın %(name)s</h4><p>e-postanızı onaylamak için bu bağlantıya tıklayın: "
+"</p><a href=\"%(confirm_url)s\">e-postayı onayla</a><p>eğer bağlantı "
+"gözükmüyor ise şunu kopyalayıp adres satırına yapıştır: </"
+"p><p>%(confirm_url)s</p><p>eğer e-posta onaylama talebinde bulunmadıysanız "
+"bu e-postayı hiç kafanıza takmanıza gerek yok. </p><p>iyi günler dileriz.</p>"
 
-#: .\views\auth.py:144 .\views\auth.py:149
-msgid "your password has been changed."
-msgstr "parolanız değiştirildi."
-
-#: .\views\auth.py:161
-msgid "your e-mail will be changed after the confirmation."
-msgstr "e-posta onayından sonra adresiniz değişecektir."
-
-#: .\views\auth.py:173
+#: dictionary/templates/mailing/password_reset.html:3
 #, python-format
 msgid ""
-"dear %(username)s, your account is now frozen. if you have chosen to delete "
-"your account, it will be deleted permanently after 5 days. in case you log "
-"in before this time passes, your account will be reactivated. if you only "
-"chose to freeze your account, you may log in any time to reactivate your "
-"account."
+"<h4>dear %(name)s</h4> <p>you requested password reset link as you somehow "
+"forget your password. here is the link:</p> <a href=\"%(protocol)s://"
+"%(domain)s%(confirm_url)s\">reset my password</a> <p>if you can't see or "
+"click the link, navigate to this link via the address bar:</p> "
+"<p>%(protocol)s://%(domain)s%(confirm_url)s</p> <p>if you didn't request "
+"such thing, you don't need to worry about anything.</p> <p>have a good day.</"
+"p>"
 msgstr ""
-"sayın %(username)s, hesabınız donduruldu. eğer silmeyi seçtiyseniz, "
-"seçiminizden 5 gün sonra hesabınız kalıcı olarak silinecektir. bu süre "
-"dolmadan önce hesabınıza giriş yaptığınız takdirde hesabınız tekrar aktif "
-"hale gelecektir. eğer hesabınızı sadece dondurmayı seçtiyseniz, herhangi bir"
-" zamanda tekrar giriş yapabilirsiniz."
+"<h4>sayın %(name)s</h4><p>parolanızı unuttuğunuz için bizden parola "
+"sıfırlama bağlantısını talep ettiniz. işte o bağlantı: </p><a "
+"href=\"%(protocol)s://%(domain)s%(confirm_url)s\">parolamı sıfırla</"
+"a><p>eğer bağlantı gözükmüyor ise şunu kopyalayıp adres satırına yapıştır: </"
+"p><p>%(protocol)s://%(domain)s%(confirm_url)s</p><p>eğer parola yenileme "
+"talebinde bulunmadıysanız bu e-postayı hiç kafanıza takmanıza gerek yok. </"
+"p><p>iyi günler dileriz.</p>"
 
-#: .\views\auth.py:182
-msgid "your account is now frozen"
-msgstr "hesabınız donduruldu"
-
-#: .\views\auth.py:191
-msgid "your request was taken. farewell."
-msgstr "isteğinizi aldık. hoşça kalın."
-
-#: .\views\auth.py:208
-msgid "you have already requested a backup file today."
-msgstr "bugün zaten bir yedek dosyası istediniz."
-
-#: .\views\detail.py:36 .\views\list.py:173
-msgid "we couldn't send your message"
-msgstr "mesajınızı göndermedik"
-
-#: .\views\detail.py:120
-msgid "just deleted that"
-msgstr "sildim ben onu"
-
-#: .\views\detail.py:126
-msgid "if only you could write down something"
-msgstr "çeşke bi şeyler yazsaydın"
-
-#: .\views\edit.py:22
-msgid "settings are saved, dear"
-msgstr "kaydettik efendim"
-
-#: .\views\edit.py:89 .\views\edit.py:152
-msgid "the entry was successfully launched into stratosphere"
-msgstr "entry başarıyla stratosfere yollandı"
-
-#: .\views\edit.py:180
-msgid "the comment was successfully launched into stratosphere"
-msgstr "yorumunuz başarıyla stratosfere yollandı"
-
-#: .\views\edit.py:207
-msgid "the comment has been updated"
-msgstr "yorum düzeltildi"
-
-#: .\views\edit.py:215
-msgid "the comment has been deleted"
-msgstr "yorum silindi"
-
-#: .\views\edit.py:220
-msgid ""
-"you lack the permissions to edit this comment. you might as well delete it?"
-msgstr "bu yorumu düzeltme yetkin yok. sil istersen?"
-
-#: .\views\images.py:39
-#, python-format
-msgid ""
-"you have reached the upload limit (%(limit)d images in a 24 hour period). "
-"try again later."
-msgstr ""
-"şimdilik yükleyebileceğiniz görsel hakkınızı doldurdunuz (bir günde "
-"%(limit)d görsel). daha sonra tekrar deneyin."
-
-#: .\views\images.py:45
-#, python-format
-msgid "this file is too large. (%.1f> MB)"
-msgstr "bu dosya çok büyük (%.1f> MB)"
-
-#: .\views\list.py:122
-msgid "following list"
-msgstr "takip edilenler"
-
-#: .\views\list.py:122
-msgid "blocked list"
-msgstr "engellenenler"
-
-#: .\views\list.py:166
-msgid "no such person though"
-msgstr "öyle biri yok"
-
-#: .\views\list.py:220
-msgid "the topics were mark read"
-msgstr "başlıklar okundu olarak işaretlendi"
-
-#: .\views\list.py:451
-msgid "honestly, there was nothing new. so i listed them all."
-msgstr "pek bişey bulamadım açıkçası, buyrun hepsi."
-
-#: .\views\list.py:618
-#, python-format
-msgid ""
-"you have been redirected by a reference, <a href='%(url)s'>click here</a> to"
-" return to the original topic."
-msgstr ""
-"bakınız etiketiyle yönlendirildiniz. asıl başlığa dönmek için <a "
-"href='%(url)s'>buraya tıklayın</a>"
-
-#: .\views\reporting.py:33
-msgid "it hasn't been long since you last sent a report."
-msgstr "siz en son iletişime geçeli pek zaman geçmedi ki."
-
-#: .\views\reporting.py:40
-msgid "your report request has been successfully sent."
-msgstr "iletişim talebiniz başarıyla iletildi."
-
-#: .\views\reporting.py:49
+#: dictionary/templates/mailing/report_confirmation.html:3
 msgid ""
 "in order reporting form to reach us, you need to follow the link given "
 "below. if you are in mindset such as 'what the hell? i did not send such "
@@ -3422,11 +3179,274 @@ msgstr ""
 "be?' diyorsanız, hiçbir şey olmamış gibi hayatınıza devam edebilirsiniz. "
 "bağlantı: "
 
-#: .\views\reporting.py:57
+#: dictionary/templatetags/filters.py:53
+msgctxt "editor"
+msgid "search"
+msgstr "ara"
+
+#. Translators: Entry date format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+#: dictionary/templatetags/filters.py:57
+msgid "M j, Y"
+msgstr "d.m.Y"
+
+#. Translators: Entry time format. https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#date
+#: dictionary/templatetags/filters.py:60
+msgid "g:i a"
+msgstr "H:i"
+
+#. Translators: Short letter for "thousand", e.g. 1000 = 1.0k
+#: dictionary/templatetags/filters.py:234
+msgid "k"
+msgstr "b"
+
+#: dictionary/templatetags/functions.py:76
+msgid "today's entries"
+msgstr "bugün girilen entry'ler"
+
+#: dictionary/templatetags/functions.py:82
+msgid "entries written after me"
+msgstr "benden sonra girilenler"
+
+#: dictionary/templatetags/functions.py:85
+#, python-format
+msgid "search: %(keywords)s"
+msgstr "arama: %(keywords)s"
+
+#: dictionary/templatetags/functions.py:86
+#, python-format
+msgid "today in history: %(year)s"
+msgstr "tarihte bugün: %(year)s"
+
+#: dictionary/templatetags/functions.py:87
+msgid "entries with replies"
+msgstr "yanıtlanmış entry'ler"
+
+#: dictionary/templatetags/functions.py:95
+#, python-format
+msgid "page %(page)d"
+msgstr "sayfa %(page)d"
+
+#: dictionary/utils/context_processors.py:104
+msgid "something went wrong. try reloading the page."
+msgstr "bir şeyler yanlış gitti. sayfayı yenilemeyi deneyin."
+
+#: dictionary/utils/mailing.py:54
+msgid "e-mail confirmation"
+msgstr "e-posta onayı"
+
+#. Translators: This is the default keyword to search when users search with no input.
+#: dictionary/utils/managers.py:275
+msgid "common sense"
+msgstr "akıl fikir"
+
+#: dictionary/utils/managers.py:398 dictionary/views/list.py:295
+#: dictionary/views/list.py:603
+msgid "actually, you may benefit from this feature by logging in."
+msgstr "giriş yaparsan bu özellikten yararlanabilirsin aslında."
+
+#: dictionary/utils/mixins.py:19
+msgid "your password was incorrect"
+msgstr "parolanızı yanlış girdiniz."
+
+#: dictionary/utils/mixins.py:80
+#, python-format
+msgid "Couldn't find any suitable %(obj_name)s objects."
+msgstr "Uygun kaynak %(obj_name)s nesneleri bulunamadı."
+
+#: dictionary/utils/mixins.py:88
+#, python-format
+msgid "At most, you can only work with %(max_input)d %(obj_name)s objects."
+msgstr ""
+"Bir anda en fazla %(max_input)d %(obj_name)s nesnesi üzerinde işlem "
+"yapabilirsiniz."
+
+#: dictionary/utils/validators.py:15
+msgid "that title is just too nasty."
+msgstr "öyle başlık mı olur hıyarağası."
+
+#: dictionary/utils/validators.py:18
+msgid "this title is too long"
+msgstr "bu başlığın tanımı çok uzun"
+
+#: dictionary/utils/validators.py:21
+msgid "the definition of this topic includes forbidden characters"
+msgstr "bu başlığın tanımı geçersiz karakterler içeriyor"
+
+#: dictionary/utils/validators.py:29
+msgid "this content includes forbidden characters."
+msgstr "bu içerik geçersiz karakterler içeriyor"
+
+#: dictionary/utils/validators.py:40
+msgid ""
+"The channel couldn't be created as the name of this channel clashes with a "
+"reserved category lister. The complete list of forbidden names follows:"
+msgstr ""
+"Bu kanalın ismi özel başlık listeyicilerinden biriyle tamamen örtüştüğü için "
+"bu ismi kullanamazsınız. Yasaklı isimlerin tam listesi şöyle:"
+
+#: dictionary/utils/validators.py:49
+msgid "this nickname is reserved by the boss"
+msgstr "bu nicki patron rezerve etmiş"
+
+#: dictionary/views/auth.py:44
+msgid "welcome back. your account has been reactivated."
+msgstr "tekrar hoşgeldiniz. hesabınız aktif oldu."
+
+#: dictionary/views/auth.py:47
+msgid "successfully logged in, dear"
+msgstr "başarıyla giriş yaptınız efendim"
+
+#: dictionary/views/auth.py:54
+msgid "successfully logged out, dear"
+msgstr "başarıyla çıkış yaptınız efendim"
+
+#: dictionary/views/auth.py:79 dictionary/views/auth.py:127
+msgid ""
+"a confirmation link has been sent to your e-mail address. by following this "
+"link you can activate and login into your account."
+msgstr ""
+"e-posta adresinize bir onay bağlantısı gönderildi. bu bağlantıya tıklayarak "
+"hesabınızı aktif hale getirip giriş yapabilirsiniz."
+
+#: dictionary/views/auth.py:140
+#, python-format
+msgid ""
+"dear %(username)s, your password was changed. If you aware of this action, "
+"there is nothing to worry about. If you didn't do such action, you can use "
+"your e-mail to recover your account."
+msgstr ""
+"sayın %(username)s, parolanız değiştirildi. Eğer bu işlemden haberdar iseniz "
+"sıkıntı yok. Bu işlemi siz yapmadıysanız, mevcut e-posta adresinizle "
+"hesabınızı kurtarabilirsiniz."
+
+#: dictionary/views/auth.py:147 dictionary/views/auth.py:151
+msgid "your password has been changed."
+msgstr "parolanız değiştirildi."
+
+#: dictionary/views/auth.py:185
+msgid "your e-mail will be changed after the confirmation."
+msgstr "e-posta onayından sonra adresiniz değişecektir."
+
+#: dictionary/views/auth.py:197
+#, python-format
+msgid ""
+"dear %(username)s, your account is now frozen. if you have chosen to delete "
+"your account, it will be deleted permanently after 5 days. in case you log "
+"in before this time passes, your account will be reactivated. if you only "
+"chose to freeze your account, you may log in any time to reactivate your "
+"account."
+msgstr ""
+"sayın %(username)s, hesabınız donduruldu. eğer silmeyi seçtiyseniz, "
+"seçiminizden 5 gün sonra hesabınız kalıcı olarak silinecektir. bu süre "
+"dolmadan önce hesabınıza giriş yaptığınız takdirde hesabınız tekrar aktif "
+"hale gelecektir. eğer hesabınızı sadece dondurmayı seçtiyseniz, herhangi bir "
+"zamanda tekrar giriş yapabilirsiniz."
+
+#: dictionary/views/auth.py:206
+msgid "your account is now frozen"
+msgstr "hesabınız donduruldu"
+
+#: dictionary/views/auth.py:217
+msgid "your request was taken. farewell."
+msgstr "isteğinizi aldık. hoşça kalın."
+
+#: dictionary/views/auth.py:234
+msgid "you have already requested a backup file today."
+msgstr "bugün zaten bir yedek dosyası istediniz."
+
+#: dictionary/views/detail.py:36 dictionary/views/list.py:175
+msgid "we couldn't send your message"
+msgstr "mesajınızı göndermedik"
+
+#: dictionary/views/detail.py:120
+msgid "just deleted that"
+msgstr "sildim ben onu"
+
+#: dictionary/views/detail.py:126
+msgid "if only you could write down something"
+msgstr "çeşke bi şeyler yazsaydın"
+
+#: dictionary/views/edit.py:22
+msgid "settings are saved, dear"
+msgstr "kaydettik efendim"
+
+#: dictionary/views/edit.py:88 dictionary/views/edit.py:151
+msgid "the entry was successfully launched into stratosphere"
+msgstr "entry başarıyla stratosfere yollandı"
+
+#: dictionary/views/edit.py:179
+msgid "the comment was successfully launched into stratosphere"
+msgstr "yorumunuz başarıyla stratosfere yollandı"
+
+#: dictionary/views/edit.py:206
+msgid "the comment has been updated"
+msgstr "yorum düzeltildi"
+
+#: dictionary/views/edit.py:214
+msgid "the comment has been deleted"
+msgstr "yorum silindi"
+
+#: dictionary/views/edit.py:219
+msgid ""
+"you lack the permissions to edit this comment. you might as well delete it?"
+msgstr "bu yorumu düzeltme yetkin yok. sil istersen?"
+
+#: dictionary/views/images.py:39
+#, python-format
+msgid ""
+"you have reached the upload limit (%(limit)d images in a 24 hour period). "
+"try again later."
+msgstr ""
+"şimdilik yükleyebileceğiniz görsel hakkınızı doldurdunuz (bir günde "
+"%(limit)d görsel). daha sonra tekrar deneyin."
+
+#: dictionary/views/images.py:45
+#, python-format
+msgid "this file is too large. (%.1f> MB)"
+msgstr "bu dosya çok büyük (%.1f> MB)"
+
+#: dictionary/views/list.py:124
+msgid "following list"
+msgstr "takip edilenler"
+
+#: dictionary/views/list.py:124
+msgid "blocked list"
+msgstr "engellenenler"
+
+#: dictionary/views/list.py:168
+msgid "no such person though"
+msgstr "öyle biri yok"
+
+#: dictionary/views/list.py:222
+msgid "the topics were mark read"
+msgstr "başlıklar okundu olarak işaretlendi"
+
+#: dictionary/views/list.py:454
+msgid "honestly, there was nothing new. so i listed them all."
+msgstr "pek bişey bulamadım açıkçası, buyrun hepsi."
+
+#: dictionary/views/list.py:621
+#, python-format
+msgid ""
+"you have been redirected by a reference, <a href='%(url)s'>click here</a> to "
+"return to the original topic."
+msgstr ""
+"bakınız etiketiyle yönlendirildiniz. asıl başlığa dönmek için <a "
+"href='%(url)s'>buraya tıklayın</a>"
+
+#: dictionary/views/reporting.py:32
+msgid "it hasn't been long since you last sent a report."
+msgstr "siz en son iletişime geçeli pek zaman geçmedi ki."
+
+#: dictionary/views/reporting.py:39
+msgid "your report request has been successfully sent."
+msgstr "iletişim talebiniz başarıyla iletildi."
+
+#: dictionary/views/reporting.py:57
 msgid "confirmation of reporting"
 msgstr "iletişim formu için onay"
 
-#: .\views\reporting.py:63
+#: dictionary/views/reporting.py:65
 msgid ""
 "a confirmation link has been sent to your e-mail address. your report will "
 "reach us if you follow the given link."
@@ -3434,7 +3454,7 @@ msgstr ""
 "e-posta adresinize bir onaylama bağlantısı gönderildi. bu bağlantıya "
 "tıkladıktan sonra isteğiniz bize ulaşacak."
 
-#: .\views\reporting.py:91
+#: dictionary/views/reporting.py:90
 #, python-format
 msgid ""
 "about the entry (#%(referrer_entry)s), in the topic titled "
@@ -3443,11 +3463,11 @@ msgstr ""
 "'%(referrer_topic)s' başlığındaki (#%(referrer_entry)s) numaralı entry "
 "hakkında"
 
-#: .\views\reporting.py:114
+#: dictionary/views/reporting.py:113
 msgid "your report request was successfully sent."
 msgstr "iletişim talebiniz başarıyla iletildi."
 
-#: .\views\reporting.py:120
+#: dictionary/views/reporting.py:119
 msgid ""
 "unfortunately your report request was not sent. the confirmation link is "
 "invalid; please check the confirmation link. <strong>confirmation link is "
@@ -3457,26 +3477,10 @@ msgstr ""
 "lütfen bağlantı adresini kontrol edin. <strong>onaylama bağlantısı "
 "gönderimden itibaren bir gün için geçerlidir.</strong> "
 
-#~ msgid "no, no i don't think i will."
-#~ msgstr "olmaz ki canım... hürrüpü"
+#: djdict/settings.py:111
+msgid "Turkish"
+msgstr ""
 
-#~ msgid "One day"
-#~ msgstr "Bir gün"
-
-#~ msgid "One week"
-#~ msgstr "Bir hafta"
-
-#~ msgid "One month"
-#~ msgstr "Bir ay"
-
-#~ msgid "Permanent"
-#~ msgstr "Sonsuza kadar"
-
-#~ msgid "oops!"
-#~ msgstr "hay aksi!"
-
-#~ msgid "Wishes"
-#~ msgstr "Ukteler"
-
-#~ msgid "maybe this can help:"
-#~ msgstr "elimizde şunlar var:"
+#: djdict/settings.py:112
+msgid "English"
+msgstr ""

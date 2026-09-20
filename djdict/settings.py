@@ -102,6 +102,7 @@ CACHES = {
 }
 
 
+LOCALE_PATHS = [BASE_DIR / "dictionary/locale"]
 LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "langcode"
 LANGUAGE_COOKIE_AGE = 180 * 86400
