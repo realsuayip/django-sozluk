@@ -1,17 +1,8 @@
 /* global gettext */
 
-import {
-    Handle,
-    Handler,
-    template,
-    one,
-    gqlc,
-    isValidText,
-    notify,
-    toggleText
-} from "./utils"
+import { Handle, Handler, template, one, gqlc, isValidText, notify, toggleText } from "./utils"
 
-function topicAction (type, pk) {
+function topicAction(type, pk) {
     return gqlc({ query: `mutation{topic{${type}(pk:"${pk}"){feedback}}}` }).then(response => {
         notify(response.data.topic[type].feedback)
     })
@@ -31,7 +22,7 @@ Handler(".suggestion-vote button", "click", function () {
 
     gqlc({
         query: "mutation($category:String!,$topic:String!,$direction:Int!){category{suggest(category:$category,topic:$topic,direction:$direction){feedback}}}",
-        variables: { category, topic, direction }
+        variables: { category, topic, direction },
     }).then(response => {
         if (response.errors) {
             response.errors.forEach(error => {
@@ -47,7 +38,7 @@ Handler(".suggestion-vote button", "click", function () {
 
 // Wish
 
-function wishTopic (title, hint = "") {
+function wishTopic(title, hint = "") {
     const query = `mutation wish($title:String!,$hint:String){topic{wish(title:$title,hint:$hint){feedback hint}}}`
     const variables = { title, hint }
     return gqlc({ query, variables })
@@ -84,7 +75,11 @@ Handle("a.wish-send[role=button]", "click", function () {
         const hintFormatted = response.data.topic.wish.hint
         const wishList = one("ul#wish-list")
         wishList.classList.remove("dj-hidden")
-        wishList.prepend(template(`<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted}</i></p>` : ""}</li>`))
+        wishList.prepend(
+            template(
+                `<li class="list-group-item owner">${gettext("you just wished for this topic.")} ${hintFormatted ? `${gettext("your hint:")} <p class="m-0 text-formatted"><i>${hintFormatted}</i></p>` : ""}</li>`
+            )
+        )
         window.scrollTo({ top: 0, behavior: "smooth" })
         notify(response.data.topic.wish.feedback)
     })

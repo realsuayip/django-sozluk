@@ -3,7 +3,7 @@
 import { cookies, many, one, notify, gqlc, notSafe, Handler, Handle, updateQueryStringParameter } from "./utils"
 import { userIsMobile } from "./mql"
 
-function setExclusions (exclusions) {
+function setExclusions(exclusions) {
     const cookieExclusions = JSON.parse(cookies.get("lfex") || "null")
     if (exclusions) {
         if (cookieExclusions) {
@@ -24,7 +24,16 @@ function setExclusions (exclusions) {
 }
 
 class LeftFrame {
-    constructor (slug, page = 1, year = null, searchKeys = null, refresh = false, tab = null, exclusions = null, extra = null) {
+    constructor(
+        slug,
+        page = 1,
+        year = null,
+        searchKeys = null,
+        refresh = false,
+        tab = null,
+        exclusions = null,
+        extra = null
+    ) {
         this.slug = slug
         this.page = page
         this.year = year
@@ -38,7 +47,7 @@ class LeftFrame {
         this.loadIndicator = one("#load_indicator")
     }
 
-    setCookies () {
+    setCookies() {
         cookies.set("lfac", this.slug)
         cookies.set("lfnp", this.page)
 
@@ -73,7 +82,7 @@ class LeftFrame {
         }
     }
 
-    call () {
+    call() {
         this.loadIndicator.style.display = "inline"
         const variables = {
             slug: this.slug,
@@ -83,7 +92,7 @@ class LeftFrame {
             refresh: this.refresh,
             tab: this.tab,
             exclusions: this.exclusions,
-            extra: this.extra
+            extra: this.extra,
         }
 
         const query = `query($slug: String!,$year:Int,$page:Int,$searchKeys:String,$refresh:Boolean,$tab:String,
@@ -105,12 +114,18 @@ class LeftFrame {
         })
     }
 
-    render (data) {
+    render(data) {
         one("#left-frame-nav").scroll({ top: 0, behavior: "smooth" })
         one("#current_category_name").textContent = data.safename
         this.renderRefreshButton(data.refreshCount)
         this.renderYearSelector(data.year, data.yearRange)
-        this.renderPagination(data.page.hasOtherPages, data.page.paginator.pageRange, data.page.paginator.numPages, data.page.number, data.page.hasNext)
+        this.renderPagination(
+            data.page.hasOtherPages,
+            data.page.paginator.pageRange,
+            data.page.paginator.numPages,
+            data.page.number,
+            data.page.hasNext
+        )
         this.renderTopicList(data.page.objectList, data.slugIdentifier, data.parameters)
         this.renderShowMoreButton(data.page.number, data.page.hasOtherPages)
         this.renderTabs(data.tabs)
@@ -118,7 +133,7 @@ class LeftFrame {
         this.loadIndicator.style.display = "none"
     }
 
-    renderRefreshButton (count) {
+    renderRefreshButton(count) {
         const refreshButton = one("#refresh_bugun")
         if (count) {
             refreshButton.classList.remove("dj-hidden")
@@ -128,7 +143,7 @@ class LeftFrame {
         }
     }
 
-    renderShowMoreButton (currentPage, isPaginated) {
+    renderShowMoreButton(currentPage, isPaginated) {
         const showMoreButton = one("a#show_more")
 
         if (currentPage !== 1 || !isPaginated) {
@@ -138,7 +153,7 @@ class LeftFrame {
         }
     }
 
-    renderTabs (tabData) {
+    renderTabs(tabData) {
         const tabHolder = one("ul#left-frame-tabs")
         if (tabData) {
             tabHolder.innerHTML = ""
@@ -153,7 +168,7 @@ class LeftFrame {
         }
     }
 
-    renderExclusions (exclusions) {
+    renderExclusions(exclusions) {
         const toggler = one("#popular_excluder")
         const categoryHolder = one("#exclusion-choices")
         const categoryList = categoryHolder.querySelector("ul.exclusion-choices")
@@ -178,7 +193,7 @@ class LeftFrame {
         }
     }
 
-    renderYearSelector (currentYear, yearRange) {
+    renderYearSelector(currentYear, yearRange) {
         const yearSelect = one("#year_select")
         yearSelect.innerHTML = ""
 
@@ -192,7 +207,7 @@ class LeftFrame {
         }
     }
 
-    renderTopicList (objectList, slugIdentifier, parameters) {
+    renderTopicList(objectList, slugIdentifier, parameters) {
         const topicList = one("ul#topic-list")
         if (objectList.length === 0) {
             topicList.innerHTML = `<small>${gettext("nothing here")}</small>`
@@ -212,8 +227,8 @@ class LeftFrame {
         }
     }
 
-    renderPagination (isPaginated, pageRange, totalPages, currentPage, hasNext) {
-    // Pagination related selectors
+    renderPagination(isPaginated, pageRange, totalPages, currentPage, hasNext) {
+        // Pagination related selectors
         const paginationWrapper = one("#lf_pagination_wrapper")
         const pageSelector = one("select#left_frame_paginator")
         const totalPagesButton = one("#lf_total_pages")
@@ -238,7 +253,7 @@ class LeftFrame {
         }
     }
 
-    static populate (slug, page = 1, ...args) {
+    static populate(slug, page = 1, ...args) {
         if (userIsMobile) {
             return
         }
@@ -246,7 +261,7 @@ class LeftFrame {
         leftFrame.call()
     }
 
-    static refreshPopulate () {
+    static refreshPopulate() {
         LeftFrame.populate("today", 1, null, null, true)
     }
 }

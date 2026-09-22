@@ -17,22 +17,27 @@ Handler("input.is-invalid", "input", function () {
     this.classList.remove("is-invalid")
 })
 
-Handler("textarea.expandable", "focus", function () {
-    this.style.height = `${this.offsetHeight + 150}px`
-    Handle(this, "transitionend", () => {
-        this.style.transition = "none"
-    })
-}, { once: true })
+Handler(
+    "textarea.expandable",
+    "focus",
+    function () {
+        this.style.height = `${this.offsetHeight + 150}px`
+        Handle(this, "transitionend", () => {
+            this.style.transition = "none"
+        })
+    },
+    { once: true }
+)
 
 const irregularCharMap = {
     "\u201C": `"`,
     "\u201D": `"`,
     "\u2018": `'`,
     "\u2019": `'`,
-    "\u02C6": `^` // eslint-disable-line
+    "\u02C6": `^`, // eslint-disable-line
 }
 
-function normalizeChars (string) {
+function normalizeChars(string) {
     return String(string).replace(/[\u201C\u201D\u2018\u2019\u02C6]/g, function (s) {
         return irregularCharMap[s]
     })

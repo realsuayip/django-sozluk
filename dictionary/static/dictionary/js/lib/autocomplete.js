@@ -9,11 +9,11 @@ import { many, one, gqlc, notSafe, lang, template, createPopper } from "../utils
  * MIT
  */
 
-function escapeRegExChars (value) {
+function escapeRegExChars(value) {
     return value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&")
 }
 
-function formatResult (suggestion, value) {
+function formatResult(suggestion, value) {
     /**
      *  formatResult function source:
      *  Ajax Autocomplete for jQuery, version 1.4.11
@@ -28,12 +28,14 @@ function formatResult (suggestion, value) {
 
     const pattern = "(" + escapeRegExChars(value) + ")"
 
-    return notSafe(suggestion.replace(new RegExp(pattern, "gi"), "<mark>$1</mark>"))
-        .replace(/&lt;(\/?mark)&gt;/g, "<$1>")
+    return notSafe(suggestion.replace(new RegExp(pattern, "gi"), "<mark>$1</mark>")).replace(
+        /&lt;(\/?mark)&gt;/g,
+        "<$1>"
+    )
 }
 
 class AutoComplete {
-    constructor (options) {
+    constructor(options) {
         this.input = options.input
         this.lookup = options.lookup // Takes name, returns a Promise that resolves into a list of {name, value}s.
         this.onSelect = options.onSelect // Takes value.
@@ -139,14 +141,16 @@ class AutoComplete {
 
         this.template.addEventListener("mouseover", event => {
             if (event.target.tagName === "LI" && !event.target.classList.contains("no-results")) {
-                Array.from(this.template.childNodes).forEach(el => el !== event.target && el.classList.remove("selected", "mouseover"))
+                Array.from(this.template.childNodes).forEach(
+                    el => el !== event.target && el.classList.remove("selected", "mouseover")
+                )
                 this.selected = event.target
                 this.selected.classList.add("selected", "mouseover")
             }
         })
     }
 
-    suggest (name) {
+    suggest(name) {
         if (this.cache) {
             const isEmptyResult = this.emptyResults.filter(result => name.startsWith(Object.keys(result)[0])).length
 
@@ -166,10 +170,10 @@ class AutoComplete {
         this.lookup(name).then(suggestions => {
             const items = suggestions.map(s => ({
                 name: this.highlight ? formatResult(s.name, name) : notSafe(s.name),
-                value: notSafe(s.value)
+                value: notSafe(s.value),
             }))
 
-            if (this.cache && (name !== "@")) {
+            if (this.cache && name !== "@") {
                 const resultSet = items.length ? this.cachedResults : this.emptyResults
                 resultSet.push({ [name]: items })
             }
@@ -178,7 +182,7 @@ class AutoComplete {
         })
     }
 
-    render (items) {
+    render(items) {
         if (!this.popper) {
             this.popper = this.create()
         }
@@ -204,7 +208,7 @@ class AutoComplete {
         this.input.setAttribute("aria-expanded", "true")
     }
 
-    destroy () {
+    destroy() {
         if (this.popper) {
             this.input.setAttribute("aria-expanded", "false")
             this.template.style.display = "none"
@@ -216,11 +220,11 @@ class AutoComplete {
         }
     }
 
-    create () {
+    create() {
         return createPopper(this.input, this.template, { placement: "bottom-start" })
     }
 
-    triggerOnSelect (selected) {
+    triggerOnSelect(selected) {
         if (selected.classList.contains("no-results")) {
             return
         }
@@ -236,117 +240,124 @@ class AutoComplete {
 
 const authorQuery = `query($lookup:String!){autocomplete{authors(lookup:$lookup){username}}}`
 
-function authorAt (name) {
+function authorAt(name) {
     // name => @username
     return gqlc({
         query: authorQuery,
-        variables: { lookup: name.substr(1) }
+        variables: { lookup: name.substr(1) },
     }).then(response => {
         return response.data.autocomplete.authors.map(user => ({
             name: `@${user.username}`,
-            value: `@${user.username}`
+            value: `@${user.username}`,
         }))
     })
 }
 
-function fullLookup (name) {
+function fullLookup(name) {
     if (name.startsWith("@") && name.substr(1)) {
         return authorAt(name)
     }
 
     return gqlc({
         query: `query($lookup:String!){autocomplete{authors(lookup:$lookup,limit:3){username}topics(lookup:$lookup,limit:7){title}}}`,
-        variables: { lookup: name }
+        variables: { lookup: name },
     }).then(response => {
         const topicSuggestions = response.data.autocomplete.topics.map(topic => ({
             name: topic.title,
-            value: topic.title
+            value: topic.title,
         }))
         const authorSuggestions = response.data.autocomplete.authors.map(user => ({
             name: `@${user.username}`,
-            value: `@${user.username}`
+            value: `@${user.username}`,
         }))
         return topicSuggestions.concat(authorSuggestions)
     })
 }
 
-new AutoComplete({ // eslint-disable-line no-new
+new AutoComplete({
+    // eslint-disable-line no-new
     input: one("#header_search"),
     highlight: true,
     cache: true,
     lookup: fullLookup,
 
-    onSelect (value) {
+    onSelect(value) {
         window.location = "/topic/?q=" + encodeURIComponent(value)
-    }
+    },
 })
 
 const inEditorSearch = one("#editor_input")
 
 if (inEditorSearch) {
-    new AutoComplete({ // eslint-disable-line no-new
+    new AutoComplete({
+        // eslint-disable-line no-new
         input: inEditorSearch,
         silent: true,
         highlight: true,
         cache: true,
-        lookup: fullLookup
+        lookup: fullLookup,
     })
 }
 
 const inTopicSearch = one("#in_topic_search")
 
 if (inTopicSearch) {
-    new AutoComplete({ // eslint-disable-line no-new
+    new AutoComplete({
+        // eslint-disable-line no-new
         input: inTopicSearch,
         silent: true,
         highlight: true,
         cache: true,
-        lookup (name) {
+        lookup(name) {
             if (name.startsWith("@") && name.substr(1)) {
                 return authorAt(name)
             }
             return new Promise(resolve => resolve)
         },
-        onSelect () {
+        onSelect() {
             inTopicSearch.closest("form").submit()
-        }
+        },
     })
 }
 
 many(".author-search").forEach(input => {
-    new AutoComplete({ // eslint-disable-line no-new
+    new AutoComplete({
+        // eslint-disable-line no-new
         input,
         highlight: true,
         cache: true,
-        lookup (name) {
+        lookup(name) {
             return gqlc({
                 query: authorQuery,
-                variables: { lookup: name }
+                variables: { lookup: name },
             }).then(response => {
                 return response.data.autocomplete.authors.map(user => ({
                     name: user.username,
-                    value: user.username
+                    value: user.username,
                 }))
             })
-        }
+        },
     })
 })
 
 const titleInput = one("#user_title_edit")
 
 if (titleInput) {
-    new AutoComplete({ // eslint-disable-line no-new
+    new AutoComplete({
+        // eslint-disable-line no-new
         input: titleInput,
         highlight: true,
         cache: true,
-        lookup (name) {
+        lookup(name) {
             return gqlc({
                 query: `query($lookup:String!){autocomplete{topics(lookup:$lookup,limit:7){title}}}`,
-                variables: { lookup: name }
-            }).then(response => response.data.autocomplete.topics.map(topic => ({
-                name: topic.title,
-                value: topic.title
-            })))
-        }
+                variables: { lookup: name },
+            }).then(response =>
+                response.data.autocomplete.topics.map(topic => ({
+                    name: topic.title,
+                    value: topic.title,
+                }))
+            )
+        },
     })
 }

@@ -2,7 +2,7 @@ import { userIsMobile } from "./mql"
 import { LeftFrame } from "./left-frame"
 import { Handle, Handler, one } from "./utils"
 
-function dictToParameters (dict) {
+function dictToParameters(dict) {
     const str = []
     for (const key in dict) {
         // a. check if the property/key is defined in the object itself, not in parent
@@ -14,7 +14,7 @@ function dictToParameters (dict) {
     return str.join("&")
 }
 
-function populateSearchResults (searchParameters) {
+function populateSearchResults(searchParameters) {
     if (!searchParameters) {
         return
     }
@@ -45,7 +45,7 @@ Handle("button#perform_advanced_search", "click", () => {
         is_in_favorites: isFavorites,
         from_date: fromDate,
         to_date: toDate,
-        ordering
+        ordering,
     }
     populateSearchResults(dictToParameters(keys))
 })

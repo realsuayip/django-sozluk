@@ -24,8 +24,12 @@ Handle(document, "click", event => {
             }
 
             const url = self.getAttribute("data-img")
-            const image = template(`<img src="${url}" alt="${gettext("image")}" class="img-thumbnail img-fluid" draggable="false">`)
-            const expander = template(`<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3 position-relative" style="top: 2px;"></a>`)
+            const image = template(
+                `<img src="${url}" alt="${gettext("image")}" class="img-thumbnail img-fluid" draggable="false">`
+            )
+            const expander = template(
+                `<a rel="ugc nofollow noopener" title="${gettext("open full image in new tab")}" href="${url}" target="_blank" class="ml-3 position-relative" style="top: 2px;"></a>`
+            )
 
             image.onerror = () => {
                 showImageErrorMessage()
@@ -51,10 +55,10 @@ Handle(document, "click", event => {
     }
 })
 
-function deleteImage (slug) {
+function deleteImage(slug) {
     return gqlc({
         query: "mutation($slug:String!){image{delete(slug:$slug){feedback}}}",
-        variables: { slug }
+        variables: { slug },
     })
 }
 

@@ -2,7 +2,7 @@
 
 import { Handler, gqlc, toggleText } from "./utils"
 
-function categoryAction (type, pk) {
+function categoryAction(type, pk) {
     return gqlc({ query: `mutation{category{${type}(pk:"${pk}"){feedback}}}` })
 }
 

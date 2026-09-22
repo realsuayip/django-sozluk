@@ -2,7 +2,7 @@ import { Handle, Handler, one, createPopper, sleep } from "../utils"
 
 const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
-function getNextFocusableElement (element) {
+function getNextFocusableElement(element) {
     if (!element.nextElementSibling) {
         return null
     }
@@ -14,7 +14,7 @@ function getNextFocusableElement (element) {
     return getNextFocusableElement(element.nextElementSibling)
 }
 
-function getPreviousFocusableElement (element) {
+function getPreviousFocusableElement(element) {
     if (!element.previousElementSibling) {
         return null
     }
@@ -29,7 +29,7 @@ function getPreviousFocusableElement (element) {
 let liveDropdown = null
 
 class Dropdown {
-    constructor (button) {
+    constructor(button) {
         this.button = button
         this.menuElement = button.parentNode.querySelector(".dropdown-menu")
         this.popper = null
@@ -68,7 +68,7 @@ class Dropdown {
         })
     }
 
-    create () {
+    create() {
         const placement = this.menuElement.getAttribute("data-orientation") || "bottom-end"
         liveDropdown && liveDropdown.destroy()
         liveDropdown = this
@@ -79,14 +79,14 @@ class Dropdown {
                 {
                     name: "offset",
                     options: {
-                        offset: [0, 1]
-                    }
-                }
-            ]
+                        offset: [0, 1],
+                    },
+                },
+            ],
         })
     }
 
-    async toggle () {
+    async toggle() {
         // To make dynamic dropdowns work (e.g., entry actions)
         // Normally, we should use popper.update() but in Chrome/Edge the layout shift
         // is preserved in (fixed) header for some reason?
@@ -105,7 +105,7 @@ class Dropdown {
         this.button.setAttribute("aria-expanded", "true")
     }
 
-    destroy () {
+    destroy() {
         this.menuElement.style.display = "none"
         this.button.setAttribute("aria-expanded", "false")
 
@@ -194,8 +194,13 @@ Handle(document, "click", event => {
     const dropdown = liveDropdown
 
     if (dropdown) {
-        const collapse = dropdown.menuElement.classList.contains("no-collapse") && dropdown.menuElement === event.target.closest(".dropdown-menu")
-        if (event.target.classList.contains("dropdown-close") || (dropdown.button !== event.target.closest("[data-toggle=dropdown]") && !collapse)) {
+        const collapse =
+            dropdown.menuElement.classList.contains("no-collapse") &&
+            dropdown.menuElement === event.target.closest(".dropdown-menu")
+        if (
+            event.target.classList.contains("dropdown-close") ||
+            (dropdown.button !== event.target.closest("[data-toggle=dropdown]") && !collapse)
+        ) {
             dropdown.destroy()
         }
     }

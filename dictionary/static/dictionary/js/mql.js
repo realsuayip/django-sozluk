@@ -6,14 +6,16 @@ let userIsMobile = false
 let lastScrollTop = 0
 
 let hasScrollTopButton = false
-const scrollTopButton = template(`<a role="button" tabindex="0" class="bg-light rounded border-0 w-100 p-2 d-none scrolltop text-center" style="display: block">${gettext("scroll to top")}</a>`)
+const scrollTopButton = template(
+    `<a role="button" tabindex="0" class="bg-light rounded border-0 w-100 p-2 d-none scrolltop text-center" style="display: block">${gettext("scroll to top")}</a>`
+)
 
 Handle(scrollTopButton, "click", function () {
     window.scrollTo(0, 0)
     this.classList.add("d-none")
 })
 
-function hideRedundantHeader () {
+function hideRedundantHeader() {
     const delta = 30
     let st = window.pageYOffset
     const header = one("header.page_header")
@@ -59,7 +61,7 @@ const swhRender = verbose => {
     })
 }
 
-function desktopView () {
+function desktopView() {
     userIsMobile = false
 
     // Find left frame scroll position.
@@ -85,7 +87,7 @@ function desktopView () {
     }
 }
 
-function mobileView () {
+function mobileView() {
     userIsMobile = true
     // Code to hide some part of the header on mobile scroll.
     window.addEventListener("scroll", hideRedundantHeader)
@@ -100,7 +102,7 @@ function mobileView () {
     }
 }
 
-function mqlsw (mql) {
+function mqlsw(mql) {
     // check mql & switch
     if (mql.matches) {
         mobileView()
@@ -133,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const themeExpires = 90
 
-function setTheme (theme) {
+function setTheme(theme) {
     const body = one("body")
     const icon = one("[data-toggle=theme]").querySelector("use")
     body.style.transition = "background-color .5s ease"

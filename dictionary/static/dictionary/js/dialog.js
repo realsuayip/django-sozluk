@@ -3,7 +3,7 @@
 import { Handle, many, one, gqlc, isValidText, notify } from "./utils"
 import { userAction } from "./user"
 
-function showBlockDialog (recipient, redirect = true, returnTo = null) {
+function showBlockDialog(recipient, redirect = true, returnTo = null) {
     const button = one("#block_user")
     button.setAttribute("data-username", recipient)
     button.setAttribute("data-re", redirect)
@@ -27,7 +27,7 @@ Handle("#block_user", "click", function () {
     userAction("block", targetUser, null, re)
 })
 
-function showMessageDialog (recipient, extraContent, returnTo = null) {
+function showMessageDialog(recipient, extraContent, returnTo = null) {
     const msgModal = one("#sendMessageModal")
     one("#sendMessageModal span.username").textContent = recipient
 
@@ -39,7 +39,7 @@ function showMessageDialog (recipient, extraContent, returnTo = null) {
     msgModal._modalInstance.show(returnTo)
 }
 
-function composeMessage (recipient, body) {
+function composeMessage(recipient, body) {
     const variables = { recipient, body }
     const query = `mutation compose($body:String!,$recipient:String!){message{compose(body:$body,recipient:$recipient){feedback}}}`
     return gqlc({ query, variables }).then(function (response) {
@@ -65,12 +65,14 @@ Handle("#send_message_btn", "click", function () {
 
     this.disabled = true
 
-    composeMessage(msgModal.getAttribute("data-for"), body).then(() => {
-        msgModal._modalInstance.hide()
-        textarea.value = ""
-    }).finally(() => {
-        this.disabled = false
-    })
+    composeMessage(msgModal.getAttribute("data-for"), body)
+        .then(() => {
+            msgModal._modalInstance.hide()
+            textarea.value = ""
+        })
+        .finally(() => {
+            this.disabled = false
+        })
 })
 
 export { showBlockDialog, showMessageDialog }

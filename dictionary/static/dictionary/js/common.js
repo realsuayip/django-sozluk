@@ -25,14 +25,16 @@ Handle("body", isTouchDevice ? "touchstart" : "focusin", event => {
 })
 
 Handle("form.search_mobile, form.reporting-form", "submit", function () {
-    Array.from(this.querySelectorAll("input")).filter(input => {
-        if (input.type === "checkbox" && !input.checked) {
-            return true
-        }
-        return input.value === ""
-    }).forEach(input => {
-        input.disabled = true
-    })
+    Array.from(this.querySelectorAll("input"))
+        .filter(input => {
+            if (input.type === "checkbox" && !input.checked) {
+                return true
+            }
+            return input.value === ""
+        })
+        .forEach(input => {
+            input.disabled = true
+        })
     return false
 })
 

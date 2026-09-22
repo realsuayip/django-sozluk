@@ -1,7 +1,7 @@
 import { many } from "../utils"
 
 class Modal {
-    constructor (modal) {
+    constructor(modal) {
         this.modal = modal
         this.showing = false
         this.lead = modal.querySelector(".lead")
@@ -37,7 +37,7 @@ class Modal {
         })
     }
 
-    show (returnTo) {
+    show(returnTo) {
         this.returnTo = returnTo
         this.showing = true
         this.modal.removeAttribute("aria-hidden")
@@ -49,7 +49,7 @@ class Modal {
         }, 0)
     }
 
-    hide () {
+    hide() {
         if (!this.showing) {
             return false
         }
@@ -58,7 +58,7 @@ class Modal {
         _modal.classList.remove("show")
 
         new Promise(resolve => {
-            _modal.addEventListener("transitionend", function _transitionend (event) {
+            _modal.addEventListener("transitionend", function _transitionend(event) {
                 if (event.target === _modal) {
                     resolve(_transitionend)
                 }

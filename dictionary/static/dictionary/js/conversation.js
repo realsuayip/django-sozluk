@@ -20,7 +20,7 @@ Handler("input.chat-selector", "change", function () {
     this.closest("li.chat").classList.toggle("selected")
 })
 
-function getPkSet (selected) {
+function getPkSet(selected) {
     const pkSet = []
     selected.forEach(el => {
         pkSet.push(el.getAttribute("data-id"))
@@ -28,7 +28,7 @@ function getPkSet (selected) {
     return pkSet
 }
 
-function selectChat (init) {
+function selectChat(init) {
     // inbox.html || conversation.html
     let chat = init.closest("li.chat")
     if (!chat) {
@@ -37,7 +37,7 @@ function selectChat (init) {
     return chat
 }
 
-function deleteConversation (pkSet, mode) {
+function deleteConversation(pkSet, mode) {
     const query = `mutation($pkSet:[ID!]!, $mode:String){message{deleteConversation(pkSet:$pkSet,mode:$mode){redirect}}}`
     const variables = { pkSet, mode }
     return gqlc({ query, variables })
@@ -87,7 +87,7 @@ Handle("a[role=button].chat-delete", "click", () => {
 
 // Archiving
 
-function archiveConversation (pkSet) {
+function archiveConversation(pkSet) {
     const query = `mutation($pkSet:[ID!]!){message{archiveConversation(pkSet:$pkSet){redirect}}}`
     const variables = { pkSet }
     return gqlc({ query, variables })
@@ -135,7 +135,11 @@ Handler("a[role=button].chat-archive-individual", "click", function () {
 // Individual message deleting
 
 many("#message_list time[data-id]").forEach(el => {
-    el.parentNode.append(template(`<div data-orientation="bottom" class="dropdown-menu"><a role="button" tabindex="0" class="dropdown-item">${gettext("delete")}</a></div>`))
+    el.parentNode.append(
+        template(
+            `<div data-orientation="bottom" class="dropdown-menu"><a role="button" tabindex="0" class="dropdown-item">${gettext("delete")}</a></div>`
+        )
+    )
 })
 
 Handler("#message_list .dropdown-menu", "click", function (event) {
@@ -144,7 +148,7 @@ Handler("#message_list .dropdown-menu", "click", function (event) {
 
         gqlc({
             variables: { pk },
-            query: "mutation($pk:ID!){message{delete(pk:$pk){immediate}}}"
+            query: "mutation($pk:ID!){message{delete(pk:$pk){immediate}}}",
         }).then(response => {
             if (response.errors) {
                 return

@@ -4,7 +4,7 @@ import { Handle, Handler, template, many, one, gqlc, notify, userIsAuthenticated
 import { showMessageDialog, showBlockDialog } from "./dialog"
 import { isTouchDevice } from "./mql"
 
-function entryAction (type, pk, redirect = false) {
+function entryAction(type, pk, redirect = false) {
     return gqlc({ query: `mutation{entry{${type}(pk:"${pk}"){feedback ${redirect ? "redirect" : ""}}}}` })
 }
 
@@ -36,7 +36,8 @@ Handler("a.fav-count[role='button']", "click", function () {
         return
     }
 
-    favoritesList.innerHTML = "<div class='px-3 py-1'><div class='spinning'><span style='font-size: 1.25em'>&orarr;</span></div></div>"
+    favoritesList.innerHTML =
+        "<div class='px-3 py-1'><div class='spinning'><span style='font-size: 1.25em'>&orarr;</span></div></div>"
 
     const pk = this.closest(".entry-full").getAttribute("data-id")
 
@@ -64,7 +65,11 @@ Handler("a.fav-count[role='button']", "click", function () {
         }
 
         if (novices.length > 0) {
-            const noviceString = interpolate(ngettext("... %(count)s novice", "... %(count)s novices", novices.length), { count: novices.length }, true)
+            const noviceString = interpolate(
+                ngettext("... %(count)s novice", "... %(count)s novices", novices.length),
+                { count: novices.length },
+                true
+            )
             const noviceToggle = template(`<a role="button" tabindex="0">${noviceString}</a>`)
             const noviceList = template(`<span class="dj-hidden"></span>`)
 
@@ -86,7 +91,9 @@ Handler("a.fav-count[role='button']", "click", function () {
 })
 
 Handler("a.twitter[role='button'], a.facebook[role='button']", "click", function () {
-    const base = this.classList.contains("twitter") ? "https://twitter.com/intent/tweet?text=" : "https://www.facebook.com/sharer/sharer.php?u="
+    const base = this.classList.contains("twitter")
+        ? "https://twitter.com/intent/tweet?text="
+        : "https://www.facebook.com/sharer/sharer.php?u="
     const entry = this.closest(".entry-footer").querySelector(".meta .permalink").getAttribute("href")
     const windowReference = window.open()
     windowReference.opener = null
@@ -113,7 +120,7 @@ Handler(".comment-vote .vote", "click", function () {
     const pk = this.parentNode.getAttribute("data-id")
     gqlc({
         query: "mutation($pk:ID!,$action:String!){entry{votecomment(pk:$pk,action:$action){count}}}",
-        variables: { pk, action }
+        variables: { pk, action },
     }).then(response => {
         if (response.errors) {
             response.errors.forEach(error => {
@@ -133,17 +140,19 @@ Handler(".comment-vote .vote", "click", function () {
 
 Handler(".entry-actions", "click", function (event) {
     const target = event.target.closest(".dropdown-item")
-    const [action] = ["message", "pin", "block", "delete", "copy", "share"].filter(action => target.classList.contains(action))
+    const [action] = ["message", "pin", "block", "delete", "copy", "share"].filter(action =>
+        target.classList.contains(action)
+    )
 
     switch (action) {
-        case "message" : {
+        case "message": {
             const recipient = this.parentNode.querySelector(".username").textContent
             const entryInQuestion = this.closest(".entry-full").getAttribute("data-id")
             showMessageDialog(recipient, `\`#${entryInQuestion}\`:\n`, this.previousElementSibling)
             break
         }
 
-        case "pin" : {
+        case "pin": {
             const entryID = this.closest(".entry-full").getAttribute("data-id")
             const body = one("body")
             entryAction("pin", entryID).then(response => {
@@ -162,7 +171,7 @@ Handler(".entry-actions", "click", function (event) {
             break
         }
 
-        case "block" : {
+        case "block": {
             const target = this.parentNode.querySelector(".username").textContent
             const profile = one(".profile-username")
             const re = profile && profile.textContent === target
@@ -170,7 +179,7 @@ Handler(".entry-actions", "click", function (event) {
             break
         }
 
-        case "delete" : {
+        case "delete": {
             if (confirm(gettext("are you sure to delete?"))) {
                 const entry = this.closest(".entry-full")
                 const redirect = many("ul.topic-view-entries li.entry-full").length === 1
@@ -205,7 +214,8 @@ Handler(".entry-actions", "click", function (event) {
 })
 
 // Render actions
-const icon = (name, a = 16, b = 16) => `<svg fill="currentColor" viewBox="0 0 ${a} ${b}"><use href="#${name}"></use></svg>`
+const icon = (name, a = 16, b = 16) =>
+    `<svg fill="currentColor" viewBox="0 0 ${a} ${b}"><use href="#${name}"></use></svg>`
 
 Handler(".entry-full a.action[role='button']", "click", function () {
     if (this.classList.contains("loaded")) {
@@ -216,7 +226,8 @@ Handler(".entry-full a.action[role='button']", "click", function () {
     const entryID = entry.getAttribute("data-id")
     const topicTitle = encodeURIComponent(entry.closest("[data-topic]").getAttribute("data-topic"))
     const actions = this.parentNode.querySelector(".entry-actions")
-    const pinLabel = entryID === one("body").getAttribute("data-pin") ? gettext("unpin from profile") : gettext("pin to profile")
+    const pinLabel =
+        entryID === one("body").getAttribute("data-pin") ? gettext("unpin from profile") : gettext("pin to profile")
 
     actions.innerHTML = ""
     let menuItems = ""
@@ -270,11 +281,13 @@ Handle(".pin-sync", "click", function () {
 
 // Read more functionality
 
-function truncateEntryText () {
+function truncateEntryText() {
     const overflown = el => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth
     many("article.entry p").forEach(el => {
         if (overflown(el)) {
-            const readMore = template(`<div role="button" tabindex="0" class="read_more">${gettext("continue reading")}</div>`)
+            const readMore = template(
+                `<div role="button" tabindex="0" class="read_more">${gettext("continue reading")}</div>`
+            )
             el.parentNode.append(readMore)
             Handle(readMore, "click", function () {
                 el.style.maxHeight = "none"
@@ -292,10 +305,10 @@ window.onload = () => {
 
 // Async draft
 
-function draftEntry (content, pk = null, title = null) {
+function draftEntry(content, pk = null, title = null) {
     return gqlc({
         query: "mutation($content:String!,$pk:ID,$title:String){entry{edit(content:$content,pk:$pk,title:$title){pk,content,feedback}}}",
-        variables: { content, title, pk }
+        variables: { content, title, pk },
     }).then(response => {
         if (response.errors) {
             response.errors.forEach(error => {
@@ -306,7 +319,11 @@ function draftEntry (content, pk = null, title = null) {
             btn.textContent = gettext("save changes")
             if (!btn.hasAttribute("data-pk")) {
                 // ^^ Only render delete button once.
-                btn.after(template(`<button type="button" class="btn btn-django-link fs-90 ml-3 draft-del">${gettext("delete")}</button>`))
+                btn.after(
+                    template(
+                        `<button type="button" class="btn btn-django-link fs-90 ml-3 draft-del">${gettext("delete")}</button>`
+                    )
+                )
             }
             window.onbeforeunload = null
             notify(response.data.entry.edit.feedback, "info")
@@ -322,7 +339,7 @@ Handle("button.draft-async", "click", function () {
     const pk = this.getAttribute("data-pk")
     const content = one("#user_content_edit").value
 
-    if (!content.trim() || ((title !== null) && !title.trim())) {
+    if (!content.trim() || (title !== null && !title.trim())) {
         // Check if content is not empty, also check title (if provided).
         notify(gettext("if only you could write down something"), "error")
         return
@@ -340,7 +357,11 @@ Handle("button.draft-async", "click", function () {
     if (title) {
         draftEntry(content, null, title).then(response => {
             if (response) {
-                one(".user-content").prepend(template(`<section class="pw-area"><h2 class="h5 text-muted">${gettext("preview")}</h2><p class="text-formatted pw-text">${response.data.entry.edit.content}</p></section>`))
+                one(".user-content").prepend(
+                    template(
+                        `<section class="pw-area"><h2 class="h5 text-muted">${gettext("preview")}</h2><p class="text-formatted pw-text">${response.data.entry.edit.content}</p></section>`
+                    )
+                )
                 const pk = response.data.entry.edit.pk
                 this.setAttribute("data-pk", pk)
                 one("#content-form").prepend(template(`<input type="hidden" name="pub_draft_pk" value="${pk}" />`))
