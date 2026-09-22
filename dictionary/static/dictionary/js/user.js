@@ -1,6 +1,6 @@
 /* global gettext */
 
-import { Handle, Handler, gqlc, notify, toggleText } from "./utils"
+import { cookies, gqlc, Handle, Handler, notify, toggleText } from "./utils"
 import { showBlockDialog, showMessageDialog } from "./dialog"
 
 function userAction(type, recipient, loc = null, re = true) {
@@ -44,6 +44,23 @@ Handle("ul.user-links", "click", function (event) {
     } else if (event.target.matches("li.send-message a")) {
         showMessageDialog(recipient, null, event.target)
     }
+})
+
+Handler("a[href='/logout/']", "click", function (event) {
+    event.preventDefault()
+    const form = document.createElement("form")
+
+    form.method = "POST"
+    form.action = "/logout/"
+
+    const csrf = document.createElement("input")
+    csrf.type = "hidden"
+    csrf.name = "csrfmiddlewaretoken"
+    csrf.value = cookies.get("csrftoken")
+
+    form.appendChild(csrf)
+    document.body.appendChild(form)
+    form.submit()
 })
 
 export { userAction }
